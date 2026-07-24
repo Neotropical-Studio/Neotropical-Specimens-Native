@@ -1,0 +1,36 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+
+# next.js / build
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+
+# testing / coverage
+/coverage
+
+# env files (NUNCA commitear secretos; .env.example sí se versiona)
+.env
+.env.*
+!.env.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# deploy / vercel
+.vercel
+
+# misc
+.DS_Store
+*.pem
+
+# claude code (config personal/local, no compartir)
+.claude/settings.local.json

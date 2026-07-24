@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #0f766e;
+  --color-accent: #f59e0b;
+  --color-surface: #0b0f0e;
+  --color-text-dynamic: #f5f5f4;
+}
+
+html,
+body {
+  background: var(--color-surface);
+  color: var(--color-text-dynamic);
+}

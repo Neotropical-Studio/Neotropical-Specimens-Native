@@ -1,0 +1,14 @@
+node_modules/
+.next/
+dist/
+build/
+public/videos/
+public/3d/
+public/images/
+*.blend
+*.mp4
+*.glb
+*.gltf
+*.ts
+*.m3u8
+package-lock.json
