@@ -8,7 +8,11 @@ const CACHE = 'entmo-edge-2026.0';
 const OFFLINE_URL = '/offline';
 const SYNC_TAG = 'entmo-edge-sync';
 
-const PRECACHE = ['/', OFFLINE_URL];
+// Sólo URLs que responden 200 directo. '/' NO se precachea: ahora redirige (307)
+// al idioma de ruta y Cache.addAll rechaza respuestas redirigidas, lo que
+// abortaría la instalación del SW. Las portadas /[lang] entran en caché solas
+// con StaleWhileRevalidate en la primera visita.
+const PRECACHE = [OFFLINE_URL];
 
 // No cachear en el SW el streaming/proxy de media (Range/HLS) ni las APIs mutables.
 const BYPASS = [/^\/api\/media\//, /^\/api\/webhooks\//];
