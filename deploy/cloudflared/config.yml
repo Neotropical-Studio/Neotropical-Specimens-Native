@@ -1,0 +1,60 @@
+# =============================================================================
+# cloudflared — túnel saliente para OCULTAR EL ORIGEN.
+#
+# El nodo no abre ningún puerto de entrada: cloudflared establece una conexión
+# SALIENTE hacia el borde de Cloudflare y el tráfico entra por ella. Consecuencias:
+#   · la IP del origen no aparece en DNS ni es alcanzable directamente;
+#   · el firewall del servidor puede cerrar 80/443 por completo;
+#   · no hay superficie para escaneo ni para DDoS volumétrico contra el origen.
+#
+# Se despliega junto a la app (ver edge.docker-compose.yml). El tunnel se crea una
+# vez con:
+#   cloudflared tunnel login
+#   cloudflared tunnel create entmo-edge
+#   cloudflared tunnel route dns entmo-edge tu-dominio.com
+# y el JSON de credenciales se monta como secreto.
+# =============================================================================
+
+tunnel: ${TUNNEL_ID}
+credentials-file: /etc/cloudflared/credentials.json
+
+# Métricas locales para el health check del contenedor.
+metrics: 0.0.0.0:2000
+loglevel: info
+
+# Conexiones simultáneas al borde: más rutas = más tolerancia a pérdida de
+# paquetes, que es el escenario típico en enlaces transpacíficos saturados.
+ha-connections: 4
+
+# QUIC como transporte del túnel: se recupera mucho mejor que TCP ante pérdida y
+# reordenación de paquetes. http2 queda como reserva si UDP está filtrado (algo
+# habitual en redes corporativas y en algunos ISP de la región).
+protocol: quic
+
+# Presupuestos de latencia holgados: un RTT transpacífico degradado no debe
+# tumbar el túnel y provocar un failover innecesario.
+grace-period: 30s
+retries: 5
+
+originRequest:
+  connectTimeout: 10s
+  tlsTimeout: 10s
+  tcpKeepAlive: 30s
+  keepAliveConnections: 100
+  keepAliveTimeout: 90s
+  # El origen es HTTP plano dentro de la red privada de Docker: el TLS lo termina
+  # Cloudflare. No se expone fuera del bridge.
+  noTLSVerify: true
+  httpHostHeader: ${SITE_DOMAIN}
+
+ingress:
+  # La sonda va primero: permite comprobar el nodo por el túnel sin pasar por la app.
+  - hostname: ${SITE_DOMAIN}
+    path: ^/api/health$
+    service: http://app:3000
+
+  - hostname: ${SITE_DOMAIN}
+    service: http://caddy:80
+
+  # Regla obligatoria de cierre: todo lo que no casa arriba se rechaza.
+  - service: http_status:404

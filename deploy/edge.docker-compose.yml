@@ -1,0 +1,93 @@
+# =============================================================================
+# Nodo de borde completo: app (Next standalone) + Caddy (TLS/HTTP-3) + cloudflared
+# (túnel saliente, origen oculto).
+#
+# Se despliega UN stack de estos por región. Para Asia el reparto habitual es:
+#   · nodo Hong Kong  → sirve HK/MO/TW y hace de puente hacia China continental
+#   · nodo Tokio      → sirve JP/KR
+#   · nodo de reserva → cualquier otra región, recibe el failover
+# El reparto entre nodos lo hace el balanceo geográfico de Cloudflare (Load
+# Balancer con health check contra /api/health), no este fichero.
+#
+#   docker compose -f deploy/edge.docker-compose.yml --env-file .env.edge up -d
+# =============================================================================
+
+name: entmo-edge
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    env_file: ../.env.local
+    environment:
+      NODE_ENV: production
+      PORT: '3000'
+      HOSTNAME: 0.0.0.0
+      # Identifica el nodo en la sonda de salud (aparece en x-edge-region).
+      EDGE_REGION: ${EDGE_REGION:-unknown}
+    # NINGÚN puerto publicado: el nodo sólo es alcanzable por la red interna.
+    # Es lo que hace efectivo el ocultamiento de origen.
+    expose:
+      - '3000'
+    networks: [edge]
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:-localhost}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+      APP_UPSTREAM: app:3000
+      APP_UPSTREAM_FALLBACK: ${APP_UPSTREAM_FALLBACK:-app:3000}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    # Puertos SÓLO para el modo sin túnel (nodo directo). Con cloudflared activo
+    # se comentan: el origen deja de escuchar de cara a internet.
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'   # QUIC / HTTP-3 — sin UDP no hay HTTP/3
+    networks: [edge]
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    command: tunnel --config /etc/cloudflared/config.yml run
+    environment:
+      TUNNEL_ID: ${TUNNEL_ID}
+      SITE_DOMAIN: ${SITE_DOMAIN}
+      # Evita que el túnel intente actualizarse solo en producción.
+      NO_AUTOUPDATE: 'true'
+    volumes:
+      - ./cloudflared/config.yml:/etc/cloudflared/config.yml:ro
+      - ${TUNNEL_CREDENTIALS:-./cloudflared/credentials.json}:/etc/cloudflared/credentials.json:ro
+    networks: [edge]
+    healthcheck:
+      test: ['CMD', 'cloudflared', '--version']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  edge:
+    driver: bridge
+
+volumes:
+  caddy-data:
+  caddy-config:

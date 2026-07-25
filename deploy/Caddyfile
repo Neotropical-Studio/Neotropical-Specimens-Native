@@ -1,0 +1,102 @@
+# =============================================================================
+# Caddy — terminación TLS + HTTP/3 delante del Next standalone.
+#
+# Por qué Caddy y no sólo el túnel: Cloudflare ya habla HTTP/3 con el visitante,
+# pero cuando se sirve una región SIN el borde de Cloudflare (nodo directo en
+# Asia, o failover con el túnel caído) hace falta un origen que hable QUIC por sí
+# mismo. Caddy activa HTTP/3 por defecto y renueva certificados solo.
+#
+# Arranque:  caddy run --config deploy/Caddyfile
+# En Docker: ver deploy/edge.docker-compose.yml
+# =============================================================================
+
+{
+	# HTTP/3 (QUIC) está activo por defecto desde Caddy 2.6; se declara explícito
+	# para que quede constancia y para poder desactivarlo en depuración.
+	servers {
+		protocols h1 h2 h3
+	}
+	# Sin cabecera de versión: no se anuncia la pila del origen.
+	admin off
+	email {$ACME_EMAIL}
+}
+
+# -----------------------------------------------------------------------------
+# Snippet reutilizable: cabeceras comunes a todos los nodos.
+# -----------------------------------------------------------------------------
+(hardening) {
+	header {
+		# Anuncia QUIC para que el cliente ascienda a HTTP/3 en la 2ª petición.
+		Alt-Svc `h3=":443"; ma=86400`
+
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "SAMEORIGIN"
+		Cross-Origin-Opener-Policy "same-origin"
+
+		# Nunca revelar el software ni la topología del origen.
+		-Server
+		-X-Powered-By
+		-Via
+	}
+
+	# Compresión: zstd primero (mejor ratio y ya soportado), gzip de reserva.
+	encode zstd gzip
+}
+
+(app_proxy) {
+	reverse_proxy {$APP_UPSTREAM:app:3000} {
+		# --- Failover automático -------------------------------------------------
+		# Si el nodo primario no pasa la sonda, Caddy lo saca del pool y sirve
+		# desde el secundario sin cortar el render.
+		to {$APP_UPSTREAM_FALLBACK:app:3000}
+		lb_policy first
+		lb_try_duration 5s
+		lb_try_interval 250ms
+
+		health_uri /api/health
+		health_method HEAD
+		health_interval 10s
+		health_timeout 2s
+		health_status 2xx
+
+		# Reintento en errores de red/5xx sobre peticiones idempotentes.
+		fail_duration 15s
+		max_fails 3
+
+		# El middleware necesita la IP real y el país del borde para el i18n.
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+		# Cloudflare inyecta CF-IPCountry; se propaga tal cual si viene del túnel.
+		header_up X-Geo-Country {http.request.header.CF-IPCountry}
+	}
+}
+
+# -----------------------------------------------------------------------------
+# Sitio público
+# -----------------------------------------------------------------------------
+{$SITE_DOMAIN:localhost} {
+	import hardening
+
+	# Assets inmutables de Next: cacheo agresivo en el borde y en el cliente.
+	@static path /_next/static/* /icons/* /sw.js
+	header @static Cache-Control "public, max-age=31536000, immutable"
+
+	# El proxy de media hace streaming con Range: no se toca ni se recomprime,
+	# o se rompe el scrub de vídeo y la carga progresiva de los .glb.
+	@media path /api/media/*
+	header @media Cache-Control "public, max-age=31536000, immutable"
+	route @media {
+		reverse_proxy {$APP_UPSTREAM:app:3000} {
+			flush_interval -1
+		}
+	}
+
+	# La sonda no se cachea nunca: la usa el failover.
+	@health path /api/health
+	header @health Cache-Control "no-store"
+
+	import app_proxy
+}
