@@ -11,7 +11,9 @@
     "build": "next build",
     "start": "next start",
     "start:standalone": "node .next/standalone/server.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "seed:i18n": "node sanity/seed/i18n.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.0.0",

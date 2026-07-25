@@ -14,3 +14,62 @@ body {
   background: var(--color-surface);
   color: var(--color-text-dynamic);
 }
+
+/* ===========================================================================
+ * Tipografía nativa CJK por idioma.
+ *
+ * Unicode unifica los ideogramas Han: el MISMO punto de código se dibuja con
+ * glifos distintos en japonés, chino simplificado y tradicional (直, 骨, 今…).
+ * Si el navegador resuelve la fuente por defecto, un lector japonés ve kanji con
+ * formas chinas: legible, pero delata que la página no es nativa.
+ *
+ * Se declara por :lang(), que toma el valor de <html lang> — el que fija el
+ * layout raíz desde el idioma de ruta. Sólo fuentes DEL SISTEMA: no hay descarga
+ * de webfonts, así que no añade dependencias externas (ni de las bloqueadas en
+ * China continental) ni latencia en la primera pintura.
+ * ======================================================================== */
+:lang(ja) {
+  /* Japonés: kana + kanji con formas japonesas. */
+  font-family: system-ui, -apple-system, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans',
+    'Yu Gothic UI', 'Yu Gothic', Meiryo, 'Noto Sans JP', sans-serif;
+}
+
+:lang(ko) {
+  /* Coreano: hangul con métricas propias (Apple SD Gothic / Malgun). */
+  font-family: system-ui, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic',
+    'Noto Sans KR', 'Nanum Gothic', sans-serif;
+}
+
+:lang(zh-CN),
+:lang(zh-SG),
+:lang(zh-Hans) {
+  /* Chino simplificado (RPC): PingFang SC / Microsoft YaHei. */
+  font-family: system-ui, -apple-system, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans SC', sans-serif;
+}
+
+:lang(zh-TW),
+:lang(zh-Hant) {
+  /* Chino tradicional (Taiwán): PingFang TC / Microsoft JhengHei. */
+  font-family: system-ui, -apple-system, 'PingFang TC', 'Microsoft JhengHei',
+    'Source Han Sans TC', 'Noto Sans TC', sans-serif;
+}
+
+:lang(zh-HK),
+:lang(zh-MO) {
+  /* Tradicional de Hong Kong/Macao: PingFang HK trae las formas locales
+     (HK Supplementary Character Set) que difieren de las taiwanesas. */
+  font-family: system-ui, -apple-system, 'PingFang HK', 'Hiragino Sans CNS',
+    'Microsoft JhengHei HK', 'Source Han Sans HC', 'Noto Sans HK', sans-serif;
+}
+
+/* Evita que el navegador "arregle" a la baja el interletrado CJK heredado de
+   las utilidades tracking-* de Tailwind, pensadas para alfabeto latino. */
+:lang(ja) .tracking-tight,
+:lang(ko) .tracking-tight,
+:lang(zh-CN) .tracking-tight,
+:lang(zh-TW) .tracking-tight,
+:lang(zh-HK) .tracking-tight,
+:lang(zh-MO) .tracking-tight {
+  letter-spacing: normal;
+}

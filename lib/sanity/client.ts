@@ -1,23 +1,52 @@
 import { createClient, type SanityClient } from '@sanity/client';
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!;
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production';
-const apiVersion = process.env.SANITY_API_VERSION ?? '2025-01-01';
+// Una variable declarada pero vacía ('') NO activa `??`, y createClient revienta
+// con apiVersion vacío. Normalizamos vacío/espacios a undefined.
+const env = (value?: string) => (value && value.trim() ? value.trim() : undefined);
 
-export const sanity: SanityClient = createClient({
-  projectId,
-  dataset,
-  apiVersion,
-  token: process.env.SANITY_API_TOKEN,
-  useCdn: process.env.NODE_ENV === 'production',
-  perspective: 'published',
-});
+const projectId = env(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID);
+const dataset = env(process.env.NEXT_PUBLIC_SANITY_DATASET) ?? 'production';
+const apiVersion = env(process.env.SANITY_API_VERSION) ?? '2025-01-01';
 
-export const sanityPreview: SanityClient = sanity.withConfig({
-  token: process.env.SANITY_API_TOKEN,
-  useCdn: false,
-  perspective: 'drafts',
-});
+// Construcción perezosa: importar este módulo nunca debe romper el arranque por
+// configuración ausente. El layout raíz depende de él en TODAS las rutas (i18n),
+// así que un throw en tiempo de import tumbaría también /offline y /_not-found.
+// Al aplazarlo, el fallo aparece en la llamada, donde las capas consumidoras
+// (lib/i18n/locales.ts, lib/i18n/strings.ts) ya degradan a sus fallbacks.
+function lazyClient(configure: (base: SanityClient) => SanityClient): SanityClient {
+  let client: SanityClient | null = null;
+
+  const instance = (): SanityClient => {
+    if (client) return client;
+    if (!projectId) throw new Error('Sanity sin configurar: falta NEXT_PUBLIC_SANITY_PROJECT_ID');
+    client = configure(
+      createClient({
+        projectId,
+        dataset,
+        apiVersion,
+        token: env(process.env.SANITY_API_TOKEN),
+        useCdn: process.env.NODE_ENV === 'production',
+        perspective: 'published',
+      }),
+    );
+    return client;
+  };
+
+  return new Proxy({} as SanityClient, {
+    get: (_target, prop) => {
+      const target = instance() as unknown as Record<string | symbol, unknown>;
+      const value = target[prop];
+      // Ligamos los métodos al cliente real (conserva su estado interno).
+      return typeof value === 'function' ? value.bind(target) : value;
+    },
+  });
+}
+
+export const sanity: SanityClient = lazyClient((base) => base);
+
+export const sanityPreview: SanityClient = lazyClient((base) =>
+  base.withConfig({ token: env(process.env.SANITY_API_TOKEN), useCdn: false, perspective: 'drafts' }),
+);
 
 // GROQ dinámico: proyecta cualquier documento con atributos variables.
 export async function fetchDynamic<T = Record<string, unknown>>(

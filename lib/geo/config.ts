@@ -37,7 +37,10 @@ export const GEO_EDGE_CONFIG: GeoEdgeConfig = {
   geolocation_routing: {
     detection_method: 'edge_ip_inference',
     auto_switch: true,
-    fallback_chain: ['target_locale', 'zh-CN', 'en-US'],
+    // 'zh-CN' NO va en la cadena global: al ser el primer perfil existente,
+    // cualquier país sin perfil propio (Francia, Perú…) acababa facturando en
+    // CNY con tema chino. El fallback neutro es en-US/USD.
+    fallback_chain: ['target_locale', 'en-US'],
   },
   profiles: {
     'zh-CN': {
@@ -52,11 +55,33 @@ export const GEO_EDGE_CONFIG: GeoEdgeConfig = {
       gateway: ['Local Credit Cards', 'Bank Transfer'],
       ui_overrides: { theme: 'collector_luxury', badge_style: 'traditional_badge' },
     },
+    // Hong Kong y Macao son mercados PROPIOS, no "Taiwán tradicional": divisa y
+    // pasarelas distintas. Compartir perfil facturaba en TWD a un cliente de HK.
+    'zh-HK': {
+      locale: 'zh-HK',
+      currency: 'HKD',
+      gateway: ['FPS', 'AlipayHK', 'Local Credit Cards'],
+      ui_overrides: { theme: 'collector_luxury', badge_style: 'traditional_badge' },
+    },
+    'zh-MO': {
+      locale: 'zh-MO',
+      currency: 'MOP',
+      gateway: ['MPay', 'AlipayHK', 'Local Credit Cards'],
+      ui_overrides: { theme: 'collector_luxury', badge_style: 'traditional_badge' },
+    },
     'ko-KR': {
       locale: 'ko-KR',
       currency: 'KRW',
       gateway: ['Naver Pay', 'Toss'],
       ui_overrides: { theme: 'dynamic_seoul', badge_style: 'modern_hangul' },
+    },
+    // Sin perfil propio, Japón caía por la cadena de fallback en zh-CN: yenes
+    // facturados en CNY y tema chino para un visitante japonés.
+    'ja-JP': {
+      locale: 'ja-JP',
+      currency: 'JPY',
+      gateway: ['Konbini', 'PayPay', 'Local Credit Cards'],
+      ui_overrides: { theme: 'minimal_speed_optimized', badge_style: 'modern_kana' },
     },
   },
   regenerative_rules: {
@@ -73,13 +98,15 @@ export const DEFAULT_PROFILE: GeoProfile = {
   ui_overrides: { theme: 'standard', badge_style: 'default' },
 };
 
-// País ISO-3166 alpha-2 → clave de perfil geo.
+// País ISO-3166 alpha-2 → clave de perfil geo. Un mercado, un perfil: no se
+// agrupan territorios con divisa o escritura distintas.
 export const COUNTRY_TO_PROFILE: Record<string, string> = {
-  CN: 'zh-CN',
-  HK: 'zh-TW', // tradicional
-  MO: 'zh-TW', // Macao → tradicional
-  TW: 'zh-TW',
-  KR: 'ko-KR',
+  CN: 'zh-CN',   // RPC · simplificado · CNY
+  HK: 'zh-HK',   // Hong Kong · tradicional · HKD
+  MO: 'zh-MO',   // Macao · tradicional · MOP
+  TW: 'zh-TW',   // Taiwán · tradicional · TWD
+  KR: 'ko-KR',   // Corea del Sur · KRW
+  JP: 'ja-JP',   // Japón · JPY
 };
 
 // Cabeceras habituales de CDN/anycast para inferir país en el borde.

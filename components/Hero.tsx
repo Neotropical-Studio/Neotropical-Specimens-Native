@@ -15,12 +15,21 @@ const fade = {
   show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: 0.08 * i, duration: 0.5 } }),
 };
 
-export default function Hero({ stats }: { stats: HeroStats }) {
+export default function Hero({
+  stats,
+  strings,
+}: {
+  stats: HeroStats;
+  strings: Record<string, string>;
+}) {
+  // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
+  const t = (key: string, fallback: string) => strings[key] ?? fallback;
+
   const tiles = [
-    { icon: Boxes, value: stats.specimens, label: 'Especímenes' },
-    { icon: Layers, value: stats.families, label: 'Familias' },
-    { icon: Globe2, value: stats.regions, label: 'Regiones' },
-    { icon: Sparkles, value: stats.countries, label: 'Países de origen' },
+    { icon: Boxes, value: stats.specimens, label: t('hero.stat_specimens', 'Especímenes') },
+    { icon: Layers, value: stats.families, label: t('hero.stat_families', 'Familias') },
+    { icon: Globe2, value: stats.regions, label: t('hero.stat_regions', 'Regiones') },
+    { icon: Sparkles, value: stats.countries, label: t('hero.stat_countries', 'Países de origen') },
   ];
 
   return (
@@ -41,7 +50,7 @@ export default function Hero({ stats }: { stats: HeroStats }) {
             className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300"
           >
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-            Catálogo dinámico en tiempo real
+            {t('hero.badge', 'Catálogo dinámico en tiempo real')}
           </motion.span>
 
           <motion.h1
@@ -49,16 +58,20 @@ export default function Hero({ stats }: { stats: HeroStats }) {
             variants={fade}
             className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight text-white md:text-6xl"
           >
-            Especímenes{' '}
+            {/* Titular en tres claves: el término resaltado se traduce aparte
+                para no meter marcado dentro de una cadena traducible. */}
+            {t('hero.title_before', 'Especímenes')}{' '}
             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-400 bg-clip-text text-transparent">
-              neotropicales
+              {t('hero.title_highlight', 'neotropicales')}
             </span>{' '}
-            de colección
+            {t('hero.title_after', 'de colección')}
           </motion.h1>
 
           <motion.p custom={2} variants={fade} className="mt-5 max-w-2xl text-lg text-neutral-300">
-            Lepidópteros y artrópodos de la selva sudamericana, documentados con fotografía WebP
-            de alta fidelidad y modelos 3D interactivos. Inventario vivo, sincronizado al instante.
+            {t(
+              'hero.subtitle',
+              'Lepidópteros y artrópodos de la selva sudamericana, documentados con fotografía WebP de alta fidelidad y modelos 3D interactivos. Inventario vivo, sincronizado al instante.',
+            )}
           </motion.p>
 
           <motion.div custom={3} variants={fade} className="mt-8 flex flex-wrap items-center gap-3">
@@ -66,13 +79,13 @@ export default function Hero({ stats }: { stats: HeroStats }) {
               href="#catalogo"
               className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 font-semibold text-neutral-950 shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-400"
             >
-              Explorar el catálogo <ArrowDown size={18} />
+              {t('hero.cta_explore', 'Explorar el catálogo')} <ArrowDown size={18} />
             </a>
             <a
               href="#mayorista"
               className="rounded-xl border border-white/15 px-6 py-3 font-semibold text-white transition hover:bg-white/5"
             >
-              Precios mayoristas
+              {t('hero.cta_wholesale', 'Precios mayoristas')}
             </a>
           </motion.div>
         </motion.div>

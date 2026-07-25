@@ -2,17 +2,28 @@
 
 import { useEffect, useState } from 'react';
 import { Bug, Menu, X } from 'lucide-react';
+import type { EnabledLocale } from '@/lib/i18n/locales';
+import LocaleSwitcher from './LocaleSwitcher';
 
-const NAV = [
-  { label: 'Catálogo', href: '#catalogo' },
-  { label: 'Regiones', href: '#regiones' },
-  { label: 'Mayorista', href: '#mayorista' },
-  { label: 'Contacto', href: '#contacto' },
-];
+interface Props {
+  strings: Record<string, string>;
+  lang: string;
+  locales: EnabledLocale[];
+}
 
-export default function Header() {
+export default function Header({ strings, lang, locales }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+
+  // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
+  const t = (key: string, fallback: string) => strings[key] ?? fallback;
+
+  const nav = [
+    { label: t('nav.catalog', 'Catálogo'), href: '#catalogo' },
+    { label: t('nav.regions', 'Regiones'), href: '#regiones' },
+    { label: t('nav.wholesale', 'Mayorista'), href: '#mayorista' },
+    { label: t('nav.contact', 'Contacto'), href: '#contacto' },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -41,7 +52,7 @@ export default function Header() {
         </a>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {NAV.map((n) => (
+          {nav.map((n) => (
             <a
               key={n.href}
               href={n.href}
@@ -50,28 +61,32 @@ export default function Header() {
               {n.label}
             </a>
           ))}
+          <LocaleSwitcher lang={lang} locales={locales} label={t('nav.language', 'Idioma')} />
           <a
             href="#catalogo"
             className="ml-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-emerald-400"
           >
-            Explorar
+            {t('nav.explore', 'Explorar')}
           </a>
         </nav>
 
-        <button
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Menú"
-          className="grid h-10 w-10 place-items-center rounded-lg text-white transition hover:bg-white/10 md:hidden"
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="flex items-center gap-1 md:hidden">
+          <LocaleSwitcher lang={lang} locales={locales} label={t('nav.language', 'Idioma')} />
+          <button
+            onClick={() => setOpen((v) => !v)}
+            aria-label={t('nav.menu', 'Menú')}
+            className="grid h-10 w-10 place-items-center rounded-lg text-white transition hover:bg-white/10"
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       {/* Menú móvil */}
       {open && (
         <div className="border-t border-white/10 bg-neutral-950/95 px-4 py-3 backdrop-blur-lg md:hidden">
           <nav className="flex flex-col gap-1">
-            {NAV.map((n) => (
+            {nav.map((n) => (
               <a
                 key={n.href}
                 href={n.href}

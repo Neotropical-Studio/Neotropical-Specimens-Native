@@ -1,9 +1,11 @@
-// app/page.tsx — Portada dinámica: consume specimens desde Supabase en tiempo
-// real (sincronizados vía n8n desde Sanity/Cloudinary). Sin datos en el repo.
+// app/[lang]/page.tsx — Portada dinámica: consume specimens desde Supabase en
+// tiempo real (sincronizados vía n8n desde Sanity/Cloudinary). Sin datos ni
+// textos en el repo: el idioma llega por ruta y las cadenas por getI18n.
 import { createClient } from '@supabase/supabase-js';
 import Header from '@/components/Header';
 import Hero, { type HeroStats } from '@/components/Hero';
 import SpecimenExplorer from '@/components/SpecimenExplorer';
+import { getI18n } from '@/lib/i18n/index';
 import { SPECIMEN_SELECT, toSpecimenView, type SpecimenRow } from '@/lib/specimens/view';
 
 export const revalidate = 0; // siempre fresco (dinámico)
@@ -22,7 +24,10 @@ async function loadSpecimens() {
   return { rows: (data ?? []) as SpecimenRow[], error: error?.message ?? null };
 }
 
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  const i18n = await getI18n(lang);
+
   const { rows, error } = await loadSpecimens();
   const specimens = rows.map(toSpecimenView);
 
@@ -35,19 +40,23 @@ export default async function HomePage() {
 
   return (
     <>
-      <Header />
+      <Header
+        strings={i18n.strings}
+        lang={i18n.locale}
+        locales={i18n.enabledLocales}
+      />
       <main className="min-h-screen bg-surface text-text-dynamic">
-        <Hero stats={stats} />
+        <Hero stats={stats} strings={i18n.strings} />
 
         {error && (
           <div className="mx-auto mb-6 max-w-7xl px-4">
             <div className="rounded-xl border border-red-800 bg-red-950/60 p-4 text-sm text-red-200">
-              No se pudo cargar el inventario en vivo: {error}
+              {i18n.t('system.inventory_error', 'No se pudo cargar el inventario en vivo')}: {error}
             </div>
           </div>
         )}
 
-        <SpecimenExplorer initial={specimens} />
+        <SpecimenExplorer initial={specimens} strings={i18n.strings} lang={i18n.locale} />
       </main>
     </>
   );

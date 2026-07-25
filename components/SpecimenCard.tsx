@@ -2,19 +2,37 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Box, Play, X, MapPin, Ruler } from 'lucide-react';
 import { imageUrl, videoMp4 } from '@/lib/cloudinary/url';
+import { formatMoney } from '@/lib/geo/regulations';
 import type { SpecimenView } from '@/lib/specimens/view';
 import ModelViewer from './ModelViewer';
 
-const SEX_LABEL: Record<string, string> = {
-  M: '♂ Macho', F: '♀ Hembra', P: 'Pareja', EP: 'Ex-pupa', S: 'Set',
+// Símbolo + clave i18n del sexo; el texto se resuelve contra el mapa de cadenas.
+const SEX_LABEL: Record<string, { key: string; fallback: string }> = {
+  M: { key: 'sex.male', fallback: '♂ Macho' },
+  F: { key: 'sex.female', fallback: '♀ Hembra' },
+  P: { key: 'sex.pair', fallback: 'Pareja' },
+  EP: { key: 'sex.ex_pupa', fallback: 'Ex-pupa' },
+  S: { key: 'sex.set', fallback: 'Set' },
 };
 
-export default function SpecimenCard({ s }: { s: SpecimenView }) {
+interface Props {
+  s: SpecimenView;
+  strings: Record<string, string>;
+  lang: string;   // idioma de ruta, propagado desde el servidor (sin cookies:
+                  // leerlas en cliente desincronizaba el href en la hidratación)
+}
+
+export default function SpecimenCard({ s, strings, lang }: Props) {
   const [hover, setHover] = useState(false);
   const [viewer, setViewer] = useState<null | '3d' | 'video'>(null);
+  const detailHref = `/${lang}/product/${s.id}`;
+
+  // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
+  const t = (key: string, fallback: string) => strings[key] ?? fallback;
 
   const front = s.primaryImage ? imageUrl(s.primaryImage, ['w_640', 'ar_1', 'c_fill']) : null;
   const back = s.secondaryImage ? imageUrl(s.secondaryImage, ['w_640', 'ar_1', 'c_fill']) : null;
@@ -44,7 +62,9 @@ export default function SpecimenCard({ s }: { s: SpecimenView }) {
               unoptimized
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-neutral-600">Sin imagen</div>
+            <div className="flex h-full items-center justify-center text-neutral-600">
+              {t('media.no_image', 'Sin imagen')}
+            </div>
           )}
 
           {/* Badges superiores */}
@@ -66,7 +86,7 @@ export default function SpecimenCard({ s }: { s: SpecimenView }) {
             {s.model3d && (
               <button
                 onClick={() => setViewer('3d')}
-                aria-label="Ver modelo 3D"
+                aria-label={t('media.view_3d_full', 'Ver modelo 3D')}
                 className="grid h-9 w-9 place-items-center rounded-full bg-black/60 text-emerald-300 backdrop-blur transition hover:bg-emerald-500 hover:text-white"
               >
                 <Box size={16} />
@@ -75,7 +95,7 @@ export default function SpecimenCard({ s }: { s: SpecimenView }) {
             {s.video && (
               <button
                 onClick={() => setViewer('video')}
-                aria-label="Ver video 360°"
+                aria-label={t('media.view_video', 'Ver video 360°')}
                 className="grid h-9 w-9 place-items-center rounded-full bg-black/60 text-emerald-300 backdrop-blur transition hover:bg-emerald-500 hover:text-white"
               >
                 <Play size={16} />
@@ -101,13 +121,21 @@ export default function SpecimenCard({ s }: { s: SpecimenView }) {
         {/* Info */}
         <div className="flex flex-1 flex-col gap-2 p-4">
           <div className="text-[11px] font-mono uppercase tracking-wider text-neutral-500">
-            {s.family ?? 'taxón'} · {s.code}
+            {s.family ?? t('taxon.unknown', 'taxón')} · {s.code}
           </div>
-          <h3 className="text-base font-bold italic leading-tight text-white">{s.scientificName}</h3>
+          <Link href={detailHref} className="transition-colors hover:text-emerald-300">
+            <h3 className="text-base font-bold italic leading-tight text-white">{s.scientificName}</h3>
+          </Link>
           {s.commonName && <p className="-mt-1 text-sm text-neutral-400">{s.commonName}</p>}
 
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-neutral-400">
-            {s.sex && <span>{SEX_LABEL[s.sex] ?? s.sex}</span>}
+            {s.sex && (
+              <span>
+                {SEX_LABEL[s.sex]
+                  ? t(SEX_LABEL[s.sex].key, SEX_LABEL[s.sex].fallback)
+                  : s.sex}
+              </span>
+            )}
             {s.wingspanMm && (
               <span className="inline-flex items-center gap-1">
                 <Ruler size={12} /> {s.wingspanMm} mm
@@ -124,14 +152,16 @@ export default function SpecimenCard({ s }: { s: SpecimenView }) {
             <div>
               {s.price != null ? (
                 <span className="text-lg font-bold text-emerald-300">
-                  {s.currency} {s.price.toFixed(2)}
+                  {formatMoney(s.price, s.currency, lang)}
                 </span>
               ) : (
-                <span className="text-sm text-neutral-500">Consultar</span>
+                <span className="text-sm text-neutral-500">{t('price.on_request', 'Consultar')}</span>
               )}
             </div>
             <span className={`text-xs font-medium ${s.stock > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-              {s.stock > 0 ? `${s.stock} en stock` : 'Agotado'}
+              {s.stock > 0
+                ? t('stock.available', '{count} en stock').replace('{count}', s.stock.toLocaleString(lang))
+                : t('stock.sold_out', 'Agotado')}
             </span>
           </div>
         </div>
@@ -158,12 +188,15 @@ export default function SpecimenCard({ s }: { s: SpecimenView }) {
                 <div>
                   <h4 className="font-bold italic text-white">{s.scientificName}</h4>
                   <p className="text-xs text-neutral-500">
-                    {viewer === '3d' ? 'Modelo 3D interactivo' : 'Video 360°'} · {s.code}
+                    {viewer === '3d'
+                      ? t('media.model_3d_caption', 'Modelo 3D interactivo')
+                      : t('media.video_caption', 'Video 360°')}{' '}
+                    · {s.code}
                   </p>
                 </div>
                 <button
                   onClick={() => setViewer(null)}
-                  aria-label="Cerrar"
+                  aria-label={t('action.close', 'Cerrar')}
                   className="grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
                 >
                   <X size={18} />

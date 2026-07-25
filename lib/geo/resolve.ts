@@ -24,8 +24,14 @@ export function detectCountry(headers: Headers): string | null {
 
 // Resuelve el perfil geo aplicando la cadena de fallback:
 // target_locale (país detectado) → zh-CN → en-US.
-export function resolveGeo(headers: Headers, forcedLocale?: string | null): ResolvedGeo {
-  const country = detectCountry(headers);
+// `knownCountry` permite inyectar un país ya resuelto (p. ej. por IP en el
+// middleware) para no repetir la detección.
+export function resolveGeo(
+  headers: Headers,
+  forcedLocale?: string | null,
+  knownCountry?: string | null,
+): ResolvedGeo {
+  const country = knownCountry ?? detectCountry(headers);
   const chain = GEO_EDGE_CONFIG.geolocation_routing.fallback_chain;
 
   const target =
