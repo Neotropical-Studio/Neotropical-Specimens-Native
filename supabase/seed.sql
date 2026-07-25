@@ -59,11 +59,11 @@ select
     "collection_date": "2026-05-12"
   }'::jsonb,
   '[
-    {"type": "photo_webp",    "view": "dorsal",       "cloudinary_id": "especimenes/neo/morpho_001_dorsal_webp"},
-    {"type": "photo_webp",    "view": "ventral",      "cloudinary_id": "especimenes/neo/morpho_001_ventral_webp"},
-    {"type": "photo_webp",    "view": "etiqueta",     "cloudinary_id": "especimenes/neo/morpho_001_label_webp"},
-    {"type": "model_3d_glb",  "view": "interactivo",  "cloudinary_id": "especimenes/neo/morpho_001_blender_model"},
-    {"type": "video_mp4",     "view": "rotacion_360", "cloudinary_id": "especimenes/neo/morpho_001_blender_video"}
+    {"type": "photo_webp",    "view": "dorsal",       "cloudinary_id": "especimenes-secos/neo/morpho_001_dorsal_webp"},
+    {"type": "photo_webp",    "view": "ventral",      "cloudinary_id": "especimenes-secos/neo/morpho_001_ventral_webp"},
+    {"type": "photo_webp",    "view": "etiqueta",     "cloudinary_id": "especimenes-secos/neo/morpho_001_label_webp"},
+    {"type": "model_3d_glb",  "view": "interactivo",  "cloudinary_id": "especimenes-secos/neo/morpho_001_blender_model"},
+    {"type": "video_mp4",     "view": "rotacion_360", "cloudinary_id": "especimenes-secos/neo/morpho_001_blender_video"}
   ]'::jsonb
 from global_regions r
 cross join taxonomy t
