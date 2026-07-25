@@ -28,6 +28,11 @@ yarn-error.log*
 # deploy / vercel
 .vercel
 
+# Supabase CLI (estado/caché local del link, nunca compartir)
+.branches
+supabase/.temp
+supabase/.branches
+
 # misc
 .DS_Store
 *.pem
