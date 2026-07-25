@@ -3,10 +3,18 @@ import { defineType, defineField, defineArrayMember } from 'sanity';
 import { TagIcon } from '@sanity/icons';
 
 const HEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
-const LTREE = /^[a-z0-9_]+(\.[a-z0-9_]+)*$/;
 
 const hexRule = (rule: any) =>
   rule.regex(HEX, { name: 'hex' }).error('Debe ser un color hexadecimal, p. ej. #0f766e');
+
+// Rangos soportados por `taxonomy.rank_hierarchy` en Supabase (sin phylum/clase:
+// el inventario es sólo insectos/artrópodos, así que la app arranca en orden).
+const RANKS = ['order', 'family', 'subfamily', 'genus', 'species', 'subspecies'] as const;
+type Rank = (typeof RANKS)[number];
+
+// Un rango sólo es relevante si es igual o más específico que el rango del nodo.
+const atLeast = (min: Rank) => (rank: Rank | undefined) =>
+  RANKS.indexOf(rank ?? 'order') >= RANKS.indexOf(min);
 
 export default defineType({
   name: 'taxonomicNode',
@@ -14,6 +22,7 @@ export default defineType({
   type: 'document',
   icon: TagIcon,
   fieldsets: [
+    { name: 'lineage', title: 'Linaje (rank_hierarchy)', options: { columns: 2 } },
     { name: 'palette', title: 'Paleta Camaleónica', options: { columns: 3 } },
     { name: 'morphology', title: 'Atributos Morfológicos y Ecológicos' },
   ],
@@ -43,10 +52,9 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Phylum', value: 'phylum' },
-          { title: 'Clase', value: 'class' },
           { title: 'Orden', value: 'order' },
           { title: 'Familia', value: 'family' },
+          { title: 'Subfamilia', value: 'subfamily' },
           { title: 'Género', value: 'genus' },
           { title: 'Especie', value: 'species' },
           { title: 'Subespecie', value: 'subspecies' },
@@ -55,24 +63,57 @@ export default defineType({
       },
       validation: (rule) => rule.required(),
     }),
+    // Linaje explícito y plano: se vuelca tal cual en `taxonomy.rank_hierarchy`
+    // (jsonb) al sincronizar, sin resolver referencias ni ltree.
     defineField({
-      name: 'parent',
-      title: 'Nodo Padre',
-      type: 'reference',
-      to: [{ type: 'taxonomicNode' }],
-      description: 'Ancestro directo. Define la jerarquía filogenética.',
+      name: 'order',
+      title: 'Orden',
+      type: 'string',
+      fieldset: 'lineage',
+      validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'path',
-      title: 'Ruta Filogenética (ltree)',
+      name: 'family',
+      title: 'Familia',
       type: 'string',
-      description: 'Ejemplo: insecta.lepidoptera.nymphalidae',
-      validation: (rule) =>
-        rule.custom((value: string | undefined) =>
-          !value || LTREE.test(value)
-            ? true
-            : 'Formato ltree inválido (solo [a-z0-9_] separados por puntos)',
-        ),
+      fieldset: 'lineage',
+      hidden: ({ parent }) => !atLeast('family')(parent?.rank),
+      validation: (rule) => rule.custom((v, ctx: any) =>
+        atLeast('family')(ctx.parent?.rank) && !v ? 'Requerido para este rango' : true),
+    }),
+    defineField({
+      name: 'subfamily',
+      title: 'Subfamilia',
+      type: 'string',
+      fieldset: 'lineage',
+      hidden: ({ parent }) => !atLeast('subfamily')(parent?.rank),
+    }),
+    defineField({
+      name: 'genus',
+      title: 'Género',
+      type: 'string',
+      fieldset: 'lineage',
+      hidden: ({ parent }) => !atLeast('genus')(parent?.rank),
+      validation: (rule) => rule.custom((v, ctx: any) =>
+        atLeast('genus')(ctx.parent?.rank) && !v ? 'Requerido para este rango' : true),
+    }),
+    defineField({
+      name: 'species',
+      title: 'Especie',
+      type: 'string',
+      fieldset: 'lineage',
+      hidden: ({ parent }) => !atLeast('species')(parent?.rank),
+      validation: (rule) => rule.custom((v, ctx: any) =>
+        atLeast('species')(ctx.parent?.rank) && !v ? 'Requerido para este rango' : true),
+    }),
+    defineField({
+      name: 'subspecies',
+      title: 'Subespecie',
+      type: 'string',
+      fieldset: 'lineage',
+      hidden: ({ parent }) => !atLeast('subspecies')(parent?.rank),
+      validation: (rule) => rule.custom((v, ctx: any) =>
+        atLeast('subspecies')(ctx.parent?.rank) && !v ? 'Requerido para este rango' : true),
     }),
     defineField({
       name: 'commonNames',
@@ -147,11 +188,20 @@ export default defineType({
     }),
   ],
   preview: {
-    select: { title: 'scientificName', rank: 'rank', path: 'path', primary: 'palettePrimary' },
-    prepare({ title, rank, path }) {
+    select: {
+      title: 'scientificName',
+      rank: 'rank',
+      order: 'order',
+      family: 'family',
+      subfamily: 'subfamily',
+      genus: 'genus',
+      species: 'species',
+    },
+    prepare({ title, rank, order, family, subfamily, genus, species }) {
+      const lineage = [order, family, subfamily, genus, species].filter(Boolean).join(' › ');
       return {
         title: title ?? 'Nodo sin nombre',
-        subtitle: [rank, path].filter(Boolean).join(' • '),
+        subtitle: [rank, lineage].filter(Boolean).join(' • '),
       };
     },
   },
