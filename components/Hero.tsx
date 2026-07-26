@@ -2,6 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { ArrowDown, Boxes, Globe2, Layers, Sparkles } from 'lucide-react';
+import HeroButterfly from './HeroButterfly';
+import HumanGeoCounter from './HumanGeoCounter';
+import type { SpecimenView } from '@/lib/specimens/view';
 
 export interface HeroStats {
   specimens: number;
@@ -18,9 +21,15 @@ const fade = {
 export default function Hero({
   stats,
   strings,
+  specimens,
+  lang,
+  country,
 }: {
   stats: HeroStats;
   strings: Record<string, string>;
+  specimens: SpecimenView[];
+  lang: string;
+  country: string | null;
 }) {
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
@@ -33,7 +42,7 @@ export default function Hero({
   ];
 
   return (
-    <section id="top" className="relative overflow-hidden pt-[68px]">
+    <section id="top" className="relative overflow-hidden">
       {/* Fondo: resplandores neotropicales */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -left-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-emerald-500/20 blur-[120px]" />
@@ -42,16 +51,16 @@ export default function Hero({
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,transparent_40%,rgba(0,0,0,0.6))]" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-16 md:pb-24 md:pt-24">
+      <div className="relative mx-auto flex max-w-7xl flex-col gap-10 px-4 pb-16 pt-16 md:pb-24 md:pt-24 lg:flex-row lg:items-center lg:justify-between lg:gap-14">
+        <div className="min-w-0 flex-1">
         <motion.div initial="hidden" animate="show" className="max-w-3xl">
-          <motion.span
-            custom={0}
-            variants={fade}
-            className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300"
-          >
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-            {t('hero.badge', 'Catálogo dinámico en tiempo real')}
-          </motion.span>
+          <motion.div custom={0} variants={fade} className="flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+              {t('hero.badge', 'Catálogo dinámico en tiempo real')}
+            </span>
+            <HumanGeoCounter country={country} lang={lang} strings={strings} />
+          </motion.div>
 
           <motion.h1
             custom={1}
@@ -109,6 +118,11 @@ export default function Hero({
             </motion.div>
           ))}
         </motion.div>
+        </div>
+
+        <div className="flex justify-center lg:justify-end">
+          <HeroButterfly specimens={specimens} lang={lang} strings={strings} />
+        </div>
       </div>
     </section>
   );

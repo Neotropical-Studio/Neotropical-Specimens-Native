@@ -2,8 +2,10 @@
 // tiempo real (sincronizados vía n8n desde Sanity/Cloudinary). Sin datos ni
 // textos en el repo: el idioma llega por ruta y las cadenas por getI18n.
 import { createClient } from '@supabase/supabase-js';
+import { headers } from 'next/headers';
 import Header from '@/components/Header';
 import Hero, { type HeroStats } from '@/components/Hero';
+import LanguageRegenerativeBanner from '@/components/LanguageRegenerativeBanner';
 import SpecimenExplorer from '@/components/SpecimenExplorer';
 import { getI18n } from '@/lib/i18n/index';
 import { SPECIMEN_SELECT, toSpecimenView, type SpecimenRow } from '@/lib/specimens/view';
@@ -30,6 +32,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
   const { rows, error } = await loadSpecimens();
   const specimens = rows.map(toSpecimenView);
+  const country = (await headers()).get('x-geo-country');
 
   const stats: HeroStats = {
     specimens: specimens.length,
@@ -45,8 +48,18 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         lang={i18n.locale}
         locales={i18n.enabledLocales}
       />
-      <main className="min-h-screen bg-surface text-text-dynamic">
-        <Hero stats={stats} strings={i18n.strings} />
+      <main className="min-h-screen bg-surface pt-[104px] text-text-dynamic">
+        <div className="mx-auto max-w-7xl px-4 pt-4">
+          <LanguageRegenerativeBanner lang={i18n.locale} strings={i18n.strings} />
+        </div>
+
+        <Hero
+          stats={stats}
+          strings={i18n.strings}
+          specimens={specimens}
+          lang={i18n.locale}
+          country={country && country !== 'XX' ? country : null}
+        />
 
         {error && (
           <div className="mx-auto mb-6 max-w-7xl px-4">

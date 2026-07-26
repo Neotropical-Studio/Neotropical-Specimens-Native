@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Bug, Menu, X } from 'lucide-react';
 import type { EnabledLocale } from '@/lib/i18n/locales';
-import LocaleSwitcher from './LocaleSwitcher';
+import RegulatoryStrip from './RegulatoryStrip';
 
 interface Props {
   strings: Record<string, string>;
@@ -40,6 +40,8 @@ export default function Header({ strings, lang, locales }: Props) {
           : 'border-b border-transparent bg-transparent'
       }`}
     >
+      <RegulatoryStrip lang={lang} locales={locales} strings={strings} />
+
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-4">
         <a href="#top" className="flex items-center gap-2.5">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-neutral-950 shadow-lg shadow-emerald-500/20">
@@ -61,7 +63,6 @@ export default function Header({ strings, lang, locales }: Props) {
               {n.label}
             </a>
           ))}
-          <LocaleSwitcher lang={lang} locales={locales} label={t('nav.language', 'Idioma')} />
           <a
             href="#catalogo"
             className="ml-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-emerald-400"
@@ -71,7 +72,6 @@ export default function Header({ strings, lang, locales }: Props) {
         </nav>
 
         <div className="flex items-center gap-1 md:hidden">
-          <LocaleSwitcher lang={lang} locales={locales} label={t('nav.language', 'Idioma')} />
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label={t('nav.menu', 'Menú')}

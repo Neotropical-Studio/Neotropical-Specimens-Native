@@ -8,8 +8,9 @@
 // ============================================================================
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Check, Globe } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { EnabledLocale } from '@/lib/i18n/locales';
+import LanguageBadge from './LanguageBadge';
 
 interface Props {
   lang: string;
@@ -61,7 +62,7 @@ export default function LocaleSwitcher({ lang, locales, label }: Props) {
         aria-expanded={open}
         className="flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-neutral-300 transition hover:bg-white/5 hover:text-white"
       >
-        <Globe size={16} />
+        <LanguageBadge code={lang} size="sm" />
         <span className="uppercase">{lang}</span>
       </button>
 
@@ -84,7 +85,10 @@ export default function LocaleSwitcher({ lang, locales, label }: Props) {
                   : 'text-neutral-300 hover:bg-white/5 hover:text-white'
               }`}
             >
-              <span className="truncate">{l.label}</span>
+              <span className="flex min-w-0 items-center gap-2">
+                <LanguageBadge code={l.code} size="sm" />
+                <span className="truncate">{l.label}</span>
+              </span>
               <span className="flex items-center gap-1.5 shrink-0">
                 <span className="font-mono text-[10px] uppercase text-neutral-500">{l.code}</span>
                 {l.code === lang && <Check size={14} />}

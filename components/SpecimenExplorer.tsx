@@ -120,7 +120,7 @@ export default function SpecimenExplorer({ initial, strings, lang }: Props) {
   return (
     <section id="catalogo" className="mx-auto max-w-7xl px-4 pb-24">
       {/* Buscador rápido */}
-      <div className="sticky top-[68px] z-30 -mx-4 mb-6 border-y border-white/10 bg-neutral-950/80 px-4 py-4 backdrop-blur-lg">
+      <div className="sticky top-[104px] z-30 -mx-4 mb-6 border-y border-white/10 bg-neutral-950/80 px-4 py-4 backdrop-blur-lg">
         <div className="relative">
           <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" />
           <input
