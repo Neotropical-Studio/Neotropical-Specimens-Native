@@ -21,9 +21,8 @@ export const schemaTypes = [
   genero,
   especie,
   subespecie,
-  // Modelo anterior (rank_hierarchy plano) — sigue vivo porque
-  // lib/sync/upsertSpecimen.ts todavía mapea specimen.taxon -> taxonomicNode.
-  // Pendiente decidir si specimen.taxon migra a `especie`/`subespecie` y este
-  // se retira.
+  // Obsoleto (ver sanity/schemas/taxonomicNode.ts) — specimen.taxon ya
+  // referencia especie/subespecie. Registrado sólo para no dejar inaccesibles
+  // documentos preexistentes de este tipo.
   taxonomicNode,
 ];

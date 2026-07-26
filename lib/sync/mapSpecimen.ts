@@ -5,14 +5,28 @@
 // Sanity, resolución de FKs, upsert) vive en lib/sync/upsertSpecimen.ts.
 // ============================================================================
 
+// Linaje dereferenciado desde `genero` hacia arriba (Género→Subfamilia→
+// Familia→Rubro) — común a `especie` y a la `especie` de una `subespecie`.
+export interface SanityGeneroChain {
+  name?: string | null;
+  subfamilia?: {
+    name?: string | null;
+    familia?: {
+      name?: string | null;
+      rubro?: { name?: string | null } | null;
+    } | null;
+  } | null;
+}
+
+// specimen.taxon referencia `especie` o `subespecie` (ver sanity/schemas/
+// specimen.ts) — el shape depende de _type: una `subespecie` cuelga de su
+// propia `especie`, que a su vez cuelga de `genero`.
 export interface SanityTaxonRef {
   _id?: string;
-  order?: string | null;
-  family?: string | null;
-  subfamily?: string | null;
-  genus?: string | null;
-  species?: string | null;
-  subspecies?: string | null;
+  _type?: string;             // 'especie' | 'subespecie'
+  name?: string | null;
+  genero?: SanityGeneroChain | null;
+  especie?: { name?: string | null; genero?: SanityGeneroChain | null } | null;
 }
 
 export interface SanityMediaItem {
@@ -49,15 +63,45 @@ export interface SanitySpecimenDoc {
   taxon?: SanityTaxonRef | null;
 }
 
-const RANK_KEYS = ['order', 'family', 'subfamily', 'genus', 'species', 'subspecies'] as const;
-
-// Sólo incluye rangos con valor real: rank_hierarchy no debe cargar claves vacías.
+// Construye rank_hierarchy siguiendo la cadena de referencias en vez de leer
+// campos planos (ver migración de sanity/schemas/taxonomicNode.ts → cadena
+// estricta Rubro→Familia→Subfamilia→Género→Especie→Subespecie).
+//
+// OJO: no hay campo "order" (orden biológico, p. ej. Lepidoptera) en la cadena
+// nueva — "rubro" es el rubro comercial/museográfico (p. ej. Mariposas), un
+// concepto distinto. lib/theme/taxon.ts y el badge de "orden" en la UI se
+// quedan sin dato para specimens sincronizados por esta vía hasta que se
+// decida si rubro sustituye a order en esos consumidores.
 export function buildRankHierarchy(taxon: SanityTaxonRef | null | undefined): Record<string, string> {
   const rh: Record<string, string> = {};
-  for (const key of RANK_KEYS) {
-    const value = taxon?.[key];
-    if (typeof value === 'string' && value.trim()) rh[key] = value.trim();
+  if (!taxon) return rh;
+
+  const isSubspecies = taxon._type === 'subespecie';
+  const especie = isSubspecies ? taxon.especie : null;
+  const genero = isSubspecies ? especie?.genero : taxon.genero;
+
+  const name = (v: string | null | undefined) => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
+
+  if (isSubspecies) {
+    const subspecies = name(taxon.name);
+    const species = name(especie?.name);
+    if (subspecies) rh.subspecies = subspecies;
+    if (species) rh.species = species;
+  } else {
+    const species = name(taxon.name);
+    if (species) rh.species = species;
   }
+
+  const genus = name(genero?.name);
+  const subfamily = name(genero?.subfamilia?.name);
+  const family = name(genero?.subfamilia?.familia?.name);
+  const rubro = name(genero?.subfamilia?.familia?.rubro?.name);
+
+  if (genus) rh.genus = genus;
+  if (subfamily) rh.subfamily = subfamily;
+  if (family) rh.family = family;
+  if (rubro) rh.rubro = rubro;
+
   return rh;
 }
 

@@ -16,9 +16,13 @@ type Rank = (typeof RANKS)[number];
 const atLeast = (min: Rank) => (rank: Rank | undefined) =>
   RANKS.indexOf(rank ?? 'order') >= RANKS.indexOf(min);
 
+// OBSOLETO: reemplazado por la cadena estricta Rubro→Familia→Subfamilia→
+// Género→Especie→Subespecie (ver sanity/schemas/taxonomy/). specimen.taxon ya
+// no referencia este tipo. Se mantiene registrado (no eliminado) sólo para
+// no dejar inaccesibles en el Studio los documentos que ya existan de este tipo.
 export default defineType({
   name: 'taxonomicNode',
-  title: 'Nodo Taxonómico',
+  title: '⚠️ Nodo Taxonómico (obsoleto)',
   type: 'document',
   icon: TagIcon,
   fieldsets: [

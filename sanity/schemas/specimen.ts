@@ -61,10 +61,11 @@ export default defineType({
     }),
     defineField({
       name: 'taxon',
-      title: 'Nodo Taxonómico',
-      description: 'Especie (o subespecie) a la que pertenece este espécimen físico.',
+      title: 'Especie / Subespecie',
+      description:
+        'Identificación taxonómica del espécimen físico, al nivel más específico disponible (especie o subespecie) de la cadena Rubro→Familia→Subfamilia→Género→Especie→Subespecie.',
       type: 'reference',
-      to: [{ type: 'taxonomicNode' }],
+      to: [{ type: 'especie' }, { type: 'subespecie' }],
       fieldset: 'links',
       validation: (rule) => rule.required(),
     }),

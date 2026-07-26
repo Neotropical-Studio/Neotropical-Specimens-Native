@@ -24,12 +24,21 @@ export interface SyncResult {
   warnings: string[];
 }
 
+// Fragmento reutilizable: Género→Subfamilia→Familia→Rubro. Se usa tanto para
+// una `especie` (su propio `genero`) como para una `subespecie` (el `genero`
+// de SU `especie`) — ver buildRankHierarchy en lib/sync/mapSpecimen.ts.
+const GENERO_CHAIN = `name, "subfamilia": subfamilia->{ name, "familia": familia->{ name, "rubro": rubro->{ name } } }`;
+
 const SPECIMEN_PROJECTION = `{
   _id, _type, specimenCode, category, region, specimenKind,
   retailPrice, wholesalePrice, wholesaleMinQty, currency, stock,
   sex, gradeCode, gradeName, wingspanMm, primaryColors, countryOrigin, gpsCoordinates,
   commonNames, description, themePrimary, themeAccent, themeSurface, media,
-  "taxon": taxon->{ "_id": _id, order, family, subfamily, genus, species, subspecies }
+  "taxon": taxon->{
+    "_id": _id, _type, name,
+    "genero": genero->{ ${GENERO_CHAIN} },
+    "especie": especie->{ name, "genero": genero->{ ${GENERO_CHAIN} } }
+  }
 }`;
 
 function stripDraft(id: string): string {
