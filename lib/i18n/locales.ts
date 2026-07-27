@@ -4,7 +4,6 @@
 // con TTL para no golpear Sanity en cada request.
 // ============================================================================
 import 'server-only';
-import { sanity } from '@/lib/sanity/client';
 import { COUNTRY_TO_PROFILE } from '@/lib/geo/config';
 import { langForCountry } from '@/lib/geo/countries';
 import { candidatesFor, isCompatible, isStrictVariant } from './variants';
@@ -58,25 +57,16 @@ export async function getLocaleConfig(): Promise<LocaleConfig> {
   if (cache && now - cache.at < TTL_MS) return cache.value;
 
   try {
-    const doc = await sanity.fetch<{
-      defaultLocale?: string;
-      enabledLocales?: Array<{ code?: string; label?: string; dir?: string }>;
-    } | null>(
-      `*[_type == "siteSettings"][0]{ defaultLocale, enabledLocales }`,
-    );
-
-    const locales: EnabledLocale[] = (doc?.enabledLocales ?? [])
-      .filter((l) => l.code && BCP47.test(l.code))
-      .map((l) => ({
-        code: l.code as string,
-        label: l.label ?? (l.code as string),
-        dir: (l.dir as 'ltr' | 'rtl') ?? dirFor(l.code as string),
-      }));
-
-    const value: LocaleConfig = locales.length
-      ? { defaultLocale: doc?.defaultLocale && BCP47.test(doc.defaultLocale) ? doc.defaultLocale : locales[0].code, locales }
-      : fallbackConfig();
-
+    const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? 'en';
+    const declared = (process.env.NEXT_PUBLIC_FALLBACK_LOCALES ?? '')
+      .split(',')
+      .map((c) => c.trim())
+      .filter((c) => c && BCP47.test(c));
+    const codes = declared.length ? declared : [defaultLocale];
+    const value: LocaleConfig = {
+      defaultLocale: codes.includes(defaultLocale) ? defaultLocale : codes[0],
+      locales: codes.map((code) => ({ code, label: code, dir: dirFor(code) })),
+    };
     cache = { at: now, value };
     return value;
   } catch {

@@ -46,12 +46,8 @@ async function probe(name: string, url: string | null): Promise<Probe> {
 
 export async function GET() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || null;
-  const sanityId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || null;
 
-  const probes = await Promise.all([
-    probe('supabase', supabaseUrl ? `${supabaseUrl}/rest/v1/` : null),
-    probe('sanity', sanityId ? `https://${sanityId}.api.sanity.io/v1/ping` : null),
-  ]);
+  const probes = await Promise.all([probe('supabase', supabaseUrl ? `${supabaseUrl}/rest/v1/` : null)]);
 
   // El render sólo depende del proceso Next: si responde, el nodo sirve.
   const degraded = probes.some((p) => p.state === 'down' || p.state === 'slow');

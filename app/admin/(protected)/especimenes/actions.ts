@@ -5,11 +5,9 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth/admin';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
-import { sanityPreview } from '@/lib/sanity/client';
 import { nextSpecimenCode } from '@/lib/codes/sequence';
-import { resolveTaxonomyId, createFreeTaxonomy, TAXON_PROJECTION } from '@/lib/sync/resolveTaxonomy';
+import { createFreeTaxonomy } from '@/lib/sync/resolveTaxonomy';
 import { GRADE_OPTIONS } from '@/lib/constants/grades';
-import type { SanityTaxonRef } from '@/lib/sync/mapSpecimen';
 
 export async function generateSpecimenCodeAction(regionCode: string): Promise<string> {
   await requireAdmin();
@@ -79,26 +77,11 @@ function parseForm(formData: FormData): { data?: SpecimenInput; state?: Specimen
   return { data: parsed.data };
 }
 
-// Reutiliza la misma fila de taxonomy que un sync Sanity→Supabase tocaría
-// (por sanity_id) cuando la especie elegida coincide con una sugerencia real;
-// si no, crea una fila Supabase-only con el texto escrito a mano.
 async function resolveTaxonomyForSubmission(
   db: ReturnType<typeof getSupabaseAdmin>,
   categoryId: string,
   input: SpecimenInput,
 ): Promise<string> {
-  const warnings: string[] = [];
-
-  if (input.especieSanityId) {
-    const taxon = await sanityPreview.fetch<SanityTaxonRef | null>(`*[_id == $id][0]${TAXON_PROJECTION}`, {
-      id: input.especieSanityId,
-    });
-    if (taxon) {
-      const id = await resolveTaxonomyId(db, taxon, categoryId, warnings);
-      if (id) return id;
-    }
-  }
-
   return createFreeTaxonomy(db, categoryId, {
     family: input.familia,
     subfamily: input.subfamilia,

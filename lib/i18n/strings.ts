@@ -4,7 +4,6 @@
 // aplique el fallback de traducción automática.
 // ============================================================================
 import 'server-only';
-import { sanity } from '@/lib/sanity/client';
 import { candidatesFor, isCompatible, isStrictVariant } from './variants';
 
 export interface RawUiString {
@@ -22,14 +21,7 @@ export async function getRawUiStrings(): Promise<RawUiString[]> {
   if (cache && now - cache.at < TTL_MS) return cache.value;
 
   try {
-    const rows = await sanity.fetch<RawUiString[]>(
-      `*[_type == "uiString" && defined(key)]{
-        key,
-        "sourceText": coalesce(sourceText, ""),
-        "values": coalesce(values[]{ locale, text }, [])
-      }`,
-    );
-    const value = Array.isArray(rows) ? rows : [];
+    const value: RawUiString[] = [];
     cache = { at: now, value };
     return value;
   } catch {
