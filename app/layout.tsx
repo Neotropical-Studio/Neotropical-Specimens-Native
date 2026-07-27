@@ -5,10 +5,15 @@ import CameleonThemeStyle from '@/components/CameleonThemeStyle';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { resolveLocale } from '@/lib/i18n/locales';
 import { THEME_PALETTE } from '@/lib/geo/resolve';
+import { cloudinaryImageUrl } from '@/lib/cloudinary/url';
 
 // Base absoluta obligatoria para que canonical y hreflang de /[lang] salgan como
 // URLs absolutas: Google ignora los hreflang relativos.
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+const faviconId = process.env.NEXT_PUBLIC_CLOUDINARY_FAVICON_ID || 'neotropical-favicon';
+const faviconUrl = cloudinaryImageUrl(faviconId, ['w_64', 'h_64', 'c_scale']);
+const appleIconUrl = cloudinaryImageUrl(faviconId, ['w_180', 'h_180', 'c_scale']);
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -22,7 +27,9 @@ export const metadata: Metadata = {
     title: 'EntmoEdge',
   },
   icons: {
-    apple: '/icons/apple-touch-icon.png',
+    icon: faviconUrl,
+    shortcut: faviconUrl,
+    apple: appleIconUrl,
   },
 };
 

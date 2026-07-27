@@ -1,8 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { Bug, Menu, X } from 'lucide-react';
+import { Bug, Globe2, Menu, X } from 'lucide-react';
 import type { EnabledLocale } from '@/lib/i18n/locales';
+import { cloudinaryImageUrl } from '@/lib/cloudinary/url';
 import RegulatoryStrip from './RegulatoryStrip';
 
 interface Props {
@@ -14,6 +16,13 @@ interface Props {
 export default function Header({ strings, lang, locales }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [logoFailed, setLogoFailed] = useState(false);
+  const [globeFailed, setGlobeFailed] = useState(false);
+
+  const logoId = process.env.NEXT_PUBLIC_CLOUDINARY_LOGO_ID || 'neotropical-logo';
+  const globeId = process.env.NEXT_PUBLIC_CLOUDINARY_GLOBE_ID || 'neotropical-globe';
+  const logoSrc = cloudinaryImageUrl(logoId, ['w_180', 'h_50', 'c_scale']);
+  const globeSrc = cloudinaryImageUrl(globeId, ['w_24', 'h_24', 'c_scale']);
 
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
@@ -44,9 +53,22 @@ export default function Header({ strings, lang, locales }: Props) {
 
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-4">
         <a href="#top" className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-neutral-950 shadow-lg shadow-emerald-500/20">
-            <Bug size={20} />
-          </span>
+          {logoSrc && !logoFailed ? (
+            <Image
+              src={logoSrc}
+              alt="Neotropical Specimens Native"
+              width={180}
+              height={50}
+              priority
+              sizes="(max-width: 768px) 120px, 180px"
+              className="h-10 w-auto object-contain"
+              onError={() => setLogoFailed(true)}
+            />
+          ) : (
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-neutral-950 shadow-lg shadow-emerald-500/20">
+              <Bug size={20} />
+            </span>
+          )}
           <span className="flex flex-col leading-none">
             <span className="text-sm font-extrabold tracking-tight text-white">Neotropical Specimens</span>
             <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-emerald-400">Native Collection</span>
@@ -65,9 +87,22 @@ export default function Header({ strings, lang, locales }: Props) {
           ))}
           <a
             href="#catalogo"
-            className="ml-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-emerald-400"
+            className="ml-2 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-emerald-400"
           >
-            {t('nav.explore', 'Explorar')}
+            {globeSrc && !globeFailed ? (
+              <Image
+                src={globeSrc}
+                alt=""
+                width={24}
+                height={24}
+                sizes="24px"
+                className="h-5 w-5 object-contain"
+                onError={() => setGlobeFailed(true)}
+              />
+            ) : (
+              <Globe2 size={16} aria-hidden="true" />
+            )}
+            <span>{t('nav.explore', 'Explorar')}</span>
           </a>
         </nav>
 

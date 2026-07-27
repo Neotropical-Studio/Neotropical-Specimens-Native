@@ -21,6 +21,7 @@ interface Option {
 interface SpecimenInitial {
   id: string;
   specimen_code: string;
+  category_id?: string | null;
   global_regions: { id: string; region_name?: string | null; name?: string | null } | null;
   taxonomy: { id: string; category_id: string | null; rank_hierarchy: Record<string, string> } | null;
   pricing: Record<string, unknown> | null;
@@ -129,7 +130,7 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
               id="categoryId"
               name="categoryId"
               className={inputClass}
-              defaultValue={specimen?.taxonomy?.category_id ?? categories.find((c) => c.slug === 'mariposas')?.id}
+              defaultValue={specimen?.category_id ?? specimen?.taxonomy?.category_id ?? categories.find((c) => c.slug === 'mariposas')?.id}
               required
             >
               {categories.map((c) => (

@@ -8,6 +8,7 @@
 // ============================================================================
 import { useEffect, useMemo, useState } from 'react';
 import { getSupabaseBrowser } from '@/lib/supabase/client';
+import { extractDominantPaletteFromImage } from '@/lib/specimens/visual';
 import {
   SPECIMEN_SELECT,
   type SpecimenRow,
@@ -46,6 +47,10 @@ export default function SpecimenDetail({
   regulatory,
 }: Props) {
   const [specimen, setSpecimen] = useState(initial);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [paletteState, setPaletteState] = useState<ThemePalette>(palette);
+  const [recommendations, setRecommendations] = useState<SpecimenDetailView[]>([]);
+  const [zoomed, setZoomed] = useState(false);
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
 
@@ -67,6 +72,57 @@ export default function SpecimenDetail({
   useEffect(() => {
     if (!mediaTabs.some((m) => m.key === active)) setActive(mediaTabs[0]?.key ?? 'dorsal');
   }, [mediaTabs, active]);
+
+  const galleryItems = useMemo(() => {
+    const unique = [specimen.views.ventral, specimen.views.dorsal, specimen.views.lateral, specimen.views.macro, specimen.primaryImage]
+      .filter((value): value is string => Boolean(value));
+    return Array.from(new Set(unique));
+  }, [specimen]);
+
+  useEffect(() => {
+    if (!galleryItems.length) return;
+    const timer = window.setInterval(() => {
+      setGalleryIndex((current) => (current + 1) % galleryItems.length);
+    }, 15000);
+    return () => window.clearInterval(timer);
+  }, [galleryItems.length]);
+
+  useEffect(() => {
+    const primary = galleryItems[galleryIndex] ?? specimen.primaryImage;
+    if (!primary) return;
+    let alive = true;
+    void extractDominantPaletteFromImage(imageUrl(primary, ['w_320', 'ar_1:1', 'c_fill']), {
+      primary: paletteState.primary,
+      accent: paletteState.accent,
+      surface: paletteState.surface,
+      text: paletteState.text,
+    }).then((next) => {
+      if (alive) setPaletteState(next);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [galleryIndex, galleryItems, paletteState.accent, paletteState.primary, paletteState.surface, paletteState.text, specimen.primaryImage]);
+
+  useEffect(() => {
+    let alive = true;
+    const supabase = getSupabaseBrowser();
+    const loadRecommendations = async () => {
+      const { data } = await supabase
+        .from('specimens')
+        .select(SPECIMEN_SELECT)
+        .eq('is_active', true)
+        .limit(6);
+      if (alive && data) {
+        const mapped = data.map((row) => toSpecimenDetail(row as SpecimenRow, lang)).filter((item) => item.id !== specimen.id);
+        setRecommendations(mapped);
+      }
+    };
+    void loadRecommendations();
+    return () => {
+      alive = false;
+    };
+  }, [specimen.id, lang]);
 
   // --- Sincronización en vivo con la fila del espécimen -----------------------
   useEffect(() => {
@@ -119,15 +175,16 @@ export default function SpecimenDetail({
   const priceLabel = quote ? formatMoney(quote.total / 100, displayCurrency, locale) : t('product.inquire', 'Inquire');
   const taxLabel = quote && quote.tax > 0 ? formatMoney(quote.tax / 100, displayCurrency, locale) : null;
 
-  const accent = palette.accent;
-  const primary = palette.primary;
+  const accent = paletteState.accent;
+  const primary = paletteState.primary;
+  const currentImage = galleryItems[galleryIndex] ?? specimen.primaryImage;
 
   return (
     <div
       dir={dir}
       lang={lang}
       className="min-h-screen pb-20 text-slate-100 antialiased"
-      style={{ background: `radial-gradient(circle at center, ${hexA(primary, 0.18)} 0%, ${palette.surface} 70%)` }}
+      style={{ background: `radial-gradient(circle at center, ${hexA(primary, 0.18)} 0%, ${paletteState.surface} 70%)` }}
     >
       {/* Header regulatorio */}
       <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 px-6 py-4 backdrop-blur">
@@ -157,12 +214,43 @@ export default function SpecimenDetail({
                   statusLabel={t('system.render_engine', 'RENDER ENGINE // 3D REAL-TIME')}
                 />
               ) : (
-                <ActiveImage
-                  publicId={specimen.views[active as Exclude<MediaKey, '3d'>]}
-                  alt={specimen.scientificName}
-                />
+                <div className="relative h-full w-full">
+                  <ActiveImage
+                    publicId={currentImage ?? specimen.views[active as Exclude<MediaKey, '3d'>]}
+                    alt={specimen.scientificName}
+                  />
+                  <button
+                    onClick={() => setZoomed((value) => !value)}
+                    className="absolute left-4 top-4 rounded-full border border-white/10 bg-black/50 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white backdrop-blur"
+                  >
+                    {zoomed ? t('product.zoom_out', 'Zoom out') : t('product.zoom_in', 'Zoom macro')}
+                  </button>
+                  {zoomed && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/80 p-4">
+                      <img
+                        src={imageUrl(currentImage ?? specimen.primaryImage ?? '', ['w_1600', 'ar_4:3', 'c_fill'])}
+                        alt={specimen.scientificName}
+                        className="max-h-full max-w-full rounded-2xl object-contain"
+                      />
+                    </div>
+                  )}
+                </div>
               )}
             </div>
+
+            {galleryItems.length > 1 && (
+              <div className="flex flex-wrap gap-2">
+                {galleryItems.map((item, index) => (
+                  <button
+                    key={item}
+                    onClick={() => setGalleryIndex(index)}
+                    className="h-16 w-16 overflow-hidden rounded-xl border border-white/10 bg-black/40"
+                  >
+                    <img src={imageUrl(item, ['w_120', 'ar_1:1', 'c_fill'])} className="h-full w-full object-cover" alt="" />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {mediaTabs.length > 1 && (
               <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${mediaTabs.length}, minmax(0,1fr))` }}>
@@ -309,6 +397,24 @@ export default function SpecimenDetail({
             </div>
           </div>
         </div>
+
+        {recommendations.length > 0 && (
+          <section className="rounded-3xl border border-white/10 bg-black/30 p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-white">{t('product.recommendations_title', 'Other species you may like')}</h2>
+              <span className="text-xs uppercase tracking-[0.3em] text-slate-400">{t('product.cross_sell_hint', 'Curated from taxonomy and collection relations')}</span>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {recommendations.slice(0, 3).map((item) => (
+                <a key={item.id} href={`/${lang}/product/${item.id}`} className="rounded-2xl border border-white/10 bg-black/40 p-3 transition hover:border-white/20">
+                  <img src={imageUrl(item.primaryImage ?? item.secondaryImage ?? '', ['w_480', 'ar_4:3', 'c_fill'])} alt={item.scientificName} className="mb-3 h-40 w-full rounded-xl object-cover" />
+                  <p className="text-sm font-semibold text-white">{item.scientificName}</p>
+                  <p className="mt-1 text-xs text-slate-400">{item.family ?? item.order}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

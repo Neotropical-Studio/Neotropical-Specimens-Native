@@ -141,6 +141,7 @@ export async function createSpecimenAction(
     .insert({
       specimen_code: input.specimenCode,
       global_region_id: input.regionId,
+      category_id: input.categoryId,
       taxonomy_id: taxonomyId,
       pricing: buildPricing(input),
       stock: input.stock,
@@ -188,6 +189,7 @@ export async function updateSpecimenAction(
     .update({
       specimen_code: input.specimenCode,
       global_region_id: input.regionId,
+      category_id: input.categoryId,
       taxonomy_id: taxonomyId,
       pricing: buildPricing(input),
       stock: input.stock,

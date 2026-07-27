@@ -11,7 +11,7 @@ async function loadSpecimen(id: string) {
   const db = getSupabaseAdmin();
   const { data, error } = await db
     .from('specimens')
-    .select('id, specimen_code, stock, pricing, attributes, taxonomy(id, category_id, rank_hierarchy), global_regions(id, region_name, name)')
+    .select('id, specimen_code, stock, pricing, attributes, category_id, taxonomy(id, category_id, rank_hierarchy), global_regions(id, region_name, name)')
     .eq('id', id)
     .maybeSingle();
   if (error) throw error;
