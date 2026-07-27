@@ -10,11 +10,11 @@
 import { sanity } from '@/lib/sanity/client';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
 import { isWithinSpecimenFolder, SPECIMEN_KIND_FOLDERS, type SpecimenKind } from '@/lib/cloudinary/paths';
+import { resolveTaxonomyId, TAXON_PROJECTION } from './resolveTaxonomy';
 import {
   buildAttributes,
   buildMediaAssets,
   buildPricing,
-  buildRankHierarchy,
   type SanitySpecimenDoc,
 } from './mapSpecimen';
 
@@ -24,21 +24,12 @@ export interface SyncResult {
   warnings: string[];
 }
 
-// Fragmento reutilizable: Género→Subfamilia→Familia→Rubro. Se usa tanto para
-// una `especie` (su propio `genero`) como para una `subespecie` (el `genero`
-// de SU `especie`) — ver buildRankHierarchy en lib/sync/mapSpecimen.ts.
-const GENERO_CHAIN = `name, "subfamilia": subfamilia->{ name, "familia": familia->{ name, "rubro": rubro->{ name } } }`;
-
 const SPECIMEN_PROJECTION = `{
   _id, _type, specimenCode, category, region, specimenKind,
   retailPrice, wholesalePrice, wholesaleMinQty, currency, stock,
   sex, gradeCode, gradeName, wingspanMm, primaryColors, countryOrigin, gpsCoordinates,
   commonNames, description, themePrimary, themeAccent, themeSurface, media,
-  "taxon": taxon->{
-    "_id": _id, _type, name,
-    "genero": genero->{ ${GENERO_CHAIN} },
-    "especie": especie->{ name, "genero": genero->{ ${GENERO_CHAIN} } }
-  }
+  "taxon": taxon->${TAXON_PROJECTION}
 }`;
 
 function stripDraft(id: string): string {
@@ -66,10 +57,10 @@ async function resolveRegionId(
   warnings: string[],
 ): Promise<string | null> {
   if (!code) return null;
-  const { data, error } = await db.from('global_regions').select('id').eq('code', code).maybeSingle();
+  const { data, error } = await db.from('global_regions').select('id').eq('region_name', code).maybeSingle();
   if (error) throw error;
   if (!data) {
-    warnings.push(`global_regions: no existe code "${code}" — se sincroniza sin región`);
+    warnings.push(`global_regions: no existe region_name "${code}" — se sincroniza sin región`);
     return null;
   }
   return data.id as string;
@@ -90,36 +81,6 @@ function checkMediaFolders(doc: SanitySpecimenDoc, warnings: string[]): void {
       );
     }
   }
-}
-
-async function resolveTaxonomyId(
-  db: ReturnType<typeof getSupabaseAdmin>,
-  taxon: SanitySpecimenDoc['taxon'],
-  categoryId: string | null,
-  warnings: string[],
-): Promise<string | null> {
-  if (!taxon?._id) {
-    warnings.push('taxon: el espécimen no referencia un taxonomicNode');
-    return null;
-  }
-
-  const rankHierarchy = buildRankHierarchy(taxon);
-  if (!Object.keys(rankHierarchy).length) {
-    warnings.push(`taxon (${taxon._id}): rank_hierarchy vacío — revisa el nodo en Sanity`);
-    return null;
-  }
-
-  const taxonSanityId = stripDraft(taxon._id);
-  const row = { category_id: categoryId, rank_hierarchy: rankHierarchy, sanity_id: taxonSanityId };
-
-  const { data, error } = await db
-    .from('taxonomy')
-    .upsert(row, { onConflict: 'sanity_id' })
-    .select('id')
-    .single();
-
-  if (error) throw error;
-  return data.id as string;
 }
 
 // Único punto de entrada: dereferencia el doc en Sanity y decide upsert/delete

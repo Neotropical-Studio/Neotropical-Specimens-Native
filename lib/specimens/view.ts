@@ -4,7 +4,7 @@
 // ============================================================================
 
 export const SPECIMEN_SELECT =
-  '*, taxonomy(rank_hierarchy), global_regions(name, code)';
+  '*, taxonomy(rank_hierarchy), global_regions(name, region_name)';
 
 export interface MediaImage {
   view: string;      // dorsal, ventral, etiqueta…
@@ -60,7 +60,7 @@ export interface SpecimenRow {
   attributes: Record<string, unknown> | null;
   media_assets: MediaAsset[] | null;
   taxonomy: { rank_hierarchy: RankHierarchy } | null;
-  global_regions: { name: string; code: string } | null;
+  global_regions: { name: string; region_name?: string | null } | null;
 }
 
 function scientificName(rh: RankHierarchy | undefined): string {
@@ -104,8 +104,8 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
     order: str(rh?.order),
     family: str(rh?.family),
     genus: str(rh?.genus),
-    regionName: row.global_regions?.name ?? null,
-    regionCode: row.global_regions?.code ?? null,
+    regionName: row.global_regions?.region_name ?? row.global_regions?.name ?? null,
+    regionCode: row.global_regions?.region_name ?? row.global_regions?.name ?? null,
     country: str(attrs.country_origin),
     sex: str(attrs.sex),
     grade: str(attrs.grade_code),

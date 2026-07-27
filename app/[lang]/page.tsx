@@ -3,6 +3,7 @@
 // textos en el repo: el idioma llega por ruta y las cadenas por getI18n.
 import { createClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
+import CampaignBanner from '@/components/CampaignBanner';
 import Header from '@/components/Header';
 import Hero, { type HeroStats } from '@/components/Hero';
 import LanguageRegenerativeBanner from '@/components/LanguageRegenerativeBanner';
@@ -50,6 +51,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       />
       <main className="min-h-screen bg-surface pt-[104px] text-text-dynamic">
         <div className="mx-auto max-w-7xl px-4 pt-4">
+          <CampaignBanner lang={i18n.locale} />
           <LanguageRegenerativeBanner lang={i18n.locale} strings={i18n.strings} />
         </div>
 

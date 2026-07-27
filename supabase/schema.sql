@@ -43,10 +43,10 @@ create trigger trg_site_branding_updated
 -- 2. REGIONES GEOGRÁFICAS GLOBALES (Ej. Neotropical, Paleártico)
 -- ---------------------------------------------------------------------------
 create table global_regions (
-    id       uuid primary key default gen_random_uuid(),
-    name     text not null,
-    code     text unique not null,                     -- Código corto (NEO, PAL)
-    metadata jsonb not null default '{}'::jsonb
+    id          uuid primary key default gen_random_uuid(),
+    name        text not null,
+    region_name text unique not null,                  -- Nombre/identificador de región (NEO, PAL, etc.)
+    metadata    jsonb not null default '{}'::jsonb
 );
 
 create index idx_regions_metadata on global_regions using gin (metadata jsonb_path_ops);

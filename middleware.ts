@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { GEO_EDGE_CONFIG } from '@/lib/geo/config';
 import { resolveGeo, detectCountry } from '@/lib/geo/resolve';
 import { langForCountry } from '@/lib/geo/countries';
@@ -10,10 +11,48 @@ const BCP47 = /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/;
 const DEFAULT_LANG = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? 'en';
 
 // Primeros segmentos que NUNCA llevan idioma: APIs, la página de reserva que
-// precachea el service worker (URL única) y los directorios de assets.
-// OJO: cualquier ruta nueva de 2–3 letras a nivel raíz debe añadirse aquí, o el
-// borde la confundirá con un código de idioma (ej: /faq).
-const RESERVED = new Set(['api', 'offline', '_next', 'icons', 'studio']);
+// precachea el service worker (URL única), el Studio embebido y el panel
+// admin. OJO: cualquier ruta nueva de 2–3 letras a nivel raíz debe añadirse
+// aquí, o el borde la confundirá con un código de idioma (ej: /faq).
+const RESERVED = new Set(['api', 'offline', '_next', 'icons', 'studio', 'admin']);
+
+// Verificación barata de sesión para /admin/*: sólo confirma que existe un
+// usuario de Supabase Auth (clave anon, apta para el borde). La verificación
+// autoritativa — ¿es un admin_users activo? — vive en app/admin/layout.tsx y
+// en cada Server Action (requireAdmin en lib/auth/admin.ts), que sí pueden
+// usar la clave service_role. No confiar sólo en este chequeo de borde.
+async function checkAdminSession(req: NextRequest): Promise<NextResponse> {
+  let response = NextResponse.next({ request: req });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value));
+          response = NextResponse.next({ request: req });
+          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        },
+      },
+    },
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/admin/login';
+    return NextResponse.redirect(url);
+  }
+
+  return response;
+}
 
 // Accept-Language ordenado por calidad: 'es-PE,es;q=0.9,en;q=0.7' → [es-PE,es,en].
 // Respetar el peso q importa: el primer tag no siempre es el preferido.
@@ -49,6 +88,14 @@ function redirectLang(req: NextRequest, country: string | null): string {
 // antes de renderizar; propaga el perfil vía cookies/headers.
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // /admin/* nunca pasa por geo/i18n: es un panel interno, no parte del
+  // storefront multilenguaje. La página de login queda fuera del chequeo de
+  // sesión (si no, nadie podría llegar a ella para autenticarse).
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    if (pathname === '/admin/login') return NextResponse.next();
+    return checkAdminSession(req);
+  }
 
   // Preferencia explícita del usuario (cookie) por encima de la geo.
   const forced = req.cookies.get('locale')?.value ?? null;

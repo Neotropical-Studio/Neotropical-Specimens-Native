@@ -4,9 +4,9 @@
 -- ============================================================================
 
 -- 1. Región global
-insert into global_regions (name, code, metadata)
+insert into global_regions (name, region_name, metadata)
 values ('Región Neotropical', 'NEO', '{"continent": "América del Sur"}')
-on conflict (code) do nothing;
+on conflict (region_name) do nothing;
 
 -- 2. Categoría / rubro
 insert into categories (name, slug, settings)
@@ -67,7 +67,7 @@ select
   ]'::jsonb
 from global_regions r
 cross join taxonomy t
-where r.code = 'NEO'
+where r.region_name = 'NEO'
   and t.rank_hierarchy->>'genus' = 'Morpho'
   and t.rank_hierarchy->>'species' = 'peleides'
 on conflict (specimen_code) do nothing;
