@@ -49,6 +49,11 @@ type MediaKey = '3d' | 'dorsal' | 'ventral' | 'lateral' | 'macro';
 // Etiquetas de la protocolo museográfico de captura: 4 tomas fijas por
 // espécimen. Sólo se muestra la pestaña de una toma si existe el recurso real
 // (specimen.views[...] viene de multimedia cargada, nunca inventada aquí).
+// Tamaño del pool que se trae para armar el catálogo dinámico y cuántas
+// tarjetas se muestran finalmente (mezcla misma-familia / otras-categorías).
+const RECOMMENDATION_POOL_SIZE = 60;
+const RECOMMENDATION_COUNT = 8;
+
 const VIEW_LABELS: Record<Exclude<MediaKey, '3d'>, { key: string; fallback: string }> = {
   dorsal: { key: 'media.dorsal', fallback: 'Vista 1: Dorsal' },
   ventral: { key: 'media.ventral', fallback: 'Vista 2: Ventral' },
@@ -125,10 +130,13 @@ export default function SpecimenDetail({
     };
   }, [galleryIndex, galleryItems, paletteState.accent, paletteState.primary, paletteState.surface, paletteState.text, specimen.primaryImage]);
 
-  // Catálogo dinámico e inteligente: especímenes relacionados para seguir
-  // explorando desde la propia ficha (cambian visor, colores y galería al
-  // navegar). Sin filtro de columnas inexistentes: mismo criterio que la
-  // portada (más recientes primero).
+  // Catálogo dinámico e inteligente: mezcla especímenes de la MISMA familia
+  // (otras especies para seguir comprando dentro del mismo grupo) con OTRAS
+  // categorías/familias (para que el visitante también pueda saltar a
+  // comprar algo completamente distinto). Se trae un pool amplio y se
+  // reparte en cliente porque PostgREST no filtra el padre por una columna
+  // embebida (taxonomy.family_name) sin un !inner que rompería specímenes
+  // sin taxonomía resuelta.
   useEffect(() => {
     let alive = true;
     const supabase = getSupabaseBrowser();
@@ -137,17 +145,34 @@ export default function SpecimenDetail({
         .from('specimens')
         .select(SPECIMEN_SELECT)
         .order('created_at', { ascending: false })
-        .limit(8);
-      if (alive && data) {
-        const mapped = data.map((row) => toSpecimenDetail(row as SpecimenRow, lang)).filter((item) => item.id !== specimen.id);
-        setRecommendations(mapped);
-      }
+        .limit(RECOMMENDATION_POOL_SIZE);
+      if (!alive || !data) return;
+
+      const pool = data
+        .map((row) => toSpecimenDetail(row as SpecimenRow, lang))
+        .filter((item) => item.id !== specimen.id);
+
+      const family = specimen.family?.trim().toLowerCase() || null;
+      const sameFamily = family ? pool.filter((item) => item.family?.trim().toLowerCase() === family) : [];
+      const otherCategories = family ? pool.filter((item) => item.family?.trim().toLowerCase() !== family) : pool;
+
+      // Hasta la mitad de las tarjetas para "otras especies, misma familia"
+      // y el resto para "otras categorías"; si a alguno de los dos grupos
+      // le faltan especímenes, el otro rellena los cupos libres.
+      const halfQuota = Math.ceil(RECOMMENDATION_COUNT / 2);
+      const picked = [...sameFamily.slice(0, halfQuota), ...otherCategories.slice(0, RECOMMENDATION_COUNT - halfQuota)];
+      const remainingSlots = RECOMMENDATION_COUNT - picked.length;
+      const merged = remainingSlots > 0
+        ? [...picked, ...pool.filter((item) => !picked.includes(item)).slice(0, remainingSlots)]
+        : picked;
+
+      setRecommendations(merged);
     };
     void loadRecommendations();
     return () => {
       alive = false;
     };
-  }, [specimen.id, lang]);
+  }, [specimen.id, specimen.family, lang]);
 
   // --- Sincronización en vivo con la fila del espécimen -----------------------
   useEffect(() => {
@@ -509,7 +534,7 @@ export default function SpecimenDetail({
               </h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {recommendations.slice(0, 4).map((item) => {
+              {recommendations.map((item) => {
                 const itemAccent = resolveTaxonPalette({
                   order: item.order,
                   family: item.family,
