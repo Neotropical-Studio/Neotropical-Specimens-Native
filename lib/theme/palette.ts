@@ -70,6 +70,15 @@ export function resolvePalette(source?: Record<string, unknown> | null): ThemePa
   return { primary, accent, surface, text };
 }
 
+// hex (#rgb/#rrggbb) → rgba con alfa; degrada a gris translúcido si el valor
+// no es un hex válido. Compartido por cualquier UI que necesite pintar
+// resplandores/bordes camaleónicos sobre la paleta resuelta.
+export function hexA(hex: string, alpha: number): string {
+  if (!isHex(hex)) return `rgba(148,163,184,${alpha})`;
+  const [r, g, b] = toRgb(hex);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 export function paletteToStyle(p: ThemePalette): string {
   return [
     `${CSS_VARS.primary}:${p.primary}`,

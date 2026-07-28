@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { ArrowDown, Boxes, Globe2, Layers, Sparkles } from 'lucide-react';
 import HeroButterfly from './HeroButterfly';
 import HumanGeoCounter from './HumanGeoCounter';
+import { useChameleonRotation } from '@/lib/specimens/useChameleonRotation';
+import { hexA } from '@/lib/theme/palette';
 import type { SpecimenView } from '@/lib/specimens/view';
 
 export interface HeroStats {
@@ -34,6 +36,11 @@ export default function Hero({
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
 
+  // Rotación camaleónica: el mismo espécimen/paleta activos alimentan tanto
+  // la tarjeta de foto (HeroButterfly) como los resplandores de fondo de
+  // abajo, así ambos cambian de tono en sincronía cada vez que rota.
+  const { active, featured, index, palette } = useChameleonRotation(specimens);
+
   const tiles = [
     { icon: Boxes, value: stats.specimens, label: t('hero.stat_specimens', 'Especímenes') },
     { icon: Layers, value: stats.families, label: t('hero.stat_families', 'Familias') },
@@ -43,11 +50,23 @@ export default function Hero({
 
   return (
     <section id="top" className="relative overflow-hidden">
-      {/* Fondo: resplandores neotropicales */}
+      {/* Fondo: resplandores camaleónicos — su color sigue al espécimen
+          activo del showcase (paleta por taxonomía, refinada con el color
+          dominante real de su foto), con una transición larga y suave para
+          que el cambio de tono se sienta vivo y no como un parpadeo. */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-emerald-500/20 blur-[120px]" />
-        <div className="absolute -right-32 top-20 h-[30rem] w-[30rem] rounded-full bg-sky-500/20 blur-[120px]" />
-        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-amber-500/10 blur-[100px]" />
+        <div
+          className="absolute -left-40 -top-40 h-[36rem] w-[36rem] rounded-full blur-[120px] transition-colors duration-[1600ms]"
+          style={{ backgroundColor: hexA(palette.primary, 0.22) }}
+        />
+        <div
+          className="absolute -right-32 top-20 h-[30rem] w-[30rem] rounded-full blur-[120px] transition-colors duration-[1600ms]"
+          style={{ backgroundColor: hexA(palette.accent, 0.2) }}
+        />
+        <div
+          className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full blur-[100px] transition-colors duration-[1600ms]"
+          style={{ backgroundColor: hexA(palette.primary, 0.12) }}
+        />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,transparent_40%,rgba(0,0,0,0.6))]" />
       </div>
 
@@ -120,9 +139,11 @@ export default function Hero({
         </motion.div>
         </div>
 
-        <div className="flex justify-center lg:justify-end">
-          <HeroButterfly specimens={specimens} lang={lang} strings={strings} />
-        </div>
+        {active && (
+          <div className="flex justify-center lg:justify-end">
+            <HeroButterfly active={active} featured={featured} index={index} palette={palette} lang={lang} strings={strings} />
+          </div>
+        )}
       </div>
     </section>
   );
