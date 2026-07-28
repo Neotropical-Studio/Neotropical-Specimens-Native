@@ -10,6 +10,7 @@ import { getI18n } from '@/lib/i18n/index';
 import { getSpecimenById } from '@/lib/specimens/detail';
 import { resolveTaxonPalette } from '@/lib/theme/taxon';
 import { resolveRegulatory } from '@/lib/geo/regulations';
+import { getActiveCampaign } from '@/lib/campaigns/getActive';
 
 export const revalidate = 0; // siempre fresco (inventario dinámico)
 
@@ -33,6 +34,9 @@ export default async function ProductPage({
   const currency = h.get('x-currency') ?? specimen.currency ?? 'USD';
   const regulatory = resolveRegulatory(country && country !== 'XX' ? country : null);
 
+  // Oferta de campaña activa (tabla `campaigns`), acotada por región si aplica.
+  const campaign = await getActiveCampaign({ regionCode: specimen.regionName });
+
   // Paleta camaleónica: override del espécimen → taxonomía → default.
   const palette = resolveTaxonPalette({
     order: specimen.order,
@@ -54,6 +58,7 @@ export default async function ProductPage({
         currency={currency}
         palette={palette}
         regulatory={regulatory}
+        campaign={campaign}
       />
     </>
   );

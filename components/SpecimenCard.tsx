@@ -7,17 +7,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Box, Play, X, MapPin, Ruler } from 'lucide-react';
 import { imageUrl, videoMp4 } from '@/lib/cloudinary/url';
 import { formatMoney } from '@/lib/geo/regulations';
+import { SEX_LABEL } from '@/lib/constants/sex';
 import type { SpecimenView } from '@/lib/specimens/view';
 import ModelViewer from './ModelViewer';
-
-// Símbolo + clave i18n del sexo; el texto se resuelve contra el mapa de cadenas.
-const SEX_LABEL: Record<string, { key: string; fallback: string }> = {
-  M: { key: 'sex.male', fallback: '♂ Macho' },
-  F: { key: 'sex.female', fallback: '♀ Hembra' },
-  P: { key: 'sex.pair', fallback: 'Pareja' },
-  EP: { key: 'sex.ex_pupa', fallback: 'Ex-pupa' },
-  S: { key: 'sex.set', fallback: 'Set' },
-};
 
 interface Props {
   s: SpecimenView;
@@ -50,6 +42,11 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
         onMouseLeave={() => setHover(false)}
         className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/60 backdrop-blur-sm transition-colors hover:border-emerald-400/40"
       >
+        <Link
+          href={detailHref}
+          aria-label={s.scientificName}
+          className="absolute inset-0 z-10"
+        />
         {/* Media */}
         <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-neutral-800 to-neutral-950">
           {shown ? (
@@ -81,11 +78,16 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
             )}
           </div>
 
-          {/* Acciones media (3D / video) */}
-          <div className="absolute right-3 top-3 flex flex-col gap-1.5">
+          {/* Acciones media (3D / video) — z-20: por encima del <Link> overlay
+              de toda la tarjeta (z-10), si no sus clics navegarían al detalle. */}
+          <div className="absolute right-3 top-3 z-20 flex flex-col gap-1.5">
             {s.model3d && (
               <button
-                onClick={() => setViewer('3d')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setViewer('3d');
+                }}
                 aria-label={t('media.view_3d_full', 'Ver modelo 3D')}
                 className="grid h-9 w-9 place-items-center rounded-full bg-black/60 text-emerald-300 backdrop-blur transition hover:bg-emerald-500 hover:text-white"
               >
@@ -94,7 +96,11 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
             )}
             {s.video && (
               <button
-                onClick={() => setViewer('video')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setViewer('video');
+                }}
                 aria-label={t('media.view_video', 'Ver video 360°')}
                 className="grid h-9 w-9 place-items-center rounded-full bg-black/60 text-emerald-300 backdrop-blur transition hover:bg-emerald-500 hover:text-white"
               >
@@ -123,9 +129,9 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
           <div className="text-[11px] font-mono uppercase tracking-wider text-neutral-500">
             {s.family ?? t('taxon.unknown', 'taxón')} · {s.code}
           </div>
-          <Link href={detailHref} className="transition-colors hover:text-emerald-300">
-            <h3 className="text-base font-bold italic leading-tight text-white">{s.scientificName}</h3>
-          </Link>
+          <h3 className="text-base font-bold italic leading-tight text-white transition-colors group-hover:text-emerald-300">
+            {s.scientificName}
+          </h3>
           {s.commonName && <p className="-mt-1 text-sm text-neutral-400">{s.commonName}</p>}
 
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-neutral-400">
