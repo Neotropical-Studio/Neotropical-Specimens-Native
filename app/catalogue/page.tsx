@@ -4,11 +4,22 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import SecureMediaViewer from '@/components/SecureMediaViewer'
 
+interface Taxonomy {
+  id: string
+  name: string
+  scientific_name: string | null
+  rank: string
+  slug: string
+}
+
 interface Specimen {
   id: string
-  species_name: string
-  author: string
-  media_url?: string
+  catalog_code: string
+  title: string | null
+  description: string | null
+  taxonomy_id: string | null
+  origin_banner_url: string | null
+  taxonomies: Taxonomy | null
 }
 
 export default function CataloguePage() {
@@ -19,14 +30,14 @@ export default function CataloguePage() {
     async function fetchSpecimens() {
       try {
         const { data, error } = await supabase
-          .from('species')
-          .select('id, species_name, author')
+          .from('specimens')
+          .select('*, taxonomies(*)')
           .limit(10)
 
         if (error) {
           console.error('Error al consultar Supabase:', error.message)
         } else if (data) {
-          setSpecimens(data)
+          setSpecimens(data as Specimen[])
         }
       } catch (err) {
         console.error('Error inesperado:', err)
@@ -55,15 +66,21 @@ export default function CataloguePage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {specimens.map((specimen) => (
-            <div key={specimen.id} className="flex flex-col items-center">
-              <SecureMediaViewer 
-                mediaUrl={specimen.media_url || 'https://res.cloudinary.com/demo/image/upload/sample.jpg'}
-                specimenName={`${specimen.species_name} ${specimen.author ? `(${specimen.author})` : ''}`}
-                type="image"
-              />
-            </div>
-          ))}
+          {specimens.map((specimen) => {
+            const taxonomy = specimen.taxonomies
+            const specimenName =
+              taxonomy?.scientific_name || taxonomy?.name || specimen.title || specimen.catalog_code
+
+            return (
+              <div key={specimen.id} className="flex flex-col items-center">
+                <SecureMediaViewer
+                  mediaUrl={specimen.origin_banner_url || 'https://res.cloudinary.com/demo/image/upload/sample.jpg'}
+                  specimenName={specimenName}
+                  type="image"
+                />
+              </div>
+            )
+          })}
         </div>
       </div>
     </main>
