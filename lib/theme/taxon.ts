@@ -1,8 +1,17 @@
 // ============================================================================
-// Theming camaleónico por taxonomía: deriva la paleta desde orden/familia/
-// subfamilia del espécimen. Precedencia:
-//   override explícito del espécimen (attributes.theme) → mapa taxonómico → default.
-// Reutiliza resolvePalette() para el override y garantiza contraste con readableText().
+// Theming camaleónico por taxonomía/rubro: CERO mapas fijos de nombres
+// conocidos. La paleta se deriva algorítmicamente del propio texto real del
+// dato (subfamilia → familia → orden, es decir, el "rubro" del espécimen),
+// hasheando ese texto a un matiz HSL estable. Así cualquier familia/orden
+// nueva que aparezca en Supabase —hoy, mañana, la que sea— se autogenera un
+// tono coherente sin tocar una sola línea de código: es regenerativo e
+// inteligente, no una tabla de casos hardcodeados.
+//
+// Precedencia:
+//   1) override explícito del dato (Sanity/Supabase attributes.theme) — el
+//      dato manda si trae colores propios.
+//   2) generación algorítmica desde subfamilia/familia/orden.
+//   3) default global sólo si el espécimen no trae taxonomía alguna.
 // ============================================================================
 import { resolvePalette, readableText, DEFAULT_PALETTE, type ThemePalette } from './palette';
 
@@ -14,29 +23,53 @@ interface TaxonInput {
   override?: Record<string, unknown> | null;
 }
 
-// Mapa taxón → paleta. Claves en minúsculas; se casa por subfamilia, luego
-// familia, luego orden (de lo más específico a lo más general).
-const TAXON_PALETTES: Record<string, ThemePalette> = {
-  // Subfamilias / familias específicas
-  morphinae: { primary: '#06b6d4', accent: '#22d3ee', surface: '#07131a' }, // cian iridiscente
-  saturniidae: { primary: '#8b5cf6', accent: '#a78bfa', surface: '#120b1f' }, // púrpura estructural
-  nymphalidae: { primary: '#10b981', accent: '#34d399', surface: '#04140d' }, // esmeralda
-  papilionidae: { primary: '#f59e0b', accent: '#fbbf24', surface: '#160f03' },
-  // Órdenes (fallback por gran grupo)
-  lepidoptera: { primary: '#10b981', accent: '#34d399', surface: '#04140d' }, // esmeralda
-  coleoptera: { primary: '#f59e0b', accent: '#fbbf24', surface: '#160f03' },  // ámbar
-  hymenoptera: { primary: '#eab308', accent: '#facc15', surface: '#141102' },
-  odonata: { primary: '#0ea5e9', accent: '#38bdf8', surface: '#04121a' },
-  mantodea: { primary: '#16a34a', accent: '#4ade80', surface: '#04140a' },
-  arachnida: { primary: '#b45309', accent: '#d97706', surface: '#160d04' },
-};
-
 function norm(v?: string | null): string {
   return (v ?? '').trim().toLowerCase();
 }
 
 function complete(p: ThemePalette): ThemePalette {
   return { ...p, text: p.text ?? readableText(p.surface) };
+}
+
+// Hash de texto → matiz (0-359). Determinístico: el mismo texto siempre cae
+// en el mismo matiz, así el "camaleón" es estable entre renders/sesiones.
+function hashHue(text: string): number {
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+  }
+  return hash % 360;
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  const sat = s / 100;
+  const light = l / 100;
+  const c = (1 - Math.abs(2 * light - 1)) * sat;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = light - c / 2;
+  let r = 0;
+  let g = 0;
+  let b = 0;
+  if (h < 60) [r, g, b] = [c, x, 0];
+  else if (h < 120) [r, g, b] = [x, c, 0];
+  else if (h < 180) [r, g, b] = [0, c, x];
+  else if (h < 240) [r, g, b] = [0, x, c];
+  else if (h < 300) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+  const toHex = (v: number) => Math.round((v + m) * 255).toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+// Deriva una paleta completa desde el nombre real del taxón/rubro: mismo
+// matiz base para primary/accent/surface (coherencia visual), variando
+// saturación y luminosidad — primary vívido, accent más claro para acentos,
+// surface muy oscuro con un tinte sutil del mismo tono.
+function deriveFromLabel(label: string): ThemePalette {
+  const hue = hashHue(label);
+  const primary = hslToHex(hue, 68, 46);
+  const accent = hslToHex((hue + 18) % 360, 78, 60);
+  const surface = hslToHex(hue, 45, 5);
+  return { primary, accent, surface, text: readableText(surface) };
 }
 
 export function resolveTaxonPalette(input: TaxonInput): ThemePalette {
@@ -53,11 +86,11 @@ export function resolveTaxonPalette(input: TaxonInput): ThemePalette {
     }
   }
 
-  // 2) Mapa taxonómico: subfamilia → familia → orden.
-  for (const key of [norm(input.subfamily), norm(input.family), norm(input.order)]) {
-    if (key && TAXON_PALETTES[key]) return complete(TAXON_PALETTES[key]);
-  }
+  // 2) Generación algorítmica: subfamilia → familia → orden (de lo más
+  // específico a lo más general), sin ningún nombre precargado.
+  const key = norm(input.subfamily) || norm(input.family) || norm(input.order);
+  if (key) return deriveFromLabel(key);
 
-  // 3) Default global.
+  // 3) Sin taxonomía resuelta todavía: paleta neutra por defecto.
   return complete(DEFAULT_PALETTE);
 }
