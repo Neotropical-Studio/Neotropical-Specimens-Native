@@ -9,7 +9,13 @@ import Hero, { type HeroStats } from '@/components/Hero';
 import LanguageRegenerativeBanner from '@/components/LanguageRegenerativeBanner';
 import SpecimenExplorer from '@/components/SpecimenExplorer';
 import { getI18n } from '@/lib/i18n/index';
-import { SPECIMEN_SELECT, toSpecimenView, type SpecimenRow } from '@/lib/specimens/view';
+import {
+  attachMedia,
+  fetchSpecimenMedia,
+  SPECIMEN_SELECT,
+  toSpecimenView,
+  type SpecimenRow,
+} from '@/lib/specimens/view';
 
 export const revalidate = 0; // siempre fresco (dinámico)
 
@@ -24,7 +30,13 @@ async function loadSpecimens() {
     .select(SPECIMEN_SELECT)
     .order('created_at', { ascending: false });
 
-  return { rows: (data ?? []) as SpecimenRow[], error: error?.message ?? null };
+  const rows = (data ?? []) as SpecimenRow[];
+
+  // La multimedia se consulta aparte: `specimen_media` no tiene FK declarada
+  // hacia `specimens`, así que no se puede incrustar vía select relacional.
+  const mediaById = await fetchSpecimenMedia(supabase, rows.map((r) => r.id));
+
+  return { rows: attachMedia(rows, mediaById), error: error?.message ?? null };
 }
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {

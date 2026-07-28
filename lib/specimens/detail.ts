@@ -6,6 +6,8 @@
 // ============================================================================
 import { createClient } from '@supabase/supabase-js';
 import {
+  attachMedia,
+  fetchSpecimenMedia,
   SPECIMEN_SELECT,
   toSpecimenView,
   type SpecimenRow,
@@ -51,7 +53,6 @@ function makeLocalizer(attrs: Record<string, unknown>, lang: string) {
 export function toSpecimenDetail(row: SpecimenRow, lang: string): SpecimenDetailView {
   const base = toSpecimenView(row);
   const attrs = row.attributes ?? {};
-  const rh = row.taxonomy?.rank_hierarchy;
   const pricing = row.pricing ?? {};
   const localize = makeLocalizer(attrs, lang);
 
@@ -68,7 +69,7 @@ export function toSpecimenDetail(row: SpecimenRow, lang: string): SpecimenDetail
   return {
     ...base,
     commonName: localize('common_name') ?? base.commonName,
-    subfamily: str(rh?.subfamily),
+    subfamily: str(row.taxonomy?.subfamily_name),
     gpsCoordinates: str(attrs.gps_coordinates) ?? str(attrs.gps),
     description: localize('description'),
     wholesalePrice: num((pricing as Record<string, unknown>).wholesale_price),
@@ -95,5 +96,11 @@ export async function getSpecimenById(id: string, lang: string): Promise<Specime
     .maybeSingle();
 
   if (error || !data) return null;
-  return toSpecimenDetail(data as SpecimenRow, lang);
+
+  // Multimedia aparte: sin FK entre `specimen_media` y `specimens`, no se
+  // puede incrustar vía select relacional (ver comentario en SPECIMEN_SELECT).
+  const mediaById = await fetchSpecimenMedia(supabase, [id]);
+  const [row] = attachMedia([data as SpecimenRow], mediaById);
+
+  return toSpecimenDetail(row, lang);
 }

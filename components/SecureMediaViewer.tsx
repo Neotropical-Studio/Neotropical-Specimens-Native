@@ -1,12 +1,12 @@
 import React from 'react'
 
 interface SecureMediaViewerProps {
-  mediaUrl: string
-  specimenName: string
+  mediaUrl?: string
+  specimenName?: string
   type?: 'image' | 'video' | '3d'
 }
 
-export default function SecureMediaViewer({ mediaUrl, specimenName, type = 'image' }: SecureMediaViewerProps) {
+export default function SecureMediaViewer({ mediaUrl = '', specimenName = '', type = 'image' }: SecureMediaViewerProps) {
   
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -21,7 +21,13 @@ export default function SecureMediaViewer({ mediaUrl, specimenName, type = 'imag
     >
       <div className="absolute inset-0 z-10 pointer-events-auto bg-transparent" />
 
-      {type === 'image' && (
+      {!mediaUrl && (
+        <div className="flex h-full w-full items-center justify-center text-zinc-600 text-sm">
+          Sin contenido multimedia
+        </div>
+      )}
+
+      {mediaUrl && type === 'image' && (
         <img 
           src={mediaUrl} 
           alt={specimenName}
@@ -30,7 +36,7 @@ export default function SecureMediaViewer({ mediaUrl, specimenName, type = 'imag
         />
       )}
 
-      {type === 'video' && (
+      {mediaUrl && type === 'video' && (
         <video 
           src={mediaUrl} 
           className="w-full h-full object-cover pointer-events-none"

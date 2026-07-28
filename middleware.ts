@@ -11,10 +11,11 @@ const BCP47 = /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/;
 const DEFAULT_LANG = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? 'en';
 
 // Primeros segmentos que NUNCA llevan idioma: APIs, la página de reserva que
-// precachea el service worker (URL única), el Studio embebido y el panel
-// admin. OJO: cualquier ruta nueva de 2–3 letras a nivel raíz debe añadirse
-// aquí, o el borde la confundirá con un código de idioma (ej: /faq).
-const RESERVED = new Set(['api', 'offline', '_next', 'icons', 'studio', 'admin']);
+// precachea el service worker (URL única), el Studio embebido, el panel
+// admin y el catálogo de prueba fuera de /[lang]. OJO: cualquier ruta nueva
+// de 2–3 letras a nivel raíz debe añadirse aquí, o el borde la confundirá
+// con un código de idioma (ej: /faq).
+const RESERVED = new Set(['api', 'offline', '_next', 'icons', 'studio', 'admin', 'catalogue']);
 
 // Verificación barata de sesión para /admin/*: sólo confirma que existe un
 // usuario de Supabase Auth (clave anon, apta para el borde). La verificación

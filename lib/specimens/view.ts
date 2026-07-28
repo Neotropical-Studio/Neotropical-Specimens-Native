@@ -3,8 +3,21 @@
 // consumible por la UI (server y client comparten SELECT + mapper).
 // ============================================================================
 
+// Relaciones reales confirmadas contra el schema en vivo de PostgREST:
+// - `specimens.taxonomy_id` -> `taxonomy.id` (tabla `taxonomy`, singular).
+// - `specimens.region_id`   -> `global_regions.id`.
+// No existe ninguna tabla `locations` ni columna `location_id` en el
+// proyecto de Supabase: nunca se debe intentar ese join (PostgREST
+// respondería PGRST200, "Could not find a relationship...").
+//
+// `specimen_media.specimen_id` SÍ existe como columna, pero NO tiene ninguna
+// Foreign Key declarada en Supabase (confirmado contra el schema en vivo), así
+// que PostgREST tampoco puede incrustarla vía `specimen_media(*)` — también
+// responde PGRST200. Por eso la multimedia se consulta aparte, de forma
+// independiente, con `fetchSpecimenMedia()` + `attachMedia()` más abajo, en
+// vez de depender del cache de relaciones de PostgREST.
 export const SPECIMEN_SELECT =
-  '*, taxonomies:taxonomies!taxonomy_id(*), locations:locations!location_id(*), specimen_media(*)';
+  '*, taxonomy:taxonomy!taxonomy_id(*), region:global_regions!region_id(*)';
 
 export interface MediaImage {
   view: string;      // dorsal, ventral, etiqueta…
@@ -37,19 +50,88 @@ export interface SpecimenView {
   video: string | null;           // public_id del video
 }
 
-interface RankHierarchy {
-  order?: string;
-  family?: string;
-  subfamily?: string;
-  genus?: string;
-  species?: string;
-  subspecies?: string | null;
+// Columnas reales de la tabla `taxonomy` (singular) en Supabase — confirmadas
+// contra el schema en vivo de PostgREST. `rank_hierarchy` es texto plano, no
+// un objeto JSON: no se debe tratar como {order, family, genus, species}.
+export interface TaxonomyRow {
+  id: string;
+  species_id?: string | null;
+  species_name?: string | null;
+  author?: string | null;
+  genus_name?: string | null;
+  subfamily_name?: string | null;
+  family_name?: string | null;
+  order_name?: string | null;
+  classification_type?: string | null;
+  rank_hierarchy?: string | null;
 }
 
 interface MediaAsset {
   type?: string;
   view?: string;
   cloudinary_id?: string;
+}
+
+// Columnas reales de `global_regions` — confirmadas contra el schema en vivo
+// de PostgREST. No existe tabla `locations`: la geolocalización del espécimen
+// vive únicamente aquí, vía `specimens.region_id`.
+export interface RegionRow {
+  id: string;
+  region_name?: string | null;
+  country?: string | null;
+  locality?: string | null;
+  gps_coordinates?: string | null;
+  altitude?: string | null;
+  name?: string | null;
+}
+
+// Columnas reales de `specimen_media` — confirmadas contra el schema en vivo
+// de PostgREST. Sin `storage_path`/`cdn_url`/`is_primary`/`metadata`: esos
+// campos no existen en la tabla real.
+export interface MediaRow {
+  id: string;
+  specimen_id?: string | null;
+  media_type?: string | null;
+  media_url?: string | null;
+  public_id?: string | null;
+  display_order?: number | null;
+}
+
+// Consulta independiente de multimedia por lote de specimen_id. No usa embed
+// de PostgREST (no hay FK configurada), sino un `IN` directo sobre la propia
+// tabla, así que nunca depende del cache de relaciones del schema.
+export async function fetchSpecimenMedia(
+  supabase: { from: (table: string) => any },
+  specimenIds: string[],
+): Promise<Map<string, MediaRow[]>> {
+  const byId = new Map<string, MediaRow[]>();
+  const ids = [...new Set(specimenIds.filter(Boolean))];
+  if (ids.length === 0) return byId;
+
+  const { data, error } = await supabase
+    .from('specimen_media')
+    .select('id, specimen_id, media_type, media_url, public_id, display_order')
+    .in('specimen_id', ids)
+    .order('display_order', { ascending: true });
+
+  if (error || !data) return byId;
+
+  for (const row of data as MediaRow[]) {
+    if (!row.specimen_id) continue;
+    const list = byId.get(row.specimen_id) ?? [];
+    list.push(row);
+    byId.set(row.specimen_id, list);
+  }
+  return byId;
+}
+
+// Adjunta la multimedia ya cargada (fetchSpecimenMedia) a cada fila de
+// specimens, sin tocar ninguna otra columna.
+export function attachMedia<T extends { id: string }>(
+  rows: T[],
+  mediaById: Map<string, MediaRow[]>,
+): (T & { specimen_media: MediaRow[] })[] {
+  return rows.map((row) => ({ ...row, specimen_media: mediaById.get(row.id) ?? [] }));
 }
 
 export interface SpecimenRow {
@@ -64,33 +146,26 @@ export interface SpecimenRow {
   metadata: Record<string, unknown> | null;
   origin_flag_url: string | null;
   origin_banner_url: string | null;
-  taxonomies?: { name?: string | null; scientific_name?: string | null; rank?: string | null; slug?: string | null; path?: string | null; metadata?: Record<string, unknown> | null } | null;
-  locations?: { name?: string | null; slug?: string | null; country_code?: string | null; latitude?: number | null; longitude?: number | null; altitude_m?: number | null; metadata?: Record<string, unknown> | null } | null;
-  specimen_media?: Array<{
-    media_type?: string | null;
-    storage_path?: string | null;
-    cdn_url?: string | null;
-    thumbnail_url?: string | null;
-    is_primary?: boolean | null;
-    sort_order?: number | null;
-    is_public?: boolean | null;
-    is_active?: boolean | null;
-    metadata?: Record<string, unknown> | null;
-  }> | null;
+  taxonomy?: TaxonomyRow | null;
+  region?: RegionRow | null;
+  // Poblado aparte por attachMedia() — nunca proviene de un embed de
+  // PostgREST, ya que no hay FK entre `specimen_media` y `specimens`.
+  specimen_media?: MediaRow[] | null;
   specimen_code?: string;
   pricing?: { retail_price?: number; currency?: string } | null;
   media_assets?: MediaAsset[] | null;
-  taxonomy?: { rank_hierarchy: RankHierarchy } | null;
-  global_regions?: { name: string; region_name?: string | null } | null;
 }
 
-function scientificName(rh: RankHierarchy | undefined, row: SpecimenRow): string {
-  if (rh) {
-    const sp = rh.species?.startsWith(rh.genus ?? '\0') ? rh.species : [rh.genus, rh.species].filter(Boolean).join(' ');
-    return [sp, rh.subspecies].filter(Boolean).join(' ') || rh.genus || '—';
+function scientificName(row: SpecimenRow): string {
+  const t = row.taxonomy;
+  const genus = str(t?.genus_name);
+  const species = str(t?.species_name);
+  if (species) {
+    return genus && !species.toLowerCase().startsWith(genus.toLowerCase())
+      ? `${genus} ${species}`
+      : species;
   }
-  const taxonomy = row.taxonomies;
-  return str(taxonomy?.scientific_name) ?? str(taxonomy?.name) ?? str(row.attributes?.scientific_name) ?? '—';
+  return genus ?? str(row.attributes?.scientific_name) ?? '—';
 }
 
 function str(v: unknown): string | null {
@@ -102,23 +177,27 @@ function num(v: unknown): number | null {
 }
 
 export function toSpecimenView(row: SpecimenRow): SpecimenView {
-  const rh = row.taxonomy?.rank_hierarchy;
   const attrs = row.attributes ?? {};
-  const location = row.locations;
+  const region = row.region;
   const media = Array.isArray(row.specimen_media) ? row.specimen_media : [];
 
+  // `specimen_media` no tiene columna de ángulo/vista (ni metadata jsonb): el
+  // orden real es sólo `display_order`, así que dorsal/ventral se resuelven
+  // por posición (primero/segundo), no por etiqueta.
   const images: MediaImage[] = media
-    .filter((m) => m.media_type === 'image' && (m.cdn_url || m.storage_path))
+    .filter((m) => m.media_type === 'image' && (m.media_url || m.public_id))
     .map((m) => ({
-      view: str((m.metadata as Record<string, unknown> | undefined)?.view) ?? str((m.metadata as Record<string, unknown> | undefined)?.label) ?? 'photo',
-      publicId: m.cdn_url ?? m.storage_path ?? '',
+      view: 'photo',
+      publicId: m.media_url ?? m.public_id ?? '',
     }));
 
-  const model = media.find((m) => m.media_type === 'model' && (m.cdn_url || m.storage_path))?.cdn_url ?? media.find((m) => m.media_type === 'model' && (m.cdn_url || m.storage_path))?.storage_path ?? null;
-  const video = media.find((m) => m.media_type === 'video' && (m.cdn_url || m.storage_path))?.cdn_url ?? media.find((m) => m.media_type === 'video' && (m.cdn_url || m.storage_path))?.storage_path ?? null;
+  const modelRow = media.find((m) => m.media_type === 'model' && (m.media_url || m.public_id));
+  const videoRow = media.find((m) => m.media_type === 'video' && (m.media_url || m.public_id));
+  const model = modelRow ? modelRow.media_url ?? modelRow.public_id ?? null : null;
+  const video = videoRow ? videoRow.media_url ?? videoRow.public_id ?? null : null;
 
-  const dorsal = images.find((i) => i.view === 'dorsal') ?? images[0] ?? null;
-  const ventral = images.find((i) => i.view === 'ventral') ?? images[1] ?? null;
+  const dorsal = images[0] ?? null;
+  const ventral = images[1] ?? null;
 
   const colors = Array.isArray(attrs.primary_colors)
     ? (attrs.primary_colors as unknown[]).filter((c): c is string => typeof c === 'string')
@@ -129,14 +208,14 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
   return {
     id: row.id,
     code: row.catalog_code ?? row.specimen_code ?? '—',
-    scientificName: scientificName(rh, row),
+    scientificName: scientificName(row),
     commonName: str(attrs.common_name) ?? str(row.metadata?.common_name),
-    order: str(rh?.order) ?? str(row.metadata?.order),
-    family: str(rh?.family) ?? str(row.metadata?.family),
-    genus: str(rh?.genus) ?? str(row.metadata?.genus),
-    regionName: str(row.metadata?.region) ?? str(location?.name) ?? row.global_regions?.region_name ?? row.global_regions?.name ?? null,
-    regionCode: str((location?.metadata as Record<string, unknown> | undefined)?.region_code) ?? str(location?.country_code) ?? row.global_regions?.region_name ?? row.global_regions?.name ?? null,
-    country: str(attrs.country_origin) ?? str((location?.metadata as Record<string, unknown> | undefined)?.country) ?? str(location?.name),
+    order: str(row.taxonomy?.order_name) ?? str(row.metadata?.order),
+    family: str(row.taxonomy?.family_name) ?? str(row.metadata?.family),
+    genus: str(row.taxonomy?.genus_name) ?? str(row.metadata?.genus),
+    regionName: str(row.metadata?.region) ?? str(region?.region_name) ?? str(region?.name) ?? null,
+    regionCode: str(region?.country) ?? null,
+    country: str(attrs.country_origin) ?? str(region?.country) ?? str(region?.locality),
     sex: str(attrs.sex) ?? str(attrs.sex_label) ?? str(row.attributes?.sex_type),
     grade: str(attrs.grade_code) ?? str(attrs.quality) ?? str(row.attributes?.quality),
     gradeName: str(attrs.grade_name) ?? str(attrs.quality_label),
