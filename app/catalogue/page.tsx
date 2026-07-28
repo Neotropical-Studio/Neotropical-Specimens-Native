@@ -19,7 +19,7 @@ interface Specimen {
   description: string | null
   taxonomy_id: string | null
   origin_banner_url: string | null
-  taxonomies: Taxonomy | null
+  taxonomy: Taxonomy | null
 }
 
 export default function CataloguePage() {
@@ -31,7 +31,7 @@ export default function CataloguePage() {
       try {
         const { data, error } = await supabase
           .from('specimens')
-          .select('*, taxonomies(*)')
+          .select('*, taxonomy(*)')
           .limit(10)
 
         if (error) {
@@ -67,7 +67,7 @@ export default function CataloguePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {specimens.map((specimen) => {
-            const taxonomy = specimen.taxonomies
+            const taxonomy = specimen.taxonomy
             const specimenName =
               taxonomy?.scientific_name || taxonomy?.name || specimen.title || specimen.catalog_code
 
