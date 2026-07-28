@@ -2,6 +2,7 @@
 // Vista de espécimen — normaliza filas JSONB de `specimens` a una forma limpia
 // consumible por la UI (server y client comparten SELECT + mapper).
 // ============================================================================
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Relaciones reales confirmadas contra el schema en vivo de PostgREST:
 // - `specimens.taxonomy_id` -> `taxonomy.id` (tabla `taxonomy`, singular).
@@ -101,7 +102,7 @@ export interface MediaRow {
 // de PostgREST (no hay FK configurada), sino un `IN` directo sobre la propia
 // tabla, así que nunca depende del cache de relaciones del schema.
 export async function fetchSpecimenMedia(
-  supabase: { from: (table: string) => any },
+  supabase: SupabaseClient,
   specimenIds: string[],
 ): Promise<Map<string, MediaRow[]>> {
   const byId = new Map<string, MediaRow[]>();
