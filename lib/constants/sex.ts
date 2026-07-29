@@ -5,8 +5,8 @@
 // attributes.sex.
 // ============================================================================
 export const SEX_LABEL: Record<string, { key: string; fallback: string }> = {
-  M: { key: 'sex.male', fallback: '♂ Macho' },
-  F: { key: 'sex.female', fallback: '♀ Hembra' },
+  M: { key: 'sex.male', fallback: 'Male ♂' },
+  F: { key: 'sex.female', fallback: 'Female ♀' },
   P: { key: 'sex.pair', fallback: 'Pareja' },
   EP: { key: 'sex.ex_pupa', fallback: 'Ex-pupa' },
   S: { key: 'sex.set', fallback: 'Set' },

@@ -34,8 +34,10 @@ export default async function ProductPage({
   const currency = h.get('x-currency') ?? specimen.currency ?? 'USD';
   const regulatory = resolveRegulatory(country && country !== 'XX' ? country : null);
 
-  // Oferta de campaña activa (tabla `campaigns`), acotada por región si aplica.
-  const campaign = await getActiveCampaign({ regionCode: specimen.regionName });
+  // Oferta de campaña: únicamente filas activas en `campaigns` (sin fallbacks estáticos).
+  const campaign = await getActiveCampaign({
+    regionCode: specimen.regionCode ?? specimen.regionName,
+  });
 
   // Paleta camaleónica: override del espécimen → taxonomía → default.
   const palette = resolveTaxonPalette({

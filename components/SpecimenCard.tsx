@@ -8,6 +8,8 @@ import { Box, Play, X, MapPin, Ruler } from 'lucide-react';
 import { imageUrl, videoMp4 } from '@/lib/cloudinary/url';
 import { formatMoney } from '@/lib/geo/regulations';
 import { SEX_LABEL } from '@/lib/constants/sex';
+import { isMorphoGodartyDidiusTingomarensis } from '@/lib/specimens/native/morphoGodartyDidiusTingomarensis';
+import { MORPHO_CARD_URL } from '@/lib/cloudinary/specimens';
 import type { SpecimenView } from '@/lib/specimens/view';
 import ModelViewer from './ModelViewer';
 
@@ -26,8 +28,19 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
 
-  const front = s.primaryImage ? imageUrl(s.primaryImage, ['w_640', 'ar_1', 'c_fill']) : null;
-  const back = s.secondaryImage ? imageUrl(s.secondaryImage, ['w_640', 'ar_1', 'c_fill']) : null;
+  const frameless = isMorphoGodartyDidiusTingomarensis({
+    id: s.id,
+    scientificName: s.scientificName,
+  });
+  const front = frameless
+    ? MORPHO_CARD_URL
+    : s.primaryImage
+      ? imageUrl(s.primaryImage, ['f_png', 'q_auto:best', 'w_640', 'c_fit'])
+      : null;
+  const back =
+    !frameless && s.secondaryImage
+      ? imageUrl(s.secondaryImage, ['f_png', 'q_auto:best', 'w_640', 'c_fit'])
+      : null;
   const shown = hover && back ? back : front;
 
   return (
@@ -40,22 +53,32 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
         transition={{ duration: 0.3 }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/60 backdrop-blur-sm transition-colors hover:border-emerald-400/40"
+        className={
+          frameless
+            ? 'group relative flex flex-col overflow-hidden bg-transparent'
+            : 'group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/60 backdrop-blur-sm transition-colors hover:border-emerald-400/40'
+        }
       >
         <Link
           href={detailHref}
           aria-label={s.scientificName}
           className="absolute inset-0 z-10"
         />
-        {/* Media */}
-        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-neutral-800 to-neutral-950">
+        {/* Media — Morpho sin marco; el resto conserva la tarjeta */}
+        <div
+          className={
+            frameless
+              ? 'relative flex aspect-[4/3] items-center justify-center overflow-visible bg-transparent'
+              : 'relative aspect-square overflow-hidden bg-transparent'
+          }
+        >
           {shown ? (
             <Image
               src={shown}
               alt={s.scientificName}
               fill
               sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="bg-transparent object-contain object-center transition-transform duration-500 group-hover:scale-105"
               unoptimized
             />
           ) : (

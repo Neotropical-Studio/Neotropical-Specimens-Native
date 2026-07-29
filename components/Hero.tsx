@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, Boxes, Globe2, Layers, Sparkles } from 'lucide-react';
 import HeroButterfly from './HeroButterfly';
@@ -37,6 +38,12 @@ export default function Hero({
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
 
+  // Evita mismatch de hidratación: Framer no aplica `hidden` en SSR/primer paint.
+  const [motionReady, setMotionReady] = useState(false);
+  useEffect(() => {
+    setMotionReady(true);
+  }, []);
+
   // Rotación camaleónica: el mismo espécimen/paleta activos alimentan tanto
   // la tarjeta de foto (HeroButterfly) como los resplandores de fondo de
   // abajo, así ambos cambian de tono en sincronía cada vez que rota.
@@ -73,7 +80,11 @@ export default function Hero({
 
       <div className="relative mx-auto flex max-w-7xl flex-col gap-10 px-4 pb-16 pt-16 md:pb-24 md:pt-24 lg:flex-row lg:items-center lg:justify-between lg:gap-14">
         <div className="min-w-0 flex-1">
-        <motion.div initial="hidden" animate="show" className="max-w-3xl">
+        <motion.div
+          initial={motionReady ? 'hidden' : false}
+          animate={motionReady ? 'show' : undefined}
+          className="max-w-3xl"
+        >
           <motion.div custom={0} variants={fade} className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
@@ -121,8 +132,8 @@ export default function Hero({
 
         {/* Stat tiles */}
         <motion.div
-          initial="hidden"
-          animate="show"
+          initial={motionReady ? 'hidden' : false}
+          animate={motionReady ? 'show' : undefined}
           className="mt-14 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4"
         >
           {tiles.map((t, i) => (
@@ -141,11 +152,11 @@ export default function Hero({
         </div>
 
         {active ? (
-          <div className="flex justify-center lg:justify-end">
+          <div className="flex w-full max-w-sm shrink-0 justify-center self-center lg:justify-end lg:self-auto">
             <HeroButterfly active={active} featured={featured} index={index} palette={palette} lang={lang} strings={strings} />
           </div>
         ) : (
-          <div className="flex justify-center lg:justify-end">
+          <div className="flex w-full max-w-sm shrink-0 justify-center self-center lg:justify-end lg:self-auto">
             <InventoryEmptyState
               variant="hero"
               title={t('hero.empty_title', 'Expedición en curso')}

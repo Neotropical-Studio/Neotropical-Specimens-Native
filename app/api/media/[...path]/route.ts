@@ -3,7 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_CLOUD_NAME =
+  (typeof process.env.CLOUDINARY_CLOUD_NAME === 'string' &&
+    process.env.CLOUDINARY_CLOUD_NAME.trim()) ||
+  (typeof process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME === 'string' &&
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME.trim()) ||
+  'juufg4mn';
 const BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}`;
 
 // Transformación por tipo de recurso. Solo las imágenes reciben f_auto/q_auto/strip.
@@ -33,11 +38,18 @@ function classify(segments: string[]): { type: ResourceType; rest: string[] } {
   return { type: 'image', rest: segments };
 }
 
+function encodePathSegment(segment: string): string {
+  // Cloudinary exige comas literales en el bloque de transformaciones
+  // (f_auto,q_auto,…). encodeURIComponent las convertiría en %2C y el
+  // delivery devolvería 404.
+  return encodeURIComponent(segment).replace(/%2C/gi, ',');
+}
+
 function buildTarget(segments: string[], search: string): string {
   const { type, rest } = classify(segments);
   // Si el cliente ya envía "upload/...", respetamos su ruta; si no, la componemos.
   const hasUploadPrefix = rest[0] === 'upload' || rest[0] === 'authenticated';
-  const path = rest.map(encodeURIComponent).join('/');
+  const path = rest.map(encodePathSegment).join('/');
 
   if (hasUploadPrefix) {
     return `${BASE}/${type}/${path}${search}`;

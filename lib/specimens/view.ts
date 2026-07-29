@@ -3,7 +3,16 @@
 // consumible por la UI (server y client comparten SELECT + mapper).
 // ============================================================================
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { resolveCloudinaryPublicId } from '@/lib/cloudinary/url';
 import { detectRubro, type InventoryRubroId } from './rubros';
+
+/** Normaliza media_url / public_id a un public_id Cloudinary usable por la UI. */
+function asMediaRef(value: string | null | undefined): string | null {
+  const raw = typeof value === 'string' ? value.trim() : '';
+  if (!raw) return null;
+  const id = resolveCloudinaryPublicId(raw);
+  return id.length > 0 ? id : raw;
+}
 
 // Relaciones reales confirmadas contra el schema en vivo de PostgREST:
 // - `specimens.taxonomy_id` -> `taxonomy.id` (tabla `taxonomy`, singular).
@@ -197,23 +206,28 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
     .filter((m) => m.media_type === 'image' && (m.media_url || m.public_id))
     .map((m) => ({
       view: 'photo',
-      publicId: m.media_url ?? m.public_id ?? '',
-    }));
+      publicId: asMediaRef(m.public_id) ?? asMediaRef(m.media_url) ?? '',
+    }))
+    .filter((m) => m.publicId.length > 0);
 
   const modelRow = media.find((m) => m.media_type === 'model' && (m.media_url || m.public_id));
   const videoRow = media.find((m) => m.media_type === 'video' && (m.media_url || m.public_id));
-  const model = modelRow ? modelRow.media_url ?? modelRow.public_id ?? null : null;
-  const video = videoRow ? videoRow.media_url ?? videoRow.public_id ?? null : null;
+  const model = modelRow
+    ? asMediaRef(modelRow.public_id) ?? asMediaRef(modelRow.media_url)
+    : null;
+  const video = videoRow
+    ? asMediaRef(videoRow.public_id) ?? asMediaRef(videoRow.media_url)
+    : null;
 
   const dorsal = images[0] ?? null;
   const ventral = images[1] ?? null;
 
   // Fuente de imagen: 1) specimen_media, 2) columna live `media_url`
-  // (Cloudinary URL o public_id), 3) origin_banner_url. Nunca inventa assets.
+  // (Cloudinary URL o public_id → siempre normalizado a public_id), 3) banner.
   const primaryImage =
     dorsal?.publicId ??
-    str(row.media_url) ??
-    str(row.origin_banner_url) ??
+    asMediaRef(row.media_url) ??
+    asMediaRef(row.origin_banner_url) ??
     null;
 
   const colors = Array.isArray(attrs.primary_colors)
@@ -222,10 +236,11 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
       ? (attrs.color_palette as unknown[]).filter((c): c is string => typeof c === 'string')
       : [];
 
-  const order = str(row.taxonomy?.order_name) ?? str(row.metadata?.order);
-  const family = str(row.taxonomy?.family_name) ?? str(row.metadata?.family);
-  const genus = str(row.taxonomy?.genus_name) ?? str(row.metadata?.genus);
   const name = scientificName(row);
+  // Inventario 100 % desde catálogo BD (taxonomía, origen, sexo, calidad, stock…).
+  const order = str(row.taxonomy?.order_name) ?? str(row.metadata?.order) ?? null;
+  const family = str(row.taxonomy?.family_name) ?? str(row.metadata?.family) ?? null;
+  const genus = str(row.taxonomy?.genus_name) ?? str(row.metadata?.genus) ?? null;
   const rubro = detectRubro({
     mediaHint: primaryImage,
     order,
@@ -238,17 +253,27 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
     id: row.id,
     code: row.catalog_code ?? row.specimen_code ?? '—',
     scientificName: name,
-    commonName: str(attrs.common_name) ?? str(row.metadata?.common_name),
+    commonName: str(attrs.common_name) ?? str(row.metadata?.common_name) ?? null,
     order,
     family,
     genus,
-    regionName: str(row.metadata?.region) ?? str(region?.region_name) ?? str(region?.name) ?? null,
+    regionName:
+      str(region?.locality) ??
+      str(row.metadata?.region) ??
+      str(region?.region_name) ??
+      str(region?.name) ??
+      null,
     regionCode: str(region?.country) ?? null,
-    country: str(attrs.country_origin) ?? str(region?.country) ?? str(region?.locality),
-    sex: str(attrs.sex) ?? str(attrs.sex_label) ?? str(row.attributes?.sex_type),
-    grade: str(attrs.grade_code) ?? str(attrs.quality) ?? str(row.attributes?.quality),
+    country:
+      str(attrs.country_origin) ??
+      (str(region?.country) === 'PE' ? 'Perú' : str(region?.country)) ??
+      str(region?.locality),
+    sex: str(attrs.sex) ?? str(attrs.sex_label) ?? str(row.attributes?.sex_type) ?? null,
+    grade: str(attrs.grade_code) ?? str(attrs.quality) ?? str(row.attributes?.quality) ?? null,
     gradeName: str(attrs.grade_name) ?? str(attrs.quality_label),
-    wingspanMm: num(attrs.wingspan_mm) ?? num(Array.isArray(attrs.size_range_cm) ? attrs.size_range_cm[1] : undefined),
+    wingspanMm:
+      num(attrs.wingspan_mm) ??
+      num(Array.isArray(attrs.size_range_cm) ? attrs.size_range_cm[1] : undefined),
     colors,
     price: num(row.price_amount) ?? num(row.pricing?.retail_price),
     currency: row.currency ?? row.pricing?.currency ?? 'USD',

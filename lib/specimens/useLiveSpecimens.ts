@@ -9,14 +9,8 @@
 // ============================================================================
 import { useEffect, useState } from 'react';
 import { getSupabaseBrowser } from '@/lib/supabase/client';
-import {
-  attachMedia,
-  fetchSpecimenMedia,
-  SPECIMEN_SELECT,
-  toSpecimenView,
-  type SpecimenRow,
-  type SpecimenView,
-} from '@/lib/specimens/view';
+import { loadCatalogRows } from '@/lib/specimens/catalog';
+import { toSpecimenView, type SpecimenView } from '@/lib/specimens/view';
 
 const WS_GRACE_MS = 8_000;
 const POLL_MS = 60_000;
@@ -43,19 +37,9 @@ export function useLiveSpecimens(initial: SpecimenView[]): {
       const supabase = getSupabaseBrowser();
 
       const refresh = async () => {
-        const { data } = await supabase
-          .from('specimens')
-          .select(SPECIMEN_SELECT)
-          .order('created_at', { ascending: false });
-        if (!active || !data) return;
-        const rows = data as SpecimenRow[];
-        // Multimedia aparte (sin FK PostgREST): misma ruta que el server.
-        const mediaById = await fetchSpecimenMedia(
-          supabase,
-          rows.map((r) => r.id),
-        );
+        const { rows } = await loadCatalogRows(supabase);
         if (!active) return;
-        setSpecimens(attachMedia(rows, mediaById).map(toSpecimenView));
+        setSpecimens(rows.map(toSpecimenView));
       };
 
       let subscribed = false;

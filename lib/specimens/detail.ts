@@ -5,10 +5,8 @@
 // Todo proviene de JSONB — sin literales de negocio en el código.
 // ============================================================================
 import { createClient } from '@supabase/supabase-js';
+import { loadCatalogRowById } from './catalog';
 import {
-  attachMedia,
-  fetchSpecimenMedia,
-  SPECIMEN_SELECT,
   toSpecimenView,
   type SpecimenRow,
   type SpecimenView,
@@ -66,11 +64,17 @@ export function toSpecimenDetail(row: SpecimenRow, lang: string): SpecimenDetail
     macro: byView('macro'),
   };
 
+  // Ficha 100 % desde catálogo BD (origen, calidad, sexo, taxonomía, stock…).
   return {
     ...base,
     commonName: localize('common_name') ?? base.commonName,
     subfamily: str(row.taxonomy?.subfamily_name),
-    gpsCoordinates: str(attrs.gps_coordinates) ?? str(attrs.gps),
+    sex: str(attrs.sex) ?? str(row.attributes?.sex_type) ?? base.sex,
+    gpsCoordinates:
+      str(attrs.gps_coordinates) ??
+      str(attrs.gps) ??
+      str(row.region?.gps_coordinates) ??
+      null,
     description: localize('description'),
     wholesalePrice: num((pricing as Record<string, unknown>).wholesale_price),
     wholesaleMinQty: num((pricing as Record<string, unknown>).wholesale_min_qty),
@@ -89,18 +93,7 @@ export async function getSpecimenById(id: string, lang: string): Promise<Specime
   if (!url || !key) return null;
 
   const supabase = createClient(url, key);
-  const { data, error } = await supabase
-    .from('specimens')
-    .select(SPECIMEN_SELECT)
-    .eq('id', id)
-    .maybeSingle();
-
-  if (error || !data) return null;
-
-  // Multimedia aparte: sin FK entre `specimen_media` y `specimens`, no se
-  // puede incrustar vía select relacional (ver comentario en SPECIMEN_SELECT).
-  const mediaById = await fetchSpecimenMedia(supabase, [id]);
-  const [row] = attachMedia([data as SpecimenRow], mediaById);
-
+  const { row } = await loadCatalogRowById(supabase, id);
+  if (!row) return null;
   return toSpecimenDetail(row, lang);
 }

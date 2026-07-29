@@ -5,37 +5,19 @@ import { createClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
 import CampaignBanner from '@/components/CampaignBanner';
 import Header from '@/components/Header';
-import LanguageRegenerativeBanner from '@/components/LanguageRegenerativeBanner';
 import LiveShowcase from '@/components/LiveShowcase';
 import { getI18n } from '@/lib/i18n/index';
-import {
-  attachMedia,
-  fetchSpecimenMedia,
-  SPECIMEN_SELECT,
-  toSpecimenView,
-  type SpecimenRow,
-} from '@/lib/specimens/view';
+import { loadCatalogRows } from '@/lib/specimens/catalog';
+import { toSpecimenView } from '@/lib/specimens/view';
 
 export const revalidate = 0; // siempre fresco (dinámico)
 
 async function loadSpecimens() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  if (!url || !key) return { rows: [] as SpecimenRow[], error: 'Supabase no configurado' };
+  if (!url || !key) return { rows: [], error: 'Supabase no configurado' };
 
-  const supabase = createClient(url, key);
-  const { data, error } = await supabase
-    .from('specimens')
-    .select(SPECIMEN_SELECT)
-    .order('created_at', { ascending: false });
-
-  const rows = (data ?? []) as SpecimenRow[];
-
-  // La multimedia se consulta aparte: `specimen_media` no tiene FK declarada
-  // hacia `specimens`, así que no se puede incrustar vía select relacional.
-  const mediaById = await fetchSpecimenMedia(supabase, rows.map((r) => r.id));
-
-  return { rows: attachMedia(rows, mediaById), error: error?.message ?? null };
+  return loadCatalogRows(createClient(url, key));
 }
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
@@ -48,15 +30,10 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
   return (
     <>
-      <Header
-        strings={i18n.strings}
-        lang={i18n.locale}
-        locales={i18n.enabledLocales}
-      />
+      <Header strings={i18n.strings} />
       <main className="min-h-screen bg-surface pt-[104px] text-text-dynamic">
         <div className="mx-auto max-w-7xl px-4 pt-4">
           <CampaignBanner lang={i18n.locale} />
-          <LanguageRegenerativeBanner lang={i18n.locale} strings={i18n.strings} />
         </div>
 
         {error && (

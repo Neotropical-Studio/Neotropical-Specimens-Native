@@ -1,23 +1,19 @@
 'use client';
 
-import type { EnabledLocale } from '@/lib/i18n/locales';
 import { PERMIT_ORDER } from '@/lib/cloudinary/permits';
-import LocaleSwitcher from './LocaleSwitcher';
 import PermitSeal from './PermitSeal';
 
 interface Props {
-  lang: string;
-  locales: EnabledLocale[];
   strings: Record<string, string>;
 }
 
-export default function RegulatoryStrip({ lang, locales, strings }: Props) {
+export default function RegulatoryStrip({ strings }: Props) {
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
 
   return (
     <div className="flex h-10 items-center border-b border-white/5 bg-black/85 backdrop-blur-md">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4">
+      <div className="mx-auto flex w-full max-w-7xl items-center px-4">
         <div className="flex min-w-0 items-center gap-3 overflow-x-auto">
           <span className="hidden shrink-0 text-[10px] font-medium uppercase tracking-wider text-neutral-500 sm:inline">
             {t('permits.label', 'Permisos oficiales')}
@@ -32,8 +28,6 @@ export default function RegulatoryStrip({ lang, locales, strings }: Props) {
             ))}
           </ul>
         </div>
-
-        <LocaleSwitcher lang={lang} locales={locales} label={t('nav.language', 'Idioma')} />
       </div>
     </div>
   );

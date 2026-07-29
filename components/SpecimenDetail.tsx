@@ -7,17 +7,14 @@
 // geo, el aviso regulatorio y la campaña activa (si hay). Se sincroniza en
 // vivo con la fila del espécimen.
 // ============================================================================
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
 import 'flag-icons/css/flag-icons.css';
 import { getSupabaseBrowser } from '@/lib/supabase/client';
 import { extractDominantPaletteFromImage } from '@/lib/specimens/visual';
-import {
-  SPECIMEN_SELECT,
-  type SpecimenRow,
-} from '@/lib/specimens/view';
+import { loadCatalogPool, loadCatalogRowById } from '@/lib/specimens/catalog';
 import {
   toSpecimenDetail,
   type SpecimenDetailView,
@@ -30,7 +27,10 @@ import { SEX_LABEL } from '@/lib/constants/sex';
 import { resolveTaxonPalette } from '@/lib/theme/taxon';
 import type { ThemePalette } from '@/lib/theme/palette';
 import type { ActiveCampaignBanner } from '@/lib/campaigns/getActive';
+import { isMorphoGodartyDidiusTingomarensis } from '@/lib/specimens/native/morphoGodartyDidiusTingomarensis';
+import { MORPHO_HERO_URL } from '@/lib/cloudinary/specimens';
 import CamaleonicSpecimenViewer from './CamaleonicSpecimenViewer';
+import PeruNationalFlag from './PeruNationalFlag';
 
 interface Props {
   specimen: SpecimenDetailView;
@@ -130,6 +130,11 @@ export default function SpecimenDetail({
     };
   }, [galleryIndex, galleryItems, paletteState.accent, paletteState.primary, paletteState.surface, paletteState.text, specimen.primaryImage]);
 
+  // Alinea estado local si el servidor entrega una ficha fresca (navegación).
+  useEffect(() => {
+    setSpecimen(initial);
+  }, [initial]);
+
   // Catálogo dinámico e inteligente: mezcla especímenes de la MISMA familia
   // (otras especies para seguir comprando dentro del mismo grupo) con OTRAS
   // categorías/familias (para que el visitante también pueda saltar a
@@ -141,15 +146,11 @@ export default function SpecimenDetail({
     let alive = true;
     const supabase = getSupabaseBrowser();
     const loadRecommendations = async () => {
-      const { data } = await supabase
-        .from('specimens')
-        .select(SPECIMEN_SELECT)
-        .order('created_at', { ascending: false })
-        .limit(RECOMMENDATION_POOL_SIZE);
-      if (!alive || !data) return;
+      const poolRows = await loadCatalogPool(supabase, RECOMMENDATION_POOL_SIZE);
+      if (!alive) return;
 
-      const pool = data
-        .map((row) => toSpecimenDetail(row as SpecimenRow, lang))
+      const pool = poolRows
+        .map((row) => toSpecimenDetail(row, lang))
         .filter((item) => item.id !== specimen.id);
 
       const family = specimen.family?.trim().toLowerCase() || null;
@@ -169,34 +170,74 @@ export default function SpecimenDetail({
       setRecommendations(merged);
     };
     void loadRecommendations();
+
+    // Cualquier alta/cambio en el catálogo refresca recomendaciones al instante.
+    let cleanupChannel = () => {};
+    try {
+      const channel = supabase
+        .channel(`specimen-recs-${initial.id}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'specimens' }, () => {
+          void loadRecommendations();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'specimen_media' }, () => {
+          void loadRecommendations();
+        })
+        .subscribe();
+      cleanupChannel = () => {
+        supabase.removeChannel(channel);
+      };
+    } catch {
+      /* sin realtime: el pool inicial sigue válido */
+    }
+
     return () => {
       alive = false;
+      cleanupChannel();
     };
-  }, [specimen.id, specimen.family, lang]);
+  }, [specimen.id, specimen.family, lang, initial.id]);
 
-  // --- Sincronización en vivo con la fila del espécimen -----------------------
+  // --- Sincronización en vivo con la fila del espécimen + su media ----------
   useEffect(() => {
     let alive = true;
     let cleanup = () => {};
     try {
       const supabase = getSupabaseBrowser();
       const refresh = async () => {
-        const { data } = await supabase
-          .from('specimens')
-          .select(SPECIMEN_SELECT)
-          .eq('id', initial.id)
-          .maybeSingle();
-        if (alive && data) setSpecimen(toSpecimenDetail(data as SpecimenRow, lang));
+        const { row } = await loadCatalogRowById(supabase, initial.id);
+        if (alive && row) setSpecimen(toSpecimenDetail(row, lang));
       };
       const channel = supabase
         .channel(`specimen-${initial.id}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'specimens', filter: `id=eq.${initial.id}` }, refresh)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'specimens', filter: `id=eq.${initial.id}` },
+          () => {
+            void refresh();
+          },
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'specimen_media',
+            filter: `specimen_id=eq.${initial.id}`,
+          },
+          () => {
+            void refresh();
+          },
+        )
         .subscribe();
-      cleanup = () => { supabase.removeChannel(channel); };
+      cleanup = () => {
+        supabase.removeChannel(channel);
+      };
     } catch {
       /* Supabase no configurado: la ficha permanece con los datos del servidor. */
     }
-    return () => { alive = false; cleanup(); };
+    return () => {
+      alive = false;
+      cleanup();
+    };
   }, [initial.id, lang]);
 
   // --- Precio adaptativo (impuesto/divisa por perfil geo + oferta de campaña) -
@@ -239,12 +280,48 @@ export default function SpecimenDetail({
   const accent = paletteState.accent;
   const primary = paletteState.primary;
   const currentImage = galleryItems[galleryIndex] ?? specimen.primaryImage;
+  const isMorpho = isMorphoGodartyDidiusTingomarensis({
+    id: specimen.id,
+    scientificName: specimen.scientificName,
+  });
 
   const gradeOption = GRADE_OPTIONS.find((g) => g.code === specimen.grade);
   const gradeBadgeLabel = gradeOption ? `${t('product.grade_museum_label', 'Grado Museo')} ${gradeOption.label}` : specimen.gradeName ?? specimen.grade;
-  const gradeSelectorLabel = gradeOption
-    ? `${gradeOption.label} (${gradeQualifier(gradeOption.name)} / ${t('product.museum_qualifier', 'Museo')})`
-    : specimen.gradeName ?? specimen.grade;
+  const gradeOptions = useMemo(() => {
+    const opts = GRADE_OPTIONS.map((g) => ({
+      value: g.code,
+      label: `${g.label} (${gradeQualifier(g.name)} / ${t('product.museum_qualifier', 'Museo')})`,
+    }));
+    // Si el grado del espécimen no está en la lista canónica, lo añadimos.
+    if (specimen.grade && !opts.some((o) => o.value === specimen.grade)) {
+      opts.unshift({
+        value: specimen.grade,
+        label: specimen.gradeName ?? specimen.grade,
+      });
+    }
+    return opts;
+  }, [specimen.grade, specimen.gradeName, strings]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const sexOptions = useMemo(
+    () =>
+      Object.entries(SEX_LABEL).map(([code, meta]) => ({
+        value: code,
+        label: t(meta.key, meta.fallback),
+      })),
+    [strings], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  const [selectedGrade, setSelectedGrade] = useState(specimen.grade ?? gradeOptions[0]?.value ?? '');
+  const [selectedSex, setSelectedSex] = useState(specimen.sex ?? sexOptions[0]?.value ?? '');
+
+  useEffect(() => {
+    if (specimen.grade) setSelectedGrade(specimen.grade);
+  }, [specimen.grade]);
+
+  useEffect(() => {
+    if (specimen.sex) setSelectedSex(specimen.sex);
+  }, [specimen.sex]);
+
   const sexDisplay = specimen.sex ? t(SEX_LABEL[specimen.sex]?.key ?? 'sex.unknown', SEX_LABEL[specimen.sex]?.fallback ?? specimen.sex) : null;
 
   return (
@@ -254,10 +331,13 @@ export default function SpecimenDetail({
       className="min-h-screen pb-20 text-slate-100 antialiased"
       style={{ background: `radial-gradient(circle at center, ${hexA(primary, 0.18)} 0%, ${paletteState.surface} 70%)` }}
     >
-      {/* Header regulatorio / campaña */}
+      {/* Header: volver al escaparate (siempre legible sobre fondo oscuro) */}
       <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 px-6 py-4 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href={`/${lang}`} className="font-mono text-xs hover:underline" style={{ color: accent }}>
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+          <Link
+            href={`/${lang}`}
+            className="shrink-0 font-mono text-xs text-emerald-300 transition hover:text-emerald-200 hover:underline"
+          >
             {t('nav.back', '← Volver al Escaparate Principal')}
           </Link>
           {campaign && discountPercent != null ? (
@@ -276,10 +356,7 @@ export default function SpecimenDetail({
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
           {/* Panel izquierdo: visor de imágenes */}
           <div className="space-y-6 lg:col-span-7">
-            <div
-              className="relative flex h-[450px] items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-black/40 md:h-[550px]"
-              style={{ boxShadow: `0 0 40px ${hexA(primary, 0.25)}` }}
-            >
+            <div className="relative flex min-h-[380px] items-center justify-center overflow-visible bg-transparent md:min-h-[480px]">
               {/* Badge superior de oferta de campaña (dato real: tabla campaigns) */}
               {discountPercent != null && (
                 <span className="absolute left-4 top-4 z-20 whitespace-nowrap rounded-full bg-red-600 px-4 py-1.5 text-xs font-black uppercase tracking-wide text-white shadow-lg">
@@ -295,24 +372,28 @@ export default function SpecimenDetail({
                   statusLabel={t('system.render_engine', 'MOTOR DE RENDER // 3D EN TIEMPO REAL')}
                 />
               ) : (
-                <div className="relative h-full w-full">
+                <div className="relative flex h-full min-h-[380px] w-full items-center justify-center bg-transparent md:min-h-[480px]">
                   <ActiveImage
-                    publicId={currentImage ?? specimen.views[active as Exclude<MediaKey, '3d'>]}
+                    publicId={isMorpho ? null : currentImage ?? specimen.views[active as Exclude<MediaKey, '3d'>]}
+                    srcOverride={isMorpho ? MORPHO_HERO_URL : null}
                     alt={specimen.scientificName}
+                    floating
                   />
-                  <button
-                    onClick={() => setZoomed((value) => !value)}
-                    className="absolute right-4 top-4 rounded-full border border-white/10 bg-black/50 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white backdrop-blur"
-                  >
-                    {zoomed ? t('product.zoom_out', 'Cerrar zoom') : t('product.zoom_in', 'Zoom macro')}
-                  </button>
-                  {zoomed && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/80 p-4">
+                  {!isMorpho && (
+                    <button
+                      onClick={() => setZoomed((value) => !value)}
+                      className="absolute right-4 top-4 rounded-full border border-white/10 bg-black/50 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white backdrop-blur"
+                    >
+                      {zoomed ? t('product.zoom_out', 'Cerrar zoom') : t('product.zoom_in', 'Zoom macro')}
+                    </button>
+                  )}
+                  {zoomed && !isMorpho && (
+                    <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 p-4">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={imageUrl(currentImage ?? specimen.primaryImage ?? '', ['w_1600', 'ar_4:3', 'c_fill'])}
+                        src={imageUrl(currentImage ?? specimen.primaryImage ?? '', ['f_png', 'w_1600', 'c_fit'])}
                         alt={specimen.scientificName}
-                        className="max-h-full max-w-full rounded-2xl object-contain"
+                        className="max-h-full max-w-full bg-transparent object-contain"
                       />
                     </div>
                   )}
@@ -390,35 +471,44 @@ export default function SpecimenDetail({
               {specimen.description && <p className="mt-3 text-sm text-slate-300">{specimen.description}</p>}
             </div>
 
-            {/* Selectores de Calidad y Sexo (espécimen único: muestran el valor
-                real como opción activa, sin fingir otras variantes) */}
-            <div className="grid grid-cols-2 gap-3">
-              {gradeSelectorLabel && (
-                <SelectorField label={t('product.quality_selector', 'Calidad del Espécimen')} accent={accent}>
-                  {gradeSelectorLabel}
-                </SelectorField>
+            {/* Selectores de Calidad y Sexo — desplegables interactivos */}
+            <div className="relative z-20 grid grid-cols-2 gap-3 overflow-visible">
+              {gradeOptions.length > 0 && (
+                <SelectorField
+                  label={t('product.quality_selector', 'Calidad del Espécimen')}
+                  accent={accent}
+                  value={selectedGrade}
+                  options={gradeOptions}
+                  onChange={setSelectedGrade}
+                />
               )}
-              {sexDisplay && (
-                <SelectorField label={t('product.sex_selector', 'Sexo / Morfología')}>
-                  {sexDisplay}
-                </SelectorField>
+              {(sexDisplay || sexOptions.length > 0) && (
+                <SelectorField
+                  label={t('product.sex_selector', 'Sexo / Morfología')}
+                  value={selectedSex}
+                  options={sexOptions}
+                  onChange={setSelectedSex}
+                />
               )}
             </div>
 
-            {/* País de origen / expedición: bandera real (flag-icons) */}
+            {/* País de origen / expedición: bandera compacta (w-10) + texto */}
             {(specimen.country || specimen.regionName) && (
-              <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-black/40 p-3.5">
-                {specimen.regionCode && (
+              <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 px-3 py-2.5">
+                {specimen.regionCode?.toUpperCase() === 'PE' ? (
+                  <PeruNationalFlag width={40} className="!h-auto !w-10 !max-w-[2.5rem] shrink-0" />
+                ) : specimen.regionCode ? (
                   <span
-                    className={`fi fi-${specimen.regionCode.toLowerCase()} h-11 w-16 flex-shrink-0 rounded-md shadow-lg ring-1 ring-white/10`}
+                    className={`fi fi-${specimen.regionCode.toLowerCase()} !block h-auto w-10 max-w-[2.5rem] shrink-0 overflow-hidden rounded-sm aspect-[3/2] ring-1 ring-white/10`}
+                    style={{ width: 40, height: 27, backgroundSize: '100% 100%' }}
                     aria-label={specimen.country ?? specimen.regionCode}
                   />
-                )}
+                ) : null}
                 <div className="min-w-0 flex-1">
                   <span className="block font-mono text-[10px] uppercase tracking-wider text-slate-400">
                     {t('product.origin', 'País de Origen / Expedición')}
                   </span>
-                  <span className="block truncate text-base font-bold text-white">
+                  <span className="block truncate text-sm font-bold text-white">
                     {specimen.country}
                     {specimen.regionName && (
                       <span className="font-normal text-slate-300"> ({specimen.regionName})</span>
@@ -609,16 +699,38 @@ export default function SpecimenDetail({
   );
 }
 
-function ActiveImage({ publicId, alt }: { publicId: string | null; alt: string }) {
-  if (!publicId) {
+function ActiveImage({
+  publicId,
+  alt,
+  srcOverride = null,
+  floating = false,
+}: {
+  publicId: string | null;
+  alt: string;
+  /** URL directa (p. ej. Morpho WebP/PNG con alfa); gana sobre publicId. */
+  srcOverride?: string | null;
+  /** Flota sin caja: fondo transparente, object-contain, sin marco. */
+  floating?: boolean;
+}) {
+  const src =
+    (srcOverride && srcOverride.trim()) ||
+    (publicId ? imageUrl(publicId, ['f_png', 'q_auto:best', 'w_1200', 'c_fit']) : '');
+
+  if (!src) {
     return <div className="flex h-full w-full items-center justify-center text-sm text-slate-600">—</div>;
   }
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={imageUrl(publicId, ['w_1200', 'ar_4:3', 'c_fill'])}
+      src={src}
       alt={alt}
-      className="h-full w-full object-cover transition-all duration-700"
+      className={
+        floating
+          ? 'max-h-[min(480px,70vh)] w-auto max-w-full bg-transparent object-contain object-center drop-shadow-none transition-all duration-700'
+          : 'max-h-[min(480px,70vh)] w-auto max-w-full bg-transparent object-contain object-center transition-all duration-700'
+      }
+      decoding="async"
+      draggable={false}
     />
   );
 }
@@ -647,21 +759,92 @@ function TierButton({ on, accent, onClick, children }: { on: boolean; accent: st
   );
 }
 
-// Campo tipo "selector" (Calidad / Sexo): visualmente un <select>, pero de
-// sólo lectura — cada espécimen es una pieza única, así que no existen otras
-// opciones reales entre las que elegir. Muestra el valor real como opción
-// activa, con el mismo look & feel que un desplegable.
-function SelectorField({ label, accent, children }: { label: string; accent?: string; children: React.ReactNode }) {
+// Campo desplegable (Calidad / Sexo): contraste forzado (texto claro / fondo oscuro).
+function SelectorField({
+  label,
+  accent: _accent,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  accent?: string;
+  value: string;
+  options: Array<{ value: string; label: string }>;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  const current = options.find((o) => o.value === value) ?? options[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (box.current && !box.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    const timer = window.setTimeout(() => {
+      document.addEventListener('mousedown', onDown);
+      document.addEventListener('keydown', onKey);
+    }, 0);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  if (!current) return null;
+
   return (
-    <div className="flex flex-col gap-1.5">
+    <div ref={box} className="relative flex flex-col gap-1.5">
       <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">{label}</span>
-      <div
-        className="flex items-center justify-between gap-2 rounded-lg border bg-black/40 px-3 py-2.5 text-xs font-bold"
-        style={{ borderColor: accent ? hexA(accent, 0.4) : 'rgba(255,255,255,0.12)', color: accent ?? '#e2e8f0' }}
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={label}
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-2 rounded-lg border border-white/15 bg-neutral-900 px-3 py-2.5 text-left text-xs font-bold text-white transition hover:bg-neutral-800"
       >
-        <span className="truncate">{children}</span>
-        <ChevronDown size={14} className="flex-shrink-0 opacity-60" />
-      </div>
+        <span className="truncate text-white">{current.label}</span>
+        <ChevronDown
+          size={14}
+          className={`flex-shrink-0 text-white/70 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          aria-label={label}
+          className="absolute start-0 top-full z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-white/15 bg-neutral-900 py-1 shadow-2xl"
+        >
+          {options.map((opt) => {
+            const selected = opt.value === current.value;
+            return (
+              <li key={opt.value} role="option" aria-selected={selected}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange(opt.value);
+                    setOpen(false);
+                  }}
+                  className={`flex w-full px-3 py-2 text-left text-xs font-semibold transition ${
+                    selected
+                      ? 'bg-emerald-500/20 text-emerald-200'
+                      : 'text-white hover:bg-neutral-800 hover:text-white'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

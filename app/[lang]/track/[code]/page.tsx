@@ -42,7 +42,7 @@ export default async function TrackShipmentPage({
 
   return (
     <>
-      <Header strings={i18n.strings} lang={i18n.locale} locales={i18n.enabledLocales} />
+      <Header strings={i18n.strings} />
       <main className="min-h-screen bg-surface pt-[104px] text-text-dynamic">
         <div className="mx-auto max-w-2xl px-4 py-10">
           <h1 className="text-2xl font-bold">Rastreo de embarque</h1>

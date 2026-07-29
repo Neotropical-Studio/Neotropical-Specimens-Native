@@ -66,7 +66,7 @@ export default function CamaleonicSpecimenViewer({
 
   return (
     <div
-      className="relative h-full w-full overflow-hidden rounded-2xl border border-white/10 transition-all duration-700"
+      className="relative h-full w-full overflow-hidden bg-transparent transition-all duration-700"
       style={{ background: `linear-gradient(to bottom, ${surface}, #000)` }}
     >
       {/* Fondo adaptativo derivado del acento */}

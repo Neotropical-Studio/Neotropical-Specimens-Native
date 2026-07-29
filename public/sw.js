@@ -4,7 +4,7 @@
  * Guard de latencia para entornos extremos (búnker / submarino / satélite).
  * ============================================================================= */
 
-const CACHE = 'entmo-edge-2026.0';
+const CACHE = 'entmo-edge-2026.1';
 const OFFLINE_URL = '/offline';
 const SYNC_TAG = 'entmo-edge-sync';
 

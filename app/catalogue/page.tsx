@@ -1,97 +1,94 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import SecureMediaViewer from '@/components/SecureMediaViewer'
+'use client';
 
-// Refleja la tabla `taxonomy` (singular) tal como existe en el proyecto de
-// Supabase en vivo. `specimens.taxonomy_id` es una Foreign Key real hacia
-// `taxonomy.id` (confirmado vía el schema de PostgREST). No usar variantes
-// en plural: no tienen ninguna relación configurada desde `specimens`.
-interface Taxonomy {
-  id: string
-  species_id: string | null
-  species_name: string | null
-  author: string | null
-  genus_name: string | null
-  subfamily_name: string | null
-  family_name: string | null
-  order_name: string | null
-  classification_type: string | null
-  created_at: string
-  rank_hierarchy: string | null
-}
-
-// Refleja las columnas reales de `specimens` en el proyecto de Supabase en
-// vivo, más la relación embebida `taxonomy` producida por
-// `.select('*, taxonomy(*)')`.
-interface Specimen {
-  id: string
-  species_name: string
-  author: string | null
-  media_url: string | null
-  created_at: string
-  taxonomy_id: string | null
-  region_id: string | null
-  taxonomy: Taxonomy | null
-}
+// Catálogo legado: misma fuente dinámica que el escaparate (Supabase + realtime).
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import SecureMediaViewer from '@/components/SecureMediaViewer';
+import { getSupabaseBrowser } from '@/lib/supabase/client';
+import { imageUrl } from '@/lib/cloudinary/url';
+import { loadCatalogRows } from '@/lib/specimens/catalog';
+import { toSpecimenView, type SpecimenView } from '@/lib/specimens/view';
+import { useLiveSpecimens } from '@/lib/specimens/useLiveSpecimens';
 
 export default function CataloguePage() {
-  const [specimens, setSpecimens] = useState<Specimen[]>([])
-  const [loading, setLoading] = useState(true)
+  const [initial, setInitial] = useState<SpecimenView[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { specimens, mode } = useLiveSpecimens(initial);
 
   useEffect(() => {
-    async function fetchSpecimens() {
+    let alive = true;
+    (async () => {
       try {
-        const { data, error } = await supabase
-          .from('specimens')
-          .select('*, taxonomy(*)')
-          .limit(10)
-          .returns<Specimen[]>()
-
-        if (error) {
-          console.error('Error al consultar Supabase:', error.message)
-        } else if (data) {
-          setSpecimens(data)
-        }
+        const supabase = getSupabaseBrowser();
+        const { rows, error: loadError } = await loadCatalogRows(supabase);
+        if (!alive) return;
+        setInitial(rows.map(toSpecimenView));
+        setError(loadError);
       } catch (err) {
-        console.error('Error inesperado:', err)
+        if (alive) setError(err instanceof Error ? err.message : 'Error inesperado');
       } finally {
-        setLoading(false)
+        if (alive) setLoading(false);
       }
-    }
-    fetchSpecimens()
-  }, [])
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p className="text-xl animate-pulse">Cargando catálogos protegidos...</p>
+      <div className="flex min-h-screen items-center justify-center bg-black text-white">
+        <p className="animate-pulse text-xl">Cargando catálogos...</p>
       </div>
-    )
+    );
   }
 
   return (
-    <main className="p-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {specimens.map((specimen) => {
-          const taxonLabel = [specimen.taxonomy?.family_name, specimen.taxonomy?.genus_name]
-            .filter(Boolean)
-            .join(' · ')
+    <main className="min-h-screen bg-black p-8 text-white">
+      <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight">Catálogo vivo</h1>
+        <p className="text-xs text-white/50">
+          {specimens.length} especímenes · sync {mode}
+        </p>
+      </div>
 
+      {error && (
+        <p className="mb-4 rounded-lg border border-red-800 bg-red-950/60 p-3 text-sm text-red-200">
+          {error}
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {specimens.map((specimen) => {
+          const taxonLabel = [specimen.family, specimen.genus].filter(Boolean).join(' · ');
           return (
-            <div key={specimen.id} className="flex flex-col items-center bg-gray-900 p-4 rounded">
-              <SecureMediaViewer
-                type="image"
-                mediaUrl={specimen.media_url ?? ''}
-                specimenName={specimen.species_name}
-              />
-              <h2 className="text-white mt-2">{specimen.species_name}</h2>
-              {specimen.author && <p className="text-gray-500 text-sm">{specimen.author}</p>}
-              {taxonLabel && <p className="text-gray-400">{taxonLabel}</p>}
-            </div>
-          )
+            <Link
+              key={specimen.id}
+              href={`/es/product/${specimen.id}`}
+              className="block space-y-3 rounded-xl border border-white/10 p-4 transition hover:border-emerald-500/40"
+            >
+              {specimen.primaryImage ? (
+                <SecureMediaViewer
+                  mediaUrl={imageUrl(specimen.primaryImage, ['w_640', 'c_fit'])}
+                  specimenName={specimen.scientificName}
+                />
+              ) : (
+                <div className="flex aspect-square items-center justify-center rounded-lg bg-white/5 text-sm text-white/40">
+                  Sin media
+                </div>
+              )}
+              <div>
+                <p className="font-medium italic">{specimen.scientificName}</p>
+                {taxonLabel ? <p className="text-sm text-white/60">{taxonLabel}</p> : null}
+                <p className="mt-1 text-xs text-white/40">
+                  {[specimen.country, specimen.sex, specimen.grade].filter(Boolean).join(' · ')}
+                </p>
+              </div>
+            </Link>
+          );
         })}
       </div>
     </main>
-  )
+  );
 }

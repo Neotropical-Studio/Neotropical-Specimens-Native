@@ -3,17 +3,14 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Globe2, Menu, X } from 'lucide-react';
-import type { EnabledLocale } from '@/lib/i18n/locales';
 import { BRAND_GLOBE_URL, BRAND_LOGO_URL } from '@/lib/cloudinary/brand';
 import RegulatoryStrip from './RegulatoryStrip';
 
 interface Props {
   strings: Record<string, string>;
-  lang: string;
-  locales: EnabledLocale[];
 }
 
-export default function Header({ strings, lang, locales }: Props) {
+export default function Header({ strings }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
@@ -47,7 +44,7 @@ export default function Header({ strings, lang, locales }: Props) {
           : 'border-b border-transparent bg-transparent'
       }`}
     >
-      <RegulatoryStrip lang={lang} locales={locales} strings={strings} />
+      <RegulatoryStrip strings={strings} />
 
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-4">
         <a href="#top" className="flex items-center gap-2.5">
@@ -59,6 +56,7 @@ export default function Header({ strings, lang, locales }: Props) {
                 fill
                 priority
                 sizes="48px"
+                unoptimized
                 className="object-contain"
                 onError={() => setLogoFailed(true)}
               />
