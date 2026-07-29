@@ -3,6 +3,7 @@
 // consumible por la UI (server y client comparten SELECT + mapper).
 // ============================================================================
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { detectRubro, type InventoryRubroId } from './rubros';
 
 // Relaciones reales confirmadas contra el schema en vivo de PostgREST:
 // - `specimens.taxonomy_id` -> `taxonomy.id` (tabla `taxonomy`, singular).
@@ -45,10 +46,13 @@ export interface SpecimenView {
   currency: string;
   stock: number;
   images: MediaImage[];
-  primaryImage: string | null;    // WebP dorsal (o el primero disponible)
+  primaryImage: string | null;    // Cloudinary public_id o URL (media_url / specimen_media)
   secondaryImage: string | null;  // WebP ventral (para hover)
   model3d: string | null;         // public_id del .glb
   video: string | null;           // public_id del video
+  /** Rubro del inventario (1 de 4) detectado desde Cloudinary path / taxonomía. */
+  rubroId: InventoryRubroId | null;
+  rubroLabel: string | null;
 }
 
 // Columnas reales de la tabla `taxonomy` (singular) en Supabase — confirmadas
@@ -137,16 +141,20 @@ export function attachMedia<T extends { id: string }>(
 
 export interface SpecimenRow {
   id: string;
-  catalog_code: string;
-  title: string | null;
-  description: string | null;
-  stock: number;
-  price_amount: number | null;
-  currency: string | null;
-  attributes: Record<string, unknown> | null;
-  metadata: Record<string, unknown> | null;
-  origin_flag_url: string | null;
-  origin_banner_url: string | null;
+  // Columnas del esquema en vivo (mínimo confirmado):
+  species_name?: string | null;
+  media_url?: string | null;
+  // Columnas opcionales de esquemas ampliados / admin:
+  catalog_code?: string;
+  title?: string | null;
+  description?: string | null;
+  stock?: number;
+  price_amount?: number | null;
+  currency?: string | null;
+  attributes?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown> | null;
+  origin_flag_url?: string | null;
+  origin_banner_url?: string | null;
   taxonomy?: TaxonomyRow | null;
   region?: RegionRow | null;
   // Poblado aparte por attachMedia() — nunca proviene de un embed de
@@ -160,7 +168,7 @@ export interface SpecimenRow {
 function scientificName(row: SpecimenRow): string {
   const t = row.taxonomy;
   const genus = str(t?.genus_name);
-  const species = str(t?.species_name);
+  const species = str(t?.species_name) ?? str(row.species_name);
   if (species) {
     return genus && !species.toLowerCase().startsWith(genus.toLowerCase())
       ? `${genus} ${species}`
@@ -200,20 +208,40 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
   const dorsal = images[0] ?? null;
   const ventral = images[1] ?? null;
 
+  // Fuente de imagen: 1) specimen_media, 2) columna live `media_url`
+  // (Cloudinary URL o public_id), 3) origin_banner_url. Nunca inventa assets.
+  const primaryImage =
+    dorsal?.publicId ??
+    str(row.media_url) ??
+    str(row.origin_banner_url) ??
+    null;
+
   const colors = Array.isArray(attrs.primary_colors)
     ? (attrs.primary_colors as unknown[]).filter((c): c is string => typeof c === 'string')
     : Array.isArray(attrs.color_palette)
       ? (attrs.color_palette as unknown[]).filter((c): c is string => typeof c === 'string')
       : [];
 
+  const order = str(row.taxonomy?.order_name) ?? str(row.metadata?.order);
+  const family = str(row.taxonomy?.family_name) ?? str(row.metadata?.family);
+  const genus = str(row.taxonomy?.genus_name) ?? str(row.metadata?.genus);
+  const name = scientificName(row);
+  const rubro = detectRubro({
+    mediaHint: primaryImage,
+    order,
+    family,
+    genus,
+    scientificName: name,
+  });
+
   return {
     id: row.id,
     code: row.catalog_code ?? row.specimen_code ?? '—',
-    scientificName: scientificName(row),
+    scientificName: name,
     commonName: str(attrs.common_name) ?? str(row.metadata?.common_name),
-    order: str(row.taxonomy?.order_name) ?? str(row.metadata?.order),
-    family: str(row.taxonomy?.family_name) ?? str(row.metadata?.family),
-    genus: str(row.taxonomy?.genus_name) ?? str(row.metadata?.genus),
+    order,
+    family,
+    genus,
     regionName: str(row.metadata?.region) ?? str(region?.region_name) ?? str(region?.name) ?? null,
     regionCode: str(region?.country) ?? null,
     country: str(attrs.country_origin) ?? str(region?.country) ?? str(region?.locality),
@@ -226,10 +254,12 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
     currency: row.currency ?? row.pricing?.currency ?? 'USD',
     stock: typeof row.stock === 'number' ? row.stock : 0,
     images,
-    primaryImage: dorsal?.publicId ?? (row.origin_banner_url ?? null),
+    primaryImage,
     secondaryImage: ventral?.publicId ?? null,
     model3d: model,
     video,
+    rubroId: rubro.id,
+    rubroLabel: rubro.label,
   };
 }
 

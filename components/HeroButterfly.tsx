@@ -61,10 +61,14 @@ export default function HeroButterfly({ active, featured, index, palette, lang, 
               className="text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors duration-[1200ms]"
               style={{ color: palette.accent }}
             >
-              {active.family ?? t('hero_butterfly.featured', 'Espécimen destacado')}
+              {active.rubroLabel ?? active.family ?? t('hero_butterfly.featured', 'Espécimen destacado')}
             </p>
             <p className="mt-1 text-lg font-bold italic leading-tight text-white">{active.scientificName}</p>
-            {active.commonName && <p className="text-sm text-neutral-300">{active.commonName}</p>}
+            {(active.family || active.commonName) && (
+              <p className="text-sm text-neutral-300">
+                {[active.family, active.commonName].filter(Boolean).join(' · ')}
+              </p>
+            )}
           </div>
         </motion.div>
       </AnimatePresence>

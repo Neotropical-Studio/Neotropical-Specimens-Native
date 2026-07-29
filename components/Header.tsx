@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { Bug, Globe2, Menu, X } from 'lucide-react';
+import { Globe2, Menu, X } from 'lucide-react';
 import type { EnabledLocale } from '@/lib/i18n/locales';
 import { cloudinaryImageUrl } from '@/lib/cloudinary/url';
 import RegulatoryStrip from './RegulatoryStrip';
@@ -19,10 +19,18 @@ export default function Header({ strings, lang, locales }: Props) {
   const [logoFailed, setLogoFailed] = useState(false);
   const [globeFailed, setGlobeFailed] = useState(false);
 
-  const logoId = process.env.NEXT_PUBLIC_CLOUDINARY_LOGO_ID || 'neotropical-logo';
-  const globeId = process.env.NEXT_PUBLIC_CLOUDINARY_GLOBE_ID || 'neotropical-globe';
-  const logoSrc = cloudinaryImageUrl(logoId, ['w_180', 'h_50', 'c_scale']);
-  const globeSrc = cloudinaryImageUrl(globeId, ['w_24', 'h_24', 'c_scale']);
+  // Sello oficial real de la empresa (Cloudinary, carpeta `LOGOS/LOGOS
+  // SPECIEMENES SECOS BIOLOGICOS NO-CITES/logo_ztmh8j.png`) — nunca un ícono
+  // genérico inventado. El recorte 1:1 centrado deja fuera el texto de
+  // certificación de borde (ilegible al tamaño del header) sin tocar el
+  // arte real. `NEXT_PUBLIC_CLOUDINARY_LOGO_ID`/`..._GLOBE_ID` permiten
+  // reemplazarlo por otra pieza real sin tocar código.
+  const logoId = process.env.NEXT_PUBLIC_CLOUDINARY_LOGO_ID || 'logo_ztmh8j';
+  const globeId = process.env.NEXT_PUBLIC_CLOUDINARY_GLOBE_ID || 'Rotating_earth__large_vwcedm';
+  // c_fit: conserva el anillo dorado oficial ("NEOTROPICAL SPECIMENS" /
+  // "HOUSE INSECTS OF PERU") sin recortar el sello de Cloudinary.
+  const logoSrc = cloudinaryImageUrl(logoId, ['w_192', 'h_192', 'c_fit']);
+  const globeSrc = cloudinaryImageUrl(globeId, ['w_48', 'h_48', 'c_fill', 'g_center']);
 
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
@@ -54,19 +62,23 @@ export default function Header({ strings, lang, locales }: Props) {
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-4">
         <a href="#top" className="flex items-center gap-2.5">
           {logoSrc && !logoFailed ? (
-            <Image
-              src={logoSrc}
-              alt="Neotropical Specimens Native"
-              width={180}
-              height={50}
-              priority
-              sizes="(max-width: 768px) 120px, 180px"
-              className="h-10 w-auto object-contain"
-              onError={() => setLogoFailed(true)}
-            />
+            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-black ring-1 ring-amber-400/40">
+              <Image
+                src={logoSrc}
+                alt="Neotropical Specimens — House Insects of Peru E.I.R.L."
+                fill
+                priority
+                sizes="48px"
+                className="object-contain"
+                onError={() => setLogoFailed(true)}
+              />
+            </span>
           ) : (
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-neutral-950 shadow-lg shadow-emerald-500/20">
-              <Bug size={20} />
+            // Mientras el sello real no cargue (red lenta / caché fría), un
+            // monograma tipográfico neutro — nunca un ícono decorativo
+            // inventado que aparente ser la marca oficial.
+            <span className="grid h-11 w-11 place-items-center rounded-full border border-amber-400/30 bg-neutral-900 text-sm font-black tracking-tight text-amber-300">
+              NS
             </span>
           )}
           <span className="flex flex-col leading-none">
@@ -96,7 +108,8 @@ export default function Header({ strings, lang, locales }: Props) {
                 width={24}
                 height={24}
                 sizes="24px"
-                className="h-5 w-5 object-contain"
+                unoptimized // preserva la animación del GIF real (globo rotando)
+                className="h-5 w-5 rounded-full object-cover"
                 onError={() => setGlobeFailed(true)}
               />
             ) : (
