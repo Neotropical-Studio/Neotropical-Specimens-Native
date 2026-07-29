@@ -1,15 +1,20 @@
 // app/[lang]/product/[id]/page.tsx
 // Ficha de producto: catálogo vivo + blindaje Morpho godarty didius tingomarensis.
+import { createClient } from '@supabase/supabase-js';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import CameleonThemeStyle from '@/components/CameleonThemeStyle';
 import SpecimenDetail from '@/components/SpecimenDetail';
 import { getI18n } from '@/lib/i18n/index';
+import { loadCatalogRows } from '@/lib/specimens/catalog';
 import {
   buildMorphoGodartyDetailView,
   getSpecimenById,
   sealMorphoDetailView,
+  toSpecimenDetail,
+  type SpecimenDetailView,
 } from '@/lib/specimens/detail';
+import { pickRelatedSpecimens } from '@/lib/specimens/related';
 import { resolveTaxonPalette } from '@/lib/theme/taxon';
 import { resolveRegulatory } from '@/lib/geo/regulations';
 import { getActiveCampaign, type ActiveCampaignBanner } from '@/lib/campaigns/getActive';
@@ -28,6 +33,34 @@ const MORPHO_NATIVE_CAMPAIGN: ActiveCampaignBanner = {
   discountPercent: MORPHO_GODARTY_NATIVE.campaignDiscountPercent,
 };
 
+async function loadRelatedCatalog(
+  current: SpecimenDetailView,
+  lang: string,
+): Promise<SpecimenDetailView[]> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  if (!url || !key) return pickRelatedSpecimens([current], current);
+
+  try {
+    const { rows } = await loadCatalogRows(createClient(url, key));
+    const pool = rows.map((row) => {
+      const detail = toSpecimenDetail(row, lang);
+      return isMorphoGodartyDidiusTingomarensis({
+        id: detail.id,
+        scientificName: detail.scientificName,
+      })
+        ? sealMorphoDetailView(detail)
+        : detail;
+    });
+    if (!pool.some((item) => item.id === current.id)) {
+      pool.unshift(current);
+    }
+    return pickRelatedSpecimens(pool, current);
+  } catch {
+    return pickRelatedSpecimens([current], current);
+  }
+}
+
 export default async function ProductPage({
   params,
 }: {
@@ -41,7 +74,6 @@ export default async function ProductPage({
     id === MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID ||
     isMorphoGodartyDidiusTingomarensis({ id });
 
-  // Morpho: fallback inmediato si el catálogo falla/demora; luego sello nativo.
   let specimen =
     (await getSpecimenById(id, i18n.locale)) ??
     (isMorphoRoute ? buildMorphoGodartyDetailView() : null);
@@ -56,6 +88,8 @@ export default async function ProductPage({
   ) {
     specimen = sealMorphoDetailView(specimen);
   }
+
+  const relatedCatalog = await loadRelatedCatalog(specimen, i18n.locale);
 
   const h = await headers();
   const country = h.get('x-geo-country');
@@ -87,6 +121,7 @@ export default async function ProductPage({
       <CameleonThemeStyle source={palette as unknown as Record<string, unknown>} />
       <SpecimenDetail
         specimen={specimen}
+        relatedCatalog={relatedCatalog}
         strings={i18n.strings}
         lang={i18n.locale}
         dir={i18n.dir}

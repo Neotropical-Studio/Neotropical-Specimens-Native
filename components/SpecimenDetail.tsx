@@ -32,12 +32,15 @@ import {
   isMorphoGodartyDidiusTingomarensis,
   MORPHO_GODARTY_NATIVE,
 } from '@/lib/specimens/native/morphoGodartyDidiusTingomarensis';
-import { MORPHO_HERO_URL } from '@/lib/cloudinary/specimens';
+import { MORPHO_CARD_URL, MORPHO_HERO_URL } from '@/lib/cloudinary/specimens';
+import { pickRelatedSpecimens } from '@/lib/specimens/related';
 import CamaleonicSpecimenViewer from './CamaleonicSpecimenViewer';
 import PeruNationalFlag from './PeruNationalFlag';
 
 interface Props {
   specimen: SpecimenDetailView;
+  /** Catálogo relacionado precargado en servidor (evita sección vacía). */
+  relatedCatalog?: SpecimenDetailView[];
   strings: Record<string, string>;
   lang: string;
   dir: 'ltr' | 'rtl';
@@ -56,7 +59,6 @@ type MediaKey = '3d' | 'dorsal' | 'ventral' | 'lateral' | 'macro';
 // Tamaño del pool que se trae para armar el catálogo dinámico y cuántas
 // tarjetas se muestran finalmente (mezcla misma-familia / otras-categorías).
 const RECOMMENDATION_POOL_SIZE = 60;
-const RECOMMENDATION_COUNT = 8;
 
 const VIEW_LABELS: Record<Exclude<MediaKey, '3d'>, { key: string; fallback: string }> = {
   dorsal: { key: 'media.dorsal', fallback: 'Vista 1: Dorsal' },
@@ -67,6 +69,7 @@ const VIEW_LABELS: Record<Exclude<MediaKey, '3d'>, { key: string; fallback: stri
 
 export default function SpecimenDetail({
   specimen: initial,
+  relatedCatalog = [],
   strings,
   lang,
   dir,
@@ -79,7 +82,7 @@ export default function SpecimenDetail({
   const [specimenRaw, setSpecimen] = useState(initial);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [paletteState, setPaletteState] = useState<ThemePalette>(palette);
-  const [recommendations, setRecommendations] = useState<SpecimenDetailView[]>([]);
+  const [recommendations, setRecommendations] = useState<SpecimenDetailView[]>(relatedCatalog);
   const [zoomed, setZoomed] = useState(false);
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
@@ -154,45 +157,70 @@ export default function SpecimenDetail({
     setSpecimen(initial);
   }, [initial]);
 
-  // Catálogo dinámico e inteligente: mezcla especímenes de la MISMA familia
-  // (otras especies para seguir comprando dentro del mismo grupo) con OTRAS
-  // categorías/familias (para que el visitante también pueda saltar a
-  // comprar algo completamente distinto). Se trae un pool amplio y se
-  // reparte en cliente porque PostgREST no filtra el padre por una columna
-  // embebida (taxonomy.family_name) sin un !inner que rompería specímenes
-  // sin taxonomía resuelta.
+  // Catálogo dinámico: SSR primero; luego refresco vía API + Supabase.
+  useEffect(() => {
+    setRecommendations(relatedCatalog);
+  }, [relatedCatalog]);
+
   useEffect(() => {
     let alive = true;
-    const supabase = getSupabaseBrowser();
-    const loadRecommendations = async () => {
-      const poolRows = await loadCatalogPool(supabase, RECOMMENDATION_POOL_SIZE);
+
+    const applyPool = (pool: SpecimenDetailView[]) => {
       if (!alive) return;
-
-      const pool = poolRows
-        .map((row) => toSpecimenDetail(row, lang))
-        .filter((item) => item.id !== specimen.id);
-
-      const family = specimen.family?.trim().toLowerCase() || null;
-      const sameFamily = family ? pool.filter((item) => item.family?.trim().toLowerCase() === family) : [];
-      const otherCategories = family ? pool.filter((item) => item.family?.trim().toLowerCase() !== family) : pool;
-
-      // Hasta la mitad de las tarjetas para "otras especies, misma familia"
-      // y el resto para "otras categorías"; si a alguno de los dos grupos
-      // le faltan especímenes, el otro rellena los cupos libres.
-      const halfQuota = Math.ceil(RECOMMENDATION_COUNT / 2);
-      const picked = [...sameFamily.slice(0, halfQuota), ...otherCategories.slice(0, RECOMMENDATION_COUNT - halfQuota)];
-      const remainingSlots = RECOMMENDATION_COUNT - picked.length;
-      const merged = remainingSlots > 0
-        ? [...picked, ...pool.filter((item) => !picked.includes(item)).slice(0, remainingSlots)]
-        : picked;
-
-      setRecommendations(merged);
+      setRecommendations(pickRelatedSpecimens(pool, specimen));
     };
+
+    const loadRecommendations = async () => {
+      // 1) API propia (misma fuente que el escaparate / listado).
+      try {
+        const res = await fetch(
+          `/api/catalog/specimens?detail=1&lang=${encodeURIComponent(lang)}`,
+          { cache: 'no-store' },
+        );
+        if (res.ok) {
+          const data = (await res.json()) as { specimens?: SpecimenDetailView[] };
+          const pool = Array.isArray(data.specimens) ? data.specimens : [];
+          if (pool.length > 0) {
+            applyPool(pool);
+            return;
+          }
+        }
+      } catch {
+        /* fallback abajo */
+      }
+
+      // 2) Supabase directo en cliente.
+      try {
+        const supabase = getSupabaseBrowser();
+        const poolRows = await loadCatalogPool(supabase, RECOMMENDATION_POOL_SIZE);
+        const pool = poolRows.map((row) => {
+          const detail = toSpecimenDetail(row, lang);
+          return isMorphoGodartyDidiusTingomarensis({
+            id: detail.id,
+            scientificName: detail.scientificName,
+          })
+            ? sealMorphoDetailView(detail)
+            : detail;
+        });
+        if (pool.length > 0) {
+          applyPool(pool);
+          return;
+        }
+      } catch {
+        /* conserva SSR */
+      }
+
+      // 3) Último recurso: mantener lo del servidor o el propio espécimen.
+      if (alive && relatedCatalog.length === 0) {
+        applyPool([specimen]);
+      }
+    };
+
     void loadRecommendations();
 
-    // Cualquier alta/cambio en el catálogo refresca recomendaciones al instante.
     let cleanupChannel = () => {};
     try {
+      const supabase = getSupabaseBrowser();
       const channel = supabase
         .channel(`specimen-recs-${initial.id}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'specimens' }, () => {
@@ -206,14 +234,14 @@ export default function SpecimenDetail({
         supabase.removeChannel(channel);
       };
     } catch {
-      /* sin realtime: el pool inicial sigue válido */
+      /* sin realtime */
     }
 
     return () => {
       alive = false;
       cleanupChannel();
     };
-  }, [specimen.id, specimen.family, lang, initial.id]);
+  }, [specimen.id, specimen.family, specimen.rubroId, specimen.order, lang, initial.id, relatedCatalog]);
 
   // --- Sincronización en vivo con la fila del espécimen + su media ----------
   useEffect(() => {
@@ -710,6 +738,15 @@ export default function SpecimenDetail({
                   override: item.themeOverride,
                 }).accent;
                 const itemPrice = item.price != null ? formatMoney(item.price, item.currency, locale) : null;
+                const itemIsMorpho = isMorphoGodartyDidiusTingomarensis({
+                  id: item.id,
+                  scientificName: item.scientificName,
+                });
+                const thumbSrc = itemIsMorpho
+                  ? MORPHO_CARD_URL
+                  : item.primaryImage || item.secondaryImage
+                    ? imageUrl(item.primaryImage ?? item.secondaryImage ?? '', ['w_480', 'ar_4:3', 'c_fill'])
+                    : null;
                 return (
                   <Link
                     key={item.id}
@@ -717,13 +754,17 @@ export default function SpecimenDetail({
                     className="group rounded-2xl border border-white/10 bg-black/40 p-3 transition hover:border-white/20"
                   >
                     <div className="relative mb-3 aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-900">
-                      {item.primaryImage || item.secondaryImage ? (
+                      {thumbSrc ? (
                         <Image
-                          src={imageUrl(item.primaryImage ?? item.secondaryImage ?? '', ['w_480', 'ar_4:3', 'c_fill'])}
+                          src={thumbSrc}
                           alt={item.scientificName}
                           fill
                           sizes="(max-width: 768px) 50vw, 25vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          className={
+                            itemIsMorpho
+                              ? 'object-contain p-2 transition-transform duration-500 group-hover:scale-105'
+                              : 'object-cover transition-transform duration-500 group-hover:scale-105'
+                          }
                           unoptimized
                         />
                       ) : (
