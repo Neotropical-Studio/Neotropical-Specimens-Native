@@ -46,3 +46,27 @@ export function formatMoney(amount: number, currency: string, locale: string): s
     return `${currency} ${amount.toFixed(2)}`;
   }
 }
+
+/**
+ * Display universal regenerativo: siempre PEN + USD.
+ * Si el país del cliente usa otra divisa, también la local (i18n ~240 países).
+ */
+export function formatMoneyUniversal(
+  amountUsd: number,
+  locale: string,
+  opts: {
+    pen: number;
+    usd: number;
+    local?: number | null;
+    localCurrency?: string | null;
+  },
+): string {
+  const parts = [
+    formatMoney(opts.pen, 'PEN', locale),
+    formatMoney(opts.usd, 'USD', locale),
+  ];
+  if (opts.local != null && opts.localCurrency) {
+    parts.unshift(formatMoney(opts.local, opts.localCurrency, locale));
+  }
+  return parts.join(' · ');
+}

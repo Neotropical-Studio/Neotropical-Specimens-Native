@@ -1,5 +1,7 @@
 // ============================================================================
-// Pasarela y carrito adaptativos — reglas mutables por rubro / perfil.
+// Pasarela y carrito adaptativos — SIN Stripe / PayPal / similares.
+// Stack autorizado: XTransfer, WorldFirst, Alipay, WeChat Pay (QR),
+// Global66, iZPay, G-Pay, MoneyGram, Western Union + bancos / transfer.
 // ============================================================================
 
 export interface CartLine {
@@ -19,6 +21,19 @@ export type ArchetypeKey =
   | 'fotografo_naturaleza' | 'decorador' | 'cine_tv' | 'boticario'
   | 'institucion_gubernamental';
 
+/** Pasarelas oficiales Neotropical Specimens (nunca Stripe/PayPal). */
+export type NativeGateway =
+  | 'xtransfer'
+  | 'worldfirst'
+  | 'alipay'
+  | 'wechat_pay'
+  | 'global66'
+  | 'izpay'
+  | 'gpay'
+  | 'moneygram'
+  | 'western_union'
+  | 'bank_transfer';
+
 export interface Profile {
   id?: string;
   country: string; // ISO-3166 alpha-2
@@ -34,7 +49,7 @@ export interface RubroRule {
   taxIncluded: boolean;
   currency: string;
   presentation: 'standard' | 'gallery' | 'immersive-3d' | 'streaming';
-  gateways: string[]; // orden de preferencia
+  gateways: NativeGateway[]; // orden de preferencia
   discounts?: Array<{ minQty: number; rate: number }>;
 }
 
@@ -44,51 +59,124 @@ const DEFAULT_RULE: RubroRule = {
   taxIncluded: true,
   currency: 'PEN',
   presentation: 'standard',
-  gateways: ['stripe', 'mercadopago'],
+  // Retail nativo: WorldFirst / Alipay / WeChat. Mayor → XTransfer por monto.
+  gateways: ['worldfirst', 'alipay', 'wechat_pay', 'xtransfer'],
 };
 
-// Reglas camaleónicas: se pueden hidratar desde Sanity/Supabase en runtime.
 const RUBRO_RULES: Record<string, Partial<RubroRule>> = {
-  'specimens-3d': { presentation: 'immersive-3d', gateways: ['stripe', 'paypal'] },
-  'video': { presentation: 'streaming', taxRate: 0.0, taxIncluded: true },
-  'wholesale': { taxIncluded: false, segment: 'b2b' } as Partial<RubroRule>,
+  'specimens-3d': {
+    presentation: 'immersive-3d',
+    gateways: ['worldfirst', 'alipay', 'wechat_pay', 'xtransfer'],
+  },
+  video: { presentation: 'streaming', taxRate: 0.0, taxIncluded: true },
+  wholesale: {
+    taxIncluded: false,
+    gateways: ['xtransfer', 'worldfirst'],
+  } as Partial<RubroRule>,
+  // Rubros de inventario — carrito universal / camaleónico
+  'dried-specimens': {
+    presentation: 'gallery',
+    gateways: ['worldfirst', 'alipay', 'wechat_pay', 'xtransfer'],
+  },
+  arthropods: {
+    presentation: 'gallery',
+    gateways: ['worldfirst', 'alipay', 'wechat_pay', 'xtransfer'],
+  },
+  'zoology-skeletons': {
+    presentation: 'standard',
+    gateways: ['worldfirst', 'xtransfer', 'bank_transfer'],
+  },
+  'dried-plants': {
+    presentation: 'standard',
+    gateways: ['worldfirst', 'alipay', 'wechat_pay', 'xtransfer'],
+  },
 };
 
-// Estrategia de conversión por arquetipo (muta cobro/presentación/descuentos).
-export const ARCHETYPE_STRATEGY: Record<ArchetypeKey, Partial<RubroRule>> = {
-  entomologo: { presentation: 'gallery', gateways: ['stripe', 'paypal'] },
-  coleccionista: { presentation: 'immersive-3d', gateways: ['stripe', 'paypal'] },
-  amateur: { presentation: 'standard' },
-  artesano: { presentation: 'gallery' },
-  joyero: { presentation: 'immersive-3d' },
-  revendedor: { taxIncluded: false, discounts: [{ minQty: 10, rate: 0.15 }, { minQty: 50, rate: 0.25 }] },
-  curador_galeria: { presentation: 'immersive-3d', gateways: ['stripe'] },
-  museo: { taxIncluded: false, presentation: 'gallery', gateways: ['stripe'] },
-  universidad: { taxIncluded: false, gateways: ['stripe'] },
-  estudiante: { presentation: 'standard', discounts: [{ minQty: 1, rate: 0.1 }] },
-  instituto: { taxIncluded: false, gateways: ['stripe'] },
-  colegio: { taxIncluded: false, discounts: [{ minQty: 5, rate: 0.2 }] },
-  hobby: { presentation: 'standard' },
-  filantropo: { presentation: 'immersive-3d', gateways: ['stripe', 'paypal'] },
-  taxidermista: { presentation: 'gallery' },
-  fotografo_naturaleza: { presentation: 'streaming' },
-  decorador: { presentation: 'immersive-3d' },
-  cine_tv: { taxIncluded: false, presentation: 'streaming', gateways: ['stripe'] },
-  boticario: { presentation: 'gallery' },
-  institucion_gubernamental: { taxIncluded: false, gateways: ['stripe'] },
+const ARCHETYPE_STRATEGY: Record<ArchetypeKey, Partial<RubroRule>> = {
+  entomologo: { presentation: 'gallery', gateways: ['global66', 'xtransfer', 'bank_transfer'] },
+  coleccionista: {
+    presentation: 'immersive-3d',
+    gateways: ['xtransfer', 'worldfirst', 'alipay', 'wechat_pay'],
+  },
+  amateur: { presentation: 'standard', gateways: ['global66', 'izpay', 'gpay', 'bank_transfer'] },
+  artesano: { presentation: 'gallery', gateways: ['global66', 'bank_transfer'] },
+  joyero: { presentation: 'immersive-3d', gateways: ['xtransfer', 'worldfirst', 'global66'] },
+  revendedor: {
+    taxIncluded: false,
+    discounts: [
+      { minQty: 10, rate: 0.15 },
+      { minQty: 50, rate: 0.25 },
+    ],
+    gateways: ['xtransfer', 'worldfirst', 'global66', 'western_union'],
+  },
+  curador_galeria: {
+    presentation: 'immersive-3d',
+    gateways: ['xtransfer', 'worldfirst', 'bank_transfer'],
+  },
+  museo: {
+    taxIncluded: false,
+    presentation: 'gallery',
+    gateways: ['xtransfer', 'worldfirst', 'bank_transfer'],
+  },
+  universidad: { taxIncluded: false, gateways: ['global66', 'bank_transfer', 'xtransfer'] },
+  estudiante: {
+    presentation: 'standard',
+    discounts: [{ minQty: 1, rate: 0.1 }],
+    gateways: ['global66', 'izpay', 'gpay'],
+  },
+  instituto: { taxIncluded: false, gateways: ['global66', 'bank_transfer', 'xtransfer'] },
+  colegio: {
+    taxIncluded: false,
+    discounts: [{ minQty: 5, rate: 0.2 }],
+    gateways: ['global66', 'bank_transfer'],
+  },
+  hobby: { presentation: 'standard', gateways: ['global66', 'izpay', 'gpay'] },
+  filantropo: {
+    presentation: 'immersive-3d',
+    gateways: ['xtransfer', 'worldfirst', 'western_union', 'moneygram'],
+  },
+  taxidermista: { presentation: 'gallery', gateways: ['global66', 'bank_transfer'] },
+  fotografo_naturaleza: { presentation: 'streaming', gateways: ['global66', 'izpay', 'gpay'] },
+  decorador: { presentation: 'immersive-3d', gateways: ['global66', 'xtransfer'] },
+  cine_tv: {
+    taxIncluded: false,
+    presentation: 'streaming',
+    gateways: ['xtransfer', 'worldfirst', 'bank_transfer'],
+  },
+  boticario: { presentation: 'gallery', gateways: ['global66', 'bank_transfer'] },
+  institucion_gubernamental: {
+    taxIncluded: false,
+    gateways: ['bank_transfer', 'xtransfer', 'worldfirst'],
+  },
+};
+
+/** Ruteo por país: Asia → Alipay/WeChat QR; B2B export → XTransfer/WorldFirst. */
+const COUNTRY_GATEWAYS: Record<string, NativeGateway[]> = {
+  CN: ['wechat_pay', 'alipay', 'xtransfer', 'worldfirst'],
+  HK: ['alipay', 'xtransfer', 'worldfirst', 'bank_transfer'],
+  MO: ['alipay', 'xtransfer', 'worldfirst'],
+  TW: ['bank_transfer', 'xtransfer', 'worldfirst'],
+  PE: ['global66', 'izpay', 'gpay', 'bank_transfer', 'xtransfer'],
+  US: ['global66', 'xtransfer', 'worldfirst', 'western_union', 'moneygram'],
+  EU: ['global66', 'xtransfer', 'worldfirst', 'bank_transfer'],
 };
 
 export function resolveRule(rubro: string, profile: Profile, overrides?: Partial<RubroRule>): RubroRule {
   const archetypeRule = profile.archetype ? ARCHETYPE_STRATEGY[profile.archetype] : undefined;
   const base: RubroRule = { ...DEFAULT_RULE, ...RUBRO_RULES[rubro], ...archetypeRule, rubro };
 
-  // Mutación por perfil detectado.
   if (profile.segment === 'b2b' || profile.segment === 'wholesale') {
     base.taxIncluded = false;
+    base.gateways = ['xtransfer', 'worldfirst', 'global66', 'bank_transfer', 'western_union', 'moneygram'];
   }
   if (profile.country && profile.country !== 'PE') {
-    base.currency = 'USD';
-    base.taxRate = 0.0; // exportación
+    base.currency = profile.country === 'CN' ? 'CNY' : 'USD';
+    base.taxRate = 0.0;
+  }
+
+  const byCountry = COUNTRY_GATEWAYS[profile.country?.toUpperCase() ?? ''];
+  if (byCountry?.length) {
+    base.gateways = byCountry;
   }
 
   return { ...base, ...overrides };
@@ -102,7 +190,7 @@ export interface Quote {
   tax: number;
   total: number;
   presentation: RubroRule['presentation'];
-  gateway: string;
+  gateway: NativeGateway;
   rule: RubroRule;
 }
 
@@ -144,9 +232,30 @@ export function quoteCart(lines: CartLine[], profile: Profile, overrides?: Parti
   };
 }
 
-export function selectGateway(rule: RubroRule, profile: Profile): string {
-  if (profile.country && profile.country !== 'PE') {
-    return rule.gateways.find((g) => g === 'stripe' || g === 'paypal') ?? rule.gateways[0];
+export function selectGateway(rule: RubroRule, profile: Profile): NativeGateway {
+  const list = rule.gateways.length ? rule.gateways : DEFAULT_RULE.gateways;
+  // Mayor / B2B: priorizar rieles de liquidación internacional.
+  if (profile.segment === 'wholesale' || profile.segment === 'b2b') {
+    return (
+      list.find((g) => g === 'xtransfer' || g === 'worldfirst' || g === 'global66') ?? list[0]
+    );
   }
-  return rule.gateways[0];
+  // China continental: QR WeChat / Alipay primero.
+  if (profile.country === 'CN') {
+    return list.find((g) => g === 'wechat_pay' || g === 'alipay') ?? list[0];
+  }
+  return list[0];
 }
+
+export const GATEWAY_LABEL: Record<NativeGateway, string> = {
+  xtransfer: 'XTransfer',
+  worldfirst: 'WorldFirst',
+  alipay: 'Alipay (QR)',
+  wechat_pay: 'WeChat Pay (QR)',
+  global66: 'Global66',
+  izpay: 'iZPay',
+  gpay: 'G-Pay',
+  moneygram: 'MoneyGram',
+  western_union: 'Western Union',
+  bank_transfer: 'Transferencia bancaria',
+};

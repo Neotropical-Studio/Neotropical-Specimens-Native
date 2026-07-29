@@ -94,7 +94,8 @@ export const GEO_EDGE_CONFIG: GeoEdgeConfig = {
 export const DEFAULT_PROFILE: GeoProfile = {
   locale: 'en-US',
   currency: 'USD',
-  gateway: ['stripe', 'paypal'],
+  // Stack nativo: sin Stripe / PayPal.
+  gateway: ['Global66', 'XTransfer', 'WorldFirst', 'Bank Transfer'],
   ui_overrides: { theme: 'standard', badge_style: 'default' },
 };
 

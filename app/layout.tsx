@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import './globals.css';
 import CameleonThemeStyle from '@/components/CameleonThemeStyle';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import { CartProvider } from '@/components/CartProvider';
 import { resolveLocale } from '@/lib/i18n/locales';
 import { THEME_PALETTE } from '@/lib/geo/resolve';
 import {
@@ -72,7 +73,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <CameleonThemeStyle source={palette} />
       </head>
       <body data-theme={theme} data-currency={currency}>
-        {children}
+        <CartProvider>{children}</CartProvider>
         <ServiceWorkerRegister />
       </body>
     </html>

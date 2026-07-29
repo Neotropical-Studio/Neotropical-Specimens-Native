@@ -1,32 +1,42 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Globe2, Menu, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Globe2, Menu, ShoppingBag, X } from 'lucide-react';
 import { BRAND_GLOBE_URL, BRAND_LOGO_URL } from '@/lib/cloudinary/brand';
+import { useCart } from '@/components/CartProvider';
 import RegulatoryStrip from './RegulatoryStrip';
 
 interface Props {
   strings: Record<string, string>;
+  /** Idioma de ruta; si falta se infiere del pathname. */
+  lang?: string;
 }
 
-export default function Header({ strings }: Props) {
+export default function Header({ strings, lang: langProp }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
   const [globeFailed, setGlobeFailed] = useState(false);
+  const pathname = usePathname() || '/es';
+  const lang = langProp || pathname.split('/').filter(Boolean)[0] || 'es';
+  const { count, ready } = useCart();
 
-  // Constantes planas precomputadas — nunca undefined.
   const logoSrc = typeof BRAND_LOGO_URL === 'string' ? BRAND_LOGO_URL : '';
   const globeSrc = typeof BRAND_GLOBE_URL === 'string' ? BRAND_GLOBE_URL : '';
 
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
 
+  const homeHref = `/${lang}`;
+  const cartHref = `/${lang}/cart`;
+
   const nav = [
-    { label: t('nav.catalog', 'Catálogo'), href: '#catalogo' },
-    { label: t('nav.regions', 'Regiones'), href: '#regiones' },
-    { label: t('nav.wholesale', 'Mayorista'), href: '#mayorista' },
-    { label: t('nav.contact', 'Contacto'), href: '#contacto' },
+    { label: t('nav.catalog', 'Catálogo'), href: `${homeHref}#catalogo` },
+    { label: t('nav.regions', 'Regiones'), href: `${homeHref}#regiones` },
+    { label: t('nav.wholesale', 'Mayorista'), href: `${homeHref}#mayorista` },
+    { label: t('nav.contact', 'Contacto'), href: `${homeHref}#contacto` },
   ];
 
   useEffect(() => {
@@ -47,7 +57,7 @@ export default function Header({ strings }: Props) {
       <RegulatoryStrip strings={strings} />
 
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-4">
-        <a href="#top" className="flex items-center gap-2.5">
+        <Link href={homeHref} className="flex items-center gap-2.5">
           {logoSrc.length > 0 && !logoFailed ? (
             <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-black ring-1 ring-amber-400/40">
               <Image
@@ -70,7 +80,7 @@ export default function Header({ strings }: Props) {
             <span className="text-sm font-extrabold tracking-tight text-white">Neotropical Specimens</span>
             <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-emerald-400">Native Collection</span>
           </span>
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
           {nav.map((n) => (
@@ -82,8 +92,20 @@ export default function Header({ strings }: Props) {
               {n.label}
             </a>
           ))}
+          <Link
+            href={cartHref}
+            className="relative ml-1 grid h-10 w-10 place-items-center rounded-lg text-neutral-200 transition hover:bg-white/5 hover:text-white"
+            aria-label={t('nav.cart', 'Carrito')}
+          >
+            <ShoppingBag size={18} />
+            {ready && count > 0 ? (
+              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-emerald-500 px-1 font-mono text-[10px] font-bold text-emerald-950">
+                {count > 99 ? '99+' : count}
+              </span>
+            ) : null}
+          </Link>
           <a
-            href="#catalogo"
+            href={`${homeHref}#catalogo`}
             className="ml-2 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-emerald-400"
           >
             {globeSrc.length > 0 && !globeFailed ? (
@@ -105,6 +127,18 @@ export default function Header({ strings }: Props) {
         </nav>
 
         <div className="flex items-center gap-1 md:hidden">
+          <Link
+            href={cartHref}
+            className="relative grid h-10 w-10 place-items-center rounded-lg text-white transition hover:bg-white/10"
+            aria-label={t('nav.cart', 'Carrito')}
+          >
+            <ShoppingBag size={20} />
+            {ready && count > 0 ? (
+              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-emerald-500 px-1 font-mono text-[10px] font-bold text-emerald-950">
+                {count > 99 ? '99+' : count}
+              </span>
+            ) : null}
+          </Link>
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label={t('nav.menu', 'Menú')}
@@ -128,6 +162,14 @@ export default function Header({ strings }: Props) {
                 {n.label}
               </a>
             ))}
+            <Link
+              href={cartHref}
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-300 transition hover:bg-white/5"
+            >
+              {t('nav.cart', 'Carrito')}
+              {ready && count > 0 ? ` (${count})` : ''}
+            </Link>
           </nav>
         </div>
       )}

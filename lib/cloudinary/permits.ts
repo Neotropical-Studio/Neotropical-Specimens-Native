@@ -6,6 +6,13 @@ import { cloudinaryImageUrl } from './url';
 
 export type PermitCode = 'CITES' | 'VUCE' | 'SENASA' | 'SERFOR';
 
+/**
+ * Sellos institucionales en UI.
+ * - CITES: diccionario / tratado de comercio internacional (NO es tarifa).
+ * - SERFOR / SENASA: permisos nacionales con costo en checkout.
+ * - VUCE: ventanilla única (trámite, no fee de catálogo).
+ */
+
 function envId(key: string, fallback: string): string {
   const raw = process.env[key];
   if (typeof raw !== 'string') return fallback;

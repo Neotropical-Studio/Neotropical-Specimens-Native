@@ -67,7 +67,11 @@ export function brandLogoUrl(extra: string[] = []): string {
 }
 
 export function brandGlobeUrl(extra: string[] = []): string {
-  const parts = Array.isArray(extra) && extra.length > 0 ? extra : ['w_48', 'h_48', 'c_fill', 'g_center'];
+  // Preferir f_gif si el caller no fija formato: el asset es GIF animado.
+  const parts =
+    Array.isArray(extra) && extra.length > 0
+      ? extra
+      : ['f_gif', 'w_112', 'h_112', 'c_fill', 'g_center'];
   return cloudinaryImageUrl(BRAND_GLOBE_ID, parts) || cloudinaryImageUrl(VERIFIED_GLOBE_ID, parts) || '';
 }
 
