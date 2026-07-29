@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Knockout quirúrgico del REVERSO Morpho + recuperación de antenas.
+Knockout del REVERSO Morpho autentico (foto macro con antenas reales).
 
-1) Separa el sujeto del negro de estudio (borde adaptativo, sin halo).
-2) Detecta / reconstruye antenas desde la cabeza (vitales en la ficha ventral).
-3) Exporta PNG + WebP con alfa limpio.
+- Separa el sujeto del negro de estudio SIN dibujar antenas.
+- Preserva filamentos reales via dark-boost + componentes delgados.
+- Borde adaptativo suave (sin halo) para fondo oscuro de la web.
+- Exporta PNG + WebP alta calidad.
 """
 from __future__ import annotations
 
@@ -12,7 +13,7 @@ from collections import deque
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "public/specimens/morpho-godarty-ventral-source.png"
@@ -61,8 +62,7 @@ def largest_component(mask: np.ndarray) -> np.ndarray:
     best = np.zeros((h, w), dtype=bool)
     best_size = 0
     for y in range(h):
-        xs = np.where(mask[y] & ~visited[y])[0]
-        for x in xs:
+        for x in np.where(mask[y] & ~visited[y])[0]:
             xi = int(x)
             if visited[y, xi]:
                 continue
@@ -110,157 +110,62 @@ def flood_from_border(seed: np.ndarray) -> np.ndarray:
     return visited
 
 
-def find_head(subject: np.ndarray) -> tuple[int, int]:
-    """Cabeza ≈ punto más alto (menor y) del cuerpo central del sujeto."""
-    ys, xs = np.where(subject)
-    if len(xs) == 0:
-        h, w = subject.shape
-        return w // 2, h // 3
-    # Banda central horizontal
-    x0, x1 = int(xs.min()), int(xs.max())
-    mid_lo = x0 + (x1 - x0) // 3
-    mid_hi = x0 + 2 * (x1 - x0) // 3
-    central = subject.copy()
-    central[:, :mid_lo] = False
-    central[:, mid_hi:] = False
-    cys, cxs = np.where(central)
-    if len(cxs) == 0:
-        cys, cxs = ys, xs
-    top_y = int(cys.min())
-    # x medio de la franja superior del cuerpo
-    band = (cys >= top_y) & (cys <= top_y + max(8, (cys.max() - top_y) // 20))
-    hx = int(np.median(cxs[band])) if band.any() else int(np.median(cxs))
-    return hx, top_y
-
-
-def detect_antenna_mask(
-    r: np.ndarray,
-    g: np.ndarray,
-    b: np.ndarray,
+def detect_authentic_antennae(
+    lum: np.ndarray,
     subject: np.ndarray,
     head: tuple[int, int],
 ) -> np.ndarray:
-    """Filamentos tenues sobre negro cerca de la cabeza (hacia arriba)."""
-    h, w = r.shape
-    hx, hy = head
-    lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
-    chroma = np.maximum(np.maximum(r, g), b) - np.minimum(np.minimum(r, g), b)
-
-    # ROI antenas: sobre la cabeza, ancho moderado
-    y0 = max(0, hy - int(h * 0.28))
-    y1 = min(h, hy + 8)
-    x0 = max(0, hx - int(w * 0.18))
-    x1 = min(w, hx + int(w * 0.18))
-
+    """Filamentos reales: brillan al realzar oscuros; componentes muy delgados."""
+    h, w = lum.shape
+    bx, by = head
+    boost = np.clip((lum - 0.2) * 32.0, 0, 255)
     roi = np.zeros((h, w), dtype=bool)
-    roi[y0:y1, x0:x1] = True
+    roi[max(0, by - 250) : by + 5, max(0, bx - 140) : min(w, bx + 140)] = True
+    cand = roi & (boost > 40) & (lum > 0.5) & (lum < 35)
 
-    # Antenas: ligeramente más claras que el negro puro, baja croma, delgadas
-    candidates = roi & ~subject & (lum > 8) & (lum < 95) & (chroma < 35)
-    # También píxeles muy tenues (lum 4–12) si están alineados
-    faint = roi & ~subject & (lum > 4) & (lum < 22) & (chroma < 18)
-    ant = dilate(candidates | faint, 1)
-
-    # Quedarse con componentes conectados que toquen cerca de la cabeza
-    near_head = np.zeros((h, w), dtype=bool)
-    near_head[max(0, hy - 6) : min(h, hy + 14), max(0, hx - 40) : min(w, hx + 40)] = True
-
-    kept = np.zeros((h, w), dtype=bool)
-    visited = np.zeros((h, w), dtype=bool)
-    for y in range(y0, y1):
-        for x in np.where(ant[y] & ~visited[y])[0]:
+    visited = np.zeros_like(cand)
+    ant = np.zeros_like(cand)
+    for y in range(h):
+        for x in np.where(cand[y] & ~visited[y])[0]:
             xi = int(x)
             if visited[y, xi]:
                 continue
             q = deque([(xi, y)])
             visited[y, xi] = True
             cells: list[tuple[int, int]] = []
-            touches_head = False
             while q:
                 cx, cy = q.popleft()
                 cells.append((cx, cy))
-                if near_head[cy, cx] or subject[cy, cx]:
-                    touches_head = True
                 for nx, ny in (
                     (cx - 1, cy), (cx + 1, cy), (cx, cy - 1), (cx, cy + 1),
                     (cx - 1, cy - 1), (cx + 1, cy - 1), (cx - 1, cy + 1), (cx + 1, cy + 1),
                 ):
-                    if 0 <= nx < w and 0 <= ny < h and ant[ny, nx] and not visited[ny, nx]:
+                    if 0 <= nx < w and 0 <= ny < h and cand[ny, nx] and not visited[ny, nx]:
                         visited[ny, nx] = True
                         q.append((nx, ny))
-            # Antenas: componentes alargados verticalmente, no manchas
-            if not cells:
-                continue
             xs_c = [c[0] for c in cells]
             ys_c = [c[1] for c in cells]
             height = max(ys_c) - min(ys_c) + 1
             width = max(xs_c) - min(xs_c) + 1
-            if touches_head and height >= 12 and height >= width * 0.7 and len(cells) < 2500:
+            # Antenas reales: muy delgadas y alargadas, ancladas cerca de la cabeza
+            if (
+                width <= 18
+                and height >= 28
+                and height >= width * 2.2
+                and len(cells) >= 40
+                and max(ys_c) >= by - 35
+            ):
                 for cx, cy in cells:
-                    kept[cy, cx] = True
-
-    return dilate(kept, 1)
-
-
-def synthesize_antennae(
-    canvas: Image.Image,
-    head: tuple[int, int],
-    body_color: tuple[int, int, int],
-    length: int,
-) -> Image.Image:
-    """Dibuja antenas naturales (curvas + club) si la detección fue insuficiente."""
-    hx, hy = head
-    overlay = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    draw = ImageDraw.Draw(overlay)
-
-    # Grosor natural ~1.5–2.5 px según escala
-    scale = max(canvas.size) / 1200.0
-    stroke = max(1.6, 2.1 * scale)
-    tip_r = max(1.8, 2.4 * scale)
-
-    def antenna(sign: int) -> list[tuple[float, float]]:
-        pts: list[tuple[float, float]] = []
-        # Base junto a la cabeza
-        x, y = float(hx + sign * 3 * scale), float(hy + 2 * scale)
-        for i in range(length):
-            t = i / max(1, length - 1)
-            # Curva suave hacia afuera y arriba
-            x += sign * (0.55 + 0.35 * t) * scale
-            y -= (1.15 - 0.25 * t) * scale
-            # Ligera ondulación
-            x += sign * 0.15 * np.sin(t * np.pi * 1.2) * scale
-            pts.append((x, y))
-        return pts
-
-    r0, g0, b0 = body_color
-    # Un poco más claro que el cuerpo para leerse sobre negro web
-    color = (
-        min(255, int(r0 * 0.75 + 55)),
-        min(255, int(g0 * 0.75 + 45)),
-        min(255, int(b0 * 0.75 + 40)),
-        245,
-    )
-    tip_color = (min(255, color[0] + 25), min(255, color[1] + 20), min(255, color[2] + 15), 255)
-
-    for sign in (-1, 1):
-        pts = antenna(sign)
-        if len(pts) < 2:
-            continue
-        draw.line(pts, fill=color, width=max(1, int(round(stroke))), joint="curve")
-        # Club apical
-        tx, ty = pts[-1]
-        draw.ellipse(
-            (tx - tip_r, ty - tip_r, tx + tip_r, ty + tip_r),
-            fill=tip_color,
-        )
-
-    # Suavizar un pelo las antenas sintetizadas
-    blur = overlay.filter(ImageFilter.GaussianBlur(radius=0.45))
-    return Image.alpha_composite(canvas, blur)
+                    ant[cy, cx] = True
+                print(
+                    f"ANTENNA n={len(cells)} h={height} w={width} "
+                    f"x={int(np.mean(xs_c))} ymin={min(ys_c)}"
+                )
+    return dilate(ant, 1)
 
 
 def main() -> None:
-    img = Image.open(SRC).convert("RGBA")
+    img = Image.open(SRC).convert("RGB")
     arr = np.asarray(img).astype(np.float32)
     r, g, b = arr[..., 0], arr[..., 1], arr[..., 2]
     h, w = r.shape
@@ -270,48 +175,53 @@ def main() -> None:
     mn = np.minimum(np.minimum(r, g), b)
     chroma = mx - mn
 
-    studio = (lum <= 18) & (chroma <= 10) & (mx <= 24)
-
-    warm_brown = (r > 24) & (r >= g - 6) & (r >= b - 4) & (lum < 175) & (chroma > 8)
-    cream_silver = (lum > 90) & (chroma < 55) & (mx > 95) & ~studio
-    eyespot_core = (lum < 55) & (chroma > 12) & (r > 18) & ~studio
-    body_dark = (lum > 12) & (lum < 70) & (chroma > 5) & (r >= g - 4) & ~studio
-
-    seed = warm_brown | cream_silver | eyespot_core | body_dark
-    seed = dilate(seed, 1)
+    studio = (lum <= 8) & (chroma <= 6) & (mx <= 10)
+    warm = (r > 20) & (r >= g - 6) & (r >= b - 4) & (lum < 190) & (chroma > 5)
+    cream = (lum > 80) & (chroma < 55) & (mx > 85) & ~studio
+    eyes = (lum < 55) & (chroma > 8) & (r > 14) & ~studio
+    body = (lum > 8) & (lum < 80) & (chroma > 3) & (r >= g - 4) & ~studio
+    seed = dilate(warm | cream | eyes | body, 1)
 
     subject = seed.copy()
     layer = seed.copy()
-    for _ in range(10):
+    for _ in range(14):
         ring = dilate(layer, 1) & ~layer
-        scallop = ring & (lum < 90) & (chroma > 3) & ~studio
-        edge_ink = ring & dilate(subject, 2) & (lum < 35) & (chroma <= 12)
-        pale = ring & cream_silver
-        subject |= scallop | edge_ink | pale | (ring & seed)
+        subject |= (
+            (ring & (lum < 100) & (chroma > 2) & ~studio)
+            | (ring & dilate(subject, 2) & (lum < 40) & (chroma <= 14))
+            | (ring & cream)
+            | (ring & seed)
+        )
         layer = subject
 
     subject = largest_component(subject)
     subject = erode(dilate(subject, 2), 1)
-
-    bg_seed = studio & ~subject
-    bg = flood_from_border(bg_seed) | (~subject & studio)
+    bg = flood_from_border(studio & ~subject) | (~subject & studio)
     subject = largest_component(~bg)
 
-    head = find_head(subject)
-    antenna_mask = detect_antenna_mask(r, g, b, subject, head)
-    antenna_pixels = int(antenna_mask.sum())
-    print(f"head={head} antenna_pixels_detected={antenna_pixels}")
+    # Cabeza = tope de columna corporal central
+    body_m = ((r > 25) & (r < 130) & (lum > 18) & (lum < 95) & subject)
+    cx0, cx1 = int(w * 0.44), int(w * 0.56)
+    proj = body_m[:, cx0:cx1].sum(axis=1)
+    ys = np.where(proj > 8)[0]
+    by = int(ys.min()) if len(ys) else h // 3
+    bx = cx0 + int(np.argmax(body_m[by : by + 40, cx0:cx1].sum(axis=0))) if len(ys) else w // 2
+    print(f"thorax_head=({bx}, {by})")
 
-    # Incluir antenas detectadas en el sujeto ANTES del alpha
+    antenna_mask = detect_authentic_antennae(lum, subject, (bx, by))
+    antenna_pixels = int(antenna_mask.sum())
+    print(f"antenna_pixels_preserved={antenna_pixels}")
+    if antenna_pixels < 80:
+        raise SystemExit("ERROR: antenas autenticas no detectadas — abort (no synthesis)")
+
     subject = subject | antenna_mask
 
     hard = subject.astype(np.float32)
     soft = box_blur(hard, 2)
-    final_a = np.clip(0.22 * soft + 0.78 * hard, 0.0, 1.0)
+    final_a = np.clip(0.14 * soft + 0.86 * hard, 0.0, 1.0)
     core = erode(subject & ~antenna_mask, 2)
     final_a[core] = 1.0
-    # Antenas: alfa alto pero fringe suave
-    final_a[antenna_mask] = np.maximum(final_a[antenna_mask], 0.92)
+    final_a[antenna_mask] = np.maximum(final_a[antenna_mask], 0.98)
     final_a[~dilate(subject, 1)] = 0.0
 
     eps = 1e-3
@@ -320,18 +230,17 @@ def main() -> None:
     g2 = np.clip(g / a_safe, 0, 255)
     b2 = np.clip(b / a_safe, 0, 255)
 
-    fringe = (final_a > 0.03) & (final_a < 0.90) & ~core & ~antenna_mask
+    fringe = (final_a > 0.03) & (final_a < 0.86) & ~core & ~antenna_mask
     fringe_lum = 0.2126 * r2 + 0.7152 * g2 + 0.0722 * b2
     fringe_chroma = np.maximum(np.maximum(r2, g2), b2) - np.minimum(np.minimum(r2, g2), b2)
-    final_a = np.where(fringe & (fringe_lum < 16) & (fringe_chroma < 10), 0.0, final_a)
-    final_a = np.where(fringe & (fringe_lum < 26) & (fringe_chroma < 8), 0.0, final_a)
+    final_a = np.where(fringe & (fringe_lum < 11) & (fringe_chroma < 9), 0.0, final_a)
+    final_a = np.where(fringe & (fringe_lum < 18) & (fringe_chroma < 7), 0.0, final_a)
 
-    # Refuerzo de color en antenas detectadas (más legibles sobre negro web)
-    if antenna_pixels > 0:
-        boost = antenna_mask & (final_a > 0.2)
-        r2 = np.where(boost, np.clip(r2 * 0.55 + 70, 0, 255), r2)
-        g2 = np.where(boost, np.clip(g2 * 0.55 + 58, 0, 255), g2)
-        b2 = np.where(boost, np.clip(b2 * 0.55 + 48, 0, 255), b2)
+    # Legibilidad sobre negro web: refuerza color SOLO en geometria real
+    boost_m = antenna_mask & (final_a > 0.2)
+    r2 = np.where(boost_m, np.clip(np.maximum(r2, 16) * 0.42 + 78, 0, 255), r2)
+    g2 = np.where(boost_m, np.clip(np.maximum(g2, 12) * 0.42 + 62, 0, 255), g2)
+    b2 = np.where(boost_m, np.clip(np.maximum(b2, 8) * 0.42 + 48, 0, 255), b2)
 
     r2 = np.where(final_a < 0.02, 0, r2)
     g2 = np.where(final_a < 0.02, 0, g2)
@@ -342,43 +251,30 @@ def main() -> None:
 
     aa = np.asarray(result.getchannel("A")).astype(np.float32)
     aa_soft = box_blur(aa / 255.0, 3) * 255.0
-    core_mask = aa > 240
-    # No suavizar antenas con blur excesivo
-    ant_a = dilate(antenna_mask, 1)
-    aa_mix = np.where(ant_a, aa, np.where(core_mask, aa, 0.6 * aa + 0.4 * aa_soft))
+    aa_mix = np.where(
+        dilate(antenna_mask, 1),
+        aa,
+        np.where(aa > 240, aa, 0.7 * aa + 0.3 * aa_soft),
+    )
     result.putalpha(Image.fromarray(np.clip(aa_mix, 0, 255).astype(np.uint8), mode="L"))
-
-    # Si las antenas son demasiado escasas, sintetizar digitalmente
-    if antenna_pixels < 80:
-        body_ys, body_xs = np.where(subject & ~antenna_mask)
-        if len(body_xs):
-            # Color medio del cuerpo superior
-            top_band = body_ys <= np.percentile(body_ys, 15)
-            sample = (
-                int(np.median(r[body_ys[top_band], body_xs[top_band]])),
-                int(np.median(g[body_ys[top_band], body_xs[top_band]])),
-                int(np.median(b[body_ys[top_band], body_xs[top_band]])),
-            )
-        else:
-            sample = (90, 70, 55)
-        length = max(70, int(h * 0.16))
-        result = synthesize_antennae(result, head, sample, length)
-        print(f"antennae synthesized length={length} color={sample}")
-    else:
-        print("antennae preserved from source detection")
 
     bbox = result.getbbox()
     if bbox:
-        pad = 14  # margen extra para no cortar clubs de antenas
+        pad = 22
         x0, y0, x1, y1 = bbox
         result = result.crop(
-            (max(0, x0 - pad), max(0, y0 - pad), min(result.size[0], x1 + pad), min(result.size[1], y1 + pad))
+            (
+                max(0, x0 - pad),
+                max(0, y0 - pad),
+                min(result.size[0], x1 + pad),
+                min(result.size[1], y1 + pad),
+            )
         )
 
     OUT_PNG.parent.mkdir(parents=True, exist_ok=True)
     result.save(OUT_PNG, "PNG", optimize=True)
-    result.save(OUT_WEBP, "WEBP", quality=90, method=6)
-    print(f"OK antenna-safe {result.size} png={OUT_PNG.stat().st_size} webp={OUT_WEBP.stat().st_size}")
+    result.save(OUT_WEBP, "WEBP", quality=96, method=6)
+    print(f"OK authentic {result.size} png={OUT_PNG.stat().st_size} webp={OUT_WEBP.stat().st_size}")
 
 
 if __name__ == "__main__":

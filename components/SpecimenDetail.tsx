@@ -7,7 +7,7 @@
 // geo, el aviso regulatorio y la campaña activa (si hay). Se sincroniza en
 // vivo con la fila del espécimen.
 // ============================================================================
-import { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef, type CSSProperties } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
@@ -891,14 +891,18 @@ function ActiveImage({
       alt={alt}
       className={
         floating
-          ? 'max-h-[min(480px,70vh)] w-auto max-w-full bg-transparent object-contain object-center transition-all duration-700 ease-out'
+          ? chameleon
+            ? 'morpho-iridescent max-h-[min(480px,70vh)] w-auto max-w-full bg-transparent object-contain object-center transition-all duration-700 ease-out'
+            : 'max-h-[min(480px,70vh)] w-auto max-w-full bg-transparent object-contain object-center transition-all duration-700 ease-out'
           : 'max-h-[min(480px,70vh)] w-auto max-w-full bg-transparent object-contain object-center transition-all duration-700'
       }
       style={
         chameleon
-          ? {
-              filter: `drop-shadow(0 10px 28px ${hexA(accent ?? '#34d399', 0.35)}) drop-shadow(0 0 18px ${hexA(accent ?? '#34d399', 0.22)})`,
-            }
+          ? ({
+              // Accent camaleónico + animación iridiscente (CSS vars)
+              ['--morpho-glow' as string]: hexA(accent ?? '#34d399', 0.38),
+              ['--morpho-glow-soft' as string]: hexA(accent ?? '#34d399', 0.2),
+            } as CSSProperties)
           : floating
             ? { filter: 'none' }
             : undefined

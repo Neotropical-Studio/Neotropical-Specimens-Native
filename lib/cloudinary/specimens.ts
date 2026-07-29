@@ -27,7 +27,7 @@ export const MORPHO_HERO_URL = '/specimens/morpho-godarty-didius-tingomarensis.w
 
 /** WebP con alfa — reverso / ventral (knockout quirúrgico). */
 export const MORPHO_VENTRAL_URL =
-  '/specimens/morpho-godarty-didius-tingomarensis-ventral.webp?v=3';
+  '/specimens/morpho-godarty-didius-tingomarensis-ventral.webp?v=4';
 
 /** PNG reverso con alfa (fallback). */
 export const MORPHO_VENTRAL_PNG =
