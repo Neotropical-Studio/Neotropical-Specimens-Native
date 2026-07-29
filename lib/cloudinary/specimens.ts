@@ -25,9 +25,9 @@ export const MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_PNG =
 /** WebP con alfa — hero / ficha dorsal (más ligero, misma transparencia). */
 export const MORPHO_HERO_URL = '/specimens/morpho-godarty-didius-tingomarensis.webp';
 
-/** WebP con alfa — reverso / ventral. */
+/** WebP con alfa — reverso / ventral (knockout quirúrgico). */
 export const MORPHO_VENTRAL_URL =
-  '/specimens/morpho-godarty-didius-tingomarensis-ventral.webp';
+  '/specimens/morpho-godarty-didius-tingomarensis-ventral.webp?v=2';
 
 /** PNG reverso con alfa (fallback). */
 export const MORPHO_VENTRAL_PNG =

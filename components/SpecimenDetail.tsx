@@ -455,6 +455,8 @@ export default function SpecimenDetail({
                     srcOverride={morphoSrcOverride}
                     alt={specimen.scientificName}
                     floating
+                    chameleon={isMorpho}
+                    accent={accent}
                   />
                   {!isMorpho && (
                     <button
@@ -862,6 +864,8 @@ function ActiveImage({
   alt,
   srcOverride = null,
   floating = false,
+  chameleon = false,
+  accent,
 }: {
   publicId: string | null;
   alt: string;
@@ -869,6 +873,9 @@ function ActiveImage({
   srcOverride?: string | null;
   /** Flota sin caja: fondo transparente, object-contain, sin marco. */
   floating?: boolean;
+  /** Resplandor camaleónico suave (ficha Morpho dorsal/ventral). */
+  chameleon?: boolean;
+  accent?: string;
 }) {
   const src =
     (srcOverride && srcOverride.trim()) ||
@@ -884,8 +891,17 @@ function ActiveImage({
       alt={alt}
       className={
         floating
-          ? 'max-h-[min(480px,70vh)] w-auto max-w-full bg-transparent object-contain object-center drop-shadow-none transition-all duration-700'
+          ? 'max-h-[min(480px,70vh)] w-auto max-w-full bg-transparent object-contain object-center transition-all duration-700 ease-out'
           : 'max-h-[min(480px,70vh)] w-auto max-w-full bg-transparent object-contain object-center transition-all duration-700'
+      }
+      style={
+        chameleon
+          ? {
+              filter: `drop-shadow(0 10px 28px ${hexA(accent ?? '#34d399', 0.35)}) drop-shadow(0 0 18px ${hexA(accent ?? '#34d399', 0.22)})`,
+            }
+          : floating
+            ? { filter: 'none' }
+            : undefined
       }
       decoding="async"
       draggable={false}
