@@ -64,8 +64,8 @@ values
   (
     'd20ad72d-7957-405a-ada8-53a320009e03',
     'image',
-    'https://res.cloudinary.com/juufg4mn/image/upload/Morpho_gadrty_didius_tingomarensis_yomszy',
-    'Morpho_gadrty_didius_tingomarensis_yomszy',
+    'https://res.cloudinary.com/juufg4mn/image/upload/Morpho_godarty_didius_tingomarensis_reverso_i9gcnn',
+    'Morpho_godarty_didius_tingomarensis_reverso_i9gcnn',
     1
   )
 on conflict do nothing;

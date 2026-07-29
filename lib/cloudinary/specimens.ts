@@ -10,10 +10,10 @@ export const MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID =
 
 /**
  * public_id Cloudinary — vista ventral / reverso
- * (asset: Morpho_gadrty_didius_tingomarensis_yomszy).
+ * (asset: Morpho_godarty_didius_tingomarensis_reverso_i9gcnn).
  */
 export const MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_VENTRAL_ID =
-  'Morpho_gadrty_didius_tingomarensis_yomszy';
+  'Morpho_godarty_didius_tingomarensis_reverso_i9gcnn';
 
 /**
  * PNG local con alfa limpio (bordes de ala precisos, sin halo negro).

@@ -392,7 +392,8 @@ export default function SpecimenDetail({
       (currentImage === specimen.views.ventral ||
         currentImage === specimen.secondaryImage ||
         currentImage.includes('ventral') ||
-        currentImage.includes('yomszy'))
+        currentImage.includes('reverso') ||
+        currentImage.includes('i9gcnn'))
     ) {
       return MORPHO_VENTRAL_URL;
     }
@@ -485,7 +486,8 @@ export default function SpecimenDetail({
                     isMorpho &&
                     (item === specimen.views.ventral ||
                       item === specimen.secondaryImage ||
-                      item.includes('yomszy') ||
+                      item.includes('reverso') ||
+                      item.includes('i9gcnn') ||
                       item.includes('ventral'));
                   const thumbSrc = isMorpho
                     ? thumbIsMorphoVentral
