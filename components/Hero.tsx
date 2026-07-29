@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowDown, Boxes, Globe2, Layers, Sparkles } from 'lucide-react';
 import HeroButterfly from './HeroButterfly';
 import HumanGeoCounter from './HumanGeoCounter';
+import InventoryEmptyState from './InventoryEmptyState';
 import { useChameleonRotation } from '@/lib/specimens/useChameleonRotation';
 import { hexA } from '@/lib/theme/palette';
 import type { SpecimenView } from '@/lib/specimens/view';
@@ -139,9 +140,21 @@ export default function Hero({
         </motion.div>
         </div>
 
-        {active && (
+        {active ? (
           <div className="flex justify-center lg:justify-end">
             <HeroButterfly active={active} featured={featured} index={index} palette={palette} lang={lang} strings={strings} />
+          </div>
+        ) : (
+          <div className="flex justify-center lg:justify-end">
+            <InventoryEmptyState
+              variant="hero"
+              title={t('hero.empty_title', 'Expedición en curso')}
+              subtitle={t(
+                'hero.empty_subtitle',
+                'Sincronizando nuevos especímenes de los 4 rubros… El visor camaleónico se activará al recibir inventario real.',
+              )}
+              showRubros
+            />
           </div>
         )}
       </div>

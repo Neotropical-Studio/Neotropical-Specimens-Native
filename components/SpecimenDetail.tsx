@@ -520,19 +520,19 @@ export default function SpecimenDetail({
         </div>
 
         {/* Catálogo dinámico e inteligente: cambia de espécimen al instante */}
-        {recommendations.length > 0 && (
-          <section className="rounded-3xl border border-white/10 bg-black/30 p-6">
-            <div className="mb-5">
-              <span className="block text-xs font-bold uppercase tracking-[0.25em]" style={{ color: accent }}>
-                {t('product.dynamic_catalog_title', 'Catálogo dinámico e inteligente')}
-              </span>
-              <h2 className="mt-1 text-xl font-extrabold text-white md:text-2xl">
-                {t(
-                  'product.dynamic_catalog_subtitle',
-                  'Seleccione un espécimen para adaptar el visor, colores y galería en tiempo real',
-                )}
-              </h2>
-            </div>
+        <section className="rounded-3xl border border-white/10 bg-black/30 p-6">
+          <div className="mb-5">
+            <span className="block text-xs font-bold uppercase tracking-[0.25em]" style={{ color: accent }}>
+              {t('product.dynamic_catalog_title', 'Catálogo dinámico e inteligente')}
+            </span>
+            <h2 className="mt-1 text-xl font-extrabold text-white md:text-2xl">
+              {t(
+                'product.dynamic_catalog_subtitle',
+                'Seleccione un espécimen para adaptar el visor, colores y galería en tiempo real',
+              )}
+            </h2>
+          </div>
+          {recommendations.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {recommendations.map((item) => {
                 const itemAccent = resolveTaxonPalette({
@@ -549,14 +549,20 @@ export default function SpecimenDetail({
                     className="group rounded-2xl border border-white/10 bg-black/40 p-3 transition hover:border-white/20"
                   >
                     <div className="relative mb-3 aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-900">
-                      <Image
-                        src={imageUrl(item.primaryImage ?? item.secondaryImage ?? '', ['w_480', 'ar_4:3', 'c_fill'])}
-                        alt={item.scientificName}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        unoptimized
-                      />
+                      {item.primaryImage || item.secondaryImage ? (
+                        <Image
+                          src={imageUrl(item.primaryImage ?? item.secondaryImage ?? '', ['w_480', 'ar_4:3', 'c_fill'])}
+                          alt={item.scientificName}
+                          fill
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-black text-[10px] uppercase tracking-widest text-neutral-600">
+                          {t('media.no_image', 'Sin imagen')}
+                        </div>
+                      )}
                       {(item.family ?? item.order) && (
                         <span
                           className="absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
@@ -584,8 +590,20 @@ export default function SpecimenDetail({
                 );
               })}
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="rounded-2xl border border-dashed border-white/10 bg-black/40 px-6 py-10 text-center">
+              <p className="text-sm font-semibold text-white">
+                {t('product.dynamic_catalog_empty_title', 'Catálogo listo para recepción de inventario')}
+              </p>
+              <p className="mt-2 text-xs text-slate-400">
+                {t(
+                  'product.dynamic_catalog_empty_subtitle',
+                  'Cuando se sincronicen más especímenes de los 4 rubros, aparecerán aquí automáticamente.',
+                )}
+              </p>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );

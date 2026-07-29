@@ -5,9 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
 import CampaignBanner from '@/components/CampaignBanner';
 import Header from '@/components/Header';
-import Hero, { type HeroStats } from '@/components/Hero';
 import LanguageRegenerativeBanner from '@/components/LanguageRegenerativeBanner';
-import SpecimenExplorer from '@/components/SpecimenExplorer';
+import LiveShowcase from '@/components/LiveShowcase';
 import { getI18n } from '@/lib/i18n/index';
 import {
   attachMedia,
@@ -47,13 +46,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const specimens = rows.map(toSpecimenView);
   const country = (await headers()).get('x-geo-country');
 
-  const stats: HeroStats = {
-    specimens: specimens.length,
-    families: new Set(specimens.map((s) => s.family).filter(Boolean)).size,
-    regions: new Set(specimens.map((s) => s.regionCode).filter(Boolean)).size,
-    countries: new Set(specimens.map((s) => s.country).filter(Boolean)).size,
-  };
-
   return (
     <>
       <Header
@@ -67,14 +59,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           <LanguageRegenerativeBanner lang={i18n.locale} strings={i18n.strings} />
         </div>
 
-        <Hero
-          stats={stats}
-          strings={i18n.strings}
-          specimens={specimens}
-          lang={i18n.locale}
-          country={country && country !== 'XX' ? country : null}
-        />
-
         {error && (
           <div className="mx-auto mb-6 max-w-7xl px-4">
             <div className="rounded-xl border border-red-800 bg-red-950/60 p-4 text-sm text-red-200">
@@ -83,7 +67,14 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           </div>
         )}
 
-        <SpecimenExplorer initial={specimens} strings={i18n.strings} lang={i18n.locale} />
+        {/* Hero + catálogo: un solo stream vivo. Empty states si no hay data;
+            aparición automática al subir productos reales (Cloudinary/Supabase). */}
+        <LiveShowcase
+          initial={specimens}
+          strings={i18n.strings}
+          lang={i18n.locale}
+          country={country && country !== 'XX' ? country : null}
+        />
       </main>
     </>
   );
