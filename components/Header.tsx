@@ -4,8 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Globe2, Menu, X } from 'lucide-react';
 import type { EnabledLocale } from '@/lib/i18n/locales';
-import { BRAND_CLOUDINARY } from '@/lib/cloudinary/brand';
-import { cloudinaryImageUrl } from '@/lib/cloudinary/url';
+import { BRAND_GLOBE_URL, BRAND_LOGO_URL } from '@/lib/cloudinary/brand';
 import RegulatoryStrip from './RegulatoryStrip';
 
 interface Props {
@@ -20,9 +19,9 @@ export default function Header({ strings, lang, locales }: Props) {
   const [logoFailed, setLogoFailed] = useState(false);
   const [globeFailed, setGlobeFailed] = useState(false);
 
-  // Identificadores reales de Cloudinary (lib/cloudinary/brand.ts).
-  const logoSrc = cloudinaryImageUrl(BRAND_CLOUDINARY.logo, ['w_192', 'h_192', 'c_fit']);
-  const globeSrc = cloudinaryImageUrl(BRAND_CLOUDINARY.globe, ['w_48', 'h_48', 'c_fill', 'g_center']);
+  // Constantes planas precomputadas — nunca undefined.
+  const logoSrc = typeof BRAND_LOGO_URL === 'string' ? BRAND_LOGO_URL : '';
+  const globeSrc = typeof BRAND_GLOBE_URL === 'string' ? BRAND_GLOBE_URL : '';
 
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
 
@@ -52,7 +51,7 @@ export default function Header({ strings, lang, locales }: Props) {
 
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-4">
         <a href="#top" className="flex items-center gap-2.5">
-          {logoSrc && !logoFailed ? (
+          {logoSrc.length > 0 && !logoFailed ? (
             <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-black ring-1 ring-amber-400/40">
               <Image
                 src={logoSrc}
@@ -89,7 +88,7 @@ export default function Header({ strings, lang, locales }: Props) {
             href="#catalogo"
             className="ml-2 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-emerald-400"
           >
-            {globeSrc && !globeFailed ? (
+            {globeSrc.length > 0 && !globeFailed ? (
               <Image
                 src={globeSrc}
                 alt=""

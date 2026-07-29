@@ -5,18 +5,30 @@ import CameleonThemeStyle from '@/components/CameleonThemeStyle';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { resolveLocale } from '@/lib/i18n/locales';
 import { THEME_PALETTE } from '@/lib/geo/resolve';
-import { brandAppleIconUrl, brandFaviconUrl } from '@/lib/cloudinary/brand';
-import { cloudinaryImageUrl } from '@/lib/cloudinary/url';
-import { BRAND_CLOUDINARY } from '@/lib/cloudinary/brand';
+import {
+  BRAND_APPLE_ICON_URL,
+  BRAND_FAVICON_ICO_URL,
+  BRAND_FAVICON_URL,
+} from '@/lib/cloudinary/brand';
 
-// Base absoluta obligatoria para que canonical y hreflang de /[lang] salgan como
-// URLs absolutas: Google ignora los hreflang relativos.
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+// Base absoluta segura: nunca pasar undefined/"" a `new URL(...)`.
+function resolveSiteUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL;
+  if (typeof raw === 'string' && raw.trim().length > 0) {
+    try {
+      return new URL(raw.trim()).toString();
+    } catch {
+      /* fall through */
+    }
+  }
+  return 'http://localhost:3000';
+}
 
-// Favicon / Apple icon: public_id reales de Cloudinary (FAVICON/…).
-const faviconUrl = brandFaviconUrl(['w_64', 'h_64', 'c_fit']);
-const appleIconUrl = brandAppleIconUrl(['w_180', 'h_180', 'c_fit']);
-const faviconIcoUrl = cloudinaryImageUrl(BRAND_CLOUDINARY.faviconIco, ['w_32', 'h_32', 'c_fit']);
+const SITE_URL = resolveSiteUrl();
+
+const faviconUrl = typeof BRAND_FAVICON_URL === 'string' ? BRAND_FAVICON_URL : '';
+const appleIconUrl = typeof BRAND_APPLE_ICON_URL === 'string' ? BRAND_APPLE_ICON_URL : '';
+const faviconIcoUrl = typeof BRAND_FAVICON_ICO_URL === 'string' ? BRAND_FAVICON_ICO_URL : '';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -31,11 +43,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: faviconUrl, sizes: '32x32', type: 'image/png' },
-      { url: faviconIcoUrl, sizes: 'any' },
+      ...(faviconUrl.length > 0 ? [{ url: faviconUrl, sizes: '32x32', type: 'image/png' as const }] : []),
+      ...(faviconIcoUrl.length > 0 ? [{ url: faviconIcoUrl, sizes: 'any' }] : []),
     ],
-    shortcut: faviconUrl,
-    apple: appleIconUrl,
+    shortcut: faviconUrl.length > 0 ? faviconUrl : undefined,
+    apple: appleIconUrl.length > 0 ? appleIconUrl : undefined,
   },
 };
 
@@ -46,9 +58,6 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-// El layout raíz no recibe params (también sirve /offline), así que toma el
-// idioma de ruta de la cabecera x-lang que fija el middleware y lo normaliza
-// contra el set habilitado en Sanity para emitir <html lang/dir> correctos.
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const h = await headers();
   const theme = h.get('x-ui-theme') ?? 'standard';

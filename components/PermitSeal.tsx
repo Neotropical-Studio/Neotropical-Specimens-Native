@@ -29,7 +29,8 @@ export default function PermitSeal({ code, label, imageSrc, size = 'sm' }: Props
   const [failed, setFailed] = useState(false);
   const dims = DIMENSIONS[size];
   const title = label ?? code;
-  const src = imageSrc || permitLogoUrl(code);
+  const src = typeof imageSrc === 'string' && imageSrc.length > 0 ? imageSrc : permitLogoUrl(code);
+  const safeSrc = typeof src === 'string' ? src : '';
 
   return (
     <span
@@ -45,15 +46,14 @@ export default function PermitSeal({ code, label, imageSrc, size = 'sm' }: Props
       title={title}
       aria-label={title}
     >
-      {/* Anillo camaleónico sutil: reacciona al hover con tono institucional */}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-md ring-1 ring-inset ring-emerald-400/0 transition duration-500 group-hover/permit:ring-emerald-400/25"
       />
 
-      {src && !failed ? (
+      {safeSrc.length > 0 && !failed ? (
         <Image
-          src={src}
+          src={safeSrc}
           alt={title}
           fill
           sizes={dims.sizes}
