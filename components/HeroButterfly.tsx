@@ -102,10 +102,7 @@ export default function HeroButterfly({ active, featured, index, palette, lang, 
             className="pointer-events-none relative z-10 mt-1 w-full px-2 pb-2 pt-3 transition-colors duration-[1200ms]"
             style={{ background: `linear-gradient(to top, ${hexA(palette.surface, 0.92)}, transparent)` }}
           >
-            <p
-              className="text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors duration-[1200ms]"
-              style={{ color: palette.accent }}
-            >
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-yellow-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]">
               {active.rubroLabel ?? active.family ?? t('hero_butterfly.featured', 'Espécimen destacado')}
             </p>
             <p className="mt-1 text-lg font-bold italic leading-tight text-white">{active.scientificName}</p>

@@ -5,7 +5,13 @@
 // Todo proviene de JSONB — sin literales de negocio en el código.
 // ============================================================================
 import { createClient } from '@supabase/supabase-js';
+import { MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID } from '@/lib/cloudinary/specimens';
 import { loadCatalogRowById } from './catalog';
+import {
+  isMorphoGodartyDidiusTingomarensis,
+  MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID,
+  MORPHO_GODARTY_NATIVE,
+} from './native/morphoGodartyDidiusTingomarensis';
 import {
   toSpecimenView,
   type SpecimenRow,
@@ -64,36 +70,167 @@ export function toSpecimenDetail(row: SpecimenRow, lang: string): SpecimenDetail
     macro: byView('macro'),
   };
 
-  // Ficha 100 % desde catálogo BD (origen, calidad, sexo, taxonomía, stock…).
-  return {
+  const native = isMorphoGodartyDidiusTingomarensis({
+    id: base.id,
+    scientificName: base.scientificName,
+    speciesName: row.species_name,
+  })
+    ? MORPHO_GODARTY_NATIVE
+    : null;
+
+  // Con perfil nativo, la ficha usa esos valores de forma exclusiva (sin
+  // mezclar familia/GPS/precios de otras especies ni del row incompleto).
+  const mapped: SpecimenDetailView = {
     ...base,
-    commonName: localize('common_name') ?? base.commonName,
-    subfamily: str(row.taxonomy?.subfamily_name),
-    sex: str(attrs.sex) ?? str(row.attributes?.sex_type) ?? base.sex,
+    scientificName: native?.scientificName ?? base.scientificName,
+    commonName: native?.commonName ?? localize('common_name') ?? base.commonName,
+    order: native?.order ?? base.order,
+    family: native?.family ?? base.family,
+    genus: native?.genus ?? base.genus,
+    subfamily: native?.subfamily ?? str(row.taxonomy?.subfamily_name),
+    sex: native?.sex ?? str(attrs.sex) ?? str(row.attributes?.sex_type) ?? base.sex,
+    grade: native?.grade ?? base.grade,
+    gradeName: native ? native.gradeName : base.gradeName,
+    colors: native ? [...native.colors] : base.colors,
+    regionCode: native?.regionCode ?? base.regionCode,
+    country: native?.country ?? base.country,
+    regionName: native?.regionName ?? base.regionName,
+    code: native?.catalogCode ?? base.code,
+    currency: native?.currency ?? base.currency,
+    price: native?.price ?? base.price,
+    stock: native?.stock ?? base.stock,
     gpsCoordinates:
+      native?.gpsCoordinates ??
       str(attrs.gps_coordinates) ??
       str(attrs.gps) ??
       str(row.region?.gps_coordinates) ??
       null,
-    description: localize('description'),
-    wholesalePrice: num((pricing as Record<string, unknown>).wholesale_price),
-    wholesaleMinQty: num((pricing as Record<string, unknown>).wholesale_min_qty),
+    description: native?.description ?? localize('description'),
+    wholesalePrice:
+      native?.wholesalePrice ?? num((pricing as Record<string, unknown>).wholesale_price),
+    wholesaleMinQty:
+      native?.wholesaleMinQty ?? num((pricing as Record<string, unknown>).wholesale_min_qty),
     views,
     themeOverride:
       (attrs.theme as Record<string, unknown>) ??
       (attrs.themeConfig as Record<string, unknown>) ??
       null,
   };
+
+  return native ? sealMorphoDetailView(mapped) : mapped;
 }
 
-// Carga un espécimen por id (lectura pública anon; RLS permite select).
+/** Ficha Morpho 100 % completa (sin depender de Supabase ni de props vacías). */
+export function buildMorphoGodartyDetailView(): SpecimenDetailView {
+  const n = MORPHO_GODARTY_NATIVE;
+  const mediaId = MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID;
+  return {
+    id: MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID,
+    code: n.catalogCode,
+    scientificName: n.scientificName,
+    commonName: n.commonName,
+    order: n.order,
+    family: n.family,
+    genus: n.genus,
+    regionName: n.regionName,
+    regionCode: n.regionCode,
+    country: n.country,
+    sex: n.sex,
+    grade: n.grade,
+    gradeName: n.gradeName,
+    wingspanMm: null,
+    colors: [...n.colors],
+    price: n.price,
+    currency: n.currency,
+    stock: n.stock,
+    images: [{ view: 'photo', publicId: mediaId }],
+    primaryImage: mediaId,
+    secondaryImage: null,
+    model3d: null,
+    video: null,
+    rubroId: 'dried-specimens',
+    rubroLabel: 'Espécimenes secos biológicos',
+    subfamily: n.subfamily,
+    gpsCoordinates: n.gpsCoordinates,
+    description: n.description,
+    wholesalePrice: n.wholesalePrice,
+    wholesaleMinQty: n.wholesaleMinQty,
+    views: {
+      dorsal: mediaId,
+      ventral: null,
+      lateral: null,
+      macro: null,
+    },
+    themeOverride: null,
+  };
+}
+
+/**
+ * Sella la ficha Morpho: cualquier campo vacío/roto se rellena con el perfil
+ * nativo. Conserva media real si ya vino del catálogo.
+ */
+export function sealMorphoDetailView(view: SpecimenDetailView): SpecimenDetailView {
+  if (
+    !isMorphoGodartyDidiusTingomarensis({
+      id: view.id,
+      scientificName: view.scientificName,
+    })
+  ) {
+    return view;
+  }
+  const n = MORPHO_GODARTY_NATIVE;
+  const primary = view.primaryImage ?? MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID;
+  return {
+    ...view,
+    code: n.catalogCode,
+    scientificName: n.scientificName,
+    commonName: n.commonName,
+    order: n.order,
+    family: n.family,
+    genus: n.genus,
+    subfamily: n.subfamily,
+    regionName: n.regionName,
+    regionCode: n.regionCode,
+    country: n.country,
+    sex: n.sex,
+    grade: n.grade,
+    gradeName: n.gradeName,
+    colors: [...n.colors],
+    price: n.price,
+    currency: n.currency,
+    stock: n.stock,
+    gpsCoordinates: n.gpsCoordinates,
+    description: n.description,
+    wholesalePrice: n.wholesalePrice,
+    wholesaleMinQty: n.wholesaleMinQty,
+    primaryImage: primary,
+    views: {
+      dorsal: view.views.dorsal ?? primary,
+      ventral: view.views.ventral,
+      lateral: view.views.lateral,
+      macro: view.views.macro,
+    },
+  };
+}
+
+// Carga un espécimen por id. Si es Morpho y Supabase falla/demora/vacío,
+// entrega de inmediato la ficha nativa completa (sin huecos en la UI).
 export async function getSpecimenById(id: string, lang: string): Promise<SpecimenDetailView | null> {
+  const morphoFallback =
+    id === MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID
+      ? buildMorphoGodartyDetailView()
+      : null;
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  if (!url || !key) return null;
+  if (!url || !key) return morphoFallback;
 
-  const supabase = createClient(url, key);
-  const { row } = await loadCatalogRowById(supabase, id);
-  if (!row) return null;
-  return toSpecimenDetail(row, lang);
+  try {
+    const supabase = createClient(url, key);
+    const { row } = await loadCatalogRowById(supabase, id);
+    if (!row) return morphoFallback;
+    return toSpecimenDetail(row, lang);
+  } catch {
+    return morphoFallback;
+  }
 }

@@ -4,6 +4,10 @@
 // ============================================================================
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { resolveCloudinaryPublicId } from '@/lib/cloudinary/url';
+import {
+  isMorphoGodartyDidiusTingomarensis,
+  MORPHO_GODARTY_NATIVE,
+} from './native/morphoGodartyDidiusTingomarensis';
 import { detectRubro, type InventoryRubroId } from './rubros';
 
 /** Normaliza media_url / public_id a un public_id Cloudinary usable por la UI. */
@@ -237,47 +241,64 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
       : [];
 
   const name = scientificName(row);
-  // Inventario 100 % desde catálogo BD (taxonomía, origen, sexo, calidad, stock…).
-  const order = str(row.taxonomy?.order_name) ?? str(row.metadata?.order) ?? null;
-  const family = str(row.taxonomy?.family_name) ?? str(row.metadata?.family) ?? null;
-  const genus = str(row.taxonomy?.genus_name) ?? str(row.metadata?.genus) ?? null;
+  // Perfil nativo SOLO para Morpho godarty didius tingomarensis (nunca otras especies).
+  const native = isMorphoGodartyDidiusTingomarensis({
+    id: row.id,
+    scientificName: name,
+    speciesName: row.species_name,
+  })
+    ? MORPHO_GODARTY_NATIVE
+    : null;
+
+  const order = native?.order ?? str(row.taxonomy?.order_name) ?? str(row.metadata?.order) ?? null;
+  const family = native?.family ?? str(row.taxonomy?.family_name) ?? str(row.metadata?.family) ?? null;
+  const genus = native?.genus ?? str(row.taxonomy?.genus_name) ?? str(row.metadata?.genus) ?? null;
   const rubro = detectRubro({
     mediaHint: primaryImage,
     order,
     family,
     genus,
-    scientificName: name,
+    scientificName: native?.scientificName ?? name,
   });
+
+  const resolvedColors = native?.colors
+    ? [...native.colors]
+    : colors.length > 0
+      ? colors
+      : [];
 
   return {
     id: row.id,
-    code: row.catalog_code ?? row.specimen_code ?? '—',
-    scientificName: name,
-    commonName: str(attrs.common_name) ?? str(row.metadata?.common_name) ?? null,
+    code: native?.catalogCode ?? row.catalog_code ?? row.specimen_code ?? '—',
+    scientificName: native?.scientificName ?? name,
+    commonName:
+      native?.commonName ?? str(attrs.common_name) ?? str(row.metadata?.common_name) ?? null,
     order,
     family,
     genus,
     regionName:
+      native?.regionName ??
       str(region?.locality) ??
       str(row.metadata?.region) ??
       str(region?.region_name) ??
       str(region?.name) ??
       null,
-    regionCode: str(region?.country) ?? null,
+    regionCode: native?.regionCode ?? str(region?.country) ?? null,
     country:
+      native?.country ??
       str(attrs.country_origin) ??
       (str(region?.country) === 'PE' ? 'Perú' : str(region?.country)) ??
       str(region?.locality),
-    sex: str(attrs.sex) ?? str(attrs.sex_label) ?? str(row.attributes?.sex_type) ?? null,
-    grade: str(attrs.grade_code) ?? str(attrs.quality) ?? str(row.attributes?.quality) ?? null,
-    gradeName: str(attrs.grade_name) ?? str(attrs.quality_label),
+    sex: native?.sex ?? str(attrs.sex) ?? str(attrs.sex_label) ?? str(row.attributes?.sex_type) ?? null,
+    grade: native?.grade ?? str(attrs.grade_code) ?? str(attrs.quality) ?? str(row.attributes?.quality) ?? null,
+    gradeName: native ? native.gradeName : str(attrs.grade_name) ?? str(attrs.quality_label),
     wingspanMm:
       num(attrs.wingspan_mm) ??
       num(Array.isArray(attrs.size_range_cm) ? attrs.size_range_cm[1] : undefined),
-    colors,
-    price: num(row.price_amount) ?? num(row.pricing?.retail_price),
-    currency: row.currency ?? row.pricing?.currency ?? 'USD',
-    stock: typeof row.stock === 'number' ? row.stock : 0,
+    colors: resolvedColors,
+    price: native?.price ?? num(row.price_amount) ?? num(row.pricing?.retail_price),
+    currency: native?.currency ?? row.currency ?? row.pricing?.currency ?? 'USD',
+    stock: native?.stock ?? (typeof row.stock === 'number' ? row.stock : 0),
     images,
     primaryImage,
     secondaryImage: ventral?.publicId ?? null,

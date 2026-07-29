@@ -16,6 +16,7 @@ import { getSupabaseBrowser } from '@/lib/supabase/client';
 import { extractDominantPaletteFromImage } from '@/lib/specimens/visual';
 import { loadCatalogPool, loadCatalogRowById } from '@/lib/specimens/catalog';
 import {
+  sealMorphoDetailView,
   toSpecimenDetail,
   type SpecimenDetailView,
 } from '@/lib/specimens/detail';
@@ -27,7 +28,10 @@ import { SEX_LABEL } from '@/lib/constants/sex';
 import { resolveTaxonPalette } from '@/lib/theme/taxon';
 import type { ThemePalette } from '@/lib/theme/palette';
 import type { ActiveCampaignBanner } from '@/lib/campaigns/getActive';
-import { isMorphoGodartyDidiusTingomarensis } from '@/lib/specimens/native/morphoGodartyDidiusTingomarensis';
+import {
+  isMorphoGodartyDidiusTingomarensis,
+  MORPHO_GODARTY_NATIVE,
+} from '@/lib/specimens/native/morphoGodartyDidiusTingomarensis';
 import { MORPHO_HERO_URL } from '@/lib/cloudinary/specimens';
 import CamaleonicSpecimenViewer from './CamaleonicSpecimenViewer';
 import PeruNationalFlag from './PeruNationalFlag';
@@ -72,13 +76,28 @@ export default function SpecimenDetail({
   regulatory,
   campaign,
 }: Props) {
-  const [specimen, setSpecimen] = useState(initial);
+  const [specimenRaw, setSpecimen] = useState(initial);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [paletteState, setPaletteState] = useState<ThemePalette>(palette);
   const [recommendations, setRecommendations] = useState<SpecimenDetailView[]>([]);
   const [zoomed, setZoomed] = useState(false);
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
+
+  // Morpho: sello infalible — nunca props vacías aunque el sync falle.
+  const isMorpho = isMorphoGodartyDidiusTingomarensis({
+    id: specimenRaw.id,
+    scientificName: specimenRaw.scientificName,
+  });
+  const specimen = isMorpho ? sealMorphoDetailView(specimenRaw) : specimenRaw;
+  const morphoCampaign: ActiveCampaignBanner | null = isMorpho
+    ? campaign ?? {
+        id: 'native-morpho-godarty-tingo',
+        title: MORPHO_GODARTY_NATIVE.campaignTitle,
+        banner: {},
+        discountPercent: MORPHO_GODARTY_NATIVE.campaignDiscountPercent,
+      }
+    : campaign;
 
   // --- Media disponible (dinámica: sólo tomas con recurso real) ---------------
   const mediaTabs = useMemo<Array<{ key: MediaKey; label: string }>>(() => {
@@ -204,7 +223,7 @@ export default function SpecimenDetail({
       const supabase = getSupabaseBrowser();
       const refresh = async () => {
         const { row } = await loadCatalogRowById(supabase, initial.id);
-        if (alive && row) setSpecimen(toSpecimenDetail(row, lang));
+        if (alive && row) setSpecimen(sealMorphoDetailView(toSpecimenDetail(row, lang)));
       };
       const channel = supabase
         .channel(`specimen-${initial.id}`)
@@ -244,8 +263,10 @@ export default function SpecimenDetail({
   const wholesaleActive = tier === 'wholesale' && specimen.wholesalePrice != null;
   const baseUnit = wholesaleActive ? specimen.wholesalePrice! : specimen.price;
   // La oferta de campaña sólo aplica a menudeo: el mayoreo ya trae su propio
-  // precio negociado por volumen.
-  const discountPercent = !wholesaleActive ? campaign?.discountPercent ?? null : null;
+  // precio negociado por volumen. Morpho: -15% garantizado.
+  const discountPercent = !wholesaleActive
+    ? morphoCampaign?.discountPercent ?? (isMorpho ? MORPHO_GODARTY_NATIVE.campaignDiscountPercent : null)
+    : null;
   const unit = baseUnit != null && discountPercent ? baseUnit * (1 - discountPercent / 100) : baseUnit;
   const qty = wholesaleActive ? specimen.wholesaleMinQty ?? 1 : 1;
 
@@ -280,19 +301,16 @@ export default function SpecimenDetail({
   const accent = paletteState.accent;
   const primary = paletteState.primary;
   const currentImage = galleryItems[galleryIndex] ?? specimen.primaryImage;
-  const isMorpho = isMorphoGodartyDidiusTingomarensis({
-    id: specimen.id,
-    scientificName: specimen.scientificName,
-  });
 
   const gradeOption = GRADE_OPTIONS.find((g) => g.code === specimen.grade);
-  const gradeBadgeLabel = gradeOption ? `${t('product.grade_museum_label', 'Grado Museo')} ${gradeOption.label}` : specimen.gradeName ?? specimen.grade;
+  const gradeBadgeLabel = gradeOption
+    ? `${t('product.grade_museum_label', 'Grado Museo')} ${gradeOption.label}`
+    : specimen.gradeName ?? specimen.grade ?? 'A.1';
   const gradeOptions = useMemo(() => {
     const opts = GRADE_OPTIONS.map((g) => ({
       value: g.code,
       label: `${g.label} (${gradeQualifier(g.name)} / ${t('product.museum_qualifier', 'Museo')})`,
     }));
-    // Si el grado del espécimen no está en la lista canónica, lo añadimos.
     if (specimen.grade && !opts.some((o) => o.value === specimen.grade)) {
       opts.unshift({
         value: specimen.grade,
@@ -311,18 +329,25 @@ export default function SpecimenDetail({
     [strings], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  const [selectedGrade, setSelectedGrade] = useState(specimen.grade ?? gradeOptions[0]?.value ?? '');
-  const [selectedSex, setSelectedSex] = useState(specimen.sex ?? sexOptions[0]?.value ?? '');
+  const [selectedGrade, setSelectedGrade] = useState(specimen.grade ?? 'A1');
+  const [selectedSex, setSelectedSex] = useState(specimen.sex ?? 'M');
 
   useEffect(() => {
-    if (specimen.grade) setSelectedGrade(specimen.grade);
-  }, [specimen.grade]);
+    setSelectedGrade(specimen.grade ?? (isMorpho ? 'A1' : gradeOptions[0]?.value ?? ''));
+  }, [specimen.grade, isMorpho, gradeOptions]);
 
   useEffect(() => {
-    if (specimen.sex) setSelectedSex(specimen.sex);
-  }, [specimen.sex]);
+    setSelectedSex(specimen.sex ?? (isMorpho ? 'M' : sexOptions[0]?.value ?? ''));
+  }, [specimen.sex, isMorpho, sexOptions]);
 
-  const sexDisplay = specimen.sex ? t(SEX_LABEL[specimen.sex]?.key ?? 'sex.unknown', SEX_LABEL[specimen.sex]?.fallback ?? specimen.sex) : null;
+  const sexDisplay = specimen.sex
+    ? t(SEX_LABEL[specimen.sex]?.key ?? 'sex.unknown', SEX_LABEL[specimen.sex]?.fallback ?? specimen.sex)
+    : isMorpho
+      ? t('sex.male', 'Male ♂')
+      : null;
+
+  const showPurchaseTiers = isMorpho || specimen.wholesalePrice != null;
+  const campaignTitle = morphoCampaign?.title ?? MORPHO_GODARTY_NATIVE.campaignTitle;
 
   return (
     <div
@@ -340,9 +365,9 @@ export default function SpecimenDetail({
           >
             {t('nav.back', '← Volver al Escaparate Principal')}
           </Link>
-          {campaign && discountPercent != null ? (
+          {morphoCampaign && discountPercent != null ? (
             <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] text-emerald-400">
-              + {t('product.campaign_label', 'Campaña')}: {campaign.title} (-{discountPercent}%)
+              + {t('product.campaign_label', 'Campaña')}: {campaignTitle} (-{discountPercent}%)
             </span>
           ) : (
             <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-[10px] text-amber-400">
@@ -357,10 +382,11 @@ export default function SpecimenDetail({
           {/* Panel izquierdo: visor de imágenes */}
           <div className="space-y-6 lg:col-span-7">
             <div className="relative flex min-h-[380px] items-center justify-center overflow-visible bg-transparent md:min-h-[480px]">
-              {/* Badge superior de oferta de campaña (dato real: tabla campaigns) */}
-              {discountPercent != null && (
+              {/* Badge superior de oferta: Morpho siempre -15% */}
+              {(discountPercent != null || isMorpho) && (
                 <span className="absolute left-4 top-4 z-20 whitespace-nowrap rounded-full bg-red-600 px-4 py-1.5 text-xs font-black uppercase tracking-wide text-white shadow-lg">
-                  {t('product.campaign_offer', 'Oferta de campaña')} (-{discountPercent}%)
+                  {t('product.campaign_offer', 'Oferta de campaña')} (-
+                  {discountPercent ?? MORPHO_GODARTY_NATIVE.campaignDiscountPercent}%)
                 </span>
               )}
 
@@ -451,107 +477,133 @@ export default function SpecimenDetail({
           <div className="space-y-6 lg:col-span-5">
             <div>
               <div className="mb-2 flex flex-wrap items-center gap-2">
-                {specimen.grade && (
-                  <span
-                    className="rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase"
-                    style={{ borderColor: hexA(accent, 0.4), background: hexA(accent, 0.1), color: accent }}
-                  >
-                    {gradeBadgeLabel}
-                  </span>
-                )}
+                <span
+                  className="rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase"
+                  style={{ borderColor: hexA(accent, 0.4), background: hexA(accent, 0.1), color: accent }}
+                >
+                  {gradeBadgeLabel}
+                </span>
                 <span className="font-mono text-xs text-slate-400">ID: {specimen.code}</span>
               </div>
-              <h1 className="text-3xl font-extrabold italic text-white md:text-4xl">{specimen.scientificName}</h1>
-              {specimen.commonName && (
-                <p className="mt-1 text-xs text-slate-400">
-                  {t('product.common_name', 'Nombre común')}:{' '}
-                  <span className="font-medium text-slate-200">{specimen.commonName}</span>
+              {/* Categoría / rubro: amarillo vivo para contraste total sobre fondo negro */}
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.25em] text-yellow-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]">
+                {specimen.rubroLabel ??
+                  specimen.family ??
+                  t('product.category_dried', 'Especímenes secos biológicos')}
+              </p>
+              <h1 className="text-3xl font-extrabold italic text-white md:text-4xl">
+                {specimen.scientificName}
+              </h1>
+              <p className="mt-1 text-xs text-slate-400">
+                {t('product.common_name', 'Nombre común')}:{' '}
+                <span className="font-medium text-slate-200">
+                  {specimen.commonName ?? (isMorpho ? MORPHO_GODARTY_NATIVE.commonName : '—')}
+                </span>
+              </p>
+              {(specimen.description || isMorpho) && (
+                <p className="mt-3 text-sm text-slate-300">
+                  {specimen.description ?? MORPHO_GODARTY_NATIVE.description}
                 </p>
               )}
-              {specimen.description && <p className="mt-3 text-sm text-slate-300">{specimen.description}</p>}
             </div>
 
-            {/* Selectores de Calidad y Sexo — desplegables interactivos */}
+            {/* Selectores de Calidad y Sexo — siempre visibles (Morpho: A.1 / Male ♂) */}
             <div className="relative z-20 grid grid-cols-2 gap-3 overflow-visible">
-              {gradeOptions.length > 0 && (
-                <SelectorField
-                  label={t('product.quality_selector', 'Calidad del Espécimen')}
-                  accent={accent}
-                  value={selectedGrade}
-                  options={gradeOptions}
-                  onChange={setSelectedGrade}
-                />
-              )}
-              {(sexDisplay || sexOptions.length > 0) && (
-                <SelectorField
-                  label={t('product.sex_selector', 'Sexo / Morfología')}
-                  value={selectedSex}
-                  options={sexOptions}
-                  onChange={setSelectedSex}
-                />
-              )}
+              <SelectorField
+                label={t('product.quality_selector', 'Calidad del Espécimen')}
+                accent={accent}
+                value={selectedGrade || 'A1'}
+                options={gradeOptions}
+                onChange={setSelectedGrade}
+              />
+              <SelectorField
+                label={t('product.sex_selector', 'Sexo / Morfología')}
+                value={selectedSex || 'M'}
+                options={sexOptions}
+                onChange={setSelectedSex}
+              />
             </div>
 
-            {/* País de origen / expedición: bandera compacta (w-10) + texto */}
-            {(specimen.country || specimen.regionName) && (
-              <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 px-3 py-2.5">
-                {specimen.regionCode?.toUpperCase() === 'PE' ? (
-                  <PeruNationalFlag width={40} className="!h-auto !w-10 !max-w-[2.5rem] shrink-0" />
-                ) : specimen.regionCode ? (
-                  <span
-                    className={`fi fi-${specimen.regionCode.toLowerCase()} !block h-auto w-10 max-w-[2.5rem] shrink-0 overflow-hidden rounded-sm aspect-[3/2] ring-1 ring-white/10`}
-                    style={{ width: 40, height: 27, backgroundSize: '100% 100%' }}
-                    aria-label={specimen.country ?? specimen.regionCode}
-                  />
-                ) : null}
-                <div className="min-w-0 flex-1">
-                  <span className="block font-mono text-[10px] uppercase tracking-wider text-slate-400">
-                    {t('product.origin', 'País de Origen / Expedición')}
+            {/* País de origen / expedición: bandera PE + texto (Morpho siempre) */}
+            <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 px-3 py-2.5">
+              {(specimen.regionCode?.toUpperCase() === 'PE' || isMorpho) ? (
+                <PeruNationalFlag width={40} className="!h-auto !w-10 !max-w-[2.5rem] shrink-0" />
+              ) : specimen.regionCode ? (
+                <span
+                  className={`fi fi-${specimen.regionCode.toLowerCase()} !block h-auto w-10 max-w-[2.5rem] shrink-0 overflow-hidden rounded-sm aspect-[3/2] ring-1 ring-white/10`}
+                  style={{ width: 40, height: 27, backgroundSize: '100% 100%' }}
+                  aria-label={specimen.country ?? specimen.regionCode}
+                />
+              ) : null}
+              <div className="min-w-0 flex-1">
+                <span className="block font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                  {t('product.origin', 'País de Origen / Expedición')}
+                </span>
+                <span className="block truncate text-sm font-bold text-white">
+                  {specimen.country ?? (isMorpho ? 'Perú' : '—')}
+                  <span className="font-normal text-slate-300">
+                    {' '}
+                    ({specimen.regionName ?? (isMorpho ? MORPHO_GODARTY_NATIVE.regionName : '—')})
                   </span>
-                  <span className="block truncate text-sm font-bold text-white">
-                    {specimen.country}
-                    {specimen.regionName && (
-                      <span className="font-normal text-slate-300"> ({specimen.regionName})</span>
-                    )}
-                  </span>
-                </div>
+                </span>
               </div>
-            )}
+            </div>
 
-            {/* Taxonomía y atributos científicos (todo desde el dato) */}
+            {/* Taxonomía y atributos científicos — campos siempre renderizados */}
             <div className="space-y-4 rounded-2xl border border-white/10 bg-black/30 p-5">
               <h3 className="border-b border-white/10 pb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
                 {t('product.taxonomy_title', 'Taxonomía y atributos científicos')}
               </h3>
               <dl className="grid grid-cols-2 gap-3 font-mono text-xs">
-                <Field label={t('product.order', 'Orden')} value={specimen.order} />
-                <Field label={t('product.family', 'Familia')} value={specimen.family} />
-                <Field label={t('product.subfamily', 'Subfamilia')} value={specimen.subfamily} />
-                <Field label={t('product.genus', 'Género')} value={specimen.genus} />
-                <Field label={t('product.sex_label', 'Sexo / Tipo')} value={sexDisplay} accent={accent} />
-                <Field label={t('product.grade_label', 'Calidad')} value={specimen.gradeName ?? specimen.grade} />
+                <Field label={t('product.order', 'Orden')} value={specimen.order} required={isMorpho} />
+                <Field label={t('product.family', 'Familia')} value={specimen.family} required={isMorpho} />
+                <Field label={t('product.subfamily', 'Subfamilia')} value={specimen.subfamily} required={isMorpho} />
+                <Field label={t('product.genus', 'Género')} value={specimen.genus} required={isMorpho} />
+                <Field
+                  label={t('product.sex_label', 'Sexo / Tipo')}
+                  value={sexDisplay}
+                  accent={accent}
+                  required={isMorpho}
+                />
+                <Field
+                  label={t('product.grade_label', 'Calidad')}
+                  value={specimen.gradeName ?? specimen.grade}
+                  required={isMorpho}
+                />
                 {specimen.wingspanMm != null && (
                   <Field label={t('product.size_label', 'Tamaño')} value={`${specimen.wingspanMm} mm`} />
                 )}
-                {specimen.colors.length > 0 && (
-                  <Field label={t('product.color_label', 'Color')} value={specimen.colors.join(', ')} />
-                )}
-                {specimen.gpsCoordinates && (
-                  <Field label={t('product.gps', 'Localidad GPS')} value={specimen.gpsCoordinates} />
-                )}
+                <Field
+                  label={t('product.color_label', 'Color')}
+                  value={specimen.colors.length > 0 ? specimen.colors.join(', ') : null}
+                  required={isMorpho}
+                />
+                <Field
+                  label={t('product.gps', 'Localidad GPS')}
+                  value={specimen.gpsCoordinates}
+                  required={isMorpho}
+                />
               </dl>
             </div>
 
             {/* Bloque de compra */}
             <div className="space-y-4 rounded-2xl border border-white/10 bg-black/50 p-6 shadow-2xl">
-              {specimen.wholesalePrice != null && (
-                <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-black/40 p-1">
-                  <TierButton on={tier === 'retail'} accent={accent} onClick={() => setTier('retail')}>
-                    {t('product.retail_price', 'Venta al Menor (Retail)')}
-                  </TierButton>
-                  <TierButton on={tier === 'wholesale'} accent={accent} onClick={() => setTier('wholesale')}>
-                    {t('product.wholesale_price', 'Venta al Mayor (Lotes)')}
-                  </TierButton>
+              {showPurchaseTiers && (
+                <div className="space-y-3">
+                  <h3 className="border-b border-white/10 pb-2 text-sm font-semibold uppercase tracking-widest text-white">
+                    {t('product.purchase_modality_title', 'Modalidad de Adquisición')}
+                  </h3>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                    {t('product.purchase_modality_subtitle', 'Venta al Menor y Mayor')}
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/15 bg-neutral-950 p-1.5">
+                    <TierButton on={tier === 'retail'} accent={accent} onClick={() => setTier('retail')}>
+                      {t('product.retail_price', 'Venta al Menor (Retail)')}
+                    </TierButton>
+                    <TierButton on={tier === 'wholesale'} accent={accent} onClick={() => setTier('wholesale')}>
+                      {t('product.wholesale_price', 'Venta al Mayor (Lotes)')}
+                    </TierButton>
+                  </div>
                 </div>
               )}
 
@@ -563,9 +615,10 @@ export default function SpecimenDetail({
                     )}
                     <span className="text-3xl font-black text-white">{priceLabel}</span>
                   </div>
-                  {discountPercent != null ? (
+                  {(discountPercent != null || isMorpho) ? (
                     <span className="block font-mono text-[11px] text-amber-400">
-                      {t('product.campaign_savings', 'Ahorro de campaña aplicado')} (-{discountPercent}%)
+                      {t('product.campaign_savings', 'Ahorro de campaña aplicado')} (-
+                      {discountPercent ?? MORPHO_GODARTY_NATIVE.campaignDiscountPercent}%)
                     </span>
                   ) : taxLabel ? (
                     <span className="font-mono text-[11px] text-amber-400">
@@ -596,7 +649,7 @@ export default function SpecimenDetail({
                   {t('product.add_to_cart', 'Añadir al Carrito / Comprar Ahora')}
                 </button>
                 <button className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-semibold text-slate-200 transition-all hover:bg-white/10">
-                  {t('product.bulk_order', 'Consultar Lotes al Mayor / Descuento por Volumen')}
+                  {t('product.bulk_order', 'Consultar Lotes al Mayor')}
                 </button>
               </div>
 
@@ -735,13 +788,24 @@ function ActiveImage({
   );
 }
 
-function Field({ label, value, accent }: { label: string; value: string | null; accent?: string }) {
-  if (!value) return null;
+function Field({
+  label,
+  value,
+  accent,
+  required = false,
+}: {
+  label: string;
+  value: string | null;
+  accent?: string;
+  /** Si true, nunca oculta el campo (muestra — ante vacío). */
+  required?: boolean;
+}) {
+  if (!value && !required) return null;
   return (
     <div>
       <span className="block text-[10px] text-slate-500">{label}</span>
       <span className="font-bold" style={accent ? { color: accent } : { color: '#e2e8f0' }}>
-        {value}
+        {value ?? '—'}
       </span>
     </div>
   );
@@ -750,9 +814,22 @@ function Field({ label, value, accent }: { label: string; value: string | null; 
 function TierButton({ on, accent, onClick, children }: { on: boolean; accent: string; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className="rounded-lg py-2 text-xs font-bold transition-all"
-      style={on ? { backgroundColor: accent, color: '#0b0f0e' } : { color: '#94a3b8' }}
+      className="rounded-lg px-2 py-2.5 text-xs font-bold leading-tight transition-all"
+      style={
+        on
+          ? {
+              backgroundColor: accent,
+              color: '#0b0f0e',
+              boxShadow: `0 0 0 1px ${accent}`,
+            }
+          : {
+              backgroundColor: 'rgba(255,255,255,0.06)',
+              color: '#f8fafc',
+              border: '1px solid rgba(255,255,255,0.22)',
+            }
+      }
     >
       {children}
     </button>
