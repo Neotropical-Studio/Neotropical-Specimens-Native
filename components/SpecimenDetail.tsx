@@ -11,7 +11,7 @@ import { useMemo, useState, useEffect, useRef, useCallback, type CSSProperties }
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ChevronDown, ShoppingBag } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import 'flag-icons/css/flag-icons.css';
 import { getSupabaseBrowser } from '@/lib/supabase/client';
 import { extractDominantPaletteFromImage } from '@/lib/specimens/visual';
@@ -38,8 +38,6 @@ import { pickRelatedSpecimens } from '@/lib/specimens/related';
 import { useCart } from '@/components/CartProvider';
 import CamaleonicSpecimenViewer from './CamaleonicSpecimenViewer';
 import PeruNationalFlag from './PeruNationalFlag';
-import CartCurrencySwitcher from '@/components/CartCurrencySwitcher';
-import { useDisplayCurrency } from '@/lib/cart/use-display-currency';
 
 interface Props {
   specimen: SpecimenDetailView;
@@ -331,27 +329,10 @@ export default function SpecimenDetail({
     };
   }, [unit, baseUnit, discountPercent, qty, wholesaleActive, specimen.id, specimen.code, specimen.scientificName, regulatory.country]);
 
-  const quoteCurrency = (quote?.currency ?? currency ?? specimen.currency ?? 'USD').toUpperCase();
-  const {
-    displayCurrency: viewCurrency,
-    setDisplayCurrency: setViewCurrency,
-    options: currencyOptions,
-    formatFrom,
-    toUsd,
-  } = useDisplayCurrency({
-    country: regulatory.country ?? 'PE',
-    locale,
-  });
-
-  const priceLabel = quote
-    ? formatFrom(quote.total / 100, quoteCurrency)
-    : t('product.inquire', 'Consultar precio');
-  const originalPriceLabel = originalQuote
-    ? formatFrom(originalQuote.total / 100, quoteCurrency)
-    : null;
-  const taxLabel =
-    quote && quote.tax > 0 ? formatFrom(quote.tax / 100, quoteCurrency) : null;
-  const priceUsdRef = quote ? toUsd(quote.total / 100, quoteCurrency) : null;
+  const displayCurrency = quote?.currency ?? currency ?? specimen.currency;
+  const priceLabel = quote ? formatMoney(quote.total / 100, displayCurrency, locale) : t('product.inquire', 'Consultar precio');
+  const originalPriceLabel = originalQuote ? formatMoney(originalQuote.total / 100, displayCurrency, locale) : null;
+  const taxLabel = quote && quote.tax > 0 ? formatMoney(quote.tax / 100, displayCurrency, locale) : null;
 
   const accent = paletteState.accent;
   const primary = paletteState.primary;
@@ -386,8 +367,7 @@ export default function SpecimenDetail({
 
   const [selectedGrade, setSelectedGrade] = useState(specimen.grade ?? 'A1');
   const [selectedSex, setSelectedSex] = useState(specimen.sex ?? 'M');
-  const [cartFlash, setCartFlash] = useState<string | null>(null);
-  const { addItem, count } = useCart();
+  const { addItem } = useCart();
   const router = useRouter();
 
   useEffect(() => {
@@ -398,58 +378,48 @@ export default function SpecimenDetail({
     setSelectedSex(specimen.sex ?? (isMorpho ? 'M' : sexOptions[0]?.value ?? ''));
   }, [specimen.sex, isMorpho, sexOptions]);
 
-  const handleAddToCart = useCallback(
-    (goCheckout: boolean) => {
-      if (unit == null || specimen.stock <= 0) return;
-      const thumb = isMorpho
-        ? MORPHO_HERO_URL
-        : specimen.primaryImage
-          ? imageUrl(specimen.primaryImage, ['w_160', 'c_fit', 'f_auto'])
-          : null;
-      addItem({
-        id: specimen.id,
-        sku: specimen.code,
-        title: specimen.scientificName,
-        quantity: qty,
-        unitPrice: Math.round(unit * 100),
-        rubro: 'specimens-3d',
-        href: `/${lang}/product/${specimen.id}`,
-        image: thumb,
-        grade: selectedGrade || specimen.grade,
-        sex: selectedSex || specimen.sex,
-        tier: wholesaleActive ? 'wholesale' : 'retail',
-        currencyHint: viewCurrency,
-        attributes: {
-          grade: selectedGrade || specimen.grade,
-          sex: selectedSex || specimen.sex,
-          tier: wholesaleActive ? 'wholesale' : 'retail',
-        },
-      });
-      setCartFlash(t('cart.added', 'Añadido al carrito'));
-      window.setTimeout(() => setCartFlash(null), 2200);
-      if (goCheckout) router.push(`/${lang}/cart`);
-    },
-    [
-      unit,
-      specimen.stock,
-      specimen.id,
-      specimen.code,
-      specimen.scientificName,
-      specimen.primaryImage,
-      specimen.grade,
-      specimen.sex,
-      isMorpho,
-      qty,
-      lang,
-      selectedGrade,
-      selectedSex,
-      wholesaleActive,
-      viewCurrency,
-      addItem,
-      router,
-      strings,
-    ],
-  );
+  // Solo cablea el botón existente — sin cambiar el diseño de la ficha.
+  const handleAddToCart = useCallback(() => {
+    if (unit == null || specimen.stock <= 0) return;
+    const thumb = isMorpho
+      ? MORPHO_HERO_URL
+      : specimen.primaryImage
+        ? imageUrl(specimen.primaryImage, ['w_160', 'c_fit', 'f_auto'])
+        : null;
+    addItem({
+      id: specimen.id,
+      sku: specimen.code,
+      title: specimen.scientificName,
+      quantity: qty,
+      unitPrice: Math.round(unit * 100),
+      rubro: 'specimens-3d',
+      href: `/${lang}/product/${specimen.id}`,
+      image: thumb,
+      grade: selectedGrade || specimen.grade,
+      sex: selectedSex || specimen.sex,
+      tier: wholesaleActive ? 'wholesale' : 'retail',
+      currencyHint: displayCurrency,
+    });
+    router.push(`/${lang}/cart`);
+  }, [
+    unit,
+    specimen.stock,
+    specimen.id,
+    specimen.code,
+    specimen.scientificName,
+    specimen.primaryImage,
+    specimen.grade,
+    specimen.sex,
+    isMorpho,
+    qty,
+    lang,
+    selectedGrade,
+    selectedSex,
+    wholesaleActive,
+    displayCurrency,
+    addItem,
+    router,
+  ]);
 
   const handleBulkInquiry = useCallback(() => {
     setTier('wholesale');
@@ -471,7 +441,7 @@ export default function SpecimenDetail({
     window.location.href = `mailto:contacto@houseinsectsofperu.com?subject=${encodeURIComponent(
       `Lotes ${specimen.code}`,
     )}&body=${msg}`;
-  }, [specimen, selectedGrade, selectedSex, lang, strings]);
+  }, [specimen, selectedGrade, selectedSex, lang, strings]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sexDisplay = specimen.sex
     ? t(SEX_LABEL[specimen.sex]?.key ?? 'sex.unknown', SEX_LABEL[specimen.sex]?.fallback ?? specimen.sex)
@@ -515,32 +485,15 @@ export default function SpecimenDetail({
           >
             {t('nav.back', '← Volver al Escaparate Principal')}
           </Link>
-          <div className="flex items-center gap-3">
-            {cartFlash ? (
-              <span className="font-mono text-[10px] text-emerald-300">{cartFlash}</span>
-            ) : null}
-            <Link
-              href={`/${lang}/cart`}
-              className="relative inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 font-mono text-[11px] text-slate-200 transition hover:border-emerald-400/40 hover:text-emerald-300"
-            >
-              <ShoppingBag size={14} />
-              {t('nav.cart', 'Carrito')}
-              {count > 0 ? (
-                <span className="grid h-4 min-w-4 place-items-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-emerald-950">
-                  {count}
-                </span>
-              ) : null}
-            </Link>
-            {morphoCampaign && discountPercent != null ? (
-              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] text-emerald-400">
-                + {t('product.campaign_label', 'Campaña')}: {campaignTitle} (-{discountPercent}%)
-              </span>
-            ) : (
-              <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-[10px] text-amber-400">
-                {t(`regulatory.${regulatory.citesStatus}`, 'No-CITES · espécimen legal para comercio')}
-              </span>
-            )}
-          </div>
+          {morphoCampaign && discountPercent != null ? (
+            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] text-emerald-400">
+              + {t('product.campaign_label', 'Campaña')}: {campaignTitle} (-{discountPercent}%)
+            </span>
+          ) : (
+            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-[10px] text-amber-400">
+              {t(`regulatory.${regulatory.citesStatus}`, 'No-CITES · espécimen legal para comercio')}
+            </span>
+          )}
         </div>
       </header>
 
@@ -817,14 +770,6 @@ export default function SpecimenDetail({
                 </div>
               )}
 
-              <CartCurrencySwitcher
-                options={currencyOptions}
-                value={viewCurrency}
-                onChange={setViewCurrency}
-                t={t}
-                compact
-              />
-
               <div className="flex items-baseline justify-between pt-1">
                 <div>
                   <div className="flex items-baseline gap-2">
@@ -833,11 +778,6 @@ export default function SpecimenDetail({
                     )}
                     <span className="text-3xl font-black text-white">{priceLabel}</span>
                   </div>
-                  {priceUsdRef != null && viewCurrency !== 'USD' ? (
-                    <span className="mt-0.5 block font-mono text-[10px] text-slate-500">
-                      ≈ {formatMoney(priceUsdRef, 'USD', locale)}
-                    </span>
-                  ) : null}
                   {(discountPercent != null || isMorpho) ? (
                     <span className="block font-mono text-[11px] text-amber-400">
                       {t('product.campaign_savings', 'Ahorro de campaña aplicado')} (-
@@ -868,7 +808,7 @@ export default function SpecimenDetail({
                 <button
                   type="button"
                   disabled={specimen.stock <= 0 || unit == null}
-                  onClick={() => handleAddToCart(true)}
+                  onClick={handleAddToCart}
                   className="w-full rounded-xl bg-emerald-500 py-3.5 font-bold text-emerald-950 shadow-lg transition-all hover:bg-emerald-400 disabled:opacity-40"
                 >
                   {t('product.add_to_cart', 'Añadir al Carrito / Comprar Ahora')}
