@@ -5,15 +5,18 @@ import CameleonThemeStyle from '@/components/CameleonThemeStyle';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { resolveLocale } from '@/lib/i18n/locales';
 import { THEME_PALETTE } from '@/lib/geo/resolve';
+import { brandAppleIconUrl, brandFaviconUrl } from '@/lib/cloudinary/brand';
 import { cloudinaryImageUrl } from '@/lib/cloudinary/url';
+import { BRAND_CLOUDINARY } from '@/lib/cloudinary/brand';
 
 // Base absoluta obligatoria para que canonical y hreflang de /[lang] salgan como
 // URLs absolutas: Google ignora los hreflang relativos.
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-const faviconId = process.env.NEXT_PUBLIC_CLOUDINARY_FAVICON_ID || 'neotropical-favicon';
-const faviconUrl = cloudinaryImageUrl(faviconId, ['w_64', 'h_64', 'c_scale']);
-const appleIconUrl = cloudinaryImageUrl(faviconId, ['w_180', 'h_180', 'c_scale']);
+// Favicon / Apple icon: public_id reales de Cloudinary (FAVICON/…).
+const faviconUrl = brandFaviconUrl(['w_64', 'h_64', 'c_fit']);
+const appleIconUrl = brandAppleIconUrl(['w_180', 'h_180', 'c_fit']);
+const faviconIcoUrl = cloudinaryImageUrl(BRAND_CLOUDINARY.faviconIco, ['w_32', 'h_32', 'c_fit']);
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -27,7 +30,10 @@ export const metadata: Metadata = {
     title: 'EntmoEdge',
   },
   icons: {
-    icon: faviconUrl,
+    icon: [
+      { url: faviconUrl, sizes: '32x32', type: 'image/png' },
+      { url: faviconIcoUrl, sizes: 'any' },
+    ],
     shortcut: faviconUrl,
     apple: appleIconUrl,
   },

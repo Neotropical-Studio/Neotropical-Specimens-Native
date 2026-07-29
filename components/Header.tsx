@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Globe2, Menu, X } from 'lucide-react';
 import type { EnabledLocale } from '@/lib/i18n/locales';
+import { BRAND_CLOUDINARY } from '@/lib/cloudinary/brand';
 import { cloudinaryImageUrl } from '@/lib/cloudinary/url';
 import RegulatoryStrip from './RegulatoryStrip';
 
@@ -19,20 +20,10 @@ export default function Header({ strings, lang, locales }: Props) {
   const [logoFailed, setLogoFailed] = useState(false);
   const [globeFailed, setGlobeFailed] = useState(false);
 
-  // Sello oficial real de la empresa (Cloudinary, carpeta `LOGOS/LOGOS
-  // SPECIEMENES SECOS BIOLOGICOS NO-CITES/logo_ztmh8j.png`) — nunca un ícono
-  // genérico inventado. El recorte 1:1 centrado deja fuera el texto de
-  // certificación de borde (ilegible al tamaño del header) sin tocar el
-  // arte real. `NEXT_PUBLIC_CLOUDINARY_LOGO_ID`/`..._GLOBE_ID` permiten
-  // reemplazarlo por otra pieza real sin tocar código.
-  const logoId = process.env.NEXT_PUBLIC_CLOUDINARY_LOGO_ID || 'logo_ztmh8j';
-  const globeId = process.env.NEXT_PUBLIC_CLOUDINARY_GLOBE_ID || 'Rotating_earth__large_vwcedm';
-  // c_fit: conserva el anillo dorado oficial ("NEOTROPICAL SPECIMENS" /
-  // "HOUSE INSECTS OF PERU") sin recortar el sello de Cloudinary.
-  const logoSrc = cloudinaryImageUrl(logoId, ['w_192', 'h_192', 'c_fit']);
-  const globeSrc = cloudinaryImageUrl(globeId, ['w_48', 'h_48', 'c_fill', 'g_center']);
+  // Identificadores reales de Cloudinary (lib/cloudinary/brand.ts).
+  const logoSrc = cloudinaryImageUrl(BRAND_CLOUDINARY.logo, ['w_192', 'h_192', 'c_fit']);
+  const globeSrc = cloudinaryImageUrl(BRAND_CLOUDINARY.globe, ['w_48', 'h_48', 'c_fill', 'g_center']);
 
-  // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
 
   const nav = [
@@ -74,10 +65,7 @@ export default function Header({ strings, lang, locales }: Props) {
               />
             </span>
           ) : (
-            // Mientras el sello real no cargue (red lenta / caché fría), un
-            // monograma tipográfico neutro — nunca un ícono decorativo
-            // inventado que aparente ser la marca oficial.
-            <span className="grid h-11 w-11 place-items-center rounded-full border border-amber-400/30 bg-neutral-900 text-sm font-black tracking-tight text-amber-300">
+            <span className="grid h-12 w-12 place-items-center rounded-full border border-amber-400/30 bg-neutral-900 text-sm font-black tracking-tight text-amber-300">
               NS
             </span>
           )}
@@ -108,7 +96,7 @@ export default function Header({ strings, lang, locales }: Props) {
                 width={24}
                 height={24}
                 sizes="24px"
-                unoptimized // preserva la animación del GIF real (globo rotando)
+                unoptimized
                 className="h-5 w-5 rounded-full object-cover"
                 onError={() => setGlobeFailed(true)}
               />
@@ -130,7 +118,6 @@ export default function Header({ strings, lang, locales }: Props) {
         </div>
       </div>
 
-      {/* Menú móvil */}
       {open && (
         <div className="border-t border-white/10 bg-neutral-950/95 px-4 py-3 backdrop-blur-lg md:hidden">
           <nav className="flex flex-col gap-1">
