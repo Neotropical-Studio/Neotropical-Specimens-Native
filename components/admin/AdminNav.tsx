@@ -1,14 +1,15 @@
 import Link from 'next/link';
-import { LogOut, LayoutDashboard, Bug, ImagePlay, Megaphone, Truck } from 'lucide-react';
+import { LogOut, LayoutDashboard, Bug, ImagePlay, Megaphone, Truck, FolderInput } from 'lucide-react';
 import type { AdminUser } from '@/lib/auth/admin';
 import { signOutAction } from '@/app/admin/actions';
 
 const NAV = [
-  { href: '/admin', label: 'Panel', icon: LayoutDashboard },
-  { href: '/admin/especimenes', label: 'Taxonomía y Datos', icon: Bug },
-  { href: '/admin/multimedia', label: 'Multimedia y 3D', icon: ImagePlay },
-  { href: '/admin/campanas', label: 'Campañas', icon: Megaphone },
-  { href: '/admin/embarques', label: 'Documentos y Logística', icon: Truck },
+  { href: '/admin',             label: 'Panel',                 icon: LayoutDashboard },
+  { href: '/admin/especimenes', label: 'Taxonomía y Datos',     icon: Bug },
+  { href: '/admin/multimedia',  label: 'Multimedia y 3D',       icon: ImagePlay },
+  { href: '/admin/ingesta',     label: 'Ingesta de Activos',    icon: FolderInput },
+  { href: '/admin/campanas',    label: 'Campañas',              icon: Megaphone },
+  { href: '/admin/embarques',   label: 'Documentos y Logística', icon: Truck },
 ];
 
 export default function AdminNav({ admin }: { admin: AdminUser }) {

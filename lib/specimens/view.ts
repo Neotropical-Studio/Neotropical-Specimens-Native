@@ -194,6 +194,17 @@ function str(v: unknown): string | null {
   return typeof v === 'string' && v.trim() ? v : null;
 }
 
+/**
+ * Extracts the base sex code (M / F / P / U) from metadata.sexo strings
+ * like "3M", "M", "F", "3P", "U", handling quantity prefixes written by
+ * ingest_csv.py.
+ */
+function extractSexBase(v: unknown): string | null {
+  if (typeof v !== 'string' || !v) return null;
+  const m = v.match(/^\d*([MFPU])$/i);
+  return m ? m[1].toUpperCase() : null;
+}
+
 function num(v: unknown): number | null {
   return typeof v === 'number' && Number.isFinite(v) ? v : null;
 }
@@ -289,16 +300,44 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
       str(attrs.country_origin) ??
       (str(region?.country) === 'PE' ? 'Perú' : str(region?.country)) ??
       str(region?.locality),
-    sex: native?.sex ?? str(attrs.sex) ?? str(attrs.sex_label) ?? str(row.attributes?.sex_type) ?? null,
-    grade: native?.grade ?? str(attrs.grade_code) ?? str(attrs.quality) ?? str(row.attributes?.quality) ?? null,
-    gradeName: native ? native.gradeName : str(attrs.grade_name) ?? str(attrs.quality_label),
+    sex:
+      native?.sex ??
+      str(attrs.sex) ??
+      str(attrs.sex_label) ??
+      str(row.attributes?.sex_type) ??
+      // ingest_csv.py stores sex in metadata.sexo as "M", "F", "3P", etc.
+      extractSexBase(row.metadata?.sexo) ??
+      null,
+    grade:
+      native?.grade ??
+      str(attrs.grade_code) ??
+      str(attrs.quality) ??
+      str(row.attributes?.quality) ??
+      // ingest_csv.py stores the normalised grade in metadata.calidad_db
+      str(row.metadata?.calidad_db) ??
+      null,
+    gradeName:
+      native ? native.gradeName : str(attrs.grade_name) ?? str(attrs.quality_label),
     wingspanMm:
       num(attrs.wingspan_mm) ??
       num(Array.isArray(attrs.size_range_cm) ? attrs.size_range_cm[1] : undefined),
     colors: resolvedColors,
-    price: native?.price ?? num(row.price_amount) ?? num(row.pricing?.retail_price),
+    price:
+      native?.price ??
+      num(row.price_amount) ??
+      num(row.pricing?.retail_price) ??
+      // ingest_csv.py stores price in metadata.precio
+      (typeof row.metadata?.precio === 'number' ? row.metadata.precio : null) ??
+      null,
     currency: native?.currency ?? row.currency ?? row.pricing?.currency ?? 'USD',
-    stock: native?.stock ?? (typeof row.stock === 'number' ? row.stock : 0),
+    stock:
+      native?.stock ??
+      (typeof row.stock === 'number'
+        ? row.stock
+        // ingest_csv.py stores out_of_stock flag in metadata.out_of_stock
+        : row.metadata?.out_of_stock === true
+          ? 0
+          : 1),
     images,
     primaryImage,
     secondaryImage: ventral?.publicId ?? null,
@@ -313,7 +352,8 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
 export function searchHaystack(s: SpecimenView): string {
   return [
     s.scientificName, s.commonName, s.family, s.genus, s.order,
-    s.country, s.regionName, s.regionCode, s.code, s.grade, ...s.colors,
+    s.country, s.regionName, s.regionCode, s.code, s.grade, s.sex,
+    s.rubroLabel, ...s.colors,
   ]
     .filter(Boolean)
     .join(' ')

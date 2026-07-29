@@ -1,0 +1,11 @@
+# Dependencias para scripts/vigilante_especimenes.py y scripts/ingest_csv.py
+# Instalar con: pip install -r scripts/requirements-migrate.txt
+
+cloudinary>=1.41.0
+supabase>=2.9.0
+openai>=1.40.0
+python-dotenv>=1.0.0
+watchdog>=4.0.0
+tqdm>=4.66.0          # (opcional, para barras de progreso en scripts futuros)
+openpyxl>=3.1.0       # export_excel.py — exportación a .xlsx
+# ingest_csv.py solo usa stdlib (csv, json, logging, argparse) + supabase + python-dotenv

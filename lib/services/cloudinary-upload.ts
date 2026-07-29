@@ -14,19 +14,28 @@ interface UploadOptions {
   publicId?: string;
   tags?: string[];
   context?: Record<string, string>;
+  /** Activar eliminación de fondo con Cloudinary AI (solo imágenes). */
+  removeBg?: boolean;
 }
 
 const IMAGE_TRANSFORM = [{ fetch_format: 'auto', quality: 'auto', flags: 'strip_profile' }];
+// Cloudinary AI background removal — produce PNG/WebP con fondo transparente.
+// Se activa pasando removeBg: true en UploadOptions.
+const BG_REMOVAL_TRANSFORM = [
+  { effect: 'background_removal' },
+  { fetch_format: 'auto', quality: 'auto:best' },
+];
 const VIDEO_EAGER = [{ streaming_profile: 'hd_hls', format: 'm3u8' }];
 
 export async function uploadImage(
   file: string | Buffer,
   opts: UploadOptions = {},
 ): Promise<UploadApiResponse> {
+  const { removeBg, ...rest } = opts;
   return upload(file, 'image', {
-    ...opts,
-    transformation: IMAGE_TRANSFORM,
-    // f_auto + q_auto + fl_strip_profile
+    ...rest,
+    transformation: removeBg ? BG_REMOVAL_TRANSFORM : IMAGE_TRANSFORM,
+    ...(removeBg ? { background_removal: 'cloudinary_ai' } : {}),
   });
 }
 
