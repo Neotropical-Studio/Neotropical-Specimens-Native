@@ -429,16 +429,32 @@ export default function SpecimenDetail({
 
             {galleryItems.length > 1 && (
               <div className="flex flex-wrap gap-2">
-                {galleryItems.map((item, index) => (
-                  <button
-                    key={item}
-                    onClick={() => setGalleryIndex(index)}
-                    className="h-16 w-16 overflow-hidden rounded-xl border border-white/10 bg-black/40"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={imageUrl(item, ['w_120', 'ar_1:1', 'c_fill'])} className="h-full w-full object-cover" alt="" />
-                  </button>
-                ))}
+                {galleryItems.map((item, index) => {
+                  const thumbOn = galleryIndex === index;
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setGalleryIndex(index)}
+                      className={
+                        thumbOn
+                          ? 'h-16 w-16 overflow-hidden rounded-xl border-2 bg-black/40 transition-shadow'
+                          : 'h-16 w-16 overflow-hidden rounded-xl border border-white/10 bg-black/40 transition-shadow'
+                      }
+                      style={
+                        thumbOn
+                          ? {
+                              borderColor: accent,
+                              boxShadow: `0 0 0 1px ${hexA(accent, 0.55)}, 0 0 14px 2px ${hexA(accent, 0.55)}`,
+                            }
+                          : undefined
+                      }
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={imageUrl(item, ['w_120', 'ar_1:1', 'c_fill'])} className="h-full w-full object-cover" alt="" />
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -452,13 +468,22 @@ export default function SpecimenDetail({
                   return (
                     <button
                       key={m.key}
+                      type="button"
                       onClick={() => setActive(m.key)}
-                      className="rounded-xl border p-2.5 text-center transition-all"
-                      style={{
-                        borderColor: on ? accent : 'rgba(255,255,255,0.08)',
-                        background: on ? hexA(accent, 0.08) : 'rgba(255,255,255,0.02)',
-                        boxShadow: on ? `0 0 0 1px ${hexA(accent, 0.4)}` : 'none',
-                      }}
+                      className={
+                        on
+                          ? 'rounded-xl border-2 bg-black/40 p-2.5 text-center transition-all'
+                          : 'rounded-xl border border-white/10 bg-white/[0.02] p-2.5 text-center transition-all'
+                      }
+                      style={
+                        on
+                          ? {
+                              borderColor: accent,
+                              background: hexA(accent, 0.12),
+                              boxShadow: `0 0 0 1px ${hexA(accent, 0.45)}, 0 0 16px 3px ${hexA(accent, 0.5)}`,
+                            }
+                          : undefined
+                      }
                     >
                       <span className="block text-[9px] font-semibold uppercase tracking-widest text-slate-500">
                         {rest.length ? kicker.trim() : `${t('media.view_generic', 'Vista')} ${i + 1}`}
