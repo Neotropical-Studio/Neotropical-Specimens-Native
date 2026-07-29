@@ -5,7 +5,10 @@
 // Todo proviene de JSONB — sin literales de negocio en el código.
 // ============================================================================
 import { createClient } from '@supabase/supabase-js';
-import { MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID } from '@/lib/cloudinary/specimens';
+import {
+  MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID,
+  MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_VENTRAL_ID,
+} from '@/lib/cloudinary/specimens';
 import { loadCatalogRowById } from './catalog';
 import {
   isMorphoGodartyDidiusTingomarensis,
@@ -124,6 +127,7 @@ export function toSpecimenDetail(row: SpecimenRow, lang: string): SpecimenDetail
 export function buildMorphoGodartyDetailView(): SpecimenDetailView {
   const n = MORPHO_GODARTY_NATIVE;
   const mediaId = MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID;
+  const ventralId = MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_VENTRAL_ID;
   return {
     id: MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID,
     code: n.catalogCode,
@@ -143,9 +147,12 @@ export function buildMorphoGodartyDetailView(): SpecimenDetailView {
     price: n.price,
     currency: n.currency,
     stock: n.stock,
-    images: [{ view: 'photo', publicId: mediaId }],
+    images: [
+      { view: 'dorsal', publicId: mediaId },
+      { view: 'ventral', publicId: ventralId },
+    ],
     primaryImage: mediaId,
-    secondaryImage: null,
+    secondaryImage: ventralId,
     model3d: null,
     video: null,
     rubroId: 'dried-specimens',
@@ -157,7 +164,7 @@ export function buildMorphoGodartyDetailView(): SpecimenDetailView {
     wholesaleMinQty: n.wholesaleMinQty,
     views: {
       dorsal: mediaId,
-      ventral: null,
+      ventral: ventralId,
       lateral: null,
       macro: null,
     },
@@ -180,6 +187,13 @@ export function sealMorphoDetailView(view: SpecimenDetailView): SpecimenDetailVi
   }
   const n = MORPHO_GODARTY_NATIVE;
   const primary = view.primaryImage ?? MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID;
+  const ventral =
+    view.views.ventral ??
+    view.secondaryImage ??
+    MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_VENTRAL_ID;
+  const hasVentralImage = view.images.some(
+    (img) => img.publicId === ventral || img.view === 'ventral',
+  );
   return {
     ...view,
     code: n.catalogCode,
@@ -204,9 +218,16 @@ export function sealMorphoDetailView(view: SpecimenDetailView): SpecimenDetailVi
     wholesalePrice: n.wholesalePrice,
     wholesaleMinQty: n.wholesaleMinQty,
     primaryImage: primary,
+    secondaryImage: ventral,
+    images: hasVentralImage
+      ? view.images
+      : [
+          ...view.images,
+          { view: 'ventral', publicId: ventral },
+        ],
     views: {
       dorsal: view.views.dorsal ?? primary,
-      ventral: view.views.ventral,
+      ventral,
       lateral: view.views.lateral,
       macro: view.views.macro,
     },

@@ -32,7 +32,7 @@ import {
   isMorphoGodartyDidiusTingomarensis,
   MORPHO_GODARTY_NATIVE,
 } from '@/lib/specimens/native/morphoGodartyDidiusTingomarensis';
-import { MORPHO_CARD_URL, MORPHO_HERO_URL } from '@/lib/cloudinary/specimens';
+import { MORPHO_CARD_URL, MORPHO_HERO_URL, MORPHO_VENTRAL_URL } from '@/lib/cloudinary/specimens';
 import { pickRelatedSpecimens } from '@/lib/specimens/related';
 import CamaleonicSpecimenViewer from './CamaleonicSpecimenViewer';
 import PeruNationalFlag from './PeruNationalFlag';
@@ -122,8 +122,14 @@ export default function SpecimenDetail({
   }, [mediaTabs, active]);
 
   const galleryItems = useMemo(() => {
-    const unique = [specimen.views.ventral, specimen.views.dorsal, specimen.views.lateral, specimen.views.macro, specimen.primaryImage]
-      .filter((value): value is string => Boolean(value));
+    const unique = [
+      specimen.views.dorsal,
+      specimen.views.ventral,
+      specimen.views.lateral,
+      specimen.views.macro,
+      specimen.primaryImage,
+      specimen.secondaryImage,
+    ].filter((value): value is string => Boolean(value));
     return Array.from(new Set(unique));
   }, [specimen]);
 
@@ -377,6 +383,22 @@ export default function SpecimenDetail({
   const showPurchaseTiers = isMorpho || specimen.wholesalePrice != null;
   const campaignTitle = morphoCampaign?.title ?? MORPHO_GODARTY_NATIVE.campaignTitle;
 
+  // Morpho: dorsal (hero) vs ventral (reverso WebP) según pestaña / galería activa.
+  const morphoSrcOverride = (() => {
+    if (!isMorpho) return null;
+    if (active === 'ventral') return MORPHO_VENTRAL_URL;
+    if (
+      currentImage &&
+      (currentImage === specimen.views.ventral ||
+        currentImage === specimen.secondaryImage ||
+        currentImage.includes('ventral') ||
+        currentImage.includes('yomszy'))
+    ) {
+      return MORPHO_VENTRAL_URL;
+    }
+    return MORPHO_HERO_URL;
+  })();
+
   return (
     <div
       dir={dir}
@@ -429,7 +451,7 @@ export default function SpecimenDetail({
                 <div className="relative flex h-full min-h-[380px] w-full items-center justify-center bg-transparent md:min-h-[480px]">
                   <ActiveImage
                     publicId={isMorpho ? null : currentImage ?? specimen.views[active as Exclude<MediaKey, '3d'>]}
-                    srcOverride={isMorpho ? MORPHO_HERO_URL : null}
+                    srcOverride={morphoSrcOverride}
                     alt={specimen.scientificName}
                     floating
                   />
@@ -459,11 +481,26 @@ export default function SpecimenDetail({
               <div className="flex flex-wrap gap-2">
                 {galleryItems.map((item, index) => {
                   const thumbOn = galleryIndex === index;
+                  const thumbIsMorphoVentral =
+                    isMorpho &&
+                    (item === specimen.views.ventral ||
+                      item === specimen.secondaryImage ||
+                      item.includes('yomszy') ||
+                      item.includes('ventral'));
+                  const thumbSrc = isMorpho
+                    ? thumbIsMorphoVentral
+                      ? MORPHO_VENTRAL_URL
+                      : MORPHO_HERO_URL
+                    : imageUrl(item, ['w_120', 'ar_1:1', 'c_fill']);
                   return (
                     <button
                       key={item}
                       type="button"
-                      onClick={() => setGalleryIndex(index)}
+                      onClick={() => {
+                        setGalleryIndex(index);
+                        if (thumbIsMorphoVentral) setActive('ventral');
+                        else if (isMorpho) setActive('dorsal');
+                      }}
                       className={
                         thumbOn
                           ? 'h-16 w-16 overflow-hidden rounded-xl border-2 bg-black/40 transition-shadow'
@@ -479,7 +516,7 @@ export default function SpecimenDetail({
                       }
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={imageUrl(item, ['w_120', 'ar_1:1', 'c_fill'])} className="h-full w-full object-cover" alt="" />
+                      <img src={thumbSrc} className="h-full w-full object-contain bg-transparent" alt="" />
                     </button>
                   );
                 })}

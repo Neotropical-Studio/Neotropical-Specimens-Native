@@ -187,4 +187,10 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) >= 3:
+        SRC = Path(sys.argv[1]).expanduser().resolve()
+        OUT_PNG = Path(sys.argv[2]).expanduser().resolve()
+        OUT_WEBP = OUT_PNG.with_suffix(".webp")
     main()

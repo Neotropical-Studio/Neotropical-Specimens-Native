@@ -50,3 +50,22 @@ set
     'currency', 'USD'
   )
 where id = 'd20ad72d-7957-405a-ada8-53a320009e03';
+
+-- Multimedia Morpho: dorsal + ventral/reverso (Cloudinary).
+insert into specimen_media (specimen_id, media_type, media_url, public_id, display_order)
+values
+  (
+    'd20ad72d-7957-405a-ada8-53a320009e03',
+    'image',
+    'https://res.cloudinary.com/juufg4mn/image/upload/MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_dwd53c',
+    'MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_dwd53c',
+    0
+  ),
+  (
+    'd20ad72d-7957-405a-ada8-53a320009e03',
+    'image',
+    'https://res.cloudinary.com/juufg4mn/image/upload/Morpho_gadrty_didius_tingomarensis_yomszy',
+    'Morpho_gadrty_didius_tingomarensis_yomszy',
+    1
+  )
+on conflict do nothing;
