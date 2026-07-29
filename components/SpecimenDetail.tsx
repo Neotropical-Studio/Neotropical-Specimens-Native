@@ -593,14 +593,14 @@ export default function SpecimenDetail({
                   <h3 className="border-b border-white/10 pb-2 text-sm font-semibold uppercase tracking-widest text-white">
                     {t('product.purchase_modality_title', 'Modalidad de Adquisición')}
                   </h3>
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                  <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-yellow-400">
                     {t('product.purchase_modality_subtitle', 'Venta al Menor y Mayor')}
                   </p>
-                  <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/15 bg-neutral-950 p-1.5">
-                    <TierButton on={tier === 'retail'} accent={accent} onClick={() => setTier('retail')}>
+                  <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/20 bg-neutral-950 p-1.5">
+                    <TierButton on={tier === 'retail'} onClick={() => setTier('retail')}>
                       {t('product.retail_price', 'Venta al Menor (Retail)')}
                     </TierButton>
-                    <TierButton on={tier === 'wholesale'} accent={accent} onClick={() => setTier('wholesale')}>
+                    <TierButton on={tier === 'wholesale'} onClick={() => setTier('wholesale')}>
                       {t('product.wholesale_price', 'Venta al Mayor (Lotes)')}
                     </TierButton>
                   </div>
@@ -811,24 +811,15 @@ function Field({
   );
 }
 
-function TierButton({ on, accent, onClick, children }: { on: boolean; accent: string; onClick: () => void; children: React.ReactNode }) {
+function TierButton({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="rounded-lg px-2 py-2.5 text-xs font-bold leading-tight transition-all"
-      style={
+      className={
         on
-          ? {
-              backgroundColor: accent,
-              color: '#0b0f0e',
-              boxShadow: `0 0 0 1px ${accent}`,
-            }
-          : {
-              backgroundColor: 'rgba(255,255,255,0.06)',
-              color: '#f8fafc',
-              border: '1px solid rgba(255,255,255,0.22)',
-            }
+          ? 'rounded-lg border border-emerald-400/60 bg-neutral-800 px-2 py-2.5 text-xs font-bold leading-tight text-white shadow-[inset_0_0_0_1px_rgba(52,211,153,0.35)] transition-all'
+          : 'rounded-lg border border-white/25 bg-neutral-800 px-2 py-2.5 text-xs font-bold leading-tight text-white transition-all hover:border-white/45 hover:bg-neutral-700'
       }
     >
       {children}
