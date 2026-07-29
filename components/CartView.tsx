@@ -28,7 +28,6 @@ import {
   estimateShippingUsdForCarrier,
   quoteNativeCarrier,
   CART_WEIGHT_OPTIONS_KG,
-  continentalBaseRateUsd,
   STANDARD_TRANSIT_DAYS,
   CONTINENT_WEIGHT_RATES,
 } from '@/lib/shipping/estimate';
@@ -146,10 +145,6 @@ export default function CartView({ lang, locale, country, strings }: Props) {
   const parcel = useMemo(
     () => ({ weightOz: shipWeightKg * 35.274, weightKg: shipWeightKg }),
     [shipWeightKg],
-  );
-  const shipMeta = useMemo(
-    () => continentalBaseRateUsd(destCountry, shipWeightKg),
-    [destCountry, shipWeightKg],
   );
   const zoneTransit = STANDARD_TRANSIT_DAYS[zoneFilter];
   const zoneRates = CONTINENT_WEIGHT_RATES[zoneFilter];

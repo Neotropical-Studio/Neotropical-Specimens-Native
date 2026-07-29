@@ -15,6 +15,19 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
     serverActions: { bodySizeLimit: '512mb' },
     largePageDataBytes: 512 * 1024,
+    // Reduce presión de memoria/caché webpack en builds Vercel (WasmHash crash).
+    webpackMemoryOptimizations: true,
+  },
+  /**
+   * En Vercel, la caché filesystem de webpack a veces se corrompe y dispara:
+   * TypeError: Cannot read properties of undefined (reading 'length') en WasmHash.
+   * Desactivar caché en CI evita el fallo intermitente.
+   */
+  webpack: (config, { dev }) => {
+    if (!dev && (process.env.VERCEL || process.env.CI)) {
+      config.cache = false;
+    }
+    return config;
   },
   async headers() {
     return [

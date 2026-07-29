@@ -96,7 +96,7 @@ const GBP_COUNTRIES = new Set(['GB', 'UK', 'GG', 'JE', 'IM', 'GI']);
  */
 export function displayCurrencyOptions(
   countryIso2: string,
-  zone: ShippingContinent,
+  _zone: ShippingContinent,
 ): DisplayCurrencyOption[] {
   const country = (countryIso2 || 'PE').toUpperCase().slice(0, 2);
   const local = currencyForCountry(country);
