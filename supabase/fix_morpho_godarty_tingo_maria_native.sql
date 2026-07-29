@@ -6,11 +6,11 @@
 update taxonomy
 set
   order_name = 'Lepidoptera',
-  family_name = 'Nymphalidae',
+  family_name = 'Morphidae',
   subfamily_name = 'Morphinae',
   genus_name = 'Morpho',
   species_name = 'Morpho godarty didius tingomarensis',
-  rank_hierarchy = 'Nymphalidae > Morphinae > Morpho > Morpho godarty didius tingomarensis'
+  rank_hierarchy = 'Morphidae > Morphinae > Morpho > Morpho godarty didius tingomarensis'
 where id = 'dc96a9af-b96c-44bc-98f3-b3bf6a75322c'
   and species_name ilike '%godarty didius tingomarensis%';
 

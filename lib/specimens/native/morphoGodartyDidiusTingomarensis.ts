@@ -49,7 +49,7 @@ export interface MorphoGodartyNativeProfile {
 export const MORPHO_GODARTY_NATIVE: MorphoGodartyNativeProfile = {
   scientificName: MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_NAME,
   order: 'Lepidoptera',
-  family: 'Nymphalidae',
+  family: 'Morphidae',
   subfamily: 'Morphinae',
   genus: 'Morpho',
   regionCode: 'PE',
