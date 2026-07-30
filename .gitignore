@@ -40,3 +40,4 @@ supabase/.branches
 # claude code (config personal/local, no compartir)
 .claude/settings.local.json
 \]+
+scripts/.venv/
