@@ -10,8 +10,10 @@ import { formatMoney } from '@/lib/geo/regulations';
 import { SEX_LABEL } from '@/lib/constants/sex';
 import { isMorphoGodartyDidiusTingomarensis } from '@/lib/specimens/native/morphoGodartyDidiusTingomarensis';
 import { MORPHO_CARD_URL } from '@/lib/cloudinary/specimens';
+import { resolveTaxonPalette } from '@/lib/theme/taxon';
 import type { SpecimenView } from '@/lib/specimens/view';
 import ModelViewer from './ModelViewer';
+import IridescentSpecimenPhoto from './IridescentSpecimenPhoto';
 
 interface Props {
   s: SpecimenView;
@@ -43,6 +45,12 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
       : null;
   const shown = hover && back ? back : front;
 
+  // Paleta derivada algorítmicamente del taxón (sin hardcoding)
+  const palette = resolveTaxonPalette({
+    family:    s.family    ?? undefined,
+    order:     s.order     ?? undefined,
+  });
+
   return (
     <>
       <motion.article
@@ -73,13 +81,13 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
           }
         >
           {shown ? (
-            <Image
+            <IridescentSpecimenPhoto
               src={shown}
               alt={s.scientificName}
-              fill
+              palette={palette}
+              intensity={0.58}
+              className="absolute inset-0 w-full h-full transition-transform duration-500 group-hover:scale-[1.04]"
               sizes="(max-width: 768px) 50vw, 25vw"
-              className="bg-transparent object-contain object-center transition-transform duration-500 group-hover:scale-105"
-              unoptimized
             />
           ) : (
             <div className="flex h-full items-center justify-center text-neutral-600">

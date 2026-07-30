@@ -1,31 +1,39 @@
 #!/usr/bin/env python3
 """
-Procesador de assets en lote: eliminación de fondo + subida a Cloudinary + registro en Supabase.
+Procesador de assets en lote — calidad quirúrgica.
+QC + eliminación de fondo (Adobe Express / Firefly API) + resize/sharpen/WebP + Cloudinary + Supabase.
 
-Uso:
-    python scripts/process_assets_bg.py --input /ruta/carpeta/fotos [--dry-run] [--min-sharpness 80]
+─── MÉTODOS DE REMOCIÓN DE FONDO ────────────────────────────────────────────
+  --method adobe      (DEFAULT) Adobe Firefly Remove Background API.
+                      La misma IA de Adobe Express — calidad quirúrgica para
+                      bordes ultrafinos: antenas, venas de alas, translucidez.
+                      GRATIS con cuenta developer en developer.adobe.com
+                      Requiere en .env.local:
+                          ADOBE_CLIENT_ID=...
+                          ADOBE_CLIENT_SECRET=...
+                      Obtén las claves GRATIS:
+                          1. https://developer.adobe.com/console/
+                          2. Crear proyecto → Agregar API → Firefly Services
+                          3. Copiar Client ID y Client Secret
 
-Convención de nombres de archivo:
-    {CODE}[_{vista}].{ext}
+  --method birefnet   IA local BiRefNet — gratis, sin límite, sin internet.
+                      Buena alternativa offline.
 
-    Vista (sufijo opcional):
-        _d / _dorsal   → dorsal (default si no hay sufijo)
-        _v / _ventral  → ventral
-        _l / _lateral  → lateral
-        _m / _macro    → macro
+  --method cloudinary Cloudinary AI — integrado en el stack, sin costo extra.
 
-    Extensiones aceptadas:
-        .jpg / .jpeg / .png / .tiff / .bmp / .webp  → foto (rembg → WebP sin fondo)
-        .glb / .gltf                                 → modelo 3D (subida directa)
-        .mp4 / .mov                                  → video (subida directa)
+─── CONVENCIÓN DE NOMBRES ───────────────────────────────────────────────────
+  {CODE}[_{vista}].{ext}
+  BR-001_dorsal.jpg  →  code=BR-001, vista=dorsal, tipo=image
+  NEO-4421.glb       →  code=NEO-4421,             tipo=model
+  HE-032.mp4         →  code=HE-032,               tipo=video
 
-    Ejemplo: BR-001_dorsal.jpg  →  code=BR-001, vista=dorsal, tipo=image
-             NEO-4421.glb       →  code=NEO-4421, tipo=model
-             HE-032.mp4         →  code=HE-032, tipo=video
-
-Dependencias extras (añadir a requirements-migrate.txt):
-    rembg==2.0.65
-    opencv-python-headless==4.10.0.84
+─── POST-PROCESO AUTOMÁTICO (imágenes) ──────────────────────────────────────
+  1. QC sharpness (Laplacian variance) — rechaza fotos borrosas
+  2. Eliminación de fondo con Adobe Firefly → PNG RGBA
+  3. Resize: máx 1 500 px en el lado mayor, preserva aspect ratio
+  4. Sharpen: unsharp mask para compensar la interpolación del resize
+  5. Exporta WebP alpha calidad 92 — fondo transparente preservado
+─────────────────────────────────────────────────────────────────────────────
 """
 from __future__ import annotations
 
@@ -44,14 +52,18 @@ from typing import NamedTuple
 try:
     import cv2
     import numpy as np
-    from PIL import Image
+    from PIL import Image, ImageFilter
     from rembg import new_session, remove as rembg_remove
     import cloudinary
     import cloudinary.uploader
     from supabase import create_client, Client
     from dotenv import load_dotenv
 except ImportError as e:
-    sys.exit(f"Dependencia faltante: {e}\nEjecuta: pip install rembg opencv-python-headless pillow cloudinary supabase python-dotenv")
+    sys.exit(
+        f"Dependencia faltante: {e}\n"
+        "Ejecuta: pip install 'rembg[gpu]' opencv-python-headless pillow "
+        "cloudinary supabase python-dotenv requests"
+    )
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
@@ -140,33 +152,196 @@ def parse_filename(p: Path) -> ParsedFile | None:
     return ParsedFile(code=code, view=view, media_type=media_type, path=p)
 
 
-# ── Background removal ─────────────────────────────────────────────────────────
+# ── Post-proceso: resize + sharpen + WebP ──────────────────────────────────────
+MAX_SIDE_PX = 1500   # resolución máxima — preserva aspect ratio
 
-_rembg_session = None
+def optimize_rgba(img: "Image.Image") -> "Image.Image":
+    """Resize al límite MAX_SIDE_PX y aplica unsharp mask sutil."""
+    w, h = img.size
+    if max(w, h) > MAX_SIDE_PX:
+        ratio = MAX_SIDE_PX / max(w, h)
+        img = img.resize(
+            (max(1, round(w * ratio)), max(1, round(h * ratio))),
+            Image.LANCZOS,
+        )
+    # Unsharp mask: compensa el ligero blur del resize; no sobreagudizar
+    img = img.filter(ImageFilter.UnsharpMask(radius=1.0, percent=60, threshold=3))
+    return img
 
-def get_rembg_session():
-    global _rembg_session
-    if _rembg_session is None:
-        log.info("Cargando modelo rembg (u2net) — primera vez ~30 s…")
-        _rembg_session = new_session("u2net")
-    return _rembg_session
 
-
-def remove_background(image_bytes: bytes) -> bytes:
-    """Devuelve bytes WebP con fondo transparente."""
-    out_bytes = rembg_remove(image_bytes, session=get_rembg_session())
-    img = Image.open(io.BytesIO(out_bytes)).convert("RGBA")
+def to_webp(img: "Image.Image") -> bytes:
+    """Exporta RGBA → WebP con canal alfa, calidad 92."""
     buf = io.BytesIO()
-    img.save(buf, format="WEBP", quality=90, method=6)
+    img.save(buf, format="WEBP", quality=92, method=6, lossless=False)
     return buf.getvalue()
+
+
+# ── Background removal ─────────────────────────────────────────────────────────
+# Tres métodos intercambiables:
+#   birefnet  — local AI (BiRefNet), mejor calidad para insectos (gratis, sin límite)
+#   removebg  — API remove.bg (50/mes gratis, luego ~$0.10/img)
+#   cloudinary — Cloudinary AI (integrado, sin costo adicional en el plan)
+
+_rembg_session: dict = {}   # cache por nombre de modelo
+
+def _get_session(model: str):
+    if model not in _rembg_session:
+        log.info("Cargando modelo rembg '%s' — primera vez puede tardar…", model)
+        _rembg_session[model] = new_session(model)
+    return _rembg_session[model]
+
+
+# ── Adobe Firefly API ──────────────────────────────────────────────────────────
+# La misma IA que usa Adobe Express en https://adobe.com/es/express/feature/image/remove-background
+# Cuenta developer GRATIS: https://developer.adobe.com/console/
+# Plan gratuito incluye créditos generativos mensuales suficientes para uso regular.
+
+ADOBE_IMS_URL      = "https://ims-na1.adobelogin.com/ims/token/v3"
+ADOBE_FIREFLY_URL  = "https://firefly-api.adobe.io/v3/images/apply-auto-cutout"
+ADOBE_UPLOAD_URL   = "https://firefly-api.adobe.io/v2/storage/image"
+
+_adobe_token_cache: dict = {}   # {"token": str, "expires_at": float}
+
+
+def _get_adobe_token() -> str:
+    """Obtiene (y cachea) un access token de Adobe IMS con client_credentials."""
+    import requests, time as _time
+    now = _time.time()
+    if _adobe_token_cache.get("token") and _adobe_token_cache.get("expires_at", 0) > now + 30:
+        return str(_adobe_token_cache["token"])
+
+    client_id     = os.getenv("ADOBE_CLIENT_ID",     "")
+    client_secret = os.getenv("ADOBE_CLIENT_SECRET", "")
+    if not client_id or not client_secret:
+        raise ValueError(
+            "\nADOBE_CLIENT_ID / ADOBE_CLIENT_SECRET no encontrados en .env.local\n\n"
+            "Para obtenerlos GRATIS:\n"
+            "  1. Ve a https://developer.adobe.com/console/\n"
+            "  2. Crear nuevo proyecto → Agregar API → Firefly Services\n"
+            "  3. Elegir 'Server-to-server' → OAuth\n"
+            "  4. Copia Client ID y Client Secret → añádelos a .env.local\n"
+        )
+
+    resp = requests.post(
+        ADOBE_IMS_URL,
+        data={
+            "grant_type":    "client_credentials",
+            "client_id":     client_id,
+            "client_secret": client_secret,
+            "scope":         "openid,AdobeID,firefly_enterprise,firefly_api",
+        },
+        timeout=30,
+    )
+    if resp.status_code != 200:
+        raise RuntimeError(f"Adobe IMS auth error {resp.status_code}: {resp.text[:300]}")
+
+    data = resp.json()
+    token = str(data["access_token"])
+    expires_in = int(data.get("expires_in", 3600))
+    _adobe_token_cache["token"]      = token
+    _adobe_token_cache["expires_at"] = _time.time() + expires_in
+    return token
+
+
+def remove_background_adobe(image_bytes: bytes) -> bytes:
+    """
+    Adobe Firefly Remove Background — misma calidad que Adobe Express.
+    Gratis con cuenta developer.adobe.com.
+
+    Flujo:
+      1. Sube la imagen a Adobe Firefly Storage (presigned)
+      2. Llama al endpoint apply-auto-cutout
+      3. Descarga el resultado PNG RGBA
+      4. Optimiza y exporta WebP con alpha
+    """
+    import requests
+    token     = _get_adobe_token()
+    client_id = os.getenv("ADOBE_CLIENT_ID", "")
+    headers   = {
+        "Authorization": f"Bearer {token}",
+        "x-api-key":     client_id,
+    }
+
+    # ── Paso 1: subir imagen a Firefly Storage ─────────────────────────────
+    # Detectar mime type
+    img_check = Image.open(io.BytesIO(image_bytes))
+    mime = "image/jpeg" if img_check.format in ("JPEG", "JPG") else "image/png"
+
+    upload_resp = requests.post(
+        ADOBE_UPLOAD_URL,
+        headers={**headers, "Content-Type": mime},
+        data=image_bytes,
+        timeout=60,
+    )
+    if upload_resp.status_code not in (200, 201):
+        raise RuntimeError(f"Adobe upload error {upload_resp.status_code}: {upload_resp.text[:300]}")
+
+    upload_id = upload_resp.json().get("images", [{}])[0].get("id") or upload_resp.json().get("id")
+    if not upload_id:
+        raise RuntimeError(f"Adobe upload: no se recibió upload ID. Respuesta: {upload_resp.text[:200]}")
+
+    # ── Paso 2: aplicar remove background ─────────────────────────────────
+    cutout_resp = requests.post(
+        ADOBE_FIREFLY_URL,
+        headers={**headers, "Content-Type": "application/json"},
+        json={"image": {"source": {"uploadId": upload_id}}},
+        timeout=120,
+    )
+    if cutout_resp.status_code not in (200, 201):
+        raise RuntimeError(f"Adobe Firefly cutout error {cutout_resp.status_code}: {cutout_resp.text[:300]}")
+
+    result_data = cutout_resp.json()
+    # La respuesta puede traer la imagen como URL o como base64
+    output = result_data.get("images", [{}])[0] if result_data.get("images") else result_data
+
+    # ── Paso 3: descargar resultado ────────────────────────────────────────
+    if "presignedUrl" in output:
+        dl = requests.get(output["presignedUrl"], timeout=60)
+        result_bytes = dl.content
+    elif "url" in output:
+        dl = requests.get(output["url"], timeout=60)
+        result_bytes = dl.content
+    elif output.get("base64"):
+        import base64 as _b64
+        result_bytes = _b64.b64decode(output["base64"])
+    else:
+        raise RuntimeError(f"Adobe Firefly: respuesta inesperada — {str(result_data)[:300]}")
+
+    img = optimize_rgba(Image.open(io.BytesIO(result_bytes)).convert("RGBA"))
+    return to_webp(img)
+
+
+# ── Otros métodos (fallbacks) ──────────────────────────────────────────────────
+
+def remove_background_birefnet(image_bytes: bytes) -> bytes:
+    """BiRefNet — IA local, gratis, sin límite. Alternativa offline."""
+    session = _get_session("birefnet-general")
+    out = rembg_remove(image_bytes, session=session)
+    img = optimize_rgba(Image.open(io.BytesIO(out)).convert("RGBA"))
+    return to_webp(img)
+
+
+def remove_background_cloudinary(image_bytes: bytes) -> bytes:
+    """Cloudinary AI — transformación en la subida. Sin costo extra en el plan."""
+    img = optimize_rgba(Image.open(io.BytesIO(image_bytes)).convert("RGBA"))
+    return to_webp(img)
+
+
+def remove_background(image_bytes: bytes, method: str = "adobe") -> bytes:
+    """Enrutador de método. Default: adobe (Adobe Firefly — misma IA que Adobe Express)."""
+    if method == "birefnet":
+        return remove_background_birefnet(image_bytes)
+    if method == "cloudinary":
+        return remove_background_cloudinary(image_bytes)
+    return remove_background_adobe(image_bytes)  # default: adobe
 
 
 # ── Cloudinary upload ──────────────────────────────────────────────────────────
 
-def upload_asset(data: bytes, public_id: str, resource_type: str) -> str:
+def upload_asset(data: bytes, public_id: str, resource_type: str,
+                 bg_transform: list | None = None) -> str:
     """Sube a Cloudinary y devuelve el public_id resultante."""
-    result = cloudinary.uploader.upload(
-        data,
+    kwargs: dict = dict(
         public_id=public_id,
         folder=CLOUDINARY_FOLDER,
         resource_type=resource_type,
@@ -175,6 +350,9 @@ def upload_asset(data: bytes, public_id: str, resource_type: str) -> str:
         use_filename=False,
         unique_filename=False,
     )
+    if bg_transform:
+        kwargs["transformation"] = bg_transform
+    result = cloudinary.uploader.upload(data, **kwargs)
     return str(result["public_id"])
 
 
@@ -220,7 +398,8 @@ def upsert_media(sb: Client, specimen_id: str, public_id: str,
 DISPLAY_ORDER = {"dorsal": 0, "ventral": 1, "lateral": 2, "macro": 3}
 
 
-def process_file(pf: ParsedFile, sb: Client, min_sharpness: float, dry_run: bool) -> dict:
+def process_file(pf: ParsedFile, sb: Client, min_sharpness: float,
+                 dry_run: bool, method: str = "birefnet") -> dict:
     result = {
         "file":  pf.path.name,
         "code":  pf.code,
@@ -260,8 +439,13 @@ def process_file(pf: ParsedFile, sb: Client, min_sharpness: float, dry_run: bool
 
     # ── Procesamiento según tipo ───────────────────────────────────────────────
     if pf.media_type == "image":
-        log.info("  🎯  Eliminando fondo: %s", pf.path.name)
-        processed = remove_background(raw)
+        log.info("  🎯  [%s] Eliminando fondo: %s", method.upper(), pf.path.name)
+        if method == "cloudinary":
+            # Optimiza local; la remoción ocurre en Cloudinary vía transformación
+            img = optimize_rgba(Image.open(io.BytesIO(raw)).convert("RGBA"))
+            processed = to_webp(img)
+        else:
+            processed = remove_background(raw, method=method)
         resource_type = "image"
     elif pf.media_type == "model":
         processed = raw
@@ -272,7 +456,9 @@ def process_file(pf: ParsedFile, sb: Client, min_sharpness: float, dry_run: bool
 
     # ── Subida a Cloudinary ────────────────────────────────────────────────────
     log.info("  ☁  Subiendo a Cloudinary: %s", public_id_base)
-    public_id = upload_asset(processed, public_id_base, resource_type)
+    # Si el método es cloudinary, aplica transformación AI en la subida
+    bg_transform = [{"effect": "background_removal"}] if method == "cloudinary" and pf.media_type == "image" else None
+    public_id = upload_asset(processed, public_id_base, resource_type, bg_transform=bg_transform)
     time.sleep(RATE_LIMIT_S)
 
     # ── Registro en Supabase ───────────────────────────────────────────────────
@@ -287,12 +473,39 @@ def process_file(pf: ParsedFile, sb: Client, min_sharpness: float, dry_run: bool
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Procesa assets de especímenes: QC + rembg + Cloudinary + Supabase")
+    parser = argparse.ArgumentParser(
+        description="Procesa assets: QC + Adobe Firefly Remove BG + Cloudinary + Supabase",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+MÉTODOS DE REMOCIÓN:
+  adobe      (DEFAULT) Adobe Firefly API — misma IA que Adobe Express.
+             Requiere ADOBE_CLIENT_ID + ADOBE_CLIENT_SECRET en .env.local
+             Cuenta gratuita: https://developer.adobe.com/console/
+  birefnet   IA local BiRefNet — gratis, sin límite, sin internet
+  cloudinary Cloudinary AI — usa el plan existente, sin costo extra
+
+EJEMPLOS:
+  # Adobe Express IA (recomendado):
+  python scripts/process_assets_bg.py --input ~/fotos/morpho
+
+  # Alternativa offline:
+  python scripts/process_assets_bg.py --input ~/fotos --method birefnet
+
+  # Explorar sin subir nada:
+  python scripts/process_assets_bg.py --input ~/fotos --dry-run
+        """,
+    )
     parser.add_argument("--input",         required=True, help="Carpeta con los archivos a procesar")
     parser.add_argument("--dry-run",       action="store_true", help="Parsear y validar sin subir nada")
     parser.add_argument("--min-sharpness", type=float, default=80.0,
-                        help="Umbral mínimo de nitidez Laplacian (default 80). Fotos por debajo se rechazan")
+                        help="Umbral mínimo de nitidez Laplacian (default 80). Fotos borrosas se rechazan")
     parser.add_argument("--recursive",     action="store_true", help="Buscar en subcarpetas")
+    parser.add_argument(
+        "--method",
+        choices=["adobe", "birefnet", "cloudinary"],
+        default="adobe",
+        help="Método de remoción de fondo (default: adobe — Adobe Firefly, misma IA que Adobe Express)",
+    )
     args = parser.parse_args()
 
     input_path = Path(args.input)
@@ -319,8 +532,15 @@ def main() -> None:
     results = []
     ok = rejected = errors = 0
 
+    METHOD_LABEL = {
+        "adobe":      "Adobe Firefly Remove Background (misma IA que Adobe Express) ✦",
+        "birefnet":   "BiRefNet local (gratis, offline)",
+        "cloudinary": "Cloudinary AI",
+    }
+    log.info("Método de remoción: %s", METHOD_LABEL.get(args.method, args.method))
+
     for pf in parsed:
-        r = process_file(pf, sb, args.min_sharpness, args.dry_run)
+        r = process_file(pf, sb, args.min_sharpness, args.dry_run, method=args.method)
         results.append(r)
         if r["status"] == "OK" or r["status"] == "DRY_RUN_OK":
             ok += 1

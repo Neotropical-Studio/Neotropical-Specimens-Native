@@ -74,6 +74,8 @@ export async function POST(req: NextRequest) {
   let result;
   try {
     if (assetType === 'image') {
+      // removeBg=true aplica e_background_removal de Cloudinary (motor Adobe Sensei/Firefly).
+      // Para calidad máxima usa el script Python con --method adobe.
       result = await uploadImage(buffer, { folder, publicId: publicIdBase, removeBg });
     } else if (assetType === 'video') {
       result = await uploadVideo(buffer, { folder, publicId: publicIdBase });
