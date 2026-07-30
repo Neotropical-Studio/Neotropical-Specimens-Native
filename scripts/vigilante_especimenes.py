@@ -3,42 +3,35 @@
 vigilante_especimenes.py — Guardián autónomo de Hot Folder
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-FUNCIONAMIENTO (cero intervención manual):
-  1. Mueve/copia tus fotos a la carpeta hot_folder/
-  2. El vigilante las detecta al instante con watchdog
-  3. Las encola y procesa con Adobe Firefly Remove Background
-  4. Las sube a Cloudinary y registra en Supabase
-  5. El espécimen aparece en el Admin Overview listo para venta
+CÓMO FUNCIONA (cero intervención manual):
+  1. Copia o mueve tus fotos a ./hot_folder/
+  2. El vigilante las detecta AL INSTANTE con watchdog
+  3. Llama a procesar_activo() → processor.py
+  4. processor.py sube a Cloudinary con Adobe Sensei Remove Background
+  5. Registra en Supabase → aparece en Admin Overview listo para venta
 
-CONVENCIÓN DE NOMBRE OBLIGATORIA:
+CONVENCIÓN DE NOMBRE:
   {CODE}[_{vista}].{ext}
-  BR-001_dorsal.jpg    →  mariposa BR-001, vista dorsal
-  BR-001_ventral.png   →  mariposa BR-001, vista ventral
-  BR-001.glb           →  modelo 3D
-  HE-032.mp4           →  video
-
-MÉTODOS DE REMOCIÓN:
-  adobe      (DEFAULT) Adobe Firefly — calidad Adobe Express, gratis
-  birefnet   IA local  — gratis, offline, sin límite
-  cloudinary Cloudinary AI — integrado en el stack
+  BR-001_dorsal.jpg   →  espécimen BR-001, vista dorsal
+  BR-001_ventral.png  →  espécimen BR-001, vista ventral
+  MO-015.glb          →  modelo 3D de MO-015
+  HE-032.mp4          →  video de HE-032
 
 USO:
-  # Vigilante en tiempo real (recomendado):
+  # Activar entorno primero (una vez por sesión):
+  source scripts/.venv/bin/activate
+
+  # Vigilante en tiempo real (hot_folder/ por defecto):
   python scripts/vigilante_especimenes.py
 
-  # Procesar carpeta existente en lote:
-  python scripts/vigilante_especimenes.py --scan /ruta/a/carpeta
+  # Carpeta personalizada:
+  python scripts/vigilante_especimenes.py --folder ~/Desktop/fotos
 
-  # Cambiar método de remoción:
-  python scripts/vigilante_especimenes.py --method birefnet
+  # Procesar lo que ya hay en la carpeta y luego vigilar:
+  python scripts/vigilante_especimenes.py --procesar-existentes
 
-  # Simular sin subir nada:
+  # Probar sin subir nada:
   python scripts/vigilante_especimenes.py --dry-run
-
-VARIABLES DE ENTORNO (.env.local):
-  ADOBE_CLIENT_ID          ADOBE_CLIENT_SECRET   (para --method adobe)
-  CLOUDINARY_CLOUD_NAME    CLOUDINARY_API_KEY     CLOUDINARY_API_SECRET
-  NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 from __future__ import annotations
@@ -46,49 +39,12 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 import queue
+import shutil
 import sys
 import threading
 import time
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import NamedTuple
-
-# ── Cargar .env.local ─────────────────────────────────────────────────────────
-ROOT = Path(__file__).resolve().parent.parent
-try:
-    from dotenv import load_dotenv
-    load_dotenv(ROOT / ".env.local")
-except ImportError:
-    sys.exit("Dependencia faltante: python-dotenv\nEjecuta: pip install python-dotenv")
-
-# ── Importar motor de procesamiento ──────────────────────────────────────────
-# Reutilizamos todo el código de process_assets_bg.py directamente.
-sys.path.insert(0, str(Path(__file__).parent))
-try:
-    from process_assets_bg import (
-        parse_filename,
-        process_file,
-        IMAGE_EXT, MODEL_EXT, VIDEO_EXT,
-    )
-    from supabase import create_client, Client
-except ImportError as e:
-    sys.exit(
-        f"Dependencia faltante: {e}\n"
-        "Ejecuta: pip install watchdog 'rembg[gpu]' opencv-python-headless "
-        "pillow cloudinary supabase python-dotenv requests"
-    )
-
-# ── watchdog ──────────────────────────────────────────────────────────────────
-try:
-    from watchdog.observers import Observer
-    from watchdog.events import FileSystemEventHandler, FileCreatedEvent
-except ImportError:
-    sys.exit(
-        "Dependencia faltante: watchdog\n"
-        "Ejecuta: pip install watchdog"
-    )
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -98,22 +54,51 @@ logging.basicConfig(
 )
 log = logging.getLogger("vigilante")
 
+# ── Importar motor de procesamiento desde processor.py ───────────────────────
+ROOT = Path(__file__).resolve().parent.parent
+SCRIPTS_DIR = Path(__file__).resolve().parent
+
+sys.path.insert(0, str(SCRIPTS_DIR))   # permite: from processor import ...
+
+try:
+    from processor import procesar_activo
+    log.info("✔ Motor processor.py cargado correctamente")
+except ImportError as e:
+    sys.exit(
+        f"No se pudo importar processor.py: {e}\n\n"
+        "Asegúrate de tener el entorno activo:\n"
+        "  source scripts/.venv/bin/activate\n"
+        "Y las dependencias instaladas:\n"
+        "  pip install cloudinary supabase python-dotenv watchdog pillow requests"
+    )
+
+# ── watchdog ──────────────────────────────────────────────────────────────────
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler
+except ImportError:
+    sys.exit(
+        "Falta watchdog.\n"
+        "Ejecuta: pip install watchdog"
+    )
+
 # ── Config ────────────────────────────────────────────────────────────────────
-DEFAULT_HOT_FOLDER   = ROOT / "hot_folder"
-CHECKPOINT_FILE      = ROOT / ".vigilante_checkpoint.json"
-DEBOUNCE_SECONDS     = 1.5    # espera antes de procesar (el archivo debe terminar de copiarse)
-RETRY_MAX            = 3      # reintentos ante fallo
-RETRY_DELAY_S        = 8.0    # pausa entre reintentos
-QUEUE_POLL_INTERVAL  = 0.3    # polling del worker thread
+DEFAULT_HOT_FOLDER     = ROOT / "hot_folder"
+DEFAULT_PROCESADOS     = ROOT / "procesados_finales"
+CHECKPOINT_FILE        = ROOT / ".vigilante_checkpoint.json"
+DEBOUNCE_S             = 2.0    # espera para que el archivo termine de copiarse
+RETRY_MAX              = 3      # reintentos ante fallo
+RETRY_DELAY_S          = 10.0   # pausa entre reintentos
 
-SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL") or os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "")
+SUPPORTED_EXT = {
+    ".jpg", ".jpeg", ".png", ".webp", ".tiff",   # fotos
+    ".glb", ".gltf",                              # modelos 3D
+    ".mp4", ".mov",                               # videos
+}
 
-SUPPORTED_EXT = IMAGE_EXT | MODEL_EXT | VIDEO_EXT
+# ── Checkpoint ────────────────────────────────────────────────────────────────
 
-# ── Checkpoint (no reprocesar archivos ya subidos) ────────────────────────────
-
-def load_checkpoint() -> set[str]:
+def _load_checkpoint() -> set[str]:
     if CHECKPOINT_FILE.exists():
         try:
             return set(json.loads(CHECKPOINT_FILE.read_text("utf-8")))
@@ -121,261 +106,229 @@ def load_checkpoint() -> set[str]:
             pass
     return set()
 
-def save_checkpoint(done: set[str]) -> None:
-    CHECKPOINT_FILE.write_text(json.dumps(sorted(done), indent=2), encoding="utf-8")
 
-# ── Estadísticas en tiempo real ───────────────────────────────────────────────
+def _save_checkpoint(done: set[str]) -> None:
+    CHECKPOINT_FILE.write_text(
+        json.dumps(sorted(done), indent=2), encoding="utf-8"
+    )
 
-class Stats:
+
+# ── Limpieza: organizar en procesados_finales/{PREFIJO}/ ──────────────────────
+
+def _prefijo_desde_nombre(nombre_archivo: str) -> str:
+    """
+    Prefijo dinámico para subcarpeta:
+      MARIPOSA_001.jpg  →  MARIPOSA
+      BR-001_dorsal.jpg →  BR-001
+      foto.jpg          →  OTROS   (sin '_')
+    """
+    if "_" in nombre_archivo:
+        prefijo = nombre_archivo.split("_", 1)[0].strip()
+        return prefijo if prefijo else "OTROS"
+    return "OTROS"
+
+
+def _mover_a_procesados(path: Path, dest_dir: Path) -> Path | None:
+    """
+    Tras éxito:
+      hot_folder/MARIPOSA_001.jpg
+        → procesados_finales/MARIPOSA/MARIPOSA_001.jpg
+    shutil.move elimina el archivo de hot_folder (queda vacía y lista).
+    Crea procesados_finales/ y la subcarpeta automáticamente si no existen.
+    """
+    try:
+        prefijo = _prefijo_desde_nombre(path.name)
+        carpeta_sub = dest_dir / prefijo
+        carpeta_sub.mkdir(parents=True, exist_ok=True)
+
+        destino = carpeta_sub / path.name
+        if destino.exists():
+            stem, suffix = path.stem, path.suffix
+            n = 1
+            while True:
+                candidato = carpeta_sub / f"{stem}_{n}{suffix}"
+                if not candidato.exists():
+                    destino = candidato
+                    break
+                n += 1
+
+        shutil.move(str(path), str(destino))
+        # Confirmación pedida: ARCHIVO ORGANIZADO EN...
+        log.info("[✓] ARCHIVO ORGANIZADO EN: %s", destino)
+        return destino
+    except Exception as exc:
+        log.warning("  ⚠ No se pudo organizar %s → procesados_finales: %s", path.name, exc)
+        return None
+
+# ── Contadores ────────────────────────────────────────────────────────────────
+
+class _Counters:
     def __init__(self) -> None:
-        self.lock        = threading.Lock()
-        self.detected    = 0
-        self.ok          = 0
-        self.rejected_qc = 0
-        self.errors      = 0
-        self.processing  = 0
-        self.queue_size  = 0
+        self._lock     = threading.Lock()
+        self.detected  = 0
+        self.ok        = 0
+        self.errores   = 0
+        self.ignorados = 0
 
-    def print_status(self) -> None:
-        with self.lock:
-            bar = "━" * 52
-            print(f"\n{bar}")
-            print(f"  VIGILANTE ACTIVO  {datetime.now(timezone.utc).strftime('%H:%M:%S UTC')}")
-            print(f"  Detectados:   {self.detected:>5}")
-            print(f"  En cola:      {self.queue_size:>5}")
-            print(f"  Procesando:   {self.processing:>5}")
-            print(f"  ✔ Subidos:    {self.ok:>5}")
-            print(f"  ⚠ QC fail:    {self.rejected_qc:>5}")
-            print(f"  ✘ Errores:    {self.errors:>5}")
-            print(f"{bar}\n")
+    def inc(self, field: str) -> None:
+        with self._lock:
+            setattr(self, field, getattr(self, field) + 1)
 
-stats = Stats()
+    def resumen(self) -> str:
+        return (
+            f"  Detectados: {self.detected} | "
+            f"✔ OK: {self.ok} | "
+            f"✘ Errores: {self.errores} | "
+            f"— Ignorados: {self.ignorados}"
+        )
 
-# ── Cola de trabajo ───────────────────────────────────────────────────────────
+counters = _Counters()
 
-class QueueItem(NamedTuple):
-    path:     Path
-    added_at: float    # timestamp para debounce
-    retries:  int = 0
+# ── Cola de trabajo (thread-safe) ─────────────────────────────────────────────
 
-work_queue: queue.Queue[QueueItem] = queue.Queue()
+class _Item:
+    __slots__ = ("path", "added_at", "retries")
+    def __init__(self, path: Path, added_at: float, retries: int = 0):
+        self.path     = path
+        self.added_at = added_at
+        self.retries  = retries
 
-# ── Worker thread — procesa archivos de la cola ───────────────────────────────
+_queue: queue.Queue[_Item] = queue.Queue()
 
-def worker(sb: Client | None, method: str, min_sharpness: float, dry_run: bool,
-           checkpoint: set[str]) -> None:
-    """Hilo que consume la cola y procesa cada archivo."""
+# ── Worker thread ─────────────────────────────────────────────────────────────
+
+def _worker(checkpoint: set[str], dry_run: bool, dest_dir: Path) -> None:
+    """Consume la cola y llama a procesar_activo() por cada archivo."""
     while True:
         try:
-            item = work_queue.get(timeout=QUEUE_POLL_INTERVAL)
+            item = _queue.get(timeout=0.5)
         except queue.Empty:
             continue
 
-        stats.queue_size = work_queue.qsize()
-
-        # ── Debounce: espera a que el archivo termine de copiarse ─────────────
-        wait = DEBOUNCE_SECONDS - (time.monotonic() - item.added_at)
+        # Debounce: esperar a que la copia termine
+        wait = DEBOUNCE_S - (time.monotonic() - item.added_at)
         if wait > 0:
             time.sleep(wait)
 
-        path_str = str(item.path)
+        path = item.path
+        key  = str(path)
 
-        # ── Verificar que el archivo existe y es accesible ────────────────────
-        if not item.path.exists():
-            log.warning("Archivo desaparecido antes de procesar: %s", item.path.name)
-            work_queue.task_done()
+        # Verificaciones rápidas
+        if not path.exists():
+            log.warning("Archivo desaparecido antes de procesar: %s", path.name)
+            counters.inc("ignorados")
+            _queue.task_done()
             continue
 
-        # ── Verificar checkpoint ──────────────────────────────────────────────
-        if path_str in checkpoint:
-            log.info("Ya procesado (checkpoint): %s", item.path.name)
-            work_queue.task_done()
+        if key in checkpoint:
+            log.debug("Ya procesado (checkpoint): %s", path.name)
+            counters.inc("ignorados")
+            _queue.task_done()
             continue
 
-        # ── Parsear nombre de archivo ─────────────────────────────────────────
-        pf = parse_filename(item.path)
-        if pf is None:
-            log.warning("Nombre no reconocido (se ignora): %s", item.path.name)
-            work_queue.task_done()
+        log.info("▶ [%d en cola] Procesando: %s", _queue.qsize(), path.name)
+
+        # ── Llamar al motor ───────────────────────────────────────────────────
+        if dry_run:
+            prefijo = _prefijo_desde_nombre(path.name)
+            log.info(
+                "  [DRY-RUN] Se omitiría: %s → %s/%s/",
+                path.name, dest_dir.name, prefijo,
+            )
+            counters.inc("ok")
+            _queue.task_done()
             continue
-
-        # ── Procesar ──────────────────────────────────────────────────────────
-        with stats.lock:
-            stats.processing += 1
-
-        log.info("▶ Procesando [%s] %s", method.upper(), item.path.name)
 
         try:
-            result = process_file(
-                pf,
-                sb,                  # type: ignore[arg-type]
-                min_sharpness,
-                dry_run,
-                method=method,
-            )
+            ok = procesar_activo(path)          # ← importado de processor.py
         except Exception as exc:
-            result = {"status": f"EXCEPTION: {exc}", "file": item.path.name}
+            log.exception("  Excepción inesperada en procesar_activo: %s", exc)
+            ok = False
 
-        with stats.lock:
-            stats.processing -= 1
-
-        status = result.get("status", "")
-
-        if status in ("OK", "DRY_RUN_OK"):
-            with stats.lock:
-                stats.ok += 1
-            checkpoint.add(path_str)
-            save_checkpoint(checkpoint)
-            log.info("  ✔  %s  →  %s", item.path.name, result.get("public_id", "dry"))
-
-        elif "RECHAZADO" in (status or ""):
-            with stats.lock:
-                stats.rejected_qc += 1
-            log.warning("  ⚠  %s  QC rechazado: %s", item.path.name, status)
-
+        if ok:
+            counters.inc("ok")
+            checkpoint.add(key)
+            _save_checkpoint(checkpoint)
+            # Organiza por prefijo y limpia hot_folder (shutil.move)
+            _mover_a_procesados(path, dest_dir)
+            log.info("[✓] PROCESAMIENTO EXITOSO: %s", path.name)
         else:
-            # Error — reintentar si no se superó el límite
             if item.retries < RETRY_MAX:
                 log.warning(
-                    "  ✘  %s  error: %s — reintento %d/%d en %.0fs",
-                    item.path.name, status, item.retries + 1, RETRY_MAX, RETRY_DELAY_S,
+                    "  ✘ Falló: %s — reintento %d/%d en %ds",
+                    path.name, item.retries + 1, RETRY_MAX, RETRY_DELAY_S,
                 )
                 time.sleep(RETRY_DELAY_S)
-                work_queue.put(QueueItem(item.path, time.monotonic(), item.retries + 1))
+                _queue.put(_Item(path, time.monotonic(), item.retries + 1))
             else:
-                with stats.lock:
-                    stats.errors += 1
-                log.error("  ✘  %s  abandonado tras %d intentos: %s",
-                          item.path.name, RETRY_MAX, status)
+                counters.inc("errores")
+                log.error(
+                    "  ✘ Abandonado tras %d intentos: %s",
+                    RETRY_MAX, path.name,
+                )
 
-        stats.queue_size = work_queue.qsize()
-        work_queue.task_done()
+        _queue.task_done()
 
 # ── Watchdog handler ──────────────────────────────────────────────────────────
 
-class HotFolderHandler(FileSystemEventHandler):
+class _HotFolderHandler(FileSystemEventHandler):
+    """Detecta archivos nuevos (creados O movidos a la carpeta)."""
+
     def __init__(self, checkpoint: set[str]) -> None:
         super().__init__()
-        self.checkpoint = checkpoint
+        self._checkpoint = checkpoint
 
-    def on_created(self, event: FileCreatedEvent) -> None:  # type: ignore[override]
-        if event.is_directory:
+    def _enqueue(self, path: Path) -> None:
+        if path.suffix.lower() not in SUPPORTED_EXT:
             return
-        p = Path(str(event.src_path))
-        if p.suffix.lower() not in SUPPORTED_EXT:
+        if str(path) in self._checkpoint:
             return
-        if str(p) in self.checkpoint:
-            return
+        counters.inc("detected")
+        log.info("⚡ Detectado: %s", path.name)
+        _queue.put(_Item(path=path, added_at=time.monotonic()))
 
-        with stats.lock:
-            stats.detected += 1
+    def on_created(self, event) -> None:                # archivo creado/copiado
+        if not event.is_directory:
+            self._enqueue(Path(str(event.src_path)))
 
-        log.info("⚡ Detectado: %s", p.name)
-        work_queue.put(QueueItem(path=p, added_at=time.monotonic()))
-        stats.queue_size = work_queue.qsize()
-
-    # Soporte para archivos movidos a la carpeta (drag & drop desde Finder/Explorer)
-    def on_moved(self, event) -> None:  # type: ignore[override]
-        if event.is_directory:
-            return
-        p = Path(str(event.dest_path))
-        if p.suffix.lower() not in SUPPORTED_EXT:
-            return
-        if str(p) in self.checkpoint:
-            return
-
-        with stats.lock:
-            stats.detected += 1
-
-        log.info("⚡ Movido a hot_folder: %s", p.name)
-        work_queue.put(QueueItem(path=p, added_at=time.monotonic()))
-        stats.queue_size = work_queue.qsize()
-
-# ── Modo --scan (lote de archivos existentes) ──────────────────────────────────
-
-def scan_existing(folder: Path, checkpoint: set[str], recursive: bool) -> int:
-    """Encola todos los archivos existentes que no están en el checkpoint."""
-    glob_fn = folder.rglob if recursive else folder.glob
-    files   = sorted(f for f in glob_fn("*.*") if f.suffix.lower() in SUPPORTED_EXT)
-    pending = [f for f in files if str(f) not in checkpoint]
-
-    log.info("Archivos encontrados: %d  /  pendientes: %d", len(files), len(pending))
-
-    for f in pending:
-        with stats.lock:
-            stats.detected += 1
-        work_queue.put(QueueItem(path=f, added_at=time.monotonic()))
-
-    stats.queue_size = work_queue.qsize()
-    return len(pending)
+    def on_moved(self, event) -> None:                  # archivo movido (drag-drop)
+        if not event.is_directory:
+            self._enqueue(Path(str(event.dest_path)))
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Vigilante autónomo de Hot Folder — Adobe Firefly + Cloudinary + Supabase",
+        description="Vigilante autónomo de hot_folder → Adobe Sensei → Cloudinary → Supabase",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 EJEMPLOS:
-  # Vigilante en tiempo real (modos por defecto: hot_folder/, método adobe):
   python scripts/vigilante_especimenes.py
-
-  # Hot folder personalizada:
   python scripts/vigilante_especimenes.py --folder ~/Desktop/fotos_mariposas
-
-  # Procesar carpeta existente en lote y luego vigilar:
-  python scripts/vigilante_especimenes.py --scan ~/fotos/morpho --watch
-
-  # Solo lote (sin vigilar después):
-  python scripts/vigilante_especimenes.py --scan ~/fotos --no-watch
-
-  # Offline sin internet (BiRefNet local):
-  python scripts/vigilante_especimenes.py --method birefnet
-
-  # Simular sin subir nada:
+  python scripts/vigilante_especimenes.py --procesar-existentes
   python scripts/vigilante_especimenes.py --dry-run
-
-  # Borrar checkpoint y reprocesar todo:
   python scripts/vigilante_especimenes.py --reset-checkpoint
         """,
     )
     parser.add_argument(
         "--folder",
         default=str(DEFAULT_HOT_FOLDER),
-        help=f"Hot folder a vigilar (default: {DEFAULT_HOT_FOLDER})",
+        help=f"Carpeta a vigilar (default: {DEFAULT_HOT_FOLDER})",
     )
     parser.add_argument(
-        "--scan",
-        metavar="CARPETA",
-        default=None,
-        help="Procesar archivos existentes en CARPETA en lote antes de vigilar",
+        "--procesados",
+        default=str(DEFAULT_PROCESADOS),
+        help=f"Carpeta destino tras éxito (default: {DEFAULT_PROCESADOS})",
     )
     parser.add_argument(
-        "--no-watch",
+        "--procesar-existentes",
         action="store_true",
-        help="Solo procesar --scan, no vigilar después",
-    )
-    parser.add_argument(
-        "--method",
-        choices=["adobe", "birefnet", "cloudinary"],
-        default="adobe",
-        help="Motor de remoción de fondo (default: adobe — Adobe Firefly)",
-    )
-    parser.add_argument(
-        "--min-sharpness",
-        type=float,
-        default=80.0,
-        help="Umbral mínimo de nitidez Laplacian (default 80)",
+        help="Encolar archivos que ya están en la carpeta al arrancar",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Simular sin subir a Cloudinary ni escribir en Supabase",
-    )
-    parser.add_argument(
-        "--recursive",
-        action="store_true",
-        help="Buscar en subcarpetas del hot_folder",
+        help="Simular sin subir nada (útil para probar el sistema)",
     )
     parser.add_argument(
         "--reset-checkpoint",
@@ -384,96 +337,86 @@ EJEMPLOS:
     )
     args = parser.parse_args()
 
-    # ── Checkpoint ────────────────────────────────────────────────────────────
+    # Checkpoint
     if args.reset_checkpoint and CHECKPOINT_FILE.exists():
         CHECKPOINT_FILE.unlink()
         log.info("Checkpoint borrado — se reprocesará todo")
-    checkpoint = load_checkpoint()
+    checkpoint = _load_checkpoint()
     log.info("Checkpoint: %d archivos ya procesados", len(checkpoint))
 
-    # ── Supabase ──────────────────────────────────────────────────────────────
-    sb: Client | None = None
-    if not args.dry_run:
-        if not SUPABASE_URL or not SUPABASE_KEY:
-            sys.exit(
-                "Faltan SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY en .env.local\n"
-                "Usa --dry-run para probar sin BD."
-            )
-        sb = create_client(SUPABASE_URL, SUPABASE_KEY)
-        log.info("Supabase conectado: %s", SUPABASE_URL[:40] + "…")
-
-    # ── Hot folder ─────────────────────────────────────────────────────────────
+    # Hot folder + destino de limpieza
     hot_folder = Path(args.folder)
     hot_folder.mkdir(parents=True, exist_ok=True)
+    dest_dir = Path(args.procesados)
+    dest_dir.mkdir(parents=True, exist_ok=True)
 
-    # ── Worker thread ─────────────────────────────────────────────────────────
-    worker_thread = threading.Thread(
-        target=worker,
-        args=(sb, args.method, args.min_sharpness, args.dry_run, checkpoint),
+    # Arrancar worker thread (daemon: muere con el proceso principal)
+    t = threading.Thread(
+        target=_worker,
+        args=(checkpoint, args.dry_run, dest_dir),
         daemon=True,
         name="worker",
     )
-    worker_thread.start()
+    t.start()
+    log.info("Worker thread iniciado → limpia a %s", dest_dir)
 
-    # ── Modo --scan: encolar archivos existentes ───────────────────────────────
-    scan_folder = Path(args.scan) if args.scan else None
-    if scan_folder:
-        if not scan_folder.is_dir():
-            sys.exit(f"Carpeta no encontrada: {scan_folder}")
-        n = scan_existing(scan_folder, checkpoint, recursive=args.recursive)
-        log.info("Lote encolado: %d archivos", n)
+    # Encolar archivos existentes si se pidió
+    if args.procesar_existentes:
+        existentes = [
+            f for f in sorted(hot_folder.glob("*.*"))
+            if f.suffix.lower() in SUPPORTED_EXT and str(f) not in checkpoint
+        ]
+        log.info(
+            "Archivos existentes en la carpeta: %d pendientes de procesar",
+            len(existentes),
+        )
+        for f in existentes:
+            counters.inc("detected")
+            _queue.put(_Item(path=f, added_at=time.monotonic()))
 
-        if args.no_watch:
-            # Esperar a que el worker vacíe la cola
-            log.info("Procesando lote — espera a que finalice…")
-            work_queue.join()
-            stats.print_status()
-            log.info("Lote completado. Saliendo.")
-            return
-
-    # ── Modo watch (hot folder en vivo) ────────────────────────────────────────
-    method_label = {
-        "adobe":      "Adobe Firefly (misma IA que Adobe Express)",
-        "birefnet":   "BiRefNet local (offline)",
-        "cloudinary": "Cloudinary AI",
-    }.get(args.method, args.method)
-
-    print("\n" + "━" * 60)
-    print("  VIGILANTE AUTÓNOMO DE HOT FOLDER")
-    print(f"  Carpeta:  {hot_folder}")
-    print(f"  Método:   {method_label}")
-    print(f"  Modo:     {'DRY-RUN (sin subir)' if args.dry_run else 'PRODUCCIÓN'}")
-    print("━" * 60)
-    print("  Mueve o copia tus fotos a la carpeta y el sistema")
-    print("  las procesará automáticamente. Ctrl+C para salir.")
-    print("━" * 60 + "\n")
-
-    handler  = HotFolderHandler(checkpoint)
+    # Arrancar watchdog
+    handler  = _HotFolderHandler(checkpoint)
     observer = Observer()
-    observer.schedule(handler, str(hot_folder), recursive=args.recursive)
+    observer.schedule(handler, str(hot_folder), recursive=False)
     observer.start()
 
-    # También encolar lo que ya esté en hot_folder al arrancar
-    n_existing = scan_existing(hot_folder, checkpoint, recursive=args.recursive)
-    if n_existing:
-        log.info("Archivos preexistentes en hot_folder encolados: %d", n_existing)
+    # Banner
+    print("\n" + "━" * 54)
+    print("  VIGILANTE ACTIVO — LISTO PARA RECIBIR FOTOS")
+    print("━" * 54)
+    print(f"  Entrada:  {hot_folder}")
+    print(f"  Salida:   {dest_dir}  (tras éxito)")
+    print(f"  Modo:     {'DRY-RUN (sin subir)' if args.dry_run else 'PRODUCCIÓN'}")
+    print(f"  Motor:    processor.py → Adobe Sensei → Cloudinary → Supabase")
+    print("━" * 54)
+    print("  Copia fotos a la entrada. Tras OK:")
+    print("  procesados_finales/{PREFIJO}/archivo  (sin '_' → OTROS/)")
+    print("  hot_folder queda vacía.  Ctrl+C para detener.")
+    print("━" * 54 + "\n")
 
-    # Imprimir estado cada 30 segundos
-    last_status = time.monotonic()
+    # Bucle principal — imprime estado cada 30s
+    last_print = time.monotonic()
     try:
         while True:
             time.sleep(1)
-            if time.monotonic() - last_status >= 30:
-                stats.print_status()
-                last_status = time.monotonic()
+            if time.monotonic() - last_print >= 30:
+                print(f"\n{'━'*54}")
+                print(f"  {counters.resumen()}")
+                print(f"  En cola: {_queue.qsize()}")
+                print(f"{'━'*54}\n")
+                last_print = time.monotonic()
     except KeyboardInterrupt:
-        print("\nDeteniendo vigilante…")
+        print("\n\nDeteniendo vigilante…")
         observer.stop()
 
     observer.join()
-    work_queue.join()   # Terminar lo que queda en cola
-    stats.print_status()
-    log.info("Vigilante detenido. Hasta la próxima.")
+    _queue.join()   # terminar lo que hay en cola antes de salir
+
+    print(f"\n{'━'*54}")
+    print("  RESUMEN FINAL")
+    print(f"  {counters.resumen()}")
+    print(f"{'━'*54}\n")
+    log.info("Vigilante detenido.")
 
 
 if __name__ == "__main__":

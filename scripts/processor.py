@@ -408,6 +408,31 @@ def save_to_supabase(
     log.info("  ✔ metadata del espécimen actualizada")
 
 
+# ── API pública para importación desde vigilante_especimenes.py ───────────────
+
+def procesar_activo(ruta: "str | Path") -> bool:
+    """
+    Interfaz simple para el vigilante.
+    Recibe la ruta del archivo, detecta código/vista del nombre,
+    sube a Cloudinary (Adobe Sensei remove-bg) y registra en Supabase.
+    Devuelve True si todo fue exitoso.
+
+    Uso desde vigilante_especimenes.py:
+        from processor import procesar_activo
+        procesar_activo('/ruta/a/BR-001_dorsal.jpg')
+    """
+    path = Path(ruta)
+    # Construir cliente Supabase en cada llamada (thread-safe, sin estado global)
+    sb: Client | None = None
+    if SUPABASE_URL and SUPABASE_KEY:
+        try:
+            sb = create_client(SUPABASE_URL, SUPABASE_KEY)
+        except Exception as e:
+            log.warning("Supabase no disponible: %s — se sube solo a Cloudinary.", e)
+
+    return process(path, code=None, view=None, sb=sb, dry_run=False)
+
+
 # ── Procesar un archivo ───────────────────────────────────────────────────────
 
 def process(
