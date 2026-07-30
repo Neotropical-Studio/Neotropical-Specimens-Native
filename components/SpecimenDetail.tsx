@@ -923,7 +923,7 @@ export default function SpecimenDetail({
               <p className="mt-2 text-xs text-slate-400">
                 {t(
                   'product.dynamic_catalog_empty_subtitle',
-                  'Cuando se sincronicen más especímenes de los 4 rubros, aparecerán aquí automáticamente.',
+                  'Cuando se sincronicen más especímenes de los 3 rubros, aparecerán aquí automáticamente.',
                 )}
               </p>
             </div>

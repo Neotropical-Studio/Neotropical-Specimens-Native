@@ -50,9 +50,18 @@ const RUBRO_THEMES: Record<string, CartChameleonTheme> = {
     glow: 'from-stone-900/60 via-black/40 to-neutral-800/40',
     globeGlow: 'rgba(214, 211, 209, 0.28)',
   },
+  'dry-plants-no-cites': {
+    id: 'dry-plants-no-cites',
+    label: 'Plantas secas no-CITES',
+    accent: 'text-lime-300',
+    ring: 'ring-lime-500/30',
+    glow: 'from-lime-950/50 via-black/40 to-green-900/30',
+    globeGlow: 'rgba(163, 230, 53, 0.32)',
+  },
+  // Alias legacy
   'dried-plants': {
-    id: 'dried-plants',
-    label: 'Plantas secas',
+    id: 'dry-plants-no-cites',
+    label: 'Plantas secas no-CITES',
     accent: 'text-lime-300',
     ring: 'ring-lime-500/30',
     glow: 'from-lime-950/50 via-black/40 to-green-900/30',

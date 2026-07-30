@@ -2,61 +2,79 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
 import AdminTable from '@/components/admin/AdminTable';
-import StatusBadge from '@/components/admin/StatusBadge';
 import { buttonPrimaryClass } from '@/components/admin/FormField';
 
 export const revalidate = 0;
 
-async function loadCampaigns() {
-  const db = getSupabaseAdmin();
-  const { data, error } = await db
-    .from('campaigns')
-    .select('id, title, discount_percent, starts_at, ends_at, active, priority')
-    .order('priority', { ascending: false });
-  if (error) throw error;
-  return data ?? [];
-}
+type CampaignRow = {
+  id: string;
+  title: string;
+};
 
-function computeStatus(c: { active: boolean; starts_at: string; ends_at: string }): string {
-  if (!c.active) return 'cancelled';
-  const now = new Date();
-  if (now < new Date(c.starts_at)) return 'pending';
-  if (now > new Date(c.ends_at)) return 'delivered'; // reutiliza el verde "cerrada"
-  return 'ready';
+async function loadCampaigns(): Promise<{ campaigns: CampaignRow[]; stub: boolean }> {
+  const db = getSupabaseAdmin();
+
+  // Live confirmado: campaigns = stub (id, name). Contrato admin (title/active…) aún no.
+  const stub = await db.from('campaigns').select('id, name').order('id');
+  if (stub.error) {
+    return { campaigns: [], stub: true };
+  }
+
+  return {
+    campaigns: (stub.data ?? []).map((c) => ({
+      id: c.id as string,
+      title: (c.name as string | null) ?? 'Sin título',
+    })),
+    stub: true,
+  };
 }
 
 export default async function CampanasPage() {
-  const campaigns = await loadCampaigns();
+  const { campaigns, stub } = await loadCampaigns();
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-white">Campañas y Avisos Audiovisuales</h1>
-          <p className="text-sm text-neutral-400">Cintillos, descuentos por temporada y ventanas de activación.</p>
+          <p className="text-sm text-neutral-400">
+            Live: tabla stub (<code className="text-xs">id</code>, <code className="text-xs">name</code>).
+          </p>
         </div>
-        <Link href="/admin/campanas/nueva" className={buttonPrimaryClass}>
-          <Plus size={16} /> Nueva campaña
-        </Link>
+        {stub ? (
+          <span
+            className={`${buttonPrimaryClass} cursor-not-allowed opacity-50`}
+            title="Aplica la sección B de espejo_universal_industrial.sql para crear campañas ricas"
+          >
+            <Plus size={16} /> Nueva campaña
+          </span>
+        ) : (
+          <Link href="/admin/campanas/nueva" className={buttonPrimaryClass}>
+            <Plus size={16} /> Nueva campaña
+          </Link>
+        )}
       </div>
 
+      {stub && (
+        <div className="rounded-xl border border-amber-700 bg-amber-950/40 p-4 text-sm text-amber-100">
+          <p className="font-medium">Campañas en modo stub (sin title / fechas / banner).</p>
+          <p className="mt-1 text-amber-200/90">
+            Para el formulario completo, pega la sección B de{' '}
+            <code className="rounded bg-black/30 px-1.5 py-0.5 text-xs">
+              supabase/sql/espejo_universal_industrial.sql
+            </code>{' '}
+            en el SQL Editor. Mientras tanto solo se listan nombres.
+          </p>
+        </div>
+      )}
+
       <AdminTable
-        columns={['Título', 'Descuento', 'Activación', 'Cierre', 'Estado']}
+        columns={['Nombre']}
         empty={campaigns.length ? undefined : 'No hay campañas registradas.'}
       >
         {campaigns.map((c) => (
           <tr key={c.id} className="hover:bg-neutral-900/60">
-            <td className="px-4 py-2 text-neutral-200">
-              <Link href={`/admin/campanas/${c.id}`} className="hover:text-emerald-400">
-                {c.title}
-              </Link>
-            </td>
-            <td className="px-4 py-2 text-neutral-400">{c.discount_percent ? `${c.discount_percent}%` : '—'}</td>
-            <td className="px-4 py-2 text-neutral-400">{new Date(c.starts_at).toLocaleString()}</td>
-            <td className="px-4 py-2 text-neutral-400">{new Date(c.ends_at).toLocaleString()}</td>
-            <td className="px-4 py-2">
-              <StatusBadge status={computeStatus(c)} />
-            </td>
+            <td className="px-4 py-2 text-neutral-200">{c.title}</td>
           </tr>
         ))}
       </AdminTable>

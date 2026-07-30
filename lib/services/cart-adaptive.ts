@@ -86,6 +86,11 @@ const RUBRO_RULES: Record<string, Partial<RubroRule>> = {
     presentation: 'standard',
     gateways: ['worldfirst', 'xtransfer', 'bank_transfer'],
   },
+  'dry-plants-no-cites': {
+    presentation: 'standard',
+    gateways: ['worldfirst', 'alipay', 'wechat_pay', 'xtransfer'],
+  },
+  // Alias legacy → mismas reglas que dry-plants-no-cites
   'dried-plants': {
     presentation: 'standard',
     gateways: ['worldfirst', 'alipay', 'wechat_pay', 'xtransfer'],

@@ -98,8 +98,15 @@ export async function createCampaignAction(
   if (!input) return state!;
 
   const db = getSupabaseAdmin();
-  const { error } = await db.from('campaigns').insert({ ...buildRow(input), created_by: admin.id });
-  if (error) return { error: error.message };
+  const rich = { ...buildRow(input), created_by: admin.id };
+  const { error } = await db.from('campaigns').insert(rich);
+  if (error && /column .* does not exist|Could not find/i.test(error.message)) {
+    // Live stub: solo id + name hasta aplicar espejo_universal_industrial.sql §D
+    const stub = await db.from('campaigns').insert({ name: input.title });
+    if (stub.error) return { error: stub.error.message };
+  } else if (error) {
+    return { error: error.message };
+  }
 
   revalidatePath('/admin/campanas');
   revalidatePath('/');

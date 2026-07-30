@@ -162,7 +162,7 @@ export default function Hero({
               title={t('hero.empty_title', 'Expedición en curso')}
               subtitle={t(
                 'hero.empty_subtitle',
-                'Sincronizando nuevos especímenes de los 4 rubros… El visor camaleónico se activará al recibir inventario real.',
+                'Sincronizando nuevos especímenes de los 3 rubros… El visor camaleónico se activará al recibir inventario real.',
               )}
               showRubros
             />

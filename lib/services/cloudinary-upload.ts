@@ -1,4 +1,11 @@
 import { v2 as cloudinary, type UploadApiResponse } from 'cloudinary';
+import {
+  assertAllowedOperationalFolder,
+  assertCanonicalUploadFolder,
+  isAllowedOperationalFolder,
+  isCanonicalCataloguePublicId,
+  isForbiddenCatalogueWriteTarget,
+} from '@/lib/mirror/contract';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -16,6 +23,12 @@ interface UploadOptions {
   context?: Record<string, string>;
   /** Activar eliminación de fondo con Cloudinary AI (solo imágenes). */
   removeBg?: boolean;
+  /**
+   * 'specimen' → exige árbol canónico RUBROS/…/REGION…
+   * 'operational' → campanas / documentos-legales (bloquea dumps _PENDING etc.)
+   * default: si hay folder, aplica la más estricta que corresponda
+   */
+  pathPolicy?: 'specimen' | 'operational';
 }
 
 const IMAGE_TRANSFORM = [{ fetch_format: 'auto', quality: 'auto', flags: 'strip_profile' }];
@@ -58,12 +71,48 @@ export async function uploadModel3d(
   return upload(file, 'raw', { ...opts });
 }
 
+function enforceUploadPath(
+  folder: string | undefined,
+  publicId: string | undefined,
+  pathPolicy?: UploadOptions['pathPolicy'],
+): void {
+  const target = (folder ?? publicId ?? '').replace(/^\/+|\/+$/g, '');
+  if (!target) {
+    throw new Error(
+      'Upload bloqueado: falta folder/public_id. No se sube a la raíz de Cloudinary.',
+    );
+  }
+  if (pathPolicy === 'specimen') {
+    assertCanonicalUploadFolder(folder ?? target);
+    return;
+  }
+  if (pathPolicy === 'operational' || isAllowedOperationalFolder(folder ?? target)) {
+    assertAllowedOperationalFolder(folder ?? target);
+    return;
+  }
+  if (isCanonicalCataloguePublicId(folder ?? target)) {
+    assertCanonicalUploadFolder(folder ?? target);
+    return;
+  }
+  if (isForbiddenCatalogueWriteTarget(target)) {
+    throw new Error(
+      `Upload bloqueado: «${target}» está fuera del árbol canónico y no es carpeta operativa.`,
+    );
+  }
+}
+
 async function upload(
   file: string | Buffer,
   resource_type: UploadTarget,
   extra: Record<string, unknown>,
 ): Promise<UploadApiResponse> {
-  const { folder, publicId, tags, context, ...rest } = extra as UploadOptions & Record<string, unknown>;
+  const { folder, publicId, tags, context, pathPolicy, ...rest } = extra as UploadOptions &
+    Record<string, unknown>;
+  enforceUploadPath(
+    typeof folder === 'string' ? folder : undefined,
+    typeof publicId === 'string' ? publicId : undefined,
+    pathPolicy,
+  );
   const options = {
     resource_type,
     folder,

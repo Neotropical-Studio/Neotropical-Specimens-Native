@@ -32,8 +32,9 @@ export default function Header({ strings, lang: langProp }: Props) {
   const homeHref = `/${lang}`;
   const cartHref = `/${lang}/cart`;
 
+  const catalogueHref = `${homeHref}/catalogue`;
   const nav = [
-    { label: t('nav.catalog', 'Catálogo'), href: `${homeHref}#catalogo` },
+    { label: t('nav.catalog', 'Catálogo'), href: catalogueHref },
     { label: t('nav.regions', 'Regiones'), href: `${homeHref}#regiones` },
     { label: t('nav.wholesale', 'Mayorista'), href: `${homeHref}#mayorista` },
     { label: t('nav.contact', 'Contacto'), href: `${homeHref}#contacto` },
@@ -104,8 +105,8 @@ export default function Header({ strings, lang: langProp }: Props) {
               </span>
             ) : null}
           </Link>
-          <a
-            href={`${homeHref}#catalogo`}
+          <Link
+            href={catalogueHref}
             className="ml-2 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-emerald-400"
           >
             {globeSrc.length > 0 && !globeFailed ? (
@@ -123,7 +124,7 @@ export default function Header({ strings, lang: langProp }: Props) {
               <Globe2 size={16} aria-hidden="true" />
             )}
             <span>{t('nav.explore', 'Explorar')}</span>
-          </a>
+          </Link>
         </nav>
 
         <div className="flex items-center gap-1 md:hidden">

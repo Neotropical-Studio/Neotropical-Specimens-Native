@@ -5,12 +5,7 @@ import { requireAdmin } from '@/lib/auth/admin';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
 import { cloudinary } from '@/lib/services/cloudinary-upload';
 
-interface MediaAsset {
-  type?: string;
-  view?: string;
-  cloudinary_id?: string;
-}
-
+/** Borra asset en Cloudinary y fila(s) en specimen_media (live). */
 export async function deleteMediaAssetAction(
   specimenId: string,
   cloudinaryId: string,
@@ -19,21 +14,28 @@ export async function deleteMediaAssetAction(
   await requireAdmin();
   const db = getSupabaseAdmin();
 
-  const { data, error } = await db.from('specimens').select('media_assets').eq('id', specimenId).maybeSingle();
-  if (error) throw error;
+  await db.from('specimen_media').delete().eq('specimen_id', specimenId).eq('public_id', cloudinaryId);
 
-  const mediaAssets: MediaAsset[] = Array.isArray(data?.media_assets) ? data.media_assets : [];
-  const next = mediaAssets.filter((m) => m.cloudinary_id !== cloudinaryId);
+  // Si era el cover del specimen, limpia anclas live.
+  const { data: sp } = await db
+    .from('specimens')
+    .select('cloudinary_public_id, media_url')
+    .eq('id', specimenId)
+    .maybeSingle();
 
-  const { error: updateError } = await db.from('specimens').update({ media_assets: next }).eq('id', specimenId);
-  if (updateError) throw updateError;
+  if (sp?.cloudinary_public_id === cloudinaryId || (sp?.media_url && String(sp.media_url).includes(cloudinaryId))) {
+    await db
+      .from('specimens')
+      .update({ cloudinary_public_id: null, media_url: null })
+      .eq('id', specimenId);
+  }
 
   try {
     await cloudinary.uploader.destroy(cloudinaryId, { resource_type: resourceType });
   } catch {
-    // El jsonb ya quedó consistente (lo que ve la UI); un recurso huérfano en
-    // Cloudinary no queda referenciado desde ningún lado si esto falla.
+    // La fila DB ya quedó limpia; huérfano Cloudinary no rompe el admin.
   }
 
   revalidatePath(`/admin/multimedia/${specimenId}`);
+  revalidatePath(`/admin/especimenes/${specimenId}`);
 }

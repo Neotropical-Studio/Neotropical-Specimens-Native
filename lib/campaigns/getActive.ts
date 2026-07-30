@@ -1,7 +1,7 @@
 // ============================================================================
-// Campaña activa para el cintillo del storefront (Sección 3). Sin caché: la
-// portada ya es `revalidate = 0`, así que activar/cerrar una campaña sólo
-// requiere cambiar sus fechas — sin cron, sin invalidación manual.
+// Campaña activa para el cintillo del storefront.
+// Live: campaigns es stub (id, name) → no hay active/banner → siempre null
+// hasta aplicar la sección B del SQL industrial.
 // ============================================================================
 import { createClient } from '@supabase/supabase-js';
 
@@ -27,7 +27,7 @@ function anonClient() {
 }
 
 export async function getActiveCampaign(
-  opts: { categorySlug?: string | null; regionCode?: string | null } = {},
+  _opts: { categorySlug?: string | null; regionCode?: string | null } = {},
 ): Promise<ActiveCampaignBanner | null> {
   const supabase = anonClient();
   if (!supabase) return null;
@@ -41,40 +41,12 @@ export async function getActiveCampaign(
     .lte('starts_at', nowIso)
     .gt('ends_at', nowIso)
     .order('priority', { ascending: false })
-    .limit(10);
+    .limit(1);
 
+  // Stub live (solo id+name) → PostgREST error → sin cintillo (no romper portada).
   if (error || !data?.length) return null;
 
-  let categoryId: string | null = null;
-  let regionId: string | null = null;
-
-  if (opts.categorySlug) {
-    const { data: cat } = await supabase.from('categories').select('id').eq('slug', opts.categorySlug).maybeSingle();
-    categoryId = (cat?.id as string) ?? null;
-  }
-  if (opts.regionCode) {
-    const { data: reg } = await supabase
-      .from('global_regions')
-      .select('id')
-      .eq('region_name', opts.regionCode)
-      .maybeSingle();
-    regionId = (reg?.id as string) ?? null;
-
-    if (!regionId) {
-      const { data: fallbackRegion } = await supabase
-        .from('global_regions')
-        .select('id')
-        .eq('name', opts.regionCode)
-        .maybeSingle();
-      regionId = (fallbackRegion?.id as string) ?? null;
-    }
-  }
-
-  const match = data.find(
-    (c) => (!c.category_id || c.category_id === categoryId) && (!c.region_id || c.region_id === regionId),
-  );
-  if (!match) return null;
-
+  const match = data[0];
   return {
     id: match.id as string,
     title: match.title as string,

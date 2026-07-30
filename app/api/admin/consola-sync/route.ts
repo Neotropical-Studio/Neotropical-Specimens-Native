@@ -1,5 +1,5 @@
 // GET /api/admin/consola-sync
-// Alimenta la Consola Maestra V2: specimens + taxonomy (columnas reales).
+// Alimenta la Consola Maestra: specimens + taxonomy / columnas planas LIVE.
 import { NextResponse } from 'next/server';
 import { getCurrentAdmin } from '@/lib/auth/admin';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
@@ -29,81 +29,55 @@ export async function GET() {
 
   const db = getSupabaseAdmin();
 
-  // Intentar con stock_status (migración 0008); fallback sin esa columna
-  let raw: Array<Record<string, unknown>> = [];
-  let errorMsg: string | null = null;
-
-  const withStock = await db
+  const { data, error } = await db
     .from('specimens')
-    .select(`
+    .select(
+      `
       id,
       species_name,
       media_url,
-      stock_status,
+      cloudinary_public_id,
+      status,
+      familia,
+      genero,
       created_at,
       taxonomy (
         family_name,
-        genus_name,
-        subfamily_name
+        genus_name
       )
-    `)
+    `,
+    )
     .order('created_at', { ascending: false })
     .limit(500);
 
-  if (withStock.error) {
-    const fallback = await db
-      .from('specimens')
-      .select(`
-        id,
-        species_name,
-        media_url,
-        created_at,
-        taxonomy (
-          family_name,
-          genus_name,
-          subfamily_name
-        )
-      `)
-      .order('created_at', { ascending: false })
-      .limit(500);
-
-    if (fallback.error) {
-      return NextResponse.json({ error: fallback.error.message }, { status: 500 });
-    }
-    raw = (fallback.data ?? []) as Array<Record<string, unknown>>;
-    errorMsg = withStock.error.message.includes('stock_status')
-      ? null
-      : withStock.error.message;
-  } else {
-    raw = (withStock.data ?? []) as Array<Record<string, unknown>>;
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const rows: ConsolaRow[] = raw.map((s) => {
+  const rows: ConsolaRow[] = (data ?? []).map((s) => {
     const tax = s.taxonomy as TaxEmbed;
-    const stockStatus = String(s.stock_status ?? 'IN_STOCK');
+    const statusRaw = String(s.status ?? '').toUpperCase();
     const status: ConsolaRow['status'] =
-      stockStatus === 'PENDING'
-        ? 'PENDIENTE'
-        : stockStatus === 'OUT_OF_STOCK'
-          ? 'OUT'
+      statusRaw.includes('OUT') || statusRaw === 'AGOTADO' || statusRaw === '0'
+        ? 'OUT'
+        : statusRaw === 'DRAFT' || statusRaw === 'PENDING' || statusRaw === 'PENDIENTE'
+          ? 'PENDIENTE'
           : 'APROBADO';
 
     const fullId = String(s.id);
+    const media =
+      (s.cloudinary_public_id ? String(s.cloudinary_public_id) : null) ??
+      (s.media_url ? String(s.media_url) : null);
 
     return {
       id: fullId.slice(0, 8).toUpperCase(),
       fullId,
       name: String(s.species_name ?? '—'),
-      stock:
-        stockStatus === 'OUT_OF_STOCK'
-          ? 0
-          : stockStatus === 'PENDING'
-            ? '—'
-            : 'OK',
+      stock: status === 'OUT' ? 0 : status === 'PENDIENTE' ? '—' : 'OK',
       status,
-      family: tax?.family_name ?? null,
-      genus: tax?.genus_name ?? null,
-      mediaUrl: s.media_url ? String(s.media_url) : null,
+      family: (tax?.family_name as string | null) ?? (s.familia as string | null) ?? null,
+      genus: (tax?.genus_name as string | null) ?? (s.genero as string | null) ?? null,
+      mediaUrl: media,
     };
   });
 
@@ -112,6 +86,5 @@ export async function GET() {
     count: rows.length,
     rows,
     syncedAt: new Date().toISOString(),
-    warning: errorMsg,
   });
 }

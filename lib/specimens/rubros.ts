@@ -1,36 +1,59 @@
 // ============================================================================
-// Los 4 rubros reales del inventario (espejo de las carpetas raíz bajo
-// Cloudinary `RUBROS/…`). No son categorías inventadas: son las facetas
-// físicas/museográficas con las que se organiza el catálogo en Cloudinary
-// y, por extensión, en Supabase. El carrusel del escaparate reparte las
-// fotos rotando entre estos 4, nunca inventando assets externos.
+// Los 3 rubros del storefront = los 3 hijos exactos de Cloudinary `RUBROS/`.
+// No inventar un 4º. Slugs estables para rutas web; `folder` = segmento Cloudinary.
+//
+//   dried-specimens      → ESPECIMENS SECOS BIOLOGICOS Y INSECTOS COLEOPTEROS  Y ARHHROPODS
+//   zoology-skeletons    → ESQUELETOS DE ZOOLOGIA , BIRS, BATS,AMPHIBIANS,CRUSATACEOS
+//   dry-plants-no-cites  → PLANTAS SECAS NO-CITES
+//
+// Artrópodos / Insects(arthropoda) = categoría bajo dried-specimens, no rubro.
 // ============================================================================
+
+import {
+  RUBRO_FOLDER,
+  RUBRO_FOLDER_PLANTS,
+  RUBRO_FOLDER_SKELETONS,
+} from '@/scripts/sync-cloudinary/roots';
 
 export const INVENTORY_RUBROS = [
   {
     id: 'dried-specimens',
     label: 'Especímenes secos biológicos',
-    // Coincide con carpetas Cloudinary / paths / taxonomía de insectos.
-    match: /especimen|specimen|insect|coleopter|lepidopter|morpho|nymphal|papilion|saturni|brassol|danaid/i,
-  },
-  {
-    id: 'arthropods',
-    label: 'Artrópodos',
-    match: /arthropod|arhhropod|arachnid|crustace|scorpion|tarantul|mantodea|odonata/i,
+    folder: RUBRO_FOLDER,
+    // Paths Cloudinary + taxonomía; Insects(arthropoda) vive bajo este rubro.
+    match:
+      /especimen|specimen|insect|coleopter|lepidopter|morpho|nymphal|papilion|saturni|brassol|danaid|arthropod|arhhropod|arachnid|crustace|scorpion|tarantul|mantodea|odonata/i,
   },
   {
     id: 'zoology-skeletons',
     label: 'Esqueletos de zoología',
-    match: /esqueleto|skeleton|zoolog|bird|bat|amphibian|amphif|crusatac|mammal/i,
+    folder: RUBRO_FOLDER_SKELETONS,
+    match: /esqueleto|skeleton|zoolog|birs|bird|bat|amphibian|amphif|crusatac|mammal/i,
   },
   {
-    id: 'dried-plants',
+    id: 'dry-plants-no-cites',
     label: 'Plantas secas no-CITES',
-    match: /planta|plant|botanic|flora|herbari/i,
+    folder: RUBRO_FOLDER_PLANTS,
+    match: /planta|plant|botanic|flora|herbari|no-cites|nocites/i,
   },
 ] as const;
 
 export type InventoryRubroId = (typeof INVENTORY_RUBROS)[number]['id'];
+
+/** Hub `/[lang]/catalogue` = exactamente estos 3. */
+export const STOREFRONT_RUBROS = INVENTORY_RUBROS;
+
+/** Alias legacy → id canónico (inventario / carrito antiguos). */
+const LEGACY_RUBRO_ID: Record<string, InventoryRubroId> = {
+  arthropods: 'dried-specimens',
+  'dried-plants': 'dry-plants-no-cites',
+};
+
+export function canonicalizeRubroId(id: string | null | undefined): InventoryRubroId | null {
+  if (!id) return null;
+  if (LEGACY_RUBRO_ID[id]) return LEGACY_RUBRO_ID[id];
+  return INVENTORY_RUBROS.some((r) => r.id === id) ? (id as InventoryRubroId) : null;
+}
 
 export interface RubroAware {
   id: string;
@@ -43,8 +66,7 @@ export interface RubroAware {
   rubroLabel?: string | null;
 }
 
-/** Detecta el rubro de un espécimen a partir de su URL/public_id de Cloudinary
- *  y de su taxonomía. Preferencia: path de media → orden → familia → género. */
+/** Detecta el rubro: primero por segmento de carpeta Cloudinary en el path, luego regex. */
 export function detectRubro(input: {
   mediaHint?: string | null;
   order?: string | null;
@@ -52,6 +74,13 @@ export function detectRubro(input: {
   genus?: string | null;
   scientificName?: string | null;
 }): { id: InventoryRubroId; label: string } {
+  const hint = input.mediaHint ?? '';
+  for (const rubro of INVENTORY_RUBROS) {
+    if (hint.includes(rubro.folder)) {
+      return { id: rubro.id, label: rubro.label };
+    }
+  }
+
   const haystack = [
     input.mediaHint,
     input.order,
@@ -67,15 +96,12 @@ export function detectRubro(input: {
       return { id: rubro.id, label: rubro.label };
     }
   }
-  // Default: el rubro mayoritario del inventario (especímenes secos).
   return { id: 'dried-specimens', label: INVENTORY_RUBROS[0].label };
 }
 
 /**
- * Arma la playlist del carrusel: hasta `perRubro` especímenes CON imagen
- * por cada uno de los 4 rubros, intercalados (round-robin) para que la
- * rotación de 15s atraviese categorías distintas en vez de quedarse en un
- * solo lote de la misma familia.
+ * Playlist del carrusel: hasta `perRubro` con imagen por cada uno de los 3
+ * rubros, intercalados (round-robin).
  */
 export function pickFeaturedAcrossRubros<T extends RubroAware>(
   specimens: T[],

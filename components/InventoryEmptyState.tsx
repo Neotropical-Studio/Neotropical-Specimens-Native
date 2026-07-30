@@ -14,7 +14,7 @@ interface Props {
   variant?: 'hero' | 'catalog' | 'inline';
   title?: string;
   subtitle?: string;
-  /** Muestra las 4 ranuras de rubro "a la espera". */
+  /** Muestra las 3 ranuras de rubro "a la espera". */
   showRubros?: boolean;
   className?: string;
 }
@@ -22,7 +22,7 @@ interface Props {
 export default function InventoryEmptyState({
   variant = 'catalog',
   title = 'Expedición en curso',
-  subtitle = 'Sincronizando nuevos especímenes de los 4 rubros…',
+  subtitle = 'Sincronizando nuevos especímenes de los 3 rubros…',
   showRubros = true,
   className = '',
 }: Props) {
@@ -64,7 +64,7 @@ export default function InventoryEmptyState({
       <p className="relative mt-2 max-w-md text-sm text-neutral-400">{subtitle}</p>
 
       {showRubros && (
-        <ul className="relative mt-8 grid w-full max-w-lg grid-cols-2 gap-2">
+        <ul className="relative mt-8 grid w-full max-w-lg grid-cols-1 gap-2 sm:grid-cols-3">
           {INVENTORY_RUBROS.map((rubro) => (
             <li
               key={rubro.id}

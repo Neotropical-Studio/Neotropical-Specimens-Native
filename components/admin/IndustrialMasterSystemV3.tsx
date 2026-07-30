@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Cpu,
 } from 'lucide-react';
+import MirrorVisionPanel from '@/components/admin/MirrorVisionPanel';
 
 type Tab = 'DASHBOARD' | 'TAXONOMÍA' | 'ADUANAS' | 'LOGÍSTICA';
 
@@ -72,26 +73,36 @@ export default function IndustrialMasterSystemV3() {
 
   return (
     <div className="min-h-[70vh] bg-zinc-950 p-6 font-mono text-emerald-400">
-      <header className="mb-8 flex flex-col gap-4 border-b border-emerald-900 pb-6 sm:flex-row sm:items-center sm:justify-between">
+      <header className="mb-6 flex flex-col gap-4 border-b border-emerald-900 pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="flex items-center gap-4 text-3xl font-black uppercase tracking-tighter text-white">
             <Cpu size={32} className="text-emerald-500" />
             {'>'} CONSOLA MAESTRA V-3
           </h1>
           <p className="text-xs italic text-emerald-700">
-            Arquitectura: Gestión Industrial Optimizada
+            Arquitectura: Espejo Cloudinary ↔ Supabase · orden 1 SQL → 2 ESPEJO → 3 panel
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => void sincronizarSistema()}
-          disabled={loading}
-          className="flex items-center gap-2 border border-emerald-500 bg-emerald-950 px-6 py-3 font-bold transition-all hover:bg-emerald-900 disabled:opacity-50"
-        >
-          <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-          {loading ? 'PROCESANDO...' : 'RECARGAR BASE'}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/admin/espejo"
+            className="border border-sky-700 bg-sky-950/40 px-4 py-3 text-xs font-bold uppercase text-sky-300 transition hover:bg-sky-900"
+          >
+            Panel espejo →
+          </Link>
+          <button
+            type="button"
+            onClick={() => void sincronizarSistema()}
+            disabled={loading}
+            className="flex items-center gap-2 border border-emerald-500 bg-emerald-950 px-6 py-3 font-bold transition-all hover:bg-emerald-900 disabled:opacity-50"
+          >
+            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+            {loading ? 'PROCESANDO...' : 'RECARGAR BASE'}
+          </button>
+        </div>
       </header>
+
+      <MirrorVisionPanel className="mb-6" autoDiscover />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
         <nav className="space-y-2">
@@ -133,9 +144,7 @@ export default function IndustrialMasterSystemV3() {
           )}
 
           {loading && data.length === 0 ? (
-            <div className="py-12 text-center text-sm text-emerald-700">
-              PROCESANDO…
-            </div>
+            <div className="py-12 text-center text-sm text-emerald-700">PROCESANDO…</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">

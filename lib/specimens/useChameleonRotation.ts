@@ -3,7 +3,7 @@
 // ============================================================================
 // Rotación camaleónica del showcase del hero: sincroniza el índice activo con
 // el inventario real (specimens llega ya cargado desde Supabase en servidor),
-// reparte las fotos entre los 4 rubros del catálogo (Cloudinary ↔ Supabase),
+// reparte las fotos entre los 3 rubros del catálogo (Cloudinary ↔ Supabase),
 // avanza cada `intervalMs` sin recargar la página, y resuelve la paleta de
 // color del espécimen activo en dos pasos —
 //   1) instantáneo, por taxonomía/rubro (resolveTaxonPalette), para no
@@ -27,7 +27,7 @@ export interface ChameleonRotation {
 }
 
 export function useChameleonRotation(specimens: SpecimenView[], intervalMs = 15_000): ChameleonRotation {
-  // Playlist intercalada: hasta 3 por cada uno de los 4 rubros, sólo con
+  // Playlist intercalada: hasta 3 por cada uno de los 3 rubros, sólo con
   // imagen real (Cloudinary vía media_url / specimen_media).
   const featured = useMemo(() => pickFeaturedAcrossRubros(specimens, 3), [specimens]);
   const [index, setIndex] = useState(0);
