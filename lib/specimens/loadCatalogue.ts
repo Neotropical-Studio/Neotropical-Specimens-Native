@@ -12,6 +12,14 @@ export async function loadCatalogueSpecimens(): Promise<{
   if (!url || !key) {
     return { specimens: [], error: 'Supabase no configurado' };
   }
-  const { rows, error } = await loadCatalogRows(createClient(url, key));
-  return { specimens: rows.map(toSpecimenView), error };
+  try {
+    const { rows, error } = await loadCatalogRows(createClient(url, key));
+    return {
+      specimens: rows.map((row) => toSpecimenView(row)),
+      error,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Error cargando catálogo';
+    return { specimens: [], error: message };
+  }
 }

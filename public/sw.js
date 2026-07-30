@@ -4,7 +4,7 @@
  * Guard de latencia para entornos extremos (búnker / submarino / satélite).
  * ============================================================================= */
 
-const CACHE = 'entmo-edge-2026.1';
+const CACHE = 'entmo-edge-2026.2';
 const OFFLINE_URL = '/offline';
 const SYNC_TAG = 'entmo-edge-sync';
 
@@ -40,7 +40,10 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   if (BYPASS.some((re) => re.test(url.pathname))) return;
 
-  // StaleWhileRevalidate: sirve caché al instante y refresca en segundo plano.
+  // Navegaciones HTML: network-first para no servir un Application error /
+  // HTML roto cacheado tras un deploy fallido. Assets: stale-while-revalidate.
+  const isNavigate = request.mode === 'navigate';
+
   event.respondWith(
     caches.open(CACHE).then(async (cache) => {
       const cached = await cache.match(request);
@@ -53,10 +56,14 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => null);
 
-      // offline_availability: si no hay caché ni red, cae a la página offline.
+      if (isNavigate) {
+        const fresh = (await network) || cached;
+        if (fresh) return fresh;
+        return cache.match(OFFLINE_URL);
+      }
+
       const fresh = cached || (await network);
       if (fresh) return fresh;
-      if (request.mode === 'navigate') return cache.match(OFFLINE_URL);
       return new Response('', { status: 504, statusText: 'Offline' });
     }),
   );

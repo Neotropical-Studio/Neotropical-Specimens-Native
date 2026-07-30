@@ -14,7 +14,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { imageUrl } from '@/lib/cloudinary/url';
 import { DEFAULT_PALETTE, type ThemePalette } from '@/lib/theme/palette';
 import { resolveTaxonPalette } from '@/lib/theme/taxon';
-import { buildShowcasePlaylist, type ShowcaseSpecimen } from './showcasePlaylist';
+import {
+  buildShowcasePlaylist,
+  morphoShowcaseSeeds,
+  type ShowcaseSpecimen,
+} from './showcasePlaylist';
 import { extractDominantPaletteFromImage } from './visual';
 import type { SpecimenView } from './view';
 
@@ -30,7 +34,10 @@ export function useChameleonRotation(
   specimens: SpecimenView[],
   intervalMs = 10_000,
 ): ChameleonRotation {
-  const featured = useMemo(() => buildShowcasePlaylist(specimens, 3), [specimens]);
+  const featured = useMemo(() => {
+    const list = buildShowcasePlaylist(specimens ?? [], 3);
+    return list.length > 0 ? list : morphoShowcaseSeeds();
+  }, [specimens]);
   const [index, setIndex] = useState(0);
   const [palette, setPalette] = useState<ThemePalette>(DEFAULT_PALETTE);
 
@@ -44,7 +51,8 @@ export function useChameleonRotation(
     return () => clearInterval(id);
   }, [featured.length, intervalMs]);
 
-  const active = featured[index] ?? featured[0];
+  // Nunca undefined: HeroButterfly lee active.id en el primer paint SSR.
+  const active = featured[index] ?? featured[0] ?? morphoShowcaseSeeds()[0];
 
   useEffect(() => {
     if (!active) return;

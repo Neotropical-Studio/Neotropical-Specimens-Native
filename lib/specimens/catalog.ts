@@ -17,21 +17,27 @@ export type CatalogSpecimenRow = SpecimenRow & { specimen_media: import('./view'
 export async function loadCatalogRows(
   supabase: SupabaseClient,
 ): Promise<{ rows: CatalogSpecimenRow[]; error: string | null }> {
-  const { data, error } = await supabase
-    .from('specimens')
-    .select(SPECIMEN_SELECT)
-    .order('created_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('specimens')
+      .select(SPECIMEN_SELECT)
+      .order('created_at', { ascending: false });
 
-  const rows = (data ?? []) as SpecimenRow[];
-  const mediaById = await fetchSpecimenMedia(
-    supabase,
-    rows.map((r) => r.id),
-  );
+    const rows = (data ?? []) as SpecimenRow[];
+    const mediaById = await fetchSpecimenMedia(
+      supabase,
+      rows.map((r) => r.id).filter(Boolean),
+    );
 
-  return {
-    rows: attachMedia(rows, mediaById),
-    error: error?.message ?? null,
-  };
+    return {
+      rows: attachMedia(rows, mediaById),
+      error: error?.message ?? null,
+    };
+  } catch (err) {
+    // Red / PostgREST caído: nunca tumbar SSR de la portada.
+    const message = err instanceof Error ? err.message : 'Error cargando inventario';
+    return { rows: [], error: message };
+  }
 }
 
 /** Una ficha por id, con multimedia adjunta. */

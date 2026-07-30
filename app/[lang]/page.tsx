@@ -17,7 +17,12 @@ async function loadSpecimens() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
   if (!url || !key) return { rows: [], error: 'Supabase no configurado' };
 
-  return loadCatalogRows(createClient(url, key));
+  try {
+    return await loadCatalogRows(createClient(url, key));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Error cargando inventario';
+    return { rows: [], error: message };
+  }
 }
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
@@ -25,7 +30,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const i18n = await getI18n(lang);
 
   const { rows, error } = await loadSpecimens();
-  const specimens = rows.map(toSpecimenView);
+  const specimens = rows.map((row) => toSpecimenView(row));
   const country = (await headers()).get('x-geo-country');
 
   return (

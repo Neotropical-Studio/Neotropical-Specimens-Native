@@ -192,6 +192,7 @@ export const MIRROR_NODE_MEDIA_EXAMPLES = {
  * Esos assets alimentan cards/intros — no son especímenes.
  */
 export function isNodeMediaPublicId(publicId: string): boolean {
+  if (typeof publicId !== 'string' || !publicId) return false;
   const pid = publicId.replace(/^\/+|\/+$/g, '');
   const parts = pid.split('/');
   return parts.some((seg) => isNodeMediaFolderName(seg));

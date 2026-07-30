@@ -74,19 +74,20 @@ function productHref(lang: string, active: SpecimenView): string {
 
 export default function HeroButterfly({ active, featured, index, palette, lang, strings }: Props) {
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
-  const href = productHref(lang, active);
-  const preferred = resolveHeroSrc(active);
+  const safeActive = active?.id ? active : null;
+  const preferred = safeActive ? resolveHeroSrc(safeActive) : '';
   const [src, setSrc] = useState(preferred);
   const [failedOnce, setFailedOnce] = useState(false);
-  const isGodarty = isMorphoShowcaseSlide(active);
-  const isVentral = isMorphoVentralSlide(active);
+  const isGodarty = safeActive ? isMorphoShowcaseSlide(safeActive) : false;
+  const isVentral = safeActive ? isMorphoVentralSlide(safeActive) : false;
 
   useEffect(() => {
     setSrc(preferred);
     setFailedOnce(false);
-  }, [preferred, active.id]);
+  }, [preferred, safeActive?.id]);
 
-  if (!src) return null;
+  if (!safeActive || !src) return null;
+  const href = productHref(lang, safeActive);
 
   return (
     <Link
@@ -96,7 +97,7 @@ export default function HeroButterfly({ active, featured, index, palette, lang, 
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          key={active.id}
+          key={safeActive.id}
           initial={{ opacity: 0, x: 28 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -28 }}
@@ -106,7 +107,7 @@ export default function HeroButterfly({ active, featured, index, palette, lang, 
           <div className="relative flex h-72 w-full items-center justify-center bg-transparent sm:h-80">
             <Image
               src={src}
-              alt={active.scientificName}
+              alt={safeActive.scientificName}
               width={720}
               height={720}
               priority
@@ -120,8 +121,8 @@ export default function HeroButterfly({ active, featured, index, palette, lang, 
                   setSrc(isVentral ? MORPHO_VENTRAL_PNG : MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_PNG);
                   return;
                 }
-                const id = resolveCloudinaryPublicId(active.primaryImage ?? '');
-                if (id) setSrc(cloudinaryImageUrl(id, ['f_png', 'c_fit']) || active.primaryImage || '');
+                const id = resolveCloudinaryPublicId(safeActive.primaryImage ?? '');
+                if (id) setSrc(cloudinaryImageUrl(id, ['f_png', 'c_fit']) || safeActive.primaryImage || '');
               }}
             />
           </div>
@@ -130,12 +131,12 @@ export default function HeroButterfly({ active, featured, index, palette, lang, 
             style={{ background: `linear-gradient(to top, ${hexA(palette.surface, 0.92)}, transparent)` }}
           >
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-yellow-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]">
-              {active.rubroLabel ?? active.family ?? t('hero_butterfly.featured', 'Espécimen destacado')}
+              {safeActive.rubroLabel ?? safeActive.family ?? t('hero_butterfly.featured', 'Espécimen destacado')}
             </p>
-            <p className="mt-1 text-lg font-bold italic leading-tight text-white">{active.scientificName}</p>
-            {(active.family || active.commonName) && (
+            <p className="mt-1 text-lg font-bold italic leading-tight text-white">{safeActive.scientificName}</p>
+            {(safeActive.family || safeActive.commonName) && (
               <p className="text-sm text-neutral-300">
-                {[active.family, active.commonName].filter(Boolean).join(' · ')}
+                {[safeActive.family, safeActive.commonName].filter(Boolean).join(' · ')}
               </p>
             )}
           </div>

@@ -1,9 +1,12 @@
 // ============================================================================
 // Playlist del visor camaleónico del hero.
 // Preferencia: especímenes reales con foto, repartidos por rubro.
-// Si el inventario está vacío o sin media → covers de nodos de catálogo
-// (cuando existan) + Morpho nativo (dorsal/ventral) para que la rotación
-// nunca se apague detrás de un empty state.
+// Si el inventario está vacío o sin media → Morpho nativo (dorsal/ventral)
+// para que la rotación nunca se apague detrás de un empty state.
+//
+// IMPORTANTE: no importar catalogueNav / mirror/contract aquí. Ese grafo es
+// enorme y se ejecutaría en el SSR del Hero (client component). Un throw en
+// ese path tumba toda la portada con "Application error".
 // ============================================================================
 
 import {
@@ -12,7 +15,6 @@ import {
   MORPHO_HERO_URL,
   MORPHO_VENTRAL_URL,
 } from '@/lib/cloudinary/specimens';
-import { buildRubroNodes } from './catalogueNav';
 import {
   MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID,
   MORPHO_GODARTY_NATIVE,
@@ -83,79 +85,36 @@ export function morphoShowcaseSeeds(): ShowcaseSpecimen[] {
   ];
 }
 
-/** Covers `_card` de nodos rubro presentes en el inventario sincronizado. */
-function catalogueNodeSlides(specimens: SpecimenView[]): ShowcaseSpecimen[] {
-  const nodes = buildRubroNodes(specimens);
-  const out: ShowcaseSpecimen[] = [];
-  for (const node of nodes) {
-    if (!node.coverPublicId) continue;
-    const rubro = INVENTORY_RUBROS.find((r) => r.id === node.id);
-    if (!rubro) continue;
-    out.push({
-      id: `catalogue-node:${node.id}`,
-      code: `RUBRO-${node.id}`,
-      scientificName: node.label,
-      commonName: null,
-      order: null,
-      family: null,
-      genus: null,
-      regionName: null,
-      regionCode: null,
-      country: null,
-      sex: null,
-      grade: null,
-      gradeName: null,
-      wingspanMm: null,
-      colors: [],
-      price: null,
-      currency: 'USD',
-      stock: 0,
-      images: [{ view: 'cover', publicId: node.coverPublicId }],
-      primaryImage: node.coverPublicId,
-      secondaryImage: null,
-      model3d: null,
-      video: node.videoPublicId,
-      rubroId: rubro.id,
-      rubroLabel: rubro.label,
-      categoria: null,
-    });
-  }
-  return out;
-}
-
 /**
- * Playlist del hero: inventario real por rubro → covers de catálogo → Morpho.
- * Nunca devuelve vacío: el visor camaleónico siempre tiene qué rotar.
+ * Playlist del hero: inventario real por rubro → Morpho.
+ * Nunca devuelve vacío ni lanza: el visor camaleónico siempre tiene qué rotar.
  */
 export function buildShowcasePlaylist(
   specimens: SpecimenView[],
   perRubro = 3,
 ): ShowcaseSpecimen[] {
-  const fromInventory = pickFeaturedAcrossRubros(specimens, perRubro);
-  if (fromInventory.length >= 2) return fromInventory;
+  try {
+    const list = Array.isArray(specimens) ? specimens.filter(Boolean) : [];
+    const fromInventory = pickFeaturedAcrossRubros(list, perRubro);
+    if (fromInventory.length >= 2) return fromInventory;
 
-  const seen = new Set(fromInventory.map((s) => s.id));
-  const merged: ShowcaseSpecimen[] = [...fromInventory];
+    const seen = new Set(fromInventory.map((s) => s.id));
+    const merged: ShowcaseSpecimen[] = [...fromInventory];
 
-  for (const slide of catalogueNodeSlides(specimens)) {
-    if (seen.has(slide.id)) continue;
-    seen.add(slide.id);
-    merged.push(slide);
-  }
-  if (merged.length >= 2) return merged;
-
-  for (const seed of morphoShowcaseSeeds()) {
-    if (seen.has(seed.id)) continue;
-    // Si ya hay Morpho dorsal en inventario, no duplicar el mismo asset.
-    if (
-      seed.id === MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID &&
-      merged.some((s) => s.id === MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID)
-    ) {
-      continue;
+    for (const seed of morphoShowcaseSeeds()) {
+      if (seen.has(seed.id)) continue;
+      if (
+        seed.id === MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID &&
+        merged.some((s) => s.id === MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID)
+      ) {
+        continue;
+      }
+      seen.add(seed.id);
+      merged.push(seed);
     }
-    seen.add(seed.id);
-    merged.push(seed);
-  }
 
-  return merged.length > 0 ? merged : morphoShowcaseSeeds();
+    return merged.length > 0 ? merged : morphoShowcaseSeeds();
+  } catch {
+    return morphoShowcaseSeeds();
+  }
 }
