@@ -11,7 +11,7 @@ import { useMemo, useState, useEffect, useRef, useCallback, type CSSProperties }
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ShoppingBag } from 'lucide-react';
 import 'flag-icons/css/flag-icons.css';
 import { getSupabaseBrowser } from '@/lib/supabase/client';
 import { extractDominantPaletteFromImage } from '@/lib/specimens/visual';
@@ -21,7 +21,7 @@ import {
   toSpecimenDetail,
   type SpecimenDetailView,
 } from '@/lib/specimens/detail';
-import { formatMoney, type Regulatory } from '@/lib/geo/regulations';
+import { type Regulatory } from '@/lib/geo/regulations';
 import { quoteCart, type CartLine, type Profile, type Quote } from '@/lib/services/cart-adaptive';
 import { imageUrl, modelUrl } from '@/lib/cloudinary/url';
 import { GRADE_OPTIONS } from '@/lib/constants/grades';
@@ -36,6 +36,8 @@ import {
 import { MORPHO_CARD_URL, MORPHO_HERO_URL, MORPHO_VENTRAL_URL } from '@/lib/cloudinary/specimens';
 import { pickRelatedSpecimens } from '@/lib/specimens/related';
 import { useCart } from '@/components/CartProvider';
+import { useDisplayCurrency } from '@/lib/cart/use-display-currency';
+import CartCurrencySwitcher from '@/components/CartCurrencySwitcher';
 import CamaleonicSpecimenViewer from './CamaleonicSpecimenViewer';
 import PeruNationalFlag from './PeruNationalFlag';
 
@@ -329,10 +331,24 @@ export default function SpecimenDetail({
     };
   }, [unit, baseUnit, discountPercent, qty, wholesaleActive, specimen.id, specimen.code, specimen.scientificName, regulatory.country]);
 
-  const displayCurrency = quote?.currency ?? currency ?? specimen.currency;
-  const priceLabel = quote ? formatMoney(quote.total / 100, displayCurrency, locale) : t('product.inquire', 'Consultar precio');
-  const originalPriceLabel = originalQuote ? formatMoney(originalQuote.total / 100, displayCurrency, locale) : null;
-  const taxLabel = quote && quote.tax > 0 ? formatMoney(quote.tax / 100, displayCurrency, locale) : null;
+  const quoteCurrency = (quote?.currency ?? currency ?? specimen.currency ?? 'PEN').toUpperCase();
+  const {
+    displayCurrency,
+    setDisplayCurrency,
+    options: currencyOptions,
+    formatFrom,
+  } = useDisplayCurrency({
+    country: regulatory.country ?? 'PE',
+    locale,
+  });
+  const priceLabel = quote
+    ? formatFrom(quote.total / 100, quoteCurrency)
+    : t('product.inquire', 'Consultar precio');
+  const originalPriceLabel = originalQuote
+    ? formatFrom(originalQuote.total / 100, quoteCurrency)
+    : null;
+  const taxLabel =
+    quote && quote.tax > 0 ? formatFrom(quote.tax / 100, quoteCurrency) : null;
 
   const accent = paletteState.accent;
   const primary = paletteState.primary;
@@ -367,7 +383,7 @@ export default function SpecimenDetail({
 
   const [selectedGrade, setSelectedGrade] = useState(specimen.grade ?? 'A1');
   const [selectedSex, setSelectedSex] = useState(specimen.sex ?? 'M');
-  const { addItem } = useCart();
+  const { addItem, count, ready } = useCart();
   const router = useRouter();
 
   useEffect(() => {
@@ -398,7 +414,7 @@ export default function SpecimenDetail({
       grade: selectedGrade || specimen.grade,
       sex: selectedSex || specimen.sex,
       tier: wholesaleActive ? 'wholesale' : 'retail',
-      currencyHint: displayCurrency,
+      currencyHint: quoteCurrency,
     });
     router.push(`/${lang}/cart`);
   }, [
@@ -416,7 +432,7 @@ export default function SpecimenDetail({
     selectedGrade,
     selectedSex,
     wholesaleActive,
-    displayCurrency,
+    quoteCurrency,
     addItem,
     router,
   ]);
@@ -473,27 +489,41 @@ export default function SpecimenDetail({
     <div
       dir={dir}
       lang={lang}
-      className="min-h-screen pb-20 text-slate-100 antialiased"
+      className="min-h-screen pb-20 pt-[108px] text-slate-100 antialiased"
       style={{ background: `radial-gradient(circle at center, ${hexA(primary, 0.18)} 0%, ${paletteState.surface} 70%)` }}
     >
-      {/* Header: volver al escaparate (siempre legible sobre fondo oscuro) */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 px-6 py-4 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+      {/* Barra de ficha: volver + moneda + carrito (bajo el Header fijo del sitio) */}
+      <header className="sticky top-[108px] z-30 border-b border-white/10 bg-black/70 px-6 py-3 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <Link
             href={`/${lang}`}
             className="shrink-0 font-mono text-xs text-emerald-300 transition hover:text-emerald-200 hover:underline"
           >
             {t('nav.back', '← Volver al Escaparate Principal')}
           </Link>
-          {morphoCampaign && discountPercent != null ? (
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] text-emerald-400">
-              + {t('product.campaign_label', 'Campaña')}: {campaignTitle} (-{discountPercent}%)
-            </span>
-          ) : (
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-[10px] text-amber-400">
-              {t(`regulatory.${regulatory.citesStatus}`, 'No-CITES · espécimen legal para comercio')}
-            </span>
-          )}
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {morphoCampaign && discountPercent != null ? (
+              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] text-emerald-400">
+                + {t('product.campaign_label', 'Campaña')}: {campaignTitle} (-{discountPercent}%)
+              </span>
+            ) : (
+              <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-[10px] text-amber-400">
+                {t(`regulatory.${regulatory.citesStatus}`, 'No-CITES · espécimen legal para comercio')}
+              </span>
+            )}
+            <Link
+              href={`/${lang}/cart`}
+              className="relative grid h-9 w-9 place-items-center rounded-lg border border-white/10 text-emerald-300 transition hover:border-emerald-400/40 hover:bg-white/5"
+              aria-label={t('nav.cart', 'Carrito')}
+            >
+              <ShoppingBag size={16} />
+              {ready && count > 0 ? (
+                <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-emerald-500 px-1 font-mono text-[10px] font-bold text-emerald-950">
+                  {count > 99 ? '99+' : count}
+                </span>
+              ) : null}
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -770,6 +800,13 @@ export default function SpecimenDetail({
                 </div>
               )}
 
+              <CartCurrencySwitcher
+                options={currencyOptions}
+                value={displayCurrency}
+                onChange={setDisplayCurrency}
+                t={t}
+              />
+
               <div className="flex items-baseline justify-between pt-1">
                 <div>
                   <div className="flex items-baseline gap-2">
@@ -853,7 +890,10 @@ export default function SpecimenDetail({
                   subfamily: item.subfamily,
                   override: item.themeOverride,
                 }).accent;
-                const itemPrice = item.price != null ? formatMoney(item.price, item.currency, locale) : null;
+                const itemPrice =
+                  item.price != null
+                    ? formatFrom(item.price, (item.currency || quoteCurrency).toUpperCase())
+                    : null;
                 const itemIsMorpho = isMorphoGodartyDidiusTingomarensis({
                   id: item.id,
                   scientificName: item.scientificName,

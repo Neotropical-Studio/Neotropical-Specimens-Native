@@ -34,7 +34,7 @@ export default function CartCurrencySwitcher({
           compact ? 'text-[9px]' : 'text-[10px]'
         }`}
       >
-        {t('cart.fx_title', 'Moneda · USD · Euro · Libra · Yuan · HK$')}
+        {t('cart.fx_title', 'MONEDA · USD · EURO · LIBRA · YUAN · HK$')}
       </p>
       <div className="flex flex-wrap gap-1.5">
         {options.map((opt) => {
