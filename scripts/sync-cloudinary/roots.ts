@@ -142,7 +142,7 @@ export const DRIED_SPECIMEN_REGION_ROOTS = GEOGRAPHIC_REGION_FOLDERS.map((r) => 
   id: r.id,
   folder: r.folder,
   path: driedSpecimenRegionRoot(r.folder),
-})) as const;
+}));
 
 /** Región Neotropical (carpeta canónica storefront / sync default). */
 export const REGION_FOLDER =
@@ -224,7 +224,7 @@ export const RARE_GYNAN_REGION_ROOTS = GEOGRAPHIC_REGION_FOLDERS.map((r) => ({
   id: r.id,
   regionFolder: r.folder,
   nodePath: `${driedSpecimenRegionRoot(r.folder)}/${RARE_GYNAN_CATEGORY_SEGMENT}`,
-})) as const;
+}));
 
 /**
  * Subcarpetas bajo Rare -Gynan-Aberrations (nombres exactos usuario).
@@ -288,7 +288,7 @@ export const INSECTS_REGION_ROOTS = GEOGRAPHIC_REGION_FOLDERS.map((r) => ({
   id: r.id,
   regionFolder: r.folder,
   nodePath: `${driedSpecimenRegionRoot(r.folder)}/${INSECTS_CATEGORY_SEGMENT}`,
-})) as const;
+}));
 
 /**
  * Familias/taxones Insects(arthropoda) — set compartido (XML parcial Jul 2026).
@@ -382,7 +382,7 @@ export const BEETLES_REGION_ROOTS = GEOGRAPHIC_REGION_FOLDERS.map((r) => ({
   id: r.id,
   regionFolder: r.folder,
   nodePath: `${driedSpecimenRegionRoot(r.folder)}/${BEETLES_CATEGORY_SEGMENT}`,
-})) as const;
+}));
 
 /** Beetles bajo Africa (Afrotropical). */
 export const AFRICA_BEETLES_ROOT = BEETLES_REGION_ROOTS.find(
@@ -571,7 +571,7 @@ export const MOTHS_REGION_ROOTS = GEOGRAPHIC_REGION_FOLDERS.map((r) => ({
   id: r.id,
   regionFolder: r.folder,
   nodePath: `${driedSpecimenRegionRoot(r.folder)}/${MOTHS_CATEGORY_SEGMENT}`,
-})) as const;
+}));
 
 /**
  * Familias bajo Moths(Lepidoptera) Nocturne — REGION Neotropical (rubro 1).
@@ -684,7 +684,7 @@ export const BUTTERFLIES_REGION_ROOTS = GEOGRAPHIC_REGION_FOLDERS.map((r) => ({
   id: r.id,
   regionFolder: r.folder,
   nodePath: `${driedSpecimenRegionRoot(r.folder)}/${BUTTERFLIES_CATEGORY_SEGMENT}`,
-})) as const;
+}));
 
 /** Región Africa — Butterflies Afrotropical. */
 export const AFRICA_REGION_FOLDER =
