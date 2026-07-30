@@ -288,6 +288,7 @@ class _HotFolderHandler(FileSystemEventHandler):
         _queue.put(_Item(path=path, added_at=time.monotonic()))
 
     def on_created(self, event) -> None:                # archivo creado/copiado
+        print(f"DEBUG: Evento detectado en {event.src_path}")
         if not event.is_directory:
             self._enqueue(Path(str(event.src_path)))
 
