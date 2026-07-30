@@ -14,7 +14,9 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "sync:cloudinary:discover": "tsx scripts/sync-cloudinary/run.ts",
-    "sync:cloudinary": "tsx scripts/sync-cloudinary/run.ts --apply"
+    "sync:cloudinary": "tsx scripts/sync-cloudinary/run.ts --apply",
+    "sync:mirror:discover": "tsx scripts/sync-mirror.ts",
+    "sync:mirror": "tsx scripts/sync-mirror.ts --apply"
   },
   "dependencies": {
     "@google/model-viewer": "^4.0.0",

@@ -67,7 +67,7 @@ export function toSpecimenDetail(row: SpecimenRow, lang: string): SpecimenDetail
     base.images.find((i) => i.view === name)?.publicId ?? null;
 
   const views: SpecimenViews = {
-    dorsal: byView('dorsal') ?? base.primaryImage,
+    dorsal: byView('dorsal') ?? (base.images.find((i) => i.view !== 'cover')?.publicId ?? null) ?? base.primaryImage,
     ventral: byView('ventral') ?? base.secondaryImage,
     lateral: byView('lateral'),
     macro: byView('macro'),
@@ -90,7 +90,12 @@ export function toSpecimenDetail(row: SpecimenRow, lang: string): SpecimenDetail
     order: native?.order ?? base.order,
     family: native?.family ?? base.family,
     genus: native?.genus ?? base.genus,
-    subfamily: native?.subfamily ?? str(row.taxonomy?.subfamily_name),
+    subfamily:
+      native?.subfamily ??
+      str(row.taxonomy?.subfamily_name) ??
+      str(row.subfamilia) ??
+      str(row.metadata?.subfamilia) ??
+      null,
     sex: native?.sex ?? str(attrs.sex) ?? str(row.attributes?.sex_type) ?? base.sex,
     grade: native?.grade ?? base.grade,
     gradeName: native ? native.gradeName : base.gradeName,
@@ -106,11 +111,14 @@ export function toSpecimenDetail(row: SpecimenRow, lang: string): SpecimenDetail
       native?.gpsCoordinates ??
       str(attrs.gps_coordinates) ??
       str(attrs.gps) ??
-      str(row.region?.gps_coordinates) ??
+      str(typeof row.region === 'object' && row.region ? row.region.gps_coordinates : null) ??
+      str(row.gps) ??
       null,
     description: native?.description ?? localize('description'),
     wholesalePrice:
-      native?.wholesalePrice ?? num((pricing as Record<string, unknown>).wholesale_price),
+      native?.wholesalePrice ??
+      num(row.precio_mayor) ??
+      num((pricing as Record<string, unknown>).wholesale_price),
     wholesaleMinQty:
       native?.wholesaleMinQty ?? num((pricing as Record<string, unknown>).wholesale_min_qty),
     views,
@@ -157,6 +165,7 @@ export function buildMorphoGodartyDetailView(): SpecimenDetailView {
     video: null,
     rubroId: 'dried-specimens',
     rubroLabel: 'Espécimenes secos biológicos',
+    categoria: 'Butterflies(lepidoptera) Diurne',
     subfamily: n.subfamily,
     gpsCoordinates: n.gpsCoordinates,
     description: n.description,

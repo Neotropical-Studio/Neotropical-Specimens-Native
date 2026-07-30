@@ -2,27 +2,38 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Globe2, Menu, ShoppingBag, X } from 'lucide-react';
 import { BRAND_GLOBE_URL, BRAND_LOGO_URL } from '@/lib/cloudinary/brand';
 import { useCart } from '@/components/CartProvider';
+import CartCurrencySwitcher from '@/components/CartCurrencySwitcher';
+import { useDisplayCurrency } from '@/lib/cart/use-display-currency';
 import RegulatoryStrip from './RegulatoryStrip';
 
 interface Props {
   strings: Record<string, string>;
   /** Idioma de ruta; si falta se infiere del pathname. */
   lang?: string;
+  /** País ISO para sugerir moneda (geo / regulatorio). */
+  country?: string;
 }
 
-export default function Header({ strings, lang: langProp }: Props) {
+export default function Header({ strings, lang: langProp, country = 'PE' }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [fxOpen, setFxOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
   const [globeFailed, setGlobeFailed] = useState(false);
+  const fxRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() || '/es';
   const lang = langProp || pathname.split('/').filter(Boolean)[0] || 'es';
   const { count, ready } = useCart();
+  const {
+    displayCurrency,
+    setDisplayCurrency,
+    options: currencyOptions,
+  } = useDisplayCurrency({ country, locale: lang });
 
   const logoSrc = typeof BRAND_LOGO_URL === 'string' ? BRAND_LOGO_URL : '';
   const globeSrc = typeof BRAND_GLOBE_URL === 'string' ? BRAND_GLOBE_URL : '';
@@ -32,8 +43,9 @@ export default function Header({ strings, lang: langProp }: Props) {
   const homeHref = `/${lang}`;
   const cartHref = `/${lang}/cart`;
 
+  const catalogueHref = `${homeHref}/catalogue`;
   const nav = [
-    { label: t('nav.catalog', 'Catálogo'), href: `${homeHref}#catalogo` },
+    { label: t('nav.catalog', 'Catálogo'), href: catalogueHref },
     { label: t('nav.regions', 'Regiones'), href: `${homeHref}#regiones` },
     { label: t('nav.wholesale', 'Mayorista'), href: `${homeHref}#mayorista` },
     { label: t('nav.contact', 'Contacto'), href: `${homeHref}#contacto` },
@@ -45,6 +57,31 @@ export default function Header({ strings, lang: langProp }: Props) {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!fxOpen) return;
+    const onPointer = (e: MouseEvent) => {
+      if (fxRef.current && !fxRef.current.contains(e.target as Node)) {
+        setFxOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setFxOpen(false);
+    };
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [fxOpen]);
+
+  const cartBadge =
+    ready && count > 0 ? (
+      <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-emerald-500 px-1 font-mono text-[10px] font-bold text-emerald-950">
+        {count > 99 ? '99+' : count}
+      </span>
+    ) : null;
 
   return (
     <header
@@ -82,31 +119,67 @@ export default function Header({ strings, lang: langProp }: Props) {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
-          {nav.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-300 transition hover:bg-white/5 hover:text-white"
+        <div className="flex items-center gap-1">
+          <nav className="hidden items-center gap-1 md:flex">
+            {nav.map((n) => (
+              <a
+                key={n.href}
+                href={n.href}
+                className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-300 transition hover:bg-white/5 hover:text-white"
+              >
+                {n.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="relative" ref={fxRef}>
+            <button
+              type="button"
+              onClick={() => setFxOpen((v) => !v)}
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-white/10 bg-black/40 px-2.5 font-mono text-[11px] font-semibold tracking-wide text-emerald-300 transition hover:border-emerald-400/40 hover:bg-white/5"
+              aria-expanded={fxOpen}
+              aria-haspopup="dialog"
+              aria-label={t('nav.currency', 'Moneda')}
             >
-              {n.label}
-            </a>
-          ))}
+              <span className="text-emerald-500" aria-hidden="true">
+                ¤
+              </span>
+              {displayCurrency}
+            </button>
+            {fxOpen ? (
+              <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-[min(22rem,calc(100vw-2rem))] rounded-xl border border-white/10 bg-neutral-950/95 p-2 shadow-2xl shadow-black/60 backdrop-blur-xl">
+                <CartCurrencySwitcher
+                  options={currencyOptions}
+                  value={displayCurrency}
+                  onChange={(code) => {
+                    setDisplayCurrency(code);
+                    setFxOpen(false);
+                  }}
+                  t={t}
+                  compact
+                />
+                <p className="mt-2 px-1 font-mono text-[9px] text-slate-500">
+                  {t(
+                    'cart.fx_hint',
+                    'USD siempre · Europa Euro · Asia Yuan / HK$ · UK Libra · eliges tú.',
+                  )}
+                </p>
+              </div>
+            ) : null}
+          </div>
+
           <Link
             href={cartHref}
-            className="relative ml-1 grid h-10 w-10 place-items-center rounded-lg text-neutral-200 transition hover:bg-white/5 hover:text-white"
+            className="relative grid h-10 w-10 place-items-center rounded-lg text-neutral-200 transition hover:bg-white/5 hover:text-white"
             aria-label={t('nav.cart', 'Carrito')}
           >
             <ShoppingBag size={18} />
-            {ready && count > 0 ? (
-              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-emerald-500 px-1 font-mono text-[10px] font-bold text-emerald-950">
-                {count > 99 ? '99+' : count}
-              </span>
-            ) : null}
+            {cartBadge}
           </Link>
-          <a
-            href={`${homeHref}#catalogo`}
-            className="ml-2 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-emerald-400"
+
+          <Link
+            href={catalogueHref}
+            className="ml-1 hidden items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-emerald-400 md:inline-flex"
           >
             {globeSrc.length > 0 && !globeFailed ? (
               <Image
@@ -123,26 +196,12 @@ export default function Header({ strings, lang: langProp }: Props) {
               <Globe2 size={16} aria-hidden="true" />
             )}
             <span>{t('nav.explore', 'Explorar')}</span>
-          </a>
-        </nav>
-
-        <div className="flex items-center gap-1 md:hidden">
-          <Link
-            href={cartHref}
-            className="relative grid h-10 w-10 place-items-center rounded-lg text-white transition hover:bg-white/10"
-            aria-label={t('nav.cart', 'Carrito')}
-          >
-            <ShoppingBag size={20} />
-            {ready && count > 0 ? (
-              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-emerald-500 px-1 font-mono text-[10px] font-bold text-emerald-950">
-                {count > 99 ? '99+' : count}
-              </span>
-            ) : null}
           </Link>
+
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label={t('nav.menu', 'Menú')}
-            className="grid h-10 w-10 place-items-center rounded-lg text-white transition hover:bg-white/10"
+            className="grid h-10 w-10 place-items-center rounded-lg text-white transition hover:bg-white/10 md:hidden"
           >
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>

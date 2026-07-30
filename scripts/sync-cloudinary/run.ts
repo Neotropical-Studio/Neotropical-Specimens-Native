@@ -7,57 +7,58 @@
 //                                            # cómo clasificaría todo — no
 //                                            # escribe nada en Supabase.
 //                                            # Por defecto arranca en
-//                                            # DEFAULT_ROOT (ver abajo), no
-//                                            # en la raíz de la cuenta.
-//   pnpm sync:cloudinary:discover -- --root="RUBROS/otra-carpeta"
-//   pnpm sync:cloudinary:discover -- --max-depth=3   # explorar poco a poco
-//                                                      # (cuida la cuota de
-//                                                      # la Admin API).
-//   pnpm sync:cloudinary -- --apply         # ejecuta los upserts reales.
-//   pnpm sync:cloudinary -- --apply --limit=20   # sólo los primeros 20
-//                                                  # especímenes (prueba).
+//                                            # DEFAULT_ROOT = nivel REGIÓN
+//                                            # (Butterflies + familias -idae).
+//   pnpm sync:cloudinary:discover -- --root="RUBROS/…"
+//   pnpm sync:cloudinary:discover -- --root=butterflies   # alias corto
+//   pnpm sync:cloudinary:discover -- --root=legacy        # rama NO CITES
+//   pnpm sync:cloudinary:discover -- --max-depth=3
+//   pnpm sync:cloudinary -- --apply
+//   pnpm sync:cloudinary -- --apply --limit=20
 //
 // Requiere en .env.local: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
 // CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET.
 //
 // SIEMPRE corre primero en modo discover y revisa `unclassified` antes de
-// pasar a --apply: ese modo no escribe nada y te deja ver exactamente qué
-// región/familia/subfamilia/género/especie va a resolver por cada carpeta.
+// pasar a --apply.
 //
-// Cadena genealógica OBLIGATORIA (ver classifier.ts::missingRequiredLevels y
-// supabase-upsert.ts::resolveTaxonomyCascade): región → familia → subfamilia
-// → género → especie son requisito para que una carpeta cuente como
-// espécimen sincronizable. Si falta cualquiera de esos niveles, la carpeta
-// cae en `unclassified` con el detalle de qué falta — nunca se crea un nivel
-// huérfano (p.ej. un género sin subfamilia). Subespecie es el único nivel
-// opcional de la cadena.
+// Cadena genealógica OBLIGATORIA: región → familia → género → especie.
+// Subfamilia y subespecie son opcionales. Orden biológico (Butterflies/
+// Lepidoptera) se guarda en taxonomy.order_name cuando la carpeta lo trae.
 // ============================================================================
 
 import { config as loadEnv } from 'dotenv';
 import { buildFolderTree, configureCloudinary } from './cloudinary-tree';
 import { classifyTree } from './classifier';
+import {
+  BUTTERFLIES_ROOT,
+  DEFAULT_ROOT,
+  KNOWN_ROOTS,
+  LEGACY_NO_CITES_ROOT,
+} from './roots';
 import { createAdminClient, resetUpsertCache, syncSpecimenGroup } from './supabase-upsert';
 import type { SyncStats } from './types';
 
-// El proyecto sólo usa `.env.local` (no hay `.env`): `dotenv/config` con su
-// default no cargaría nada, así que se apunta explícito al archivo real.
 loadEnv({ path: '.env.local' });
-
-// Ruta contenedora real en Cloudinary (verificada con la Admin API el
-// 2026-07-28, no adivinada — respeta mayúsculas y dobles espacios exactos
-// tal como existen hoy en la cuenta):
-//   RUBROS
-//     └─ ESPECIMENS SECOS BIOLOGICOS Y INSECTOS COLEOPTEROS  Y ARHHROPODS
-//          └─ REGION Central  South America Neotropical
-//               └─ SPECIMENES SECOS Y BIOLOGICOS NO CITES   ← DEFAULT_ROOT
-const DEFAULT_ROOT =
-  'RUBROS/ESPECIMENS SECOS BIOLOGICOS Y INSECTOS COLEOPTEROS  Y ARHHROPODS/REGION Central  South America Neotropical/SPECIMENES SECOS Y BIOLOGICOS NO CITES';
 
 interface CliArgs {
   apply: boolean;
   root: string;
   limit: number | null;
   maxDepth: number;
+}
+
+function resolveRoot(raw: string | undefined): string {
+  if (!raw) return DEFAULT_ROOT;
+  const key = raw.trim().toLowerCase();
+  if (key === 'region' || key === 'default') return KNOWN_ROOTS.region;
+  if (key === 'butterflies' || key === 'diurne') return KNOWN_ROOTS.butterflies;
+  if (key === 'legacy' || key === 'nocites' || key === 'no-cites') return KNOWN_ROOTS.legacyNoCites;
+  if (key === 'rubro') return KNOWN_ROOTS.rubro;
+  if (key in KNOWN_ROOTS) {
+    return KNOWN_ROOTS[key as keyof typeof KNOWN_ROOTS];
+  }
+  return raw;
 }
 
 function parseArgs(argv: string[]): CliArgs {
@@ -67,7 +68,7 @@ function parseArgs(argv: string[]): CliArgs {
   const maxDepthArg = argv.find((a) => a.startsWith('--max-depth='));
   return {
     apply,
-    root: rootArg ? rootArg.slice('--root='.length) : DEFAULT_ROOT,
+    root: resolveRoot(rootArg ? rootArg.slice('--root='.length) : undefined),
     limit: limitArg ? Number.parseInt(limitArg.slice('--limit='.length), 10) : null,
     maxDepth: maxDepthArg ? Number.parseInt(maxDepthArg.slice('--max-depth='.length), 10) : 12,
   };
@@ -78,6 +79,9 @@ async function main(): Promise<void> {
 
   console.log(`\n=== Sync Cloudinary → Supabase (${args.apply ? 'APPLY — escribirá en la base de datos' : 'DISCOVER — sólo lectura'}) ===`);
   console.log(`Raíz: ${args.root}`);
+  console.log(`  (aliases: --root=butterflies | --root=legacy | --root=region)`);
+  console.log(`  butterflies → ${BUTTERFLIES_ROOT}`);
+  console.log(`  legacy     → ${LEGACY_NO_CITES_ROOT}`);
   console.log(`Profundidad máxima: ${args.maxDepth}`);
   if (args.limit) console.log(`Límite de especímenes: ${args.limit}`);
 
@@ -109,7 +113,7 @@ async function main(): Promise<void> {
       totalMedia += group.resources.length;
       if (!args.apply) {
         console.log(
-          `  · ${name}  [región=${leaf.context.regionName}, familia=${leaf.context.familyName}, subfamilia=${leaf.context.subfamilyName ?? '(sin subfamilia)'}]  → grupo "${group.groupKey}" (${group.resources.length} archivos)`,
+          `  · ${name}  [región=${leaf.context.regionName}, orden=${leaf.context.orderName ?? '(n/a)'}, familia=${leaf.context.familyName}, subfamilia=${leaf.context.subfamilyName ?? '(sin subfamilia)'}]  → grupo "${group.groupKey}" (${group.resources.length} archivos)`,
         );
       }
     }

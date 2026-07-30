@@ -1,8 +1,8 @@
 'use client';
 
 // ============================================================================
-// Showcase del hero: rotación 15s + paleta camaleónica.
-// Morpho godarty → PNG con alfa real (flota sobre el fondo). Resto → foto.
+// Showcase del hero: rotación ~10s + paleta camaleónica.
+// Morpho godarty → WebP/PNG con alfa real (flota sobre el fondo). Resto → foto.
 // Sin marco; object-contain para no distorsionar proporciones.
 // ============================================================================
 import { useEffect, useState } from 'react';
@@ -13,8 +13,13 @@ import { cloudinaryImageUrl, resolveCloudinaryPublicId } from '@/lib/cloudinary/
 import {
   MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_PNG,
   MORPHO_HERO_URL,
+  MORPHO_VENTRAL_PNG,
+  MORPHO_VENTRAL_URL,
 } from '@/lib/cloudinary/specimens';
-import { isMorphoGodartyDidiusTingomarensis } from '@/lib/specimens/native/morphoGodartyDidiusTingomarensis';
+import {
+  isMorphoGodartyDidiusTingomarensis,
+  MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID,
+} from '@/lib/specimens/native/morphoGodartyDidiusTingomarensis';
 import { hexA, type ThemePalette } from '@/lib/theme/palette';
 import type { SpecimenView } from '@/lib/specimens/view';
 
@@ -27,15 +32,30 @@ interface Props {
   strings: Record<string, string>;
 }
 
-function resolveHeroSrc(active: SpecimenView): string {
-  const isGodarty = isMorphoGodartyDidiusTingomarensis({
+function isMorphoShowcaseSlide(active: SpecimenView): boolean {
+  if (active.id.startsWith(`${MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID}`)) return true;
+  return isMorphoGodartyDidiusTingomarensis({
     id: active.id,
     scientificName: active.scientificName,
   });
-  if (isGodarty) return MORPHO_HERO_URL;
+}
+
+function isMorphoVentralSlide(active: SpecimenView): boolean {
+  return (
+    active.id.endsWith(':ventral') ||
+    (active.primaryImage ?? '').includes('ventral') ||
+    (active.scientificName ?? '').toLowerCase().includes('ventral')
+  );
+}
+
+function resolveHeroSrc(active: SpecimenView): string {
+  if (isMorphoShowcaseSlide(active)) {
+    return isMorphoVentralSlide(active) ? MORPHO_VENTRAL_URL : MORPHO_HERO_URL;
+  }
 
   const raw = (active.primaryImage ?? '').trim();
   if (!raw) return '';
+  if (raw.startsWith('/') || raw.startsWith('http')) return raw;
 
   const publicId = resolveCloudinaryPublicId(raw);
   if (!publicId) return raw;
@@ -43,16 +63,23 @@ function resolveHeroSrc(active: SpecimenView): string {
   return cloudinaryImageUrl(publicId, ['f_png', 'q_auto:best', 'w_900', 'c_fit']) || raw;
 }
 
+function productHref(lang: string, active: SpecimenView): string {
+  // Slides sintéticos de catálogo no tienen ficha; Morpho ventral → ficha Morpho.
+  if (active.id.startsWith('catalogue-node:')) return `/${lang}/catalogue`;
+  const baseId = active.id.includes(':')
+    ? active.id.slice(0, active.id.indexOf(':'))
+    : active.id;
+  return `/${lang}/product/${baseId}`;
+}
+
 export default function HeroButterfly({ active, featured, index, palette, lang, strings }: Props) {
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
-  const href = `/${lang}/product/${active.id}`;
+  const href = productHref(lang, active);
   const preferred = resolveHeroSrc(active);
   const [src, setSrc] = useState(preferred);
   const [failedOnce, setFailedOnce] = useState(false);
-  const isGodarty = isMorphoGodartyDidiusTingomarensis({
-    id: active.id,
-    scientificName: active.scientificName,
-  });
+  const isGodarty = isMorphoShowcaseSlide(active);
+  const isVentral = isMorphoVentralSlide(active);
 
   useEffect(() => {
     setSrc(preferred);
@@ -90,7 +117,7 @@ export default function HeroButterfly({ active, featured, index, palette, lang, 
                 if (failedOnce) return;
                 setFailedOnce(true);
                 if (isGodarty) {
-                  setSrc(MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_PNG);
+                  setSrc(isVentral ? MORPHO_VENTRAL_PNG : MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_PNG);
                   return;
                 }
                 const id = resolveCloudinaryPublicId(active.primaryImage ?? '');

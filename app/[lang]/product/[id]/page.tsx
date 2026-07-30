@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import CameleonThemeStyle from '@/components/CameleonThemeStyle';
+import Header from '@/components/Header';
 import SpecimenDetail from '@/components/SpecimenDetail';
 import { getI18n } from '@/lib/i18n/index';
 import { loadCatalogRows } from '@/lib/specimens/catalog';
@@ -116,9 +117,12 @@ export default async function ProductPage({
     override: specimen.themeOverride,
   });
 
+  const geoCountry = regulatory.country ?? 'PE';
+
   return (
     <>
       <CameleonThemeStyle source={palette as unknown as Record<string, unknown>} />
+      <Header strings={i18n.strings} lang={i18n.locale} country={geoCountry} />
       <SpecimenDetail
         specimen={specimen}
         relatedCatalog={relatedCatalog}

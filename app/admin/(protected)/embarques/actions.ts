@@ -37,21 +37,41 @@ export async function createShipmentAction(
   const db = getSupabaseAdmin();
   const shipmentCode = await nextShipmentCode(input.shipmentType);
 
-  const { data, error } = await db
-    .from('shipments')
-    .insert({
-      shipment_code: shipmentCode,
-      shipment_type: input.shipmentType,
-      destination_country: input.destinationCountry || null,
-      destination_customer: input.destinationCustomer || null,
-      carrier: input.carrier || null,
-      notes: input.notes || null,
-      created_by: admin.id,
-    })
-    .select('id')
-    .single();
+  // Live stub: solo tracking_code. Contrato rico tras delta_align_admin_stubs.sql.
+  let data: { id: string } | null = null;
+  {
+    const rich = await db
+      .from('shipments')
+      .insert({
+        shipment_code: shipmentCode,
+        tracking_code: shipmentCode,
+        shipment_type: input.shipmentType,
+        destination_country: input.destinationCountry || null,
+        destination_customer: input.destinationCustomer || null,
+        carrier: input.carrier || null,
+        notes: input.notes || null,
+        created_by: admin.id,
+        status: 'draft',
+      })
+      .select('id')
+      .single();
 
-  if (error) return { error: error.message };
+    if (rich.error && /column .* does not exist|Could not find/i.test(rich.error.message)) {
+      const stub = await db
+        .from('shipments')
+        .insert({ tracking_code: shipmentCode })
+        .select('id')
+        .single();
+      if (stub.error) return { error: stub.error.message };
+      data = stub.data;
+    } else if (rich.error) {
+      return { error: rich.error.message };
+    } else {
+      data = rich.data;
+    }
+  }
+
+  if (!data?.id) return { error: 'No se pudo crear el embarque' };
 
   revalidatePath('/admin/embarques');
   redirect(`/admin/embarques/${data.id}`);
@@ -150,6 +170,7 @@ export async function generateShipmentQrAction(shipmentId: string, shipmentCode:
   const result = await uploadImage(buffer, {
     folder: `documentos-legales/${shipmentCode}`,
     publicId: 'qr',
+    pathPolicy: 'operational',
   });
 
   const db = getSupabaseAdmin();

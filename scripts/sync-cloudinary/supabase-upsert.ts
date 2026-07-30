@@ -147,20 +147,51 @@ export async function upsertEspecimen(
     scientificName: string;
     taxonomiaId: string;
     regionId: string;
+    regionName: string;
+    familyName: string;
+    genusName: string;
+    speciesName: string;
+    subfamilyName?: string;
     coverMediaUrl: string | null;
+    coverPublicId: string | null;
   },
 ): Promise<string> {
-  return upsertOne(
-    supabase,
-    'specimens',
-    {
-      species_name: params.scientificName,
-      taxonomy_id: params.taxonomiaId,
-      region_id: params.regionId,
-      media_url: params.coverMediaUrl,
-    },
-    'media_url',
-  );
+  // Columnas canónicas + denormalización live (rubro/familia/genero/especie).
+  // Si live aún no tiene alguna columna plana, reintentamos con payload mínimo.
+  const full = {
+    species_name: params.scientificName,
+    taxonomy_id: params.taxonomiaId,
+    region_id: params.regionId,
+    region: params.regionName,
+    media_url: params.coverMediaUrl,
+    cloudinary_public_id: params.coverPublicId,
+    rubro: 'ESPECIMENS SECOS BIOLOGICOS',
+    familia: params.familyName,
+    subfamilia: params.subfamilyName ?? null,
+    genero: params.genusName,
+    especie: params.speciesName,
+  };
+  const { data, error } = await supabase
+    .from('specimens')
+    .upsert(full, { onConflict: 'media_url' })
+    .select('id')
+    .single();
+  if (!error) return (data as { id: string }).id;
+
+  if (/column .* does not exist|Could not find/i.test(error.message)) {
+    return upsertOne(
+      supabase,
+      'specimens',
+      {
+        species_name: params.scientificName,
+        taxonomy_id: params.taxonomiaId,
+        region_id: params.regionId,
+        media_url: params.coverMediaUrl,
+      },
+      'media_url',
+    );
+  }
+  throw new Error(`upsert specimens (${params.scientificName}): ${error.message}`);
 }
 
 /** Paso 6b: Multimedia del espécimen (una o más fotos/videos por individuo). */
@@ -301,12 +332,19 @@ export async function syncSpecimenGroup(
 
   const sortedResources = [...group.resources].sort((a, b) => a.publicId.localeCompare(b.publicId));
   const coverMediaUrl = sortedResources[0]?.secureUrl ?? null;
+  const coverPublicId = sortedResources[0]?.publicId ?? null;
 
   const specimenId = await upsertEspecimen(supabase, {
     scientificName,
     taxonomiaId,
     regionId: ids.regionId,
+    regionName: ctx.regionName,
+    familyName: ctx.familyName,
+    genusName: ctx.genusName,
+    speciesName: ctx.speciesName,
+    subfamilyName: ctx.subfamilyName,
     coverMediaUrl,
+    coverPublicId,
   });
 
   let displayOrder = 0;

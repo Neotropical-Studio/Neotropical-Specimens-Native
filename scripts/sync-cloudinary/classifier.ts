@@ -27,6 +27,7 @@
 // dejarlas fuera del sync a clasificar mal un espécimen real.
 // ============================================================================
 
+import { DRIED_SPECIMEN_CATEGORY_FOLDERS, isNodeMediaFolderName } from './roots';
 import type {
   ClassifiedLeaf,
   CloudinaryResourceInfo,
@@ -46,6 +47,33 @@ const TRIBE_SUFFIX_RE = /^[a-z]+ini$/i;
 const CAPITALIZED_WORD_RE = /^[A-ZÀ-Ý][a-zà-ÿ]+$/;
 const LOWERCASE_WORD_RE = /^[a-zà-ÿ]+$/;
 
+/** Orden biológico embebido: Butterflies(lepidoptera) Diurne → Lepidoptera */
+const ORDER_IN_PARENS_RE =
+  /^(?:butterflies|moths|beetles|insects|coleoptera|lepidoptera|arthropoda)[^(]*\(([^)]+)\)/i;
+const ORDER_STANDALONE_RE =
+  /^(lepidoptera|coleoptera|hymenoptera|diptera|hemiptera|orthoptera|odonata|arthropoda)$/i;
+
+/** Rare -Gynan-Aberrations (con o sin apóstrofo) → no es orden; se atraviesa. */
+const RARE_CATEGORY_RE = /^'?rare\s*-?\s*gynan\s*-?\s*aberrations'?$/i;
+
+const CATEGORY_ALIAS_SET = new Set(
+  DRIED_SPECIMEN_CATEGORY_FOLDERS.flatMap((c) =>
+    [c.segment, ...c.aliases].map((s) => s.trim().toLowerCase()),
+  ),
+);
+
+function normalizeFolderName(name: string): string {
+  return name.trim().replace(/^['"]+|['"]+$/g, '').replace(/\s+/g, ' ');
+}
+
+/**
+ * Carpetas basura / legacy de catálogo que no aportan taxonomía.
+ * Se atraviesan sin persistir y no se desciende (ahorra cuota Admin API).
+ * `_card` / `_video` se tratan aparte (node media, no basura).
+ */
+const SKIP_FOLDER_RE =
+  /^(_PENDING|_pending|CATALOGUE(_|$)|catalogue(_|$)|PENDING|TEMP|tmp|\.trash)/i;
+
 function titleCase(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
@@ -56,11 +84,38 @@ function lowerCase(word: string): string {
 
 export function classifySegment(rawSegment: string): SegmentClassification {
   const raw = rawSegment;
-  const segment = rawSegment.trim().replace(/\s+/g, ' ');
+  const segment = normalizeFolderName(rawSegment);
+
+  // Slots de card/video del nodo: NO son taxones ni especies.
+  if (isNodeMediaFolderName(segment)) {
+    return { kind: 'node_media', value: segment, raw };
+  }
+
+  if (SKIP_FOLDER_RE.test(segment) || segment.includes('_PENDING')) {
+    return { kind: 'skip', value: segment, raw };
+  }
 
   const regionMatch = segment.match(REGION_PREFIX_RE);
   if (regionMatch) {
     return { kind: 'region', value: regionMatch[1].trim(), raw };
+  }
+
+  // Carpetas-categoría merchandising (las 5 bajo REGION): aportan order si
+  // llevan (Orden) en el nombre; Rare se atraviesa sin taxonomía.
+  if (RARE_CATEGORY_RE.test(segment)) {
+    return { kind: 'unknown', value: segment, raw };
+  }
+
+  const orderParen = segment.match(ORDER_IN_PARENS_RE);
+  if (orderParen) {
+    return { kind: 'order', value: titleCase(orderParen[1].trim()), raw };
+  }
+  if (ORDER_STANDALONE_RE.test(segment)) {
+    return { kind: 'order', value: titleCase(segment), raw };
+  }
+  // Alias exacto de categoría Cloudinary sin paréntesis de orden → atraviesa
+  if (CATEGORY_ALIAS_SET.has(segment.toLowerCase())) {
+    return { kind: 'unknown', value: segment, raw };
   }
 
   const tokens = segment.split(/[\s_]+/).filter(Boolean);
@@ -144,6 +199,14 @@ function applyClassification(ctx: TaxonContext, classification: SegmentClassific
     case 'region':
       next.regionName = classification.value;
       break;
+    case 'order':
+      next.orderName = classification.value;
+      break;
+    case 'skip':
+      break;
+    case 'node_media':
+      // _card / _video: no aportan taxonomía.
+      break;
     case 'family':
       next.familyName = classification.value;
       break;
@@ -211,6 +274,23 @@ export function classifyTree(nodes: FolderNode[]): DiscoveryReport {
 
   function walk(node: FolderNode, ctx: TaxonContext) {
     const classification = classifySegment(node.name);
+    // Media de nodo (_card/_video): no clasificar como taxón ni reportar
+    // sus assets como especímenes; no descender (hojas = solo media de card).
+    if (classification.kind === 'node_media') {
+      return;
+    }
+    // Basura CATALOGUE/_PENDING: no clasificar ni descender.
+    if (classification.kind === 'skip') {
+      if (node.resources.length > 0) {
+        unclassified.push({
+          folderPath: node.path,
+          reason: `Carpeta omitida (basura/catálogo legacy): "${node.name}". Prioridad: RUBROS → REGION → Rare/Insects/Beetles/Moths/Butterflies → Familia (-idae).`,
+          resourceCount: node.resources.length,
+        });
+      }
+      return;
+    }
+
     const nextCtx = applyClassification(ctx, classification);
     if (nextCtx.regionName) regionsFound.add(nextCtx.regionName);
 

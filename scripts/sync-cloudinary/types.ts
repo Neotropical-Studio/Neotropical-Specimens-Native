@@ -19,6 +19,7 @@ export interface FolderNode {
 
 export type TaxonRank =
   | 'region'
+  | 'order'
   | 'family'
   | 'subfamily'
   | 'tribe'
@@ -26,6 +27,8 @@ export type TaxonRank =
   | 'species'
   | 'binomial'
   | 'trinomial'
+  | 'skip'
+  | 'node_media'
   | 'unknown';
 
 export interface SegmentClassification {

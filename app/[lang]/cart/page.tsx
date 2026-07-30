@@ -19,7 +19,7 @@ export default async function CartPage({
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)] text-slate-100">
-      <Header strings={i18n.strings} lang={lang} />
+      <Header strings={i18n.strings} lang={lang} country={regulatory.country ?? 'PE'} />
       <main className="pt-[calc(68px+2.5rem)] pb-16">
         <CartView
           lang={lang}
