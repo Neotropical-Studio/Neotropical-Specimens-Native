@@ -146,12 +146,16 @@ def upload_to_cloudinary(
     code: str,
     view: str,
     dry_run: bool = False,
+    wait_adobe: bool = True,
 ) -> dict:
     """
     Sube el archivo a Cloudinary activando Adobe Sensei/Firefly Remove Background.
 
     Cloudinary background_removal='cloudinary_ai' usa el motor Adobe Sensei:
     el mismo que impulsa Adobe Express Remove Background.
+
+    wait_adobe=False: no hace polling (modo industrial / alto throughput).
+      Adobe sigue procesando en background; el status quedará 'pending'.
 
     Retorna un dict con:
       public_id, secure_url, bg_status, resource_type, bytes
@@ -223,7 +227,11 @@ def upload_to_cloudinary(
     # ── Polling del estado de Adobe Sensei ────────────────────────────────────
     bg_status = "not_applicable"
     if apply_bg:
-        bg_status = _poll_adobe_status(public_id_full)
+        if wait_adobe:
+            bg_status = _poll_adobe_status(public_id_full)
+        else:
+            bg_status = "pending"
+            log.info("  ⏳ Adobe Sensei en background (sin poll — modo industrial)")
 
     return {
         "public_id":     public_id_full,
