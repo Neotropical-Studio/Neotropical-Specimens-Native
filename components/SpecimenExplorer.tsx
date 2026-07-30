@@ -243,7 +243,7 @@ export default function SpecimenExplorer({
           title={t('catalog.empty_title', 'Catálogo listo para recepción de inventario')}
           subtitle={t(
             'catalog.empty_subtitle',
-            'Expedición en curso: sincronizando nuevos especímenes de los 3 rubros. Las fichas aparecerán solas al subir productos reales con fotos Cloudinary y taxonomía Supabase.',
+            'Las fichas del grid aparecerán al sincronizar especímenes con fotos Cloudinary y taxonomía Supabase.',
           )}
           showRubros
         />

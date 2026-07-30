@@ -3,6 +3,10 @@
 // consumible por la UI (server y client comparten SELECT + mapper).
 // ============================================================================
 import type { SupabaseClient } from '@supabase/supabase-js';
+import {
+  MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID,
+  MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_VENTRAL_ID,
+} from '@/lib/cloudinary/specimens';
 import { resolveCloudinaryPublicId } from '@/lib/cloudinary/url';
 import {
   isMorphoGodartyDidiusTingomarensis,
@@ -316,23 +320,6 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
     images.filter((i) => i.view !== 'cover' && i !== dorsal)[0] ??
     null;
 
-  // Cover preferido: cloudinary_public_id / media_url → cover slot → dorsal.
-  const primaryImage =
-    asMediaRef(row.cloudinary_public_id) ??
-    asMediaRef(row.media_url) ??
-    coverImg?.publicId ??
-    dorsal?.publicId ??
-    asMediaRef(row.origin_banner_url) ??
-    null;
-
-  const colors = Array.isArray(attrs.primary_colors)
-    ? (attrs.primary_colors as unknown[]).filter((c): c is string => typeof c === 'string')
-    : Array.isArray(attrs.color_palette)
-      ? (attrs.color_palette as unknown[]).filter((c): c is string => typeof c === 'string')
-      : str(row.color_dominante)
-        ? [row.color_dominante as string]
-        : [];
-
   const name = scientificName(row);
   // Perfil nativo SOLO para Morpho godarty didius tingomarensis (nunca otras especies).
   const native = isMorphoGodartyDidiusTingomarensis({
@@ -342,6 +329,24 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
   })
     ? MORPHO_GODARTY_NATIVE
     : null;
+
+  // Cover preferido: cloudinary_public_id / media_url → cover slot → dorsal.
+  // Morpho nativo: nunca dejar primaryImage vacío (el hero depende de media).
+  const primaryImage =
+    asMediaRef(row.cloudinary_public_id) ??
+    asMediaRef(row.media_url) ??
+    coverImg?.publicId ??
+    dorsal?.publicId ??
+    asMediaRef(row.origin_banner_url) ??
+    (native ? MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID : null);
+
+  const colors = Array.isArray(attrs.primary_colors)
+    ? (attrs.primary_colors as unknown[]).filter((c): c is string => typeof c === 'string')
+    : Array.isArray(attrs.color_palette)
+      ? (attrs.color_palette as unknown[]).filter((c): c is string => typeof c === 'string')
+      : str(row.color_dominante)
+        ? [row.color_dominante as string]
+        : [];
 
   const order = native?.order ?? str(row.taxonomy?.order_name) ?? str(row.metadata?.order) ?? null;
   const family =
@@ -449,7 +454,8 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
           : stockFromStatus),
     images,
     primaryImage,
-    secondaryImage: ventral?.publicId ?? null,
+    secondaryImage:
+      ventral?.publicId ?? (native ? MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_VENTRAL_ID : null),
     model3d: model,
     video,
     rubroId: rubro.id,
