@@ -39,7 +39,8 @@ export default function IndustrialMasterSystemV3() {
     setError(null);
     try {
       const res = await fetch('/api/admin/consola-sync', { cache: 'no-store' });
-      const json = (await res.json()) as {
+      const text = await res.text();
+      let json: {
         error?: string;
         rows?: Array<{
           id: string;
@@ -48,7 +49,15 @@ export default function IndustrialMasterSystemV3() {
           stock: number | string;
           status: ConsolaItem['status'];
         }>;
-      };
+      } = {};
+      try {
+        json = text ? (JSON.parse(text) as typeof json) : {};
+      } catch {
+        throw new Error(
+          text?.slice(0, 180) ||
+            'Respuesta vacía del servidor (revisa SUPABASE_SERVICE_ROLE_KEY en Vercel)',
+        );
+      }
       if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
       setData(
         (json.rows ?? []).map((r) => ({

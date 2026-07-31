@@ -58,7 +58,22 @@ async function loadFamilyNames(
  * No inventa carpetas; solo muestra lo que falta para alinear.
  */
 export default async function ClassificationVisionPanel() {
-  const db = getSupabaseAdmin();
+  let db: ReturnType<typeof getSupabaseAdmin>;
+  try {
+    db = getSupabaseAdmin();
+  } catch {
+    return (
+      <section className="rounded-xl border border-amber-800/60 bg-amber-950/25 p-4 text-sm text-amber-100">
+        <p className="font-medium">Clasificación (DB) no disponible</p>
+        <p className="mt-1 text-amber-200/90">
+          Falta <code className="text-amber-50">SUPABASE_SERVICE_ROLE_KEY</code> en Vercel
+          Production. Puedes subir <strong>_card / _video</strong> en el panel de Node Media
+          abajo (solo Cloudinary). Para fichas/especímenes/campañas hace falta esa variable +
+          Redeploy.
+        </p>
+      </section>
+    );
+  }
 
   const [regions, familiesCount, genera, species, subspecies, taxonomy, specimens, media, famPack] =
     await Promise.all([

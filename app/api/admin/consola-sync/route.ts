@@ -27,7 +27,21 @@ export async function GET() {
   const admin = await getCurrentAdmin();
   if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  const db = getSupabaseAdmin();
+  let db;
+  try {
+    db = getSupabaseAdmin();
+  } catch (e) {
+    return NextResponse.json(
+      {
+        error:
+          e instanceof Error
+            ? e.message
+            : 'Missing SUPABASE_SERVICE_ROLE_KEY on Vercel Production',
+        rows: [],
+      },
+      { status: 503 },
+    );
+  }
 
   const { data, error } = await db
     .from('specimens')

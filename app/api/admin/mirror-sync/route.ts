@@ -31,9 +31,11 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(result, { status: result.ok ? 200 : 207 });
   } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    const missingKey = msg.includes('SUPABASE_SERVICE_ROLE_KEY');
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : String(e) },
-      { status: 500 },
+      { error: msg },
+      { status: missingKey ? 503 : 500 },
     );
   }
 }
@@ -51,9 +53,11 @@ export async function GET() {
     });
     return NextResponse.json(result);
   } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    const missingKey = msg.includes('SUPABASE_SERVICE_ROLE_KEY');
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : String(e) },
-      { status: 500 },
+      { error: msg },
+      { status: missingKey ? 503 : 500 },
     );
   }
 }
