@@ -1,7 +1,7 @@
 import MirrorVisionPanel from '@/components/admin/MirrorVisionPanel';
 import ClassificationVisionPanel from '@/components/admin/ClassificationVisionPanel';
 import NodeMediaUploadPanel from '@/components/admin/NodeMediaUploadPanel';
-import RubrosRegionesPanel from '@/components/admin/RubrosRegionesPanel';
+import AdminStructurePanel from '@/components/admin/AdminStructurePanel';
 import Link from 'next/link';
 import {
   listNodeMediaUploadTargets,
@@ -11,6 +11,7 @@ import {
   MIRROR_RARE_GYNAN_CATEGORY_NODE_MEDIA,
   MIRROR_REGION_NODE_MEDIA,
   MIRROR_RUBRO_NODE_MEDIA,
+  type NodeMediaUploadTarget,
 } from '@/lib/mirror/contract';
 import {
   AFRICA_BUTTERFLIES_ROOT,
@@ -33,8 +34,16 @@ export const metadata = {
   title: 'Espejo C↔S · Admin',
 };
 
+function safeUploadTargets(): NodeMediaUploadTarget[] {
+  try {
+    return listNodeMediaUploadTargets();
+  } catch {
+    return [];
+  }
+}
+
 export default function EspejoAdminPage() {
-  const uploadTargets = listNodeMediaUploadTargets();
+  const uploadTargets = safeUploadTargets();
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,9 +64,15 @@ export default function EspejoAdminPage() {
         </Link>
       </div>
 
-      <RubrosRegionesPanel />
+      <AdminStructurePanel />
 
-      <NodeMediaUploadPanel targets={uploadTargets} />
+      {uploadTargets.length === 0 ? (
+        <p className="rounded-lg border border-amber-800/50 bg-amber-950/30 p-4 text-sm text-amber-100">
+          No se pudieron cargar los destinos de upload. Reintenta o revisa el contrato mirror/roots.
+        </p>
+      ) : (
+        <NodeMediaUploadPanel targets={uploadTargets} />
+      )}
 
       <ClassificationVisionPanel />
 

@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { FolderTree, Globe2, Layers, Bug } from 'lucide-react';
 import {

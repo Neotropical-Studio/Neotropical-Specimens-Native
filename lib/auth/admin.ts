@@ -12,7 +12,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { getSupabaseAdmin } from '@/lib/supabase/client';
+import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase/client';
 
 export interface AdminUser {
   id: string;
@@ -26,55 +26,70 @@ export interface AdminUser {
 // y escritura, p. ej. signIn/signOut).
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
-          } catch {
-            // Un Server Component no puede escribir cookies (sólo Server
-            // Actions/Route Handlers) — se ignora; la sesión igual se refresca
-            // en la próxima petición que sí pueda escribir.
-          }
-        },
+  if (!url || !anonKey) {
+    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  }
+
+  return createServerClient(url, anonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        } catch {
+          // Un Server Component no puede escribir cookies (sólo Server
+          // Actions/Route Handlers) — se ignora; la sesión igual se refresca
+          // en la próxima petición que sí pueda escribir.
+        }
       },
     },
-  );
+  });
 }
 
 export async function getCurrentAdmin(): Promise<AdminUser | null> {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+  // Nunca dejar que un fallo de env/red explote el layout en digest SSR.
+  try {
+    if (!isSupabaseAdminConfigured()) return null;
 
-  const db = getSupabaseAdmin();
-  const { data } = await db
-    .from('admin_users')
-    .select('id, email, full_name, role, active')
-    .eq('id', user.id)
-    .maybeSingle();
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
 
-  if (!data || !data.active) return null;
+    const db = getSupabaseAdmin();
+    const { data, error } = await db
+      .from('admin_users')
+      .select('id, email, full_name, role, active')
+      .eq('id', user.id)
+      .maybeSingle();
 
-  return {
-    id: data.id as string,
-    email: data.email as string,
-    fullName: (data.full_name as string) ?? null,
-    role: data.role as AdminUser['role'],
-  };
+    if (error || !data || !data.active) return null;
+
+    return {
+      id: data.id as string,
+      email: data.email as string,
+      fullName: (data.full_name as string) ?? null,
+      role: data.role as AdminUser['role'],
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function requireAdmin(): Promise<AdminUser> {
   const admin = await getCurrentAdmin();
-  if (!admin) redirect('/admin/login');
+  if (!admin) {
+    // Distinguir “sin sesión / sin rol” de “falta SERVICE_ROLE_KEY en el deploy”.
+    if (!isSupabaseAdminConfigured()) {
+      redirect('/admin/login?error=config');
+    }
+    redirect('/admin/login');
+  }
   return admin;
 }

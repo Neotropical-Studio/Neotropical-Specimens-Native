@@ -1,24 +1,31 @@
 import Link from 'next/link';
 import { Bug, ImagePlay, Megaphone, Truck } from 'lucide-react';
-import { getSupabaseAdmin } from '@/lib/supabase/client';
-import RubrosRegionesPanel from '@/components/admin/RubrosRegionesPanel';
+import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase/client';
+import AdminStructurePanel from '@/components/admin/AdminStructurePanel';
 
 export const revalidate = 0;
 
 async function loadCounts() {
-  const db = getSupabaseAdmin();
-  // Live: campaigns stub (sin `active`); shipment_permits stub (sin `status`).
-  const [specimens, campaigns, shipments] = await Promise.all([
-    db.from('specimens').select('id', { count: 'exact', head: true }),
-    db.from('campaigns').select('id', { count: 'exact', head: true }),
-    db.from('shipments').select('id', { count: 'exact', head: true }),
-  ]);
+  if (!isSupabaseAdminConfigured()) {
+    return { specimens: 0, campaigns: 0, shipments: 0 };
+  }
+  try {
+    const db = getSupabaseAdmin();
+    // Live: campaigns stub (sin `active`); shipment_permits stub (sin `status`).
+    const [specimens, campaigns, shipments] = await Promise.all([
+      db.from('specimens').select('id', { count: 'exact', head: true }),
+      db.from('campaigns').select('id', { count: 'exact', head: true }),
+      db.from('shipments').select('id', { count: 'exact', head: true }),
+    ]);
 
-  return {
-    specimens: specimens.count ?? 0,
-    campaigns: campaigns.count ?? 0,
-    shipments: shipments.count ?? 0,
-  };
+    return {
+      specimens: specimens.count ?? 0,
+      campaigns: campaigns.count ?? 0,
+      shipments: shipments.count ?? 0,
+    };
+  } catch {
+    return { specimens: 0, campaigns: 0, shipments: 0 };
+  }
 }
 
 export default async function AdminDashboardPage() {
@@ -48,8 +55,8 @@ export default async function AdminDashboardPage() {
         </Link>
       </div>
 
-      {/* 1º — estructura principal */}
-      <RubrosRegionesPanel />
+      {/* 1º — estructura; aislada para que roots/mirror no tumben /admin */}
+      <AdminStructurePanel />
 
       {/* 2º — KPIs operativos */}
       <div>
