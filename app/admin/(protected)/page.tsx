@@ -1,9 +1,14 @@
 import Link from 'next/link';
 import { Bug, ImagePlay, Megaphone, Truck } from 'lucide-react';
-import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase/client';
+import {
+  getSupabaseAdmin,
+  getSupabaseAdminConfigStatus,
+  isSupabaseAdminConfigured,
+} from '@/lib/supabase/client';
 import AdminStructurePanel from '@/components/admin/AdminStructurePanel';
 
 export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 async function loadCounts() {
   if (!isSupabaseAdminConfigured()) {
@@ -29,7 +34,8 @@ async function loadCounts() {
 
 export default async function AdminDashboardPage() {
   const counts = await loadCounts();
-  const missingServiceRole = !isSupabaseAdminConfigured();
+  const cfg = getSupabaseAdminConfigStatus();
+  const missingServiceRole = !cfg.hasUrl || !cfg.hasServiceRole;
 
   const cards = [
     { href: '/admin/especimenes', label: 'Especímenes registrados', value: counts.specimens, icon: Bug },
@@ -43,35 +49,43 @@ export default async function AdminDashboardPage() {
       {missingServiceRole ? (
         <div className="rounded-xl border border-amber-700/60 bg-amber-950/40 p-4 text-sm text-amber-50">
           <p className="font-semibold text-amber-100">
-            Falta SUPABASE_SERVICE_ROLE_KEY en Vercel (Production)
+            El servidor no ve SUPABASE_SERVICE_ROLE_KEY en runtime
           </p>
           <p className="mt-2 text-amber-100/90">
-            Sin esa variable no funcionan fichas, campañas, embarques ni Discover/Apply. La
-            contraseña de login ya está bien — esto es configuración del servidor.
+            Esto no es la contraseña de login. Es la variable de entorno de Vercel Production.
+          </p>
+          <p className="mt-2 rounded bg-black/30 px-2 py-1.5 font-mono text-[11px] text-amber-200">
+            Diagnóstico: URL={cfg.hasUrl ? 'OK' : 'FALTA'} · ANON={cfg.hasAnon ? 'OK' : 'FALTA'} ·
+            SERVICE_ROLE={cfg.hasServiceRole ? `OK (${cfg.serviceRoleLen} chars)` : 'FALTA'} · JWT=
+            {cfg.serviceRoleLooksLikeJwt ? 'OK' : 'NO (debe empezar eyJ)'}
           </p>
           <ol className="mt-3 list-decimal space-y-1 pl-5 text-amber-50/95">
             <li>
-              Vercel → equipo <strong>neotropicalspecimens</strong> → proyecto{' '}
+              Vercel → <strong>neotropicalspecimens</strong> /{' '}
               <strong>neotropicalspecimens-native</strong>
             </li>
             <li>
-              Settings → Environment Variables → Key{' '}
+              Environment Variables → nombre exacto{' '}
               <code className="text-amber-100">SUPABASE_SERVICE_ROLE_KEY</code>
             </li>
             <li>
-              Value = clave <code className="text-amber-100">service_role</code> (Legacy) de
-              Supabase → Environments: <strong>Production</strong> → Save
+              Valor Legacy <code className="text-amber-100">service_role</code> (eyJ…), sin comillas ·
+              Environments incluye <strong>Production</strong>
             </li>
-            <li>Deployments → Redeploy del Production</li>
+            <li>Redeploy Production sin build cache</li>
           </ol>
           <p className="mt-3">
-            Mientras tanto puedes subir cards:{' '}
+            Mientras tanto cards:{' '}
             <Link href="/admin/espejo" className="font-medium text-sky-300 underline">
-              Ir a Espejo → Node Media (_card / _video)
+              /admin/espejo → Node Media
             </Link>
           </p>
         </div>
-      ) : null}
+      ) : (
+        <div className="rounded-xl border border-emerald-800/50 bg-emerald-950/30 px-4 py-2 text-xs text-emerald-200">
+          SERVICE_ROLE detectada ({cfg.serviceRoleLen} chars) · admin DB listo
+        </div>
+      )}
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>

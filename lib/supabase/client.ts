@@ -9,22 +9,60 @@ export type DynamicRecord = Record<string, unknown> & {
 
 let browserClient: SupabaseClient | undefined;
 
+/** Limpia valor de env: comillas, BOM, espacios (fallo típico al pegar en Vercel). */
+function cleanEnv(raw: string | undefined): string {
+  if (!raw) return '';
+  let v = raw.replace(/^\uFEFF/, '').trim();
+  if (
+    (v.startsWith('"') && v.endsWith('"')) ||
+    (v.startsWith("'") && v.endsWith("'"))
+  ) {
+    v = v.slice(1, -1).trim();
+  }
+  return v;
+}
+
 function publicEnv() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || '';
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || '';
+  // Nombres literales (Next/Vercel inyecta solo accesos estáticos a process.env.*)
+  const url = cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const anonKey = cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
   return { url, anonKey };
 }
 
 function adminEnv() {
   const { url } = publicEnv();
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || '';
+  // Accesos estáticos + alias por si el nombre en Vercel quedó corto/typo.
+  const serviceKey =
+    cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY) ||
+    cleanEnv(process.env.SUPABASE_SERVICE_ROLE) ||
+    cleanEnv(process.env.SUPABASE_SERVICE_KEY) ||
+    '';
   return { url, serviceKey };
 }
 
-/** True si el servidor tiene URL + service_role (necesario para /admin). */
+/** True si el servidor tiene URL + service_role (necesario para escrituras admin). */
 export function isSupabaseAdminConfigured(): boolean {
   const { url, serviceKey } = adminEnv();
   return Boolean(url && serviceKey);
+}
+
+/** Diagnóstico seguro (sin revelar secretos) para el banner de /admin. */
+export function getSupabaseAdminConfigStatus(): {
+  hasUrl: boolean;
+  hasAnon: boolean;
+  hasServiceRole: boolean;
+  serviceRoleLooksLikeJwt: boolean;
+  serviceRoleLen: number;
+} {
+  const { url, anonKey } = publicEnv();
+  const { serviceKey } = adminEnv();
+  return {
+    hasUrl: Boolean(url),
+    hasAnon: Boolean(anonKey),
+    hasServiceRole: Boolean(serviceKey),
+    serviceRoleLooksLikeJwt: serviceKey.startsWith('eyJ'),
+    serviceRoleLen: serviceKey.length,
+  };
 }
 
 export function getSupabaseBrowser(): SupabaseClient {
@@ -40,8 +78,6 @@ export function getSupabaseBrowser(): SupabaseClient {
 
 export function getSupabaseAdmin(): SupabaseClient {
   const { url, serviceKey } = adminEnv();
-  // createClient lanza "supabaseKey is required" si la key es undefined — eso
-  // convertía requireAdmin() en un digest SSR opaco en /admin. Validar antes.
   if (!url || !serviceKey) {
     throw new Error(
       'Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY (required for admin)',
@@ -53,7 +89,6 @@ export function getSupabaseAdmin(): SupabaseClient {
   });
 }
 
-// Consulta camaleónica: filtra por atributos arbitrarios en jsonb.
 export async function queryDynamic(
   table: string,
   filters: Record<string, unknown> = {},
@@ -64,7 +99,6 @@ export async function queryDynamic(
 
   for (const [key, value] of Object.entries(filters)) {
     if (key.includes('.')) {
-      // filtro sobre jsonb: metadata.color -> metadata->>color
       const [col, ...rest] = key.split('.');
       q = q.eq(`${col}->>${rest.join('.')}`, value as string);
     } else {
