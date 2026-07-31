@@ -16,18 +16,11 @@ export async function signInAction(_prevState: SignInState, formData: FormData):
     return { error: 'Correo y contraseña son obligatorios' };
   }
 
-  if (!isSupabaseAdminConfigured()) {
-    return {
-      error:
-        'El servidor no tiene SUPABASE_SERVICE_ROLE_KEY configurada. No se puede verificar el acceso de administrador.',
-    };
-  }
-
   let supabase;
   try {
     supabase = await createSupabaseServerClient();
   } catch {
-    return { error: 'Configuración de Supabase incompleta (URL/anon key).' };
+    return { error: 'Configuración de Supabase incompleta (URL/anon key en Vercel).' };
   }
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -48,36 +41,52 @@ export async function signInAction(_prevState: SignInState, formData: FormData):
     return { error: 'No se pudo establecer la sesión. Intenta de nuevo.' };
   }
 
-  // Auth ok ≠ acceso al panel: hace falta fila activa en admin_users.
-  try {
-    const db = getSupabaseAdmin();
-    const { data: adminRow, error: adminErr } = await db
+  // Auth ok — verificar fila activa en admin_users.
+  // 1) service_role si existe  2) si no, lectura con el JWT (RLS select-own).
+  let allowed = false;
+  let verifyError: string | null = null;
+
+  if (isSupabaseAdminConfigured()) {
+    try {
+      const db = getSupabaseAdmin();
+      const { data, error: adminErr } = await db
+        .from('admin_users')
+        .select('id, active')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (adminErr) {
+        verifyError =
+          'Inicio de sesión correcto, pero no se pudo verificar el permiso de administrador.';
+      } else if (data?.active) {
+        allowed = true;
+      } else {
+        verifyError =
+          'Inicio de sesión correcto, pero esta cuenta no está autorizada en el panel (admin_users).';
+      }
+    } catch {
+      verifyError =
+        'Inicio de sesión correcto, pero falló la verificación con service_role.';
+    }
+  }
+
+  if (!allowed) {
+    const { data, error: sessionErr } = await supabase
       .from('admin_users')
       .select('id, active')
       .eq('id', user.id)
       .maybeSingle();
 
-    if (adminErr) {
+    if (!sessionErr && data?.active) {
+      allowed = true;
+      verifyError = null;
+    } else if (!allowed) {
       await supabase.auth.signOut();
+      if (verifyError) return { error: verifyError };
       return {
         error:
-          'Inicio de sesión correcto, pero no se pudo verificar el permiso de administrador. Contacta al equipo técnico.',
+          'Inicio de sesión correcto, pero no hay permiso de administrador (falta fila en admin_users o política RLS). Ejecuta la migración 0011_admin_users_select_own.sql en Supabase.',
       };
     }
-
-    if (!adminRow || !adminRow.active) {
-      await supabase.auth.signOut();
-      return {
-        error:
-          'Inicio de sesión correcto, pero esta cuenta no está autorizada en el panel (falta en admin_users o está inactiva).',
-      };
-    }
-  } catch {
-    await supabase.auth.signOut();
-    return {
-      error:
-        'Inicio de sesión correcto, pero falló la verificación de administrador (revisa SUPABASE_SERVICE_ROLE_KEY en el deploy).',
-    };
   }
 
   redirect('/admin');
