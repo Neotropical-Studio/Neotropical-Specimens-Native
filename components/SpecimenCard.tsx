@@ -20,12 +20,32 @@ interface Props {
   strings: Record<string, string>;
   lang: string;   // idioma de ruta, propagado desde el servidor (sin cookies:
                   // leerlas en cliente desincronizaba el href en la hidratación)
+  /** Vuelta al catálogo de esta familia (ej. Brassolidae). */
+  returnFamilyHref?: string | null;
+  returnFamilyLabel?: string | null;
+  /** Vuelta al catálogo de familias (ej. Butterflies Diurne). */
+  returnCategoryHref?: string | null;
+  returnCategoryLabel?: string | null;
 }
 
-export default function SpecimenCard({ s, strings, lang }: Props) {
+export default function SpecimenCard({
+  s,
+  strings,
+  lang,
+  returnFamilyHref,
+  returnFamilyLabel,
+  returnCategoryHref,
+  returnCategoryLabel,
+}: Props) {
   const [hover, setHover] = useState(false);
   const [viewer, setViewer] = useState<null | '3d' | 'video'>(null);
-  const detailHref = `/${lang}/product/${s.id}`;
+  const q = new URLSearchParams();
+  if (returnFamilyHref?.trim()) q.set('backFamily', returnFamilyHref.trim());
+  if (returnFamilyLabel?.trim()) q.set('backFamilyLabel', returnFamilyLabel.trim());
+  if (returnCategoryHref?.trim()) q.set('backFamilies', returnCategoryHref.trim());
+  if (returnCategoryLabel?.trim()) q.set('backFamiliesLabel', returnCategoryLabel.trim());
+  const qs = q.toString();
+  const detailHref = `/${lang}/product/${s.id}${qs ? `?${qs}` : ''}`;
 
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;

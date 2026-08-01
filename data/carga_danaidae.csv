@@ -1,0 +1,11 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+DA-001,Danaus plexippus nigrippus,null,Danaidae,null,null,Lepidoptera,Peru,null,null,A1,M or F,5.50,9.0 cm
+DA-002,Danaus plexippus nigrippus,null,Danaidae,null,null,Lepidoptera,Peru,null,null,A1,3M or F,14.25,9.0 cm
+DA-003,Danaus plexippus nigrippus,null,Danaidae,null,null,Lepidoptera,Peru,null,null,A1,P,10.00,9.0 cm
+DA-004,Danaus plexippus nigrippus (Ecuador),null,Danaidae,null,null,Lepidoptera,Ecuador,null,null,A1,F,5.50,8.0 cm
+DA-005,Danaus plexippus nigrippus (Ecuador),null,Danaidae,null,null,Lepidoptera,Ecuador,null,null,A1 OUT OF STOCK,M,0.00,8.0 cm
+DA-006,Lycorea halia,null,Danaidae,null,null,Lepidoptera,Peru,null,null,A1,M,5.25,9.0 cm
+DA-007,Lycorea halia,null,Danaidae,null,null,Lepidoptera,Peru,null,null,A1,3M,15.00,9.0 cm
+DA-008,Lycorea ilione lamaris (=Ituna lamaris),null,Danaidae,null,null,Lepidoptera,Peru,null,null,A1,M,3.00,8.0 cm
+DA-009,Lycorea ilione lamaris (=Ituna lamaris),null,Danaidae,null,null,Lepidoptera,Peru,null,null,A1,3M,7.50,8.0 cm
+DA-010,Lycorea ilione lamaris (=Ituna lamaris),null,Danaidae,null,null,Lepidoptera,Peru,null,null,A1/A1-,M,1.50,8.0 cm

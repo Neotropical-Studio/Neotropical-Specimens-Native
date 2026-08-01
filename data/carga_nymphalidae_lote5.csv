@@ -1,0 +1,38 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+NY-398,Prepona werneri,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Ecuador,null,null,A1/A1-,M,175.00,8.0 cm
+NY-399,Pycina zamba,null,Nymphalidae  Cathonopheles y Diversos species,null,Pycina,Lepidoptera,Peru,null,null,A1,M,8.00,7.0 cm
+NY-400,Pyrrhogyra amphiro juani (Ecuador),null,Nymphalidae  Cathonopheles y Diversos species,null,Pyrrhogyra,Lepidoptera,Ecuador,null,null,A1,M,3.50,5.0 cm
+NY-401,Pyrrhogyra edocla maculata,null,Nymphalidae  Cathonopheles y Diversos species,null,Pyrrhogyra,Lepidoptera,Peru,"Chanchamayo, Peru",null,A1,M,2.50,4-4.5 cm
+NY-402,Pyrrhogyra edocla maculata,null,Nymphalidae  Cathonopheles y Diversos species,null,Pyrrhogyra,Lepidoptera,Peru,"Chanchamayo, Peru",null,A1,3M,6.00,4-4.5 cm
+NY-403,Pyrrhogyra neaerea,null,Nymphalidae  Cathonopheles y Diversos species,null,Pyrrhogyra,Lepidoptera,Peru,null,null,A1,M,2.50,5.0 cm
+NY-404,Pyrrhogyra neaerea,null,Nymphalidae  Cathonopheles y Diversos species,null,Pyrrhogyra,Lepidoptera,Peru,null,null,A1,3M,6.00,5.0 cm
+NY-405,Pyrrhogyra otalais,null,Nymphalidae  Cathonopheles y Diversos species,null,Pyrrhogyra,Lepidoptera,Peru,null,null,A1,M,3.00,3.5 cm
+NY-406,Siderone (Anaea) galanthis galanthis (=marthesia),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Siderone (Anaea),Lepidoptera,Peru,null,null,A1,M,15.00,6.0 cm
+NY-407,Siderone (Anaea) galanthis galanthis (=marthesia),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Siderone (Anaea),Lepidoptera,Peru,null,null,A1,F,25.00,6-7.0 cm
+NY-408,Siderone (Anaea) galanthis thebais,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Siderone (Anaea),Lepidoptera,Peru,null,null,A1,M,15.00,6.0 cm
+NY-409,Siproeta (Victorina) stelenes,null,Nymphalidae  Cathonopheles y Diversos species,null,Siproeta (Victorina),Lepidoptera,Peru,null,null,A1,3M,13.50,8.0 cm
+NY-410,Siproeta (Victorina) stelenes,null,Nymphalidae  Cathonopheles y Diversos species,null,Siproeta (Victorina),Lepidoptera,Peru,null,null,A1,M,4.75,8.0 cm
+NY-411,Siproeta (Victorina) stelenes,null,Nymphalidae  Cathonopheles y Diversos species,null,Siproeta (Victorina),Lepidoptera,Peru,null,null,A1,F,8.50,7-8.0 cm
+NY-412,Siproeta epaphus,null,Nymphalidae  Cathonopheles y Diversos species,null,Siproeta,Lepidoptera,Peru,null,null,A1,M,4.00,7.5 cm
+NY-413,Siproeta epaphus,null,Nymphalidae  Cathonopheles y Diversos species,null,Siproeta,Lepidoptera,Peru,null,null,A1,5M,4.00,7.0 cm
+NY-414,Siproeta epaphus trayja,null,Nymphalidae  Cathonopheles y Diversos species,null,Siproeta,Lepidoptera,Brazil,null,null,A1,3M,10.50,7.0 cm
+NY-415,Siproeta epaphus trayja,null,Nymphalidae  Cathonopheles y Diversos species,null,Siproeta,Lepidoptera,Brazil,null,null,A1,M,4.50,7.0 cm
+NY-416,Siproeta epaphus trayja,null,Nymphalidae  Cathonopheles y Diversos species,null,Siproeta,Lepidoptera,Brazil,null,null,A1-,M,2.00,7.0 cm
+NY-417,Smyrna blomfieldia (Ecuador),null,Nymphalidae  Cathonopheles y Diversos species,null,Smyrna,Lepidoptera,Ecuador,null,null,A1,F,4.00,6.5 cm
+NY-418,Smyrna blomfieldia (Ecuador),null,Nymphalidae  Cathonopheles y Diversos species,null,Smyrna,Lepidoptera,Ecuador,null,null,A1,P,7.00,6.5 cm
+NY-419,Smyrna blomfieldia (Peru),null,Nymphalidae  Cathonopheles y Diversos species,null,Smyrna,Lepidoptera,Peru,null,null,A1,F,4.00,6.5 cm
+NY-420,Smyrna blomfieldia datis,null,Nymphalidae  Cathonopheles y Diversos species,null,Smyrna,Lepidoptera,Mexico,null,null,A1,P,8.00,5.5-6.5 cm
+NY-421,Smyrna blomfieldia datis,null,Nymphalidae  Cathonopheles y Diversos species,null,Smyrna,Lepidoptera,Mexico,null,null,A1,M,3.00,5.5-6.5 cm
+NY-422,Smyrna blomfieldia,null,Nymphalidae  Cathonopheles y Diversos species,null,Smyrna,Lepidoptera,Peru,null,null,A1,M,4.75,6.5 cm
+NY-423,Smyrna blomfieldia,null,Nymphalidae  Cathonopheles y Diversos species,null,Smyrna,Lepidoptera,Peru,null,null,A1,3M,13.50,6.5 cm
+NY-424,Temenis lathoe,null,Nymphalidae  Cathonopheles y Diversos species,null,Temenis,Lepidoptera,Peru,null,null,A1,M,4.00,3.5 cm
+NY-425,Temenis lathoe,null,Nymphalidae  Cathonopheles y Diversos species,null,Temenis,Lepidoptera,Peru,null,null,A1,3M,4.00,3.5 cm
+NY-426,Temenis lathoe (Ecuador),null,Nymphalidae  Cathonopheles y Diversos species,null,Temenis,Lepidoptera,Ecuador,null,null,A1,M,3.50,4.5 cm
+NY-427,Temenis lathoe (Ecuador),null,Nymphalidae  Cathonopheles y Diversos species,null,Temenis,Lepidoptera,Ecuador,null,null,A1,3M,9.00,4.5 cm
+NY-428,Temenis pulchra pallidior,null,Nymphalidae  Cathonopheles y Diversos species,null,Temenis,Lepidoptera,Peru/Ecuador,null,null,A1/A1-,M,2.00,3.0 cm
+NY-429,Villa emilia,null,Nymphalidae  Cathonopheles y Diversos species,null,Villa,Lepidoptera,Peru,null,null,A1,M,5.00,5.0 cm
+NY-430,Zaretis (Anaea) isidora,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Zaretis (Anaea),Lepidoptera,Peru/Ecuador,null,null,A1,M,4.50,4.5 cm
+NY-431,Zaretis (Anaea) isidora,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Zaretis (Anaea),Lepidoptera,Peru/Ecuador,null,null,A1,3M,12.00,4.5 cm
+NY-432,Zaretis (Anaea) isidora,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Zaretis (Anaea),Lepidoptera,Peru,null,null,A1/A1-,F,15.00,6.0 cm
+NY-433,Zaretis (Anaea) isidora (Brazil),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Zaretis (Anaea),Lepidoptera,Brazil,null,null,A1/A1-,M,10.00,4.5 cm
+NY-434,Zaretis (Anaea) isidora (Brazil),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Zaretis (Anaea),Lepidoptera,Brazil,null,null,A1,M,15.00,4.5 cm

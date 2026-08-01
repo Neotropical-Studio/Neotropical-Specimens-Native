@@ -1,0 +1,69 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+PI-001,Anteos clorinde,null,Pieridae,Pierinae,Anteos,Lepidoptera,Peru,null,null,A1,3M,15.00,5-6.0 cm
+PI-002,Anteos clorinde,null,Pieridae,Pierinae,Anteos,Lepidoptera,Peru,null,null,A1,M,5.50,6.0 cm
+PI-003,Anteos menippe,null,Pieridae,Pierinae,Anteos,Lepidoptera,Peru,null,null,A1,M,2.25,7-8.0 cm
+PI-004,Anteos menippe,null,Pieridae,Pierinae,Anteos,Lepidoptera,Peru,null,null,A1,3M,6.00,7-8.0 cm
+PI-005,Archonias (=Catasticta) ctemene strigosa,null,Pieridae,Pierinae,Archonias,Lepidoptera,Peru,null,null,A1,M,3.00,4.0 cm
+PI-006,Archonias (=Catasticta) eurigania straminea,null,Pieridae,Pierinae,Archonias,Lepidoptera,Peru,null,null,A1,M,4.00,4.0 cm
+PI-007,Archonias (=Catasticta) hebra,null,Pieridae,Pierinae,Archonias,Lepidoptera,Peru,null,null,A1,M,3.00,4.0 cm
+PI-008,Archonias (=Catasticta) poujadei,null,Pieridae,Pierinae,Archonias,Lepidoptera,Peru,null,null,A1,M,2.50,4.0 cm
+PI-009,Archonias (=Catasticta) poujadei,null,Pieridae,Pierinae,Archonias,Lepidoptera,Peru,null,null,A1,3M,6.00,4.0 cm
+PI-010,Archonias (=Catasticta) sisamnus telasco,null,Pieridae,Pierinae,Archonias,Lepidoptera,Peru,null,null,A1,M,3.50,5.0 cm
+PI-011,Archonias (=Catasticta) sisamnus telasco,null,Pieridae,Pierinae,Archonias,Lepidoptera,Peru,null,null,A1,3M,9.00,5.0 cm
+PI-012,Archonias (=Catasticta) species mix(10 pcs),null,Pieridae,Pierinae,Archonias,Lepidoptera,Peru,null,null,A1,10M,20.00,3.5-5.0 cm
+PI-013,Archonias bellona negrina,null,Pieridae,Pierinae,Archonias,Lepidoptera,Peru,null,null,A1,F,4.50,5.0 cm
+PI-014,Ascia buniae,null,Pieridae,Pierinae,Ascia,Lepidoptera,Peru,null,null,A1,3M,12.00,7-8.0 cm
+PI-015,Ascia buniae,null,Pieridae,Pierinae,Ascia,Lepidoptera,Peru,null,null,A1,M,4.25,7-8.0 cm
+PI-016,Dismorphia amphione ssp?,null,Pieridae,Pierinae,Dismorphia,Lepidoptera,Peru,null,null,A1,F,10.00,6.0 cm
+PI-017,Eurema arbela,null,Pieridae,Pierinae,Eurema,Lepidoptera,Peru,null,null,A1,M,5.00,3.0 cm
+PI-018,Eurema arbela,null,Pieridae,Pierinae,Eurema,Lepidoptera,Peru,null,null,A1,3M,5.00,3.0 cm
+PI-019,Eurema reticulata,null,Pieridae,Pierinae,Eurema,Lepidoptera,Peru,null,null,A1,M,5.00,4-4.5 cm
+PI-020,Hesperocharis marchali coloe,null,Pieridae,Pierinae,Hesperocharis,Lepidoptera,Peru,null,null,A1,M,5.00,4.0 cm
+PI-021,Itaballia demophile demophile,null,Pieridae,Pierinae,Itaballia,Lepidoptera,Peru,null,null,A1,M,3.50,6.0 cm
+PI-022,Itaballia demophile demophile,null,Pieridae,Pierinae,Itaballia,Lepidoptera,Peru,null,null,A1,3M,9.00,6.0 cm
+PI-023,Leptophobia aripa aripa,null,Pieridae,Pierinae,Leptophobia,Lepidoptera,Peru,null,null,A1,M,5.00,5.0 cm
+PI-024,Leptophobia eleone eleone,null,Pieridae,Pierinae,Leptophobia,Lepidoptera,Peru,null,null,A1,M,3.00,4.0 cm
+PI-025,Leptophobia philoma,null,Pieridae,Pierinae,Leptophobia,Lepidoptera,Peru,null,null,A1,M,5.00,5.0 cm
+PI-026,Leptophobia tovaria maruga,null,Pieridae,Pierinae,Leptophobia,Lepidoptera,Peru,null,null,A1 K,M,5.50,4.0 cm
+PI-027,Lieinix (Dismorphia) nemesis,null,Pieridae,Pierinae,Lieinix (Dismorphia),Lepidoptera,Peru,null,null,A1,M,4.00,4.5 cm
+PI-028,Lieinix (Dismorphia) nemesis,null,Pieridae,Pierinae,Lieinix (Dismorphia),Lepidoptera,Peru,null,null,A1,3M,10.50,4.5 cm
+PI-029,Melete lycimnia aelia (Ecuador),null,Pieridae,Pierinae,Melete,Lepidoptera,Ecuador,null,null,A1,M,4.00,6.0 cm
+PI-030,Melete lycimnia aelia (Ecuador),null,Pieridae,Pierinae,Melete,Lepidoptera,Ecuador,null,null,A1,3M,10.50,6.0 cm
+PI-031,Melete lycimnia napona (Ecuador),null,Pieridae,Pierinae,Melete,Lepidoptera,Ecuador,null,null,A1,3 pcs,5.00,6.0 cm
+PI-032,Melete lycimnia napona (Ecuador),null,Pieridae,Pierinae,Melete,Lepidoptera,Ecuador,null,null,A1,M or F,5.00,6.0 cm
+PI-033,Methania agasicles,null,Pieridae,Pierinae,Methania,Lepidoptera,Peru,Cusco Peru,null,A1,M,6.00,5.5 cm
+PI-034,Methania aureomaculata,null,Pieridae,Pierinae,Methania,Lepidoptera,Peru,"Cusco, Peru",null,A1,M,6.00,5.5 cm
+PI-035,Pereute callinara,null,Pieridae,Pierinae,Pereute,Lepidoptera,Peru,null,null,A1,M,3.50,5.5 cm
+PI-036,Pereute callinara,null,Pieridae,Pierinae,Pereute,Lepidoptera,Peru,null,null,A1,3M,9.00,5.5 cm
+PI-037,Pereute callinara,null,Pieridae,Pierinae,Pereute,Lepidoptera,Peru,null,null,A1,P,10.00,5.5 cm
+PI-038,Pereute callinara,null,Pieridae,Pierinae,Pereute,Lepidoptera,Peru,null,null,A1,3P,24.00,5.5 cm
+PI-039,Pereute callinara,null,Pieridae,Pierinae,Pereute,Lepidoptera,Peru,null,null,"M=A1, F=A1/A1-",P,8.00,5.5 cm
+PI-040,Pereute charops peruviana,null,Pieridae,Pierinae,Pereute,Lepidoptera,Peru,null,null,A1,M,4.00,6.0 cm
+PI-041,Pereute charops peruviana,null,Pieridae,Pierinae,Pereute,Lepidoptera,Peru,null,null,A1,3M,10.50,6.0 cm
+PI-042,Pereute leucodrosime beryllina,null,Pieridae,Pierinae,Pereute,Lepidoptera,Ecuador,null,null,A1,M,4.00,6.0 cm
+PI-043,Perrhybris lorena lorena (= pamela),null,Pieridae,Pierinae,Perrhybris,Lepidoptera,Peru,null,null,A1,M,4.00,5-6.0 cm
+PI-044,Perrhybris lorena lorena (= pamela),null,Pieridae,Pierinae,Perrhybris,Lepidoptera,Peru,null,null,A1,3M,10.50,5-6.0 cm
+PI-045,Perrhybris pyrrha carmenta,null,Pieridae,Pierinae,Perrhybris,Lepidoptera,Peru,null,null,A1,M,4.00,6.0 cm
+PI-046,Perrhybris pyrrha carmenta,null,Pieridae,Pierinae,Perrhybris,Lepidoptera,Peru,null,null,A1,3M,10.50,6.0 cm
+PI-047,Perrhybris pyrrha carmenta,null,Pieridae,Pierinae,Perrhybris,Lepidoptera,Peru,null,null,A1/A1-,F,8.00,6.0 cm
+PI-048,Phoebis (Aphrissa) statira,null,Pieridae,Pierinae,Phoebis (Aphrissa),Lepidoptera,Peru,null,null,A1,3M,10.50,5.0 cm
+PI-049,Phoebis (Aphrissa) statira,null,Pieridae,Pierinae,Phoebis (Aphrissa),Lepidoptera,Peru,null,null,A1,M,3.75,5.0 cm
+PI-050,Phoebis (Rhabdodryas) trite,null,Pieridae,Pierinae,Phoebis (Rhabdodryas),Lepidoptera,Peru/Ecuador,null,null,A1,M,3.75,5.0 cm
+PI-051,Phoebis (Rhabdodryas) trite,null,Pieridae,Pierinae,Phoebis (Rhabdodryas),Lepidoptera,Peru/Ecuador,null,null,A1,3M,10.50,5.0 cm
+PI-052,Phoebis (Rhabdodryas) trite,null,Pieridae,Pierinae,Phoebis (Rhabdodryas),Lepidoptera,Peru,null,null,A1-,F,4.00,5.0 cm
+PI-053,Phoebis (Rhabdodryas) trite,null,Pieridae,Pierinae,Phoebis (Rhabdodryas),Lepidoptera,Peru,null,null,A1,F,8.00,5.5 cm
+PI-054,Phoebis argante,null,Pieridae,Pierinae,Phoebis,Lepidoptera,Peru/Ecuador,null,null,A1,M,3.00,5.5 cm
+PI-055,Phoebis argante,null,Pieridae,Pierinae,Phoebis,Lepidoptera,Peru/Ecuador,null,null,A1,3M,7.50,5.5 cm
+PI-056,Phoebis argante (Brazil),null,Pieridae,Pierinae,Phoebis,Lepidoptera,Brazil,null,null,A1,M,3.00,6.0 cm
+PI-057,Phoebis neocypris rurina (=rurina),null,Pieridae,Pierinae,Phoebis,Lepidoptera,Peru,null,null,A1,M,2.50,7.0 cm
+PI-058,Phoebis neocypris rurina (=rurina),null,Pieridae,Pierinae,Phoebis,Lepidoptera,Peru,null,null,A1,3M,6.75,7.0 cm
+PI-059,Phoebis neocypris rurina (=rurina),null,Pieridae,Pierinae,Phoebis,Lepidoptera,Peru,null,null,A1/A1-,F,12.00,7.0 cm
+PI-060,Phoebis philea,null,Pieridae,Pierinae,Phoebis,Lepidoptera,Peru/Ecuador,null,null,A1,M,3.50,7.0 cm
+PI-061,Phoebis philea,null,Pieridae,Pierinae,Phoebis,Lepidoptera,Peru/Ecuador,null,null,A1,3M,9.00,7.0 cm
+PI-062,Phoebis philea,null,Pieridae,Pierinae,Phoebis,Lepidoptera,Peru,null,null,A1,F,14.00,7.0 cm
+PI-063,Phoebis philea (Brazil),null,Pieridae,Pierinae,Phoebis,Lepidoptera,Brazil,null,null,A1,M,3.25,7.0 cm
+PI-064,Phoebis philea (Brazil),null,Pieridae,Pierinae,Phoebis,Lepidoptera,Brazil,null,null,A1,3P,33.00,7.0 cm
+PI-065,Phoebis philea (Brazil),null,Pieridae,Pierinae,Phoebis,Lepidoptera,Brazil,null,null,A1,P,12.50,7.0 cm
+PI-066,Phoebis philea (Ecuador),null,Pieridae,Pierinae,Phoebis,Lepidoptera,Ecuador,null,null,A1/A1-,F,6.00,7.0 cm
+PI-067,Pieriballia mandela apicalis,null,Pieridae,Pierinae,Pieriballia,Lepidoptera,Peru,null,null,A1,M,3.50,5.5 cm
+PI-068,Pieriballia mandela apicalis,null,Pieridae,Pierinae,Pieriballia,Lepidoptera,Peru,null,null,A1,3M,9.00,5.5 cm

@@ -1,0 +1,101 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+NY-298,Nessaea hewitsoni,null,Nymphalidae  Cathonopheles y Diversos species,null,Nessaea,Lepidoptera,Peru/Ecuador,null,null,A1,M,7.00,6.0 cm
+NY-299,Nessaea hewitsoni,null,Nymphalidae  Cathonopheles y Diversos species,null,Nessaea,Lepidoptera,Peru/Ecuador,null,null,A1,F,4.00,6.0 cm
+NY-300,Nessaea hewitsoni,null,Nymphalidae  Cathonopheles y Diversos species,null,Nessaea,Lepidoptera,Peru/Ecuador,null,null,A1,P,10.00,6.0 cm
+NY-301,Nessaea hewitsoni,null,Nymphalidae  Cathonopheles y Diversos species,null,Nessaea,Lepidoptera,Peru/Ecuador,null,null,A1,3M,21.00,6.0 cm
+NY-302,Nessaea hewitsoni,null,Nymphalidae  Cathonopheles y Diversos species,null,Nessaea,Lepidoptera,Peru/Ecuador,null,null,A1/A1-,P,7.00,6.0 cm
+NY-303,Nessaea hewitsoni,null,Nymphalidae  Cathonopheles y Diversos species,null,Nessaea,Lepidoptera,Peru/Ecuador,null,null,A1,3P,27.00,6.0 cm
+NY-304,Nessaea obrinus,null,Nymphalidae  Cathonopheles y Diversos species,null,Nessaea,Lepidoptera,Ecuador,null,null,A1 O,M,7.00,6.0 cm
+NY-305,Orophila (Perisama) diotima cecidas,null,Nymphalidae Agrias-Collicore-Perisamas,null,Orophila (Perisama),Lepidoptera,Peru,null,null,A1,M,4.00,3.5-4.0 cm
+NY-306,Orophila (Perisama) diotima cecidas,null,Nymphalidae Agrias-Collicore-Perisamas,null,Orophila (Perisama),Lepidoptera,Peru,null,null,A1,3M,10.50,3.5-4.0 cm
+NY-307,Panacea procilla divalis,null,Nymphalidae  Cathonopheles y Diversos species,null,Panacea,Lepidoptera,Ecuador,null,null,A1,M,6.00,7.0 cm
+NY-308,Panacea prola,null,Nymphalidae  Cathonopheles y Diversos species,null,Panacea,Lepidoptera,Peru,null,null,A1,M,5.00,6.0-6.5 cm
+NY-309,Panacea prola,null,Nymphalidae  Cathonopheles y Diversos species,null,Panacea,Lepidoptera,Peru,null,null,A1,3M,13.50,6.0-6.5 cm
+NY-310,Panacea prola,null,Nymphalidae  Cathonopheles y Diversos species,null,Panacea,Lepidoptera,Peru,null,null,A1/A1-,M,3.50,6-6.5 cm
+NY-311,Panacea prola,null,Nymphalidae  Cathonopheles y Diversos species,null,Panacea,Lepidoptera,Peru,null,null,A1/A1-,3M,9.00,6-6.5 cm
+NY-312,Panacea regina chalcothea,null,Nymphalidae  Cathonopheles y Diversos species,null,Panacea,Lepidoptera,Peru,null,null,A1,M,6.00,7.0 cm
+NY-313,Panacea regina chalcothea,null,Nymphalidae  Cathonopheles y Diversos species,null,Panacea,Lepidoptera,Peru,null,null,A1,3M,16.50,7.0 cm
+NY-314,Paulogramma pyracmon peristera,null,Nymphalidae Agrias-Collicore-Perisamas,null,Paulogramma,Lepidoptera,Peru,null,null,A1,M,4.25,3 cm
+NY-315,Paulogramma pyracmon peristera,null,Nymphalidae Agrias-Collicore-Perisamas,null,Paulogramma,Lepidoptera,Peru,null,null,A1,3M,12.00,3 cm
+NY-316,Paulogramma pyracmon peristera,null,Nymphalidae Agrias-Collicore-Perisamas,null,Paulogramma,Lepidoptera,Peru,null,null,A1,F,12.00,3.0 cm
+NY-317,Perisama alicia,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,0.00,3.5 cm
+NY-318,Perisama alicia,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,3M,0.00,3.5 cm
+NY-319,Perisama ambatensis,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1 OUT OF STOCK,M,0.00,3.0 cm
+NY-320,Perisama bomplandii albipenis,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,M,6.50,5.0 cm
+NY-321,Perisama canoma ssp?,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,3M,10.50,4.0 cm
+NY-322,Perisama canoma ssp?,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,4.00,4.0 cm
+NY-323,Perisama cecidas,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1 K,M,6.00,4.0 cm
+NY-324,Perisama commena X Perisama humboldti ??,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,6.00,4.0 cm
+NY-325,Perisama commena,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1 O,M,7.00,3.5 cm
+NY-326,Perisama hilara,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,7.00,3.5 cm
+NY-327,Perisama hilara,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,3M,7.00,3.5 cm
+NY-328,Perisama humboldti,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,6.50,4.0 cm
+NY-329,Perisama jurinei jurinei,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1 K,M,6.00,3.5 cm
+NY-330,Perisama jurinei klugi,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,6.00,3.5 cm
+NY-331,Perisama lanice picteti,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,3M,12.00,3.5 cm
+NY-332,Perisama lanice picteti,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,4.50,4.5 cm
+NY-333,Perisama oppellii eribina (1 set of 2 males available),null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Colombia,"Callima Valley, Colombia",null,A1,2M,20.00,4-4.5 cm
+NY-334,Perisama oppellii viridinota,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,M,6.50,4.0 cm
+NY-335,Perisama oppellii viridinota,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,3M,15.75,4.0 cm
+NY-336,Perisama pericles,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,6.00,4.0 cm
+NY-337,Perisama pericles,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,3M,7.00,4.0 cm
+NY-338,Perisama philinus saussurei,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,6.00,3.5 cm
+NY-339,Perisama tringa,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,6.00,3.5 cm
+NY-340,Perisama vitringa vitringa,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,5.50,4.0 cm
+NY-341,Perisama xanthica xanthica,null,Nymphalidae Agrias-Collicore-Perisamas,null,Perisama,Lepidoptera,Peru,null,null,A1,M,5.50,3.5 cm
+NY-342,Polygrapha (Anaea) cyanea cyanea,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Peru,null,null,A1,M,5.50,6.0 cm
+NY-343,Polygrapha (Anaea) cyanea silvaorum,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Ecuador,null,null,A1/A1-,F,80.00,7-8.0 cm
+NY-344,Polygrapha (Anaea) cyanea silvaorum,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Ecuador,null,null,A1,F,125.00,7-8.0 cm
+NY-345,Polygrapha (Anaea) cyanea silvaorum,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Ecuador,null,null,A1-,F,40.00,7-8.0 cm
+NY-346,Polygrapha (Anaea) suprema,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Brazil,null,null,A1,M,450.00,6.0 cm
+NY-347,Polygrapha (Anaea) tyrianthina,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Peru,null,null,A1,M,28.50,8.5 cm
+NY-348,Polygrapha (Anaea) tyrianthina,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Peru,null,null,A1/A1-,M,17.50,8.5 cm
+NY-349,Polygrapha (Anaea) tyrianthina,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Peru,null,null,A1,3F,75.00,8.5 cm
+NY-350,Polygrapha (Anaea) tyrianthina,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Peru,null,null,A1,F,30.00,8.5 cm
+NY-351,Polygrapha (Anaea) tyrianthina,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Peru,null,null,A1/A1-,F,20.00,8.5 cm
+NY-352,Polygrapha (Anaea) xenocrates ernestoi (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Ecuador,null,null,A1,M,5.00,7.0 cm
+NY-353,Polygrapha (Anaea) xenocrates xenocrates (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Polygrapha (Anaea),Lepidoptera,Peru,null,null,A1,M,4.00,7.0 cm
+NY-354,Prepona (Archeoprepona) amphimachus,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,M,7.00,8.5 cm
+NY-355,Prepona (Archeoprepona) amphimachus,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,3M,18.00,8.5 cm
+NY-356,Prepona (Archeoprepona) amphimachus symaithus,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Ecuador,null,null,A1,M,6.00,8.5 cm
+NY-357,Prepona (Archeoprepona) camilla,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,M,5.00,8.5 cm
+NY-358,Prepona (Archeoprepona) camilla,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,3M,0.00,8.5 cm
+NY-359,Prepona (Archeoprepona) demophon centralis (Belize),null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Belize,null,null,A1,P,18.00,9-9.5 cm
+NY-360,Prepona (Archeoprepona) demophon centralis (Belize),null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Belize,null,null,A1,F,10.00,9-9.5 cm
+NY-361,Prepona (Archeoprepona) demophon centralis (Belize),null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Belize,null,null,A1/A1-,"2 M, 1 F",15.00,9-9.5 cm
+NY-362,Prepona (Archeoprepona) demophon centralis (Guatemala),null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Guatemala,null,null,A1,M,4.00,9.0 cm
+NY-363,Prepona (Archeoprepona) demophon muson,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,M,3.50,8.5 cm
+NY-364,Prepona (Archeoprepona) demophon muson,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,3M,9.75,8.5 cm
+NY-365,Prepona (Archeoprepona) demophon muson,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,F,15.00,8.5-9.0 cm
+NY-366,Prepona (Archeoprepona) demophon niklasi (Ecuador),null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Ecuador,null,null,A1,M,5.00,8.5 cm
+NY-367,Prepona (Archeoprepona) demophoon ssp?,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,"Satipo, Peru",null,A1,F,18.00,10-11.0 cm
+NY-368,Prepona (Archeoprepona) licomedes,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,M,6.00,8.0 cm
+NY-369,Prepona (Archeoprepona) licomedes (Ecuador),null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Ecuador,null,null,A1,M,6.00,8-8.5 cm
+NY-370,Prepona (Archeoprepona) meander megabates,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,M,7.00,7-8.0 cm
+NY-371,Prepona (Archeoprepona) meander megabates,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,3M,18.00,7-8.0 cm
+NY-372,Prepona (Archeoprepona) phaedra,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Costa Rica,null,null,A1,M,15.00,8-9.0 cm
+NY-373,Prepona (Archeoprepona/Norepa) chromus,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,M,7.00,7.5 cm
+NY-374,Prepona (Archeoprepona/Norepa) chromus,null,Nymphalidae Doxocopa-Preponas,null,Prepona (Archeoprepona),Lepidoptera,Peru,null,null,A1,3M,18.00,7.5 cm
+NY-375,Prepona deiphile brooksiana,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Mexico,null,null,A1/A1-,F,60.00,9.0 cm
+NY-376,Prepona deiphile brooksiana,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Mexico,null,null,A1-,F,40.00,9.0 cm
+NY-377,Prepona dexamenes,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,null,null,A1,M,0.00,7.0 cm
+NY-378,Prepona dexamenes,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,null,null,A1,3M,0.00,7.0 cm
+NY-379,Prepona eugenes,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,null,null,A1,M,5.00,8.0 cm
+NY-380,Prepona eugenes,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,null,null,A1,3M,5.00,8.0 cm
+NY-381,Prepona laertes,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,null,null,A1 K,3M,5.00,8.0 cm
+NY-382,Prepona laertes,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,null,null,A1,M,0.00,8.0 cm
+NY-383,Prepona laertes,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,null,null,A1,F,15.00,8.0 cm
+NY-384,Prepona laertes (Brazil),null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Brazil,null,null,A1,M,10.00,8.0 cm
+NY-385,Prepona laertes octavia (=omphale octavia),null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Costa Rica,null,null,A1,P,25.00,7.5 cm
+NY-386,Prepona laertes octavia (=omphale octavia),null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Costa Rica,null,null,A1,F,10.00,7.5 cm
+NY-387,Prepona laertes octavia (=omphale octavia),null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Costa Rica,null,null,A1 O,M,30.00,7.5 cm
+NY-388,Prepona pheridamas (Ecuador),null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Ecuador,null,null,A1,M,5.00,9.0 cm
+NY-389,"Prepona praeneste (Dept San Martin, N. Peru)",null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1/A1-,M,45.00,8.0 cm
+NY-390,Prepona praeneste confusa,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,"Satipo, Peru",null,A1/A1-,M,40.00,8.0 cm
+NY-391,Prepona praeneste confusa,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,"Satipo, Peru",null,A1,3M,120.00,8.0 cm
+NY-392,Prepona praeneste confusa,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,"Satipo, Peru",null,A1,M,50.00,8.0 cm
+NY-393,Prepona praeneste confusa,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,"Satipo, Peru",null,A1,F,200.00,8-9.0 cm
+NY-394,Prepona praeneste praenestina (= ssp abrupta?),null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,"Tingo Maria, Peru",null,A1,M,90.00,8.0 cm
+NY-395,Prepona pyrene proschion,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Brazil,null,null,A1,M,50.00,8.0 cm
+NY-396,Prepona sub-omphale pseudoomphale,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Peru,null,null,A1,M,28.00,8.0 cm
+NY-397,Prepona werneri,null,Nymphalidae Doxocopa-Preponas,null,Prepona,Lepidoptera,Colombia/Ecuador,null,null,A1,M,225.00,8.0 cm

@@ -4,8 +4,9 @@
 // Filtros: tipo de medio · rubro (kind) · familia · especie
 // Datos vienen de la API /api/admin/media-gallery
 import { useMemo, useState, useEffect } from 'react';
-import { ImageIcon, Box, Video, X, SlidersHorizontal, ExternalLink } from 'lucide-react';
+import { ImageIcon, Box, Video, X, SlidersHorizontal, ExternalLink, Trash2 } from 'lucide-react';
 import { imageUrl, videoMp4, modelUrl } from '@/lib/cloudinary/url';
+import { deleteMediaAssetAction } from './actions';
 
 export type GalleryItem = {
   id:           string;
@@ -60,8 +61,40 @@ function Chip({
   );
 }
 
-function MediaThumb({ item }: { item: GalleryItem }) {
+function MediaThumb({
+  item,
+  onDeleted,
+}: {
+  item: GalleryItem;
+  onDeleted?: (id: string) => void;
+}) {
   const [open, setOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (
+      !window.confirm(
+        `¿Eliminar este medio?\n${item.publicId}\n(${TYPE_LABEL[item.mediaType] ?? item.mediaType})`,
+      )
+    ) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      await deleteMediaAssetAction(
+        item.specimenId,
+        item.publicId,
+        item.mediaType === 'video_mp4' ? 'video' : item.mediaType === 'model_3d_glb' ? 'raw' : 'image',
+      );
+      onDeleted?.(item.id);
+      setOpen(false);
+    } catch (err) {
+      window.alert((err as Error).message);
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
     <>
@@ -90,6 +123,17 @@ function MediaThumb({ item }: { item: GalleryItem }) {
             </div>
           )}
         </div>
+
+        <button
+          type="button"
+          disabled={deleting}
+          onClick={(e) => void handleDelete(e)}
+          className="absolute right-1.5 top-1.5 z-10 inline-flex items-center gap-1 rounded border border-red-800 bg-black/75 px-1.5 py-1 text-[10px] font-semibold text-red-200 opacity-90 hover:bg-red-950 disabled:opacity-40"
+          title="Eliminar"
+        >
+          <Trash2 size={11} />
+          {deleting ? '…' : 'Eliminar'}
+        </button>
 
         {/* Overlay info */}
         <div className="px-2 py-1.5">
@@ -162,9 +206,24 @@ function MediaThumb({ item }: { item: GalleryItem }) {
                 </a>
               </div>
             )}
-            <div className="mt-2 text-center">
+            <div className="mt-2 flex flex-col items-center gap-2 text-center">
               <p className="font-mono text-xs text-neutral-400">{item.code}</p>
               {item.species && <p className="text-xs italic text-neutral-500">{item.species}</p>}
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={(e) => void handleDelete(e)}
+                className="inline-flex items-center gap-1.5 rounded border border-red-800 bg-red-950/70 px-3 py-1.5 text-xs font-semibold text-red-200 hover:bg-red-900 disabled:opacity-40"
+              >
+                <Trash2 size={12} />
+                {deleting
+                  ? 'Eliminando…'
+                  : item.mediaType === 'video_mp4'
+                    ? 'Eliminar video'
+                    : item.mediaType === 'photo_webp'
+                      ? 'Eliminar foto'
+                      : 'Eliminar 3D'}
+              </button>
             </div>
           </div>
         </div>
@@ -173,13 +232,18 @@ function MediaThumb({ item }: { item: GalleryItem }) {
   );
 }
 
-export default function MediaGallery({ items }: { items: GalleryItem[] }) {
+export default function MediaGallery({ items: initialItems }: { items: GalleryItem[] }) {
+  const [items, setItems] = useState(initialItems);
   const [typeFilter, setTypeFilter] = useState<MediaFilter>('all');
   const [family,   setFamily]   = useState<string | null>(null);
   const [kind,     setKind]     = useState<string | null>(null);
   const [species,  setSpecies]  = useState<string | null>(null);
   const [search,   setSearch]   = useState('');
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
 
   // Unique values for filter chips
   const families   = useMemo(() => [...new Set(items.map((i) => i.family).filter(Boolean))].sort() as string[], [items]);
@@ -320,7 +384,11 @@ export default function MediaGallery({ items }: { items: GalleryItem[] }) {
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {results.map((item) => (
-            <MediaThumb key={item.id} item={item} />
+            <MediaThumb
+              key={item.id}
+              item={item}
+              onDeleted={(id) => setItems((prev) => prev.filter((x) => x.id !== id))}
+            />
           ))}
         </div>
       )}

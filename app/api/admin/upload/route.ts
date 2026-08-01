@@ -13,7 +13,7 @@ import {
   resolveCanonicalSpecimenFolder,
 } from '@/lib/mirror/contract';
 import { type SpecimenKind } from '@/lib/cloudinary/paths';
-import { uploadImage, uploadVideo, uploadModel3d } from '@/lib/services/cloudinary-upload';
+import { uploadImage, uploadVideo, uploadModel3d, assertNotNodeMediaSlotPath } from '@/lib/services/cloudinary-upload';
 
 export const runtime = 'nodejs';
 
@@ -155,21 +155,29 @@ export async function POST(req: NextRequest) {
     }
     folder = resolved.folder;
     pathPolicy = 'specimen';
+    try {
+      assertNotNodeMediaSlotPath(folder);
+    } catch (e) {
+      return NextResponse.json(
+        { error: e instanceof Error ? e.message : String(e) },
+        { status: 400 },
+      );
+    }
   }
 
   let result: { public_id: string; secure_url?: string };
   try {
     if (documentFolder && mediaType !== 'photo_webp' && mediaType !== 'video_mp4') {
       // Permisos / docs: tratar como imagen/raw operativo
-      result = await uploadImage(buffer, { folder, pathPolicy });
+      result = await uploadImage(buffer, { folder, pathPolicy, industrial: true });
     } else if (mediaType === 'photo_webp' || (documentFolder && !mediaType)) {
-      result = await uploadImage(buffer, { folder, pathPolicy });
+      result = await uploadImage(buffer, { folder, pathPolicy, industrial: true });
     } else if (mediaType === 'video_mp4') {
-      result = await uploadVideo(buffer, { folder, pathPolicy });
+      result = await uploadVideo(buffer, { folder, pathPolicy, industrial: true });
     } else if (mediaType === 'model_3d_glb') {
       result = await uploadModel3d(buffer, { folder, pathPolicy });
     } else if (documentFolder) {
-      result = await uploadImage(buffer, { folder, pathPolicy });
+      result = await uploadImage(buffer, { folder, pathPolicy, industrial: true });
     } else {
       return NextResponse.json({ error: 'mediaType inválido' }, { status: 400 });
     }

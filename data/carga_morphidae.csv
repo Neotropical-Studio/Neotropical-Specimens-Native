@@ -1,0 +1,74 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+MO-001,Morpho deidamia mariae,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1/A1-,F,11.00,12-13.0 cm
+MO-002,Morpho deidamia mariae,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,3F,60.00,12-13.0 cm
+MO-003,Morpho deidamia pyrrhus,null,Morphidae,null,null,Lepidoptera,Peru,Satipo,null,A1-,F,8.00,10-11.0 cm
+MO-004,Morpho deidamia pyrrhus,null,Morphidae,null,null,Lepidoptera,Peru,Satipo,null,A1/A1-,F,15.00,10-11.0 cm
+MO-005,Morpho epistrophus catanaria,null,Morphidae,null,null,Lepidoptera,Brazil,null,null,A1,3M,39.00,9-10.0 cm
+MO-006,Morpho godarti didius,null,Morphidae,null,null,Lepidoptera,Peru,Junin,null,A1,M,22.50,12-14.0 cm
+MO-007,Morpho godarti didius,null,Morphidae,null,null,Lepidoptera,Peru,Junin,null,A1,3M,60.00,12-14.0 cm
+MO-008,Morpho godarti julanthiscus,null,Morphidae,null,null,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,3M,90.00,12-14.0 cm
+MO-009,Morpho godarti julanthiscus,null,Morphidae,null,null,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,M,33.00,12-14.0 cm
+MO-010,Morpho godarti julanthiscus,null,Morphidae,null,null,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1/A1-,M,21.00,12-14.0 cm
+MO-011,Morpho godarti julanthiscus,null,Morphidae,null,null,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1/A1-,3M,58.00,12-14.0 cm
+MO-012,Morpho helenor achillides (= Morpho trojana),null,Morphidae,null,null,Lepidoptera,Argentina,null,null,A1,M,21.00,9.0 cm
+MO-013,Morpho helenor montezuma (Guatemala),null,Morphidae,null,null,Lepidoptera,Guatemala,null,null,A1,F,20.00,10-11.0 cm
+MO-014,Morpho helenor narcissus,null,Morphidae,null,null,Lepidoptera,Costa Rica,null,null,A1,3P,63.00,8-10.0 cm
+MO-015,Morpho helenor narcissus,null,Morphidae,null,null,Lepidoptera,Costa Rica,null,null,A1,M,14.00,8-10.0 cm
+MO-016,Morpho helenor narcissus,null,Morphidae,null,null,Lepidoptera,Costa Rica,null,null,A1/A1-,P,15.00,8-10.0 cm
+MO-017,Morpho helenor narcissus,null,Morphidae,null,null,Lepidoptera,Costa Rica,null,null,A1,P,24.00,8-10.0 cm
+MO-018,Morpho helenor narcissus,null,Morphidae,null,null,Lepidoptera,Costa Rica,null,null,A1/A1-,M,9.00,8-10.0 cm
+MO-019,Morpho helenor narcissus,null,Morphidae,null,null,Lepidoptera,Costa Rica,null,null,A1,3M,36.00,8-10.0 cm
+MO-020,Morpho helenor peleides (= peleides peleides),null,Morphidae,null,null,Lepidoptera,Colombia,null,null,A1,M,0.00,11.0 cm
+MO-021,Morpho helenor peleides (Ecuador),null,Morphidae,null,null,Lepidoptera,Ecuador,null,null,A1/A1-,M,9.00,10-12.0 cm
+MO-022,Morpho helenor peleides (Ecuador),null,Morphidae,null,null,Lepidoptera,Ecuador,null,null,A1,P,30.00,10-12.0 cm
+MO-023,Morpho helenor peleides (Ecuador),null,Morphidae,null,null,Lepidoptera,Ecuador,null,null,A1-,P,15.00,10-12.0 cm
+MO-024,Morpho helenor peleides (Ecuador),null,Morphidae,null,null,Lepidoptera,Ecuador,null,null,A1/A1-,P,24.00,10-12.0 cm
+MO-025,Morpho helenor rugitaeniatus,null,Morphidae,null,null,Lepidoptera,Ecuador,null,null,A1/A1-,M,6.00,9-10.0 cm
+MO-026,Morpho helenor theodorus,null,Morphidae,null,null,Lepidoptera,Peru,Satipo,null,A1,M,10.00,11.0 cm
+MO-027,Morpho helenor violaceus,null,Morphidae,null,null,Lepidoptera,Brazil,null,null,A1,P,48.00,11-12.0 cm
+MO-028,Morpho helenor violaceus,null,Morphidae,null,null,Lepidoptera,Brazil,null,null,A1,M,21.00,11-12.0 cm
+MO-029,Morpho helenor violaceus (HYBRID ??),null,Morphidae,null,null,Lepidoptera,Brazil,null,null,A1,F,25.00,11-12.0 cm
+MO-030,Morpho hercules diadema (Brazil),null,Morphidae,null,null,Lepidoptera,Brazil,null,null,A1/A1-,M,25.00,15.0 cm
+MO-031,Morpho hercules diadema (Brazil),null,Morphidae,null,null,Lepidoptera,Brazil,null,null,A1,P,70.00,15.0 cm
+MO-032,Morpho hercules diadema (Brazil),null,Morphidae,null,null,Lepidoptera,Brazil,null,null,A1,M,35.00,15.0 cm
+MO-033,Morpho marcus major (=adonis huallaga)= (adonis major),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,F,60.00,10.0 cm
+MO-034,Morpho marcus major (=adonis huallaga)= (adonis major),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1/A1-,F,45.00,10.0 cm
+MO-035,Morpho marcus major (=adonis huallaga)= (adonis major),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,2F,160.00,10.0 cm
+MO-036,Morpho marcus major (=adonis huallaga)= (adonis major),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1-,F,25.00,10.0 cm
+MO-037,Morpho menelaus alexandrovana,null,Morphidae,null,null,Lepidoptera,Peru,S. Peru,null,A1,F,60.00,14.0 cm
+MO-038,Morpho menelaus coeruleus (=M. nestira),null,Morphidae,null,null,Lepidoptera,Brazil,Santa Catarina State,null,A1,M,36.00,13.0 cm
+MO-039,Morpho menelaus melichaelus,null,Morphidae,null,null,Lepidoptera,Peru,Iquitos Region,null,A1-,F,50.00,10-11.0 cm
+MO-040,Morpho menelaus melichaelus,null,Morphidae,null,null,Lepidoptera,Peru,Iquitos region,null,A1/A1-,F,70.00,13.0 cm
+MO-041,Morpho menelaus occidentalis (=alexandrovana),null,Morphidae,null,null,Lepidoptera,Peru,S. Peru,null,A1,P,67.50,13-14.0 cm
+MO-042,Morpho rhetenor cacica,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1/A1-,M,40.00,11-12.0 cm
+MO-043,Morpho rhetenor cacica,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,3M,150.00,11-12.0 cm
+MO-044,Morpho rhetenor cacica,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1/A1-,F,55.00,12-13.0 cm
+MO-045,Morpho rhetenor cacica,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,3F,180.00,12-13.0 cm
+MO-046,Morpho rhetenor cacica,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,M,60.00,11-12.0 cm
+MO-047,Morpho rhetenor cacica,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,F,65.00,12-13.0 cm
+MO-048,Morpho rhetenor cacica,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1- to VGA2,F,25.00,12-13.0 cm
+MO-049,Morpho rhetenor cacica (DWARF),null,Morphidae,null,null,Lepidoptera,Peru,Satipo,null,A1/A1-,F,40.00,9-10.0 cm
+MO-050,Morpho rhetenor helena (Dwarf Female) # 1,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,F,80.00,9.0 cm
+MO-051,Morpho rhetenor helena (Dwarf Female) # 2,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1/A1-++,F,70.00,10.0 cm
+MO-052,Morpho rhetenor helena (SMALL FEMALE),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,F,50.00,10.0 cm
+MO-053,Morpho rhetenor mariajosianae,null,Morphidae,null,null,Lepidoptera,Peru,Pucallpa Previsto,null,A1,M,60.00,12-14.0 cm
+MO-054,Morpho rhetenor mariajosianae,null,Morphidae,null,null,Lepidoptera,Peru,Pucallpa Previsto,null,A1/A1-,M,40.00,12-14.0 cm
+MO-055,Morpho rhetenor mariajosianae,null,Morphidae,null,null,Lepidoptera,Peru,Pucallpa Previsto,null,A1,F,175.00,12-14.0 cm
+MO-056,Morpho sulkowskyi (=M. lympharis) descimokoenigi,null,Morphidae,null,null,Lepidoptera,Peru,Cusco,null,A1,F,35.00,8.0 cm
+MO-057,Morpho sulkowskyi (=M. lympharis) descimokoenigi,null,Morphidae,null,null,Lepidoptera,Peru,Cusco,null,A1/A1-,F,20.00,8.0 cm
+MO-058,Morpho sulkowskyi (=M. lympharis) selenaris,null,Morphidae,null,null,Lepidoptera,Peru,Huanaco - Carpish,null,A1,P,75.00,9-10 cm
+MO-059,Morpho sulkowskyi (=M. lympharis) selenaris,null,Morphidae,null,null,Lepidoptera,Peru,Huanaco - Carpish,null,A1,F,38.50,9-10.0 cm
+MO-060,Morpho sulkowskyi (=M. lympharis) selenaris,null,Morphidae,null,null,Lepidoptera,Peru,Huanaco - Carpish,null,A1,3P,204.00,9-10.0 cm
+MO-061,Morpho sulkowskyi (=M. lympharis) selenaris,null,Morphidae,null,null,Lepidoptera,Peru,Huanaco - Carpish,null,A1,3F,105.00,9-10.0 cm
+MO-062,Morpho sulkowskyi (=M. lympharis) selenaris,null,Morphidae,null,null,Lepidoptera,Peru,Huanaco - Carpish,null,A1,M,49.00,9-10.0 cm
+MO-063,Morpho telemachus penelope (aka foucheri),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,3M,0.00,12-13.0 cm
+MO-064,Morpho telemachus penelope (aka foucheri),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,M,0.00,12-13.0 cm
+MO-065,Morpho telemachus penelope (aka foucheri),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,P,32.50,12-13.0 cm
+MO-066,Morpho telemachus penelope (aka foucheri),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,F,28.00,12-13.0 cm
+MO-067,Morpho telemachus penelope (aka foucheri),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,2F,50.00,12-13.00 cm
+MO-068,Morpho telemachus penelope (aka foucheri),null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1/A1-,F,18.00,12-13.0 cm
+MO-069,Morpho theseus juturna,null,Morphidae,null,null,Lepidoptera,Peru,Dept San Martin,null,A1,M,60.00,12-14.00 cm
+MO-070,Morpho theseus juturna,null,Morphidae,null,null,Lepidoptera,Peru,Dept San Martin,null,A1/A1-,M,45.00,12-14.00 cm
+MO-071,Morpho theseus juturna,null,Morphidae,null,null,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,3M,160.00,12-14.0 cm
+MO-072,Morpho zephyritis,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1/A1-++,F,150.00,8.0 cm
+MO-073,Morpho zephyritis,null,Morphidae,null,null,Lepidoptera,Peru,null,null,A1,F,200.00,8.0 cm

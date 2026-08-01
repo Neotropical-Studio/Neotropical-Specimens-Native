@@ -2,12 +2,14 @@ import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Link from 'next/link';
 import SpecimenCard from '@/components/SpecimenCard';
+import CatalogBackLink from '@/components/catalogue/CatalogBackLink';
 import FamilyIntroGate from '@/components/catalogue/FamilyIntroGate';
 import { getI18n } from '@/lib/i18n/index';
 import {
   buildBreadcrumbs,
   buildCategoryNodes,
   buildFamilyNodes,
+  categoryFamiliesHref,
   familyCatalogHref,
   filterSpecimensByFamily,
   findCategoryById,
@@ -79,11 +81,21 @@ export default async function CatalogueFamiliaPage({
       : null;
   if (!category || category.rubroId !== rubro.id) notFound();
 
+  let familyEntries: Array<{ label: string; folder: string }> | undefined;
+  try {
+    const { familyEntriesForScope } = await import(
+      '@/lib/specimens/catalogueFamilyOverrides'
+    );
+    familyEntries = await familyEntriesForScope(regionNode.id, category.id);
+  } catch {
+    familyEntries = undefined;
+  }
   const familyNodes = buildFamilyNodes(
     specimens,
     rubro.id as InventoryRubroId,
     regionNode.id,
     category.id,
+    familyEntries,
   );
   const familyNode = familyNodes.find((n) => n.id === familiaParam);
   if (!familyNode) notFound();
@@ -95,6 +107,15 @@ export default async function CatalogueFamiliaPage({
     familia: familyNode.id,
   };
   const catalogHref = familyCatalogHref(i18n.locale, familyParts);
+  const familiesHref = categoryFamiliesHref(i18n.locale, {
+    rubro: rubro.id,
+    region: regionNode.id,
+    categoria: category.id,
+  });
+  const backToCategoryLabel = i18n.t(
+    'catalogue.back_to_families_catalog',
+    `← Volver al catálogo de familias · ${category.label}`,
+  );
   const showIntro =
     Boolean(familyNode.videoPublicId?.trim()) && view !== 'catalog';
 
@@ -117,6 +138,8 @@ export default async function CatalogueFamiliaPage({
             videoPublicId={familyNode.videoPublicId}
             coverPublicId={familyNode.coverPublicId}
             catalogHref={catalogHref}
+            backHref={familiesHref}
+            backLabel={backToCategoryLabel}
             skipLabel={i18n.t('catalogue.skip_to_catalog', 'Ver catálogo')}
             hintLabel={i18n.t(
               'catalogue.family_intro_hint',
@@ -129,8 +152,11 @@ export default async function CatalogueFamiliaPage({
   }
 
   const crumbs = buildBreadcrumbs(i18n.locale, i18n.t, {
-    rubro: { id: rubro.id, label: rubro.label },
-    region: { id: regionNode.id, label: regionNode.label },
+    rubro: {
+      id: rubro.id,
+      label: i18n.t('catalogue.regions_title', 'Regiones'),
+    },
+    region: { id: regionNode.id, label: rubro.label },
     categoria: { id: category.id, label: category.label },
     familia: { id: familyNode.id, label: familyNode.label },
   });
@@ -140,6 +166,10 @@ export default async function CatalogueFamiliaPage({
       <Header strings={i18n.strings} lang={i18n.locale} />
       <main className="pt-[104px]">
         <div className="mx-auto max-w-7xl px-4 pb-24 pt-6">
+          <div className="mb-4 flex flex-wrap gap-2">
+            <CatalogBackLink href={familiesHref} label={backToCategoryLabel} />
+          </div>
+
           <nav
             aria-label="Breadcrumb"
             className="mb-6 flex flex-wrap items-center gap-2 text-xs text-white/45"
@@ -190,10 +220,18 @@ export default async function CatalogueFamiliaPage({
                   s={s}
                   strings={i18n.strings}
                   lang={i18n.locale}
+                  returnFamilyHref={catalogHref}
+                  returnFamilyLabel={familyNode.label}
+                  returnCategoryHref={familiesHref}
+                  returnCategoryLabel={category.label}
                 />
               ))}
             </div>
           )}
+
+          <div className="mt-10 flex flex-wrap gap-2 border-t border-white/10 pt-6">
+            <CatalogBackLink href={familiesHref} label={backToCategoryLabel} />
+          </div>
         </div>
       </main>
     </div>

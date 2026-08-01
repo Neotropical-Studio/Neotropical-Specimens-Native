@@ -14,6 +14,7 @@ import {
   findRegionById,
   findRegionBySlugOrFolder,
   findRubroById,
+  regionCategoriesHref,
 } from '@/lib/specimens/catalogueNav';
 import { loadCatalogueSpecimens } from '@/lib/specimens/loadCatalogue';
 import type { InventoryRubroId } from '@/lib/specimens/rubros';
@@ -85,6 +86,14 @@ export default async function CatalogueCategoriaPage({
     region: regionNode.id,
     categoria: category.id,
   });
+  const categoriesHref = regionCategoriesHref(i18n.locale, {
+    rubro: rubro.id,
+    region: regionNode.id,
+  });
+  const backToRegionLabel = i18n.t(
+    'catalogue.back_to_region_categories',
+    `← Volver a categorías · ${regionNode.label}`,
+  );
 
   if (showIntro && videoPublicId) {
     return (
@@ -97,14 +106,16 @@ export default async function CatalogueCategoriaPage({
             videoPublicId={videoPublicId}
             coverPublicId={categoryMedia?.coverPublicId}
             catalogHref={familiesHref}
+            backHref={categoriesHref}
+            backLabel={backToRegionLabel}
             skipLabel={i18n.t('catalogue.skip_to_families', 'Ver familias')}
             hintLabel={i18n.t(
               'catalogue.category_intro_hint',
-              `Al terminar o saltar entrarás al catálogo de familias de ${category.label} (cada familia: card + video).`,
+              `Al terminar o saltar entrarás a las familias de ${category.label}.`,
             )}
             footerLabel={i18n.t(
               'catalogue.category_intro_footer',
-              `Siguiente: familias de ${category.label} → luego video de familia → especies de esa familia.`,
+              `Siguiente: familias de ${category.label}.`,
             )}
           />
         </main>
@@ -112,12 +123,23 @@ export default async function CatalogueCategoriaPage({
     );
   }
 
-  // ?view=families (o sin video): grid de familias con card + video. No especies aquí.
+  // ?view=families (o sin video): grid de familias. No especies aquí.
+  // Industrial: nunca tumbar storefront si falta tabla / falla DB.
+  let familyEntries: Array<{ label: string; folder: string }> | undefined;
+  try {
+    const { familyEntriesForScope } = await import(
+      '@/lib/specimens/catalogueFamilyOverrides'
+    );
+    familyEntries = await familyEntriesForScope(regionNode.id, category.id);
+  } catch {
+    familyEntries = undefined; // buildFamilyNodes → EXPECTED_* bootstrap
+  }
   const nodes = buildFamilyNodes(
     specimens,
     rubro.id as InventoryRubroId,
     regionNode.id,
     category.id,
+    familyEntries,
   );
 
   return (
@@ -135,11 +157,16 @@ export default async function CatalogueCategoriaPage({
           title={category.label}
           subtitle={i18n.t(
             'catalogue.families_subtitle',
-            `Familias de ${category.label}. Cada familia: card + video (_card/_video) → catálogo solo de esa familia.`,
+            `Familias de ${category.label}. Elige una familia para ver su catálogo.`,
           )}
+          backHref={categoriesHref}
+          backLabel={backToRegionLabel}
           breadcrumbs={buildBreadcrumbs(i18n.locale, i18n.t, {
-            rubro: { id: rubro.id, label: rubro.label },
-            region: { id: regionNode.id, label: regionNode.label },
+            rubro: {
+              id: rubro.id,
+              label: i18n.t('catalogue.regions_title', 'Regiones'),
+            },
+            region: { id: regionNode.id, label: rubro.label },
             categoria: { id: category.id, label: category.label },
           })}
           nodes={nodes}

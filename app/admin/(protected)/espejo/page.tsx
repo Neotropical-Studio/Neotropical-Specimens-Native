@@ -1,18 +1,9 @@
 import MirrorVisionPanel from '@/components/admin/MirrorVisionPanel';
 import ClassificationVisionPanel from '@/components/admin/ClassificationVisionPanel';
 import NodeMediaUploadPanel from '@/components/admin/NodeMediaUploadPanel';
+import CatalogueFamilyEditor from '@/components/admin/CatalogueFamilyEditor';
 import AdminStructurePanel from '@/components/admin/AdminStructurePanel';
 import Link from 'next/link';
-import {
-  listNodeMediaUploadTargets,
-  MIRROR_CANONICAL_BUTTERFLIES_PATH,
-  MIRROR_NEOTROPICAL_CATEGORY_NODE_MEDIA,
-  MIRROR_NODE_MEDIA_EXAMPLES,
-  MIRROR_RARE_GYNAN_CATEGORY_NODE_MEDIA,
-  MIRROR_REGION_NODE_MEDIA,
-  MIRROR_RUBRO_NODE_MEDIA,
-  type NodeMediaUploadTarget,
-} from '@/lib/mirror/contract';
 import {
   AFRICA_BUTTERFLIES_ROOT,
   AUSTRALASIAN_BUTTERFLIES_ROOT,
@@ -23,27 +14,51 @@ import {
   EXPECTED_EUROPE_BUTTERFLY_FAMILIES,
   EXPECTED_NEARCTIC_BUTTERFLY_FAMILIES,
   EXPECTED_NEOTROPICAL_BUTTERFLY_FAMILIES,
+  EXPECTED_NEOTROPICAL_MOTHS_FAMILIES,
   EXPECTED_RARE_SUBFOLDERS,
+  EXPECTED_SHARED_INSECTS_FAMILIES,
+  INSECTS_DISPLAY_LABEL,
+  MOTHS_DISPLAY_LABEL,
   NEARCTIC_BUTTERFLIES_ROOT,
+  NEOTROPICAL_INSECTS_ROOT,
+  NEOTROPICAL_MOTHS_ROOT,
+  RARE_GYNAN_DISPLAY_LABEL,
+  RARE_GYNAN_REGION_ROOTS,
   nodeCardFolder,
   nodeVideoFolder,
   rareGynanFamiliesForRegion,
 } from '@/scripts/sync-cloudinary/roots';
+import {
+  MIRROR_CANONICAL_BUTTERFLIES_PATH,
+  MIRROR_INSECTS_CATEGORY_NODE_MEDIA,
+  MIRROR_MOTHS_CATEGORY_NODE_MEDIA,
+  MIRROR_NEOTROPICAL_CATEGORY_NODE_MEDIA,
+  MIRROR_NODE_MEDIA_EXAMPLES,
+  MIRROR_RARE_GYNAN_CATEGORY_NODE_MEDIA,
+  MIRROR_REGION_NODE_MEDIA,
+  MIRROR_RUBRO_NODE_MEDIA,
+  type NodeMediaUploadTarget,
+} from '@/lib/mirror/contract';
+import { listNodeMediaUploadTargetsResolved } from '@/lib/mirror/targets-resolved';
 
 export const metadata = {
   title: 'Espejo C↔S · Admin',
 };
 
-function safeUploadTargets(): NodeMediaUploadTarget[] {
+/** Admin + DB/Cloudinary: no prerender en build. */
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+async function safeUploadTargets(): Promise<NodeMediaUploadTarget[]> {
   try {
-    return listNodeMediaUploadTargets();
+    return await listNodeMediaUploadTargetsResolved();
   } catch {
     return [];
   }
 }
 
-export default function EspejoAdminPage() {
-  const uploadTargets = safeUploadTargets();
+export default async function EspejoAdminPage() {
+  const uploadTargets = await safeUploadTargets();
 
   return (
     <div className="flex flex-col gap-6">
@@ -51,9 +66,19 @@ export default function EspejoAdminPage() {
         <div>
           <h1 className="text-xl font-semibold text-white">Espejo Cloudinary ↔ Supabase</h1>
           <p className="mt-1 max-w-2xl text-sm text-neutral-400">
-            Primero rubros y regiones; luego cards/videos y sync. Nunca fuera del árbol
-            entomológico. Orden: (1) rubros/regiones → (2) subir card/video → (3) Discover / Apply
-            → (4) «Fuera de lugar».
+            Arriba: <strong className="text-emerald-300">cambiar / renombrar / crear familias</strong>.
+            Abajo: CARD/VIDEO dinámico y regenerativo (cero hardcode de dispositivo) · Wi‑Fi o
+            datos · galería / cámara / escáner → GRABAR. Taxonomía fina en{' '}
+            <Link href="/admin/especimenes" className="text-violet-300 underline">
+              Taxonomía y Datos
+            </Link>
+            .
+          </p>
+          <p className="mt-2 text-xs text-amber-200/90">
+            → Scroll al panel verde «Clasificación · regenerativa» o abrí directo:{' '}
+            <a href="#clasificacion-familias" className="underline">
+              #clasificacion-familias
+            </a>
           </p>
         </div>
         <Link
@@ -66,6 +91,8 @@ export default function EspejoAdminPage() {
 
       <AdminStructurePanel />
 
+      <CatalogueFamilyEditor />
+
       {uploadTargets.length === 0 ? (
         <p className="rounded-lg border border-amber-800/50 bg-amber-950/30 p-4 text-sm text-amber-100">
           No se pudieron cargar los destinos de upload. Reintenta o revisa el contrato mirror/roots.
@@ -76,7 +103,9 @@ export default function EspejoAdminPage() {
 
       <ClassificationVisionPanel />
 
-      <MirrorVisionPanel autoDiscover />
+      <div id="espejo-discover" className="scroll-mt-6">
+        <MirrorVisionPanel autoDiscover />
+      </div>
 
       <div className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-4 text-sm text-neutral-400">
         <p className="font-medium text-neutral-200">Checklist card / video por nivel</p>
@@ -111,7 +140,7 @@ export default function EspejoAdminPage() {
             <li key={r.id}>
               <span className="text-neutral-300">
                 {r.folder}
-                {r.id === 'neotropical' ? ' · REGION 3 foco web' : ''}
+                {r.id === 'neotropical' ? ' · PRINCIPAL · 1º' : ''}
               </span>
               <br />
               <code className="text-amber-200/80">{r.cardFolder}</code>
@@ -158,7 +187,7 @@ export default function EspejoAdminPage() {
         </ul>
 
         <p className="mt-3 text-xs font-medium text-emerald-300/90">
-          REGION 3 · Familias Neotropical (17 · cada una _card + _video)
+          REGION 1 · Familias Neotropical (17 · cada una _card + _video) · PRINCIPAL
         </p>
         <ul className="mt-1 list-disc space-y-1.5 pl-5 text-xs">
           {EXPECTED_NEOTROPICAL_BUTTERFLY_FAMILIES.map((fam) => {
@@ -212,8 +241,8 @@ export default function EspejoAdminPage() {
         </ul>
 
         <p className="mt-3 text-xs font-medium text-cyan-300/90">
-          Foco · {CURRENT_CATEGORY_FOCUS.displayLabel} × 5 REGIONs ·{' '}
-          {EXPECTED_RARE_SUBFOLDERS.length} hijos · _card/_video
+          Foco · {RARE_GYNAN_DISPLAY_LABEL} · × 5 REGIONs ·{' '}
+          {EXPECTED_RARE_SUBFOLDERS.length} hijos · categoría + c/u _card/_video
         </p>
         <ul className="mt-1 list-disc space-y-1.5 pl-5 text-xs">
           {MIRROR_RARE_GYNAN_CATEGORY_NODE_MEDIA.map((c) => {
@@ -253,6 +282,39 @@ export default function EspejoAdminPage() {
             );
           })}
         </ul>
+
+        <p className="mt-3 text-xs font-medium text-sky-300/80">
+          {INSECTS_DISPLAY_LABEL} · {EXPECTED_SHARED_INSECTS_FAMILIES.length}{' '}
+          taxones ×5 (instalado · no foco)
+        </p>
+        <ul className="mt-1 list-disc space-y-0.5 pl-5 text-[10px] text-neutral-500">
+          {EXPECTED_SHARED_INSECTS_FAMILIES.map((fam) => (
+            <li key={fam}>
+              {fam}: {nodeCardFolder(`${NEOTROPICAL_INSECTS_ROOT}/${fam}`)} +
+              _video
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-3 text-xs font-medium text-violet-300/80">
+          {MOTHS_DISPLAY_LABEL} · Neo · {EXPECTED_NEOTROPICAL_MOTHS_FAMILIES.length}{' '}
+          familias (instalado · no foco)
+        </p>
+        <ul className="mt-1 list-disc space-y-0.5 pl-5 text-[10px] text-neutral-500">
+          {EXPECTED_NEOTROPICAL_MOTHS_FAMILIES.map((fam) => (
+            <li key={fam}>
+              {fam}: {nodeCardFolder(`${NEOTROPICAL_MOTHS_ROOT}/${fam}`)} + _video
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-3 text-[10px] text-neutral-600">
+          Rare paths ×5:{' '}
+          {RARE_GYNAN_REGION_ROOTS.map((r) => r.id).join(', ')} · Insects:{' '}
+          {MIRROR_INSECTS_CATEGORY_NODE_MEDIA.map((c) => c.regionId).join(', ')}{' '}
+          · Moths:{' '}
+          {MIRROR_MOTHS_CATEGORY_NODE_MEDIA.map((c) => c.regionId).join(', ')}
+        </p>
 
         <p className="mt-3 text-xs font-medium text-amber-300/90">
           Categorías Neotropical (5 cards — checklist corto)

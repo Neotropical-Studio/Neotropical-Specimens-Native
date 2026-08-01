@@ -1,0 +1,55 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+RI-001,Ancyluris aulestes,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,F,10.00,3.5 cm
+RI-002,Ancyluris cacica latifasciata,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,"Chanchamayo, Peru",null,A1,M,15.00,4.0 cm
+RI-003,Ancyluris colubra (1 Only),null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,M,15.00,3.0 cm
+RI-004,Ancyluris endaemon,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,M,5.00,3.5 cm
+RI-005,Ancyluris endaemon,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,3M,12.75,3.5 cm
+RI-006,Ancyluris etias,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,M,5.00,3.5 cm
+RI-007,Ancyluris etias,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,3M,5.00,3.5 cm
+RI-008,Ancyluris formisissima venerabilis,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,P,35.00,4.0 cm
+RI-009,Ancyluris formisissima venerabilis,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,M,15.00,4.0 cm
+RI-010,Ancyluris formisissima venerabilis,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1/A1-,M,10.00,4.0 cm
+RI-011,Ancyluris formisissima venerabilis,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1-,F,10.00,4.0 cm
+RI-012,Ancyluris formisissima venerabilis,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1/A1-,F,30.00,4.0 cm
+RI-013,Ancyluris formisissima venerabilis,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,3M,36.00,4.0 cm
+RI-014,Ancyluris formisissima venerabilis,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,F,25.00,4.0 cm
+RI-015,Ancyluris huscar,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1/A1-,M,5.00,4.5 cm
+RI-016,Ancyluris inca huscar (2 Available),null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,"Chonta Chaca, Peru",null,A1,F,35.00,3.5 cm
+RI-017,Ancyluris meliboeus eudaemon,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,M,5.00,2.5 cm
+RI-018,Ancyluris meliboeus eudaemon,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,3M,5.00,2.5 cm
+RI-019,Ancyluris mira,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,"Chonta Chaca, Cusco, Peru",null,A1,M,12.00,3.5 cm
+RI-020,Ancyluris mira,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,"Chonta Chaca, Cusco, Peru",null,A1/A1-,M,8.00,3-3.5 cm
+RI-021,Ancyluris mira,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,"Chonta chaca, Cusco, Peru",null,A1,3M,31.50,3.5 cm
+RI-022,Ancyluris pulchra,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,3M,42.00,4.00 cm
+RI-023,Ancyluris pulchra,null,Riodinidae,null,Ancyluris,Lepidoptera,Peru,null,null,A1,M,16.00,4.00 cm
+RI-024,Cartea vitula,null,Riodinidae,null,Cartea,Lepidoptera,Peru,null,null,A1,3 pcs,12.00,2.5 cm
+RI-025,Cartea vitula,null,Riodinidae,null,Cartea,Lepidoptera,Peru,null,null,A1,M or F,4.50,2.5 cm
+RI-026,Chorinea amazon,null,Riodinidae,null,Chorinea,Lepidoptera,Peru,null,null,A1,M,6.00,3.5 cm
+RI-027,Chorinea amazon,null,Riodinidae,null,Chorinea,Lepidoptera,Peru,null,null,A1,3M,15.00,3.5 cm
+RI-028,Chorinea batesii,null,Riodinidae,null,Chorinea,Lepidoptera,Peru,null,null,A1,M,6.00,3.0 cm
+RI-029,Chorinea sylphina,null,Riodinidae,null,Chorinea,Lepidoptera,Peru,null,null,A1,M,9.00,3-4.0 cm
+RI-030,Chorinea sylphina,null,Riodinidae,null,Chorinea,Lepidoptera,Peru,null,null,A1,3M,22.50,3-4.0 cm
+RI-031,Cremna acoris,null,Riodinidae,null,Cremna,Lepidoptera,Peru,null,null,A1,M,8.00,2-2.5 cm
+RI-032,Eurybia halimede ssp?,null,Riodinidae,null,Eurybia,Lepidoptera,Peru,"Loreto, Peru",null,A1/A1-,M,7.00,4.5 cm
+RI-033,Lyropteryx appollonia,null,Riodinidae,null,Lyropteryx,Lepidoptera,Peru/Ecuador,null,null,A1,M,4.75,4.0 cm
+RI-034,Lyropteryx appollonia,null,Riodinidae,null,Lyropteryx,Lepidoptera,Peru/Ecuador,null,null,A1,3M,12.75,4.0 cm
+RI-035,Mesosemia loruhama,null,Riodinidae,null,Mesosemia,Lepidoptera,Ecuador,null,null,A1,M,7.00,3.5 cm
+RI-036,Necyria bellona juturna,null,Riodinidae,null,Necyria,Lepidoptera,Peru,null,null,A1,"M, F ?",13.50,4.0 cm
+RI-037,Necyria bellona westwoodi,null,Riodinidae,null,Necyria,Lepidoptera,Ecuador,null,null,A1,3M,11.25,4.0 cm
+RI-038,Necyria bellona westwoodi,null,Riodinidae,null,Necyria,Lepidoptera,Ecuador,null,null,A1,M,4.25,4.0 cm
+RI-039,Nymphidium cachrus ssp?,null,Riodinidae,null,Nymphidium,Lepidoptera,Peru,null,null,A1,M or F,5.00,2.5 cm
+RI-040,Rhetus arcius,null,Riodinidae,null,Rhetus,Lepidoptera,Peru,null,null,A1,3M,6.00,3.0 cm
+RI-041,Rhetus arcius beutelspacheri ( 1 SET OF 10 PCS),null,Riodinidae,null,Rhetus,Lepidoptera,Mexico,"Veracruz, Mexico",null,A1 to A1/A1-,10 pcs,30.00,3.0 cm
+RI-042,Rhetus dysoni,null,Riodinidae,null,Rhetus,Lepidoptera,Peru,null,null,A1,M,5.00,4.0 cm
+RI-043,Rhetus dysoni,null,Riodinidae,null,Rhetus,Lepidoptera,Peru,null,null,A1,3M,13.50,4.0 cm
+RI-044,Rhetus dysoni,null,Riodinidae,null,Rhetus,Lepidoptera,Peru,null,null,A1,F,25.00,4.0 cm
+RI-045,Rhetus periander,null,Riodinidae,null,Rhetus,Lepidoptera,Peru,null,null,A1/A1-,F,12.00,4.0 cm
+RI-046,Rhetus periander,null,Riodinidae,null,Rhetus,Lepidoptera,Peru,null,null,A1,M,4.00,4.0 cm
+RI-047,Rhetus periander,null,Riodinidae,null,Rhetus,Lepidoptera,Peru,null,null,A1,3M,10.50,4.0 cm
+RI-048,Rhetus periander,null,Riodinidae,null,Rhetus,Lepidoptera,Peru,null,null,A1,F,20.00,4.0 cm
+RI-049,Siseme hellotis,null,Riodinidae,null,Siseme,Lepidoptera,Peru,null,null,A1,M,6.00,3.0 cm
+RI-050,Stalachtis euterpe,null,Riodinidae,null,Stalachtis,Lepidoptera,Peru,null,null,A1,M or F,8.00,5-6.0 cm
+RI-051,Stalachtis euterpe,null,Riodinidae,null,Stalachtis,Lepidoptera,Peru,null,null,A1,M or F,10.00,4-5.0 cm
+RI-052,Stalachtis phaedusa,null,Riodinidae,null,Stalachtis,Lepidoptera,Peru,null,null,A1,M or F,10.00,4-4.5 cm
+RI-053,Thisbe irene,null,Riodinidae,null,Thisbe,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,8.00,3.0 cm
+RI-054,Thisbe irene,null,Riodinidae,null,Thisbe,Lepidoptera,Peru,null,null,A1/A1-,M,9.00,3.0 cm

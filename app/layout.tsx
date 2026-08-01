@@ -57,6 +57,8 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
   width: 'device-width',
   initialScale: 1,
+  // Accesible en cualquier dispositivo (móvil → PC); no bloquear zoom.
+  userScalable: true,
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

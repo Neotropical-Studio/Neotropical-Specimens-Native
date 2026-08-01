@@ -1,23 +1,138 @@
-// POST /api/admin/node-media
-// Sube card o video de ingreso a un nodo canónico (rubro / región / categoría / familia).
-// Carpeta FIJA: {nodePath}/_card o {nodePath}/_video — allowlist, sin elegir path libre.
+// POST /api/admin/node-media — subir / sobrescribir cover|intro (overwrite, sin vaciar carpeta)
+// GET  /api/admin/node-media?targetId=&slot= — listar media actual
+// DELETE — borrar slot (_card|_video) del nodo (admin autenticado)
+//
+// Tags: neo_node_card|video + marca neo_brand_* + neo_catalogue (ver lib/media/node-tags).
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAdmin } from '@/lib/auth/admin';
 import {
-  assertNodeMediaSlotFolder,
-  findNodeMediaUploadTarget,
-} from '@/lib/mirror/contract';
-import { uploadImage, uploadVideo } from '@/lib/services/cloudinary-upload';
+  listNodeMediaUploadTargetsResolved,
+  findNodeMediaUploadTargetAsync,
+  assertNodeMediaSlotFolderAsync,
+} from '@/lib/mirror/targets-resolved';
+import { type NodeMediaUploadTarget } from '@/lib/mirror/contract';
+import { detectMediaKind } from '@/lib/media/kinds';
+import {
+  buildNodeMediaUploadContext,
+  buildNodeMediaUploadTags,
+} from '@/lib/media/node-tags';
+import {
+  clearNodeMediaFolder,
+  listFolderResources,
+  uploadImage,
+  uploadModel3d,
+  uploadVideo,
+} from '@/lib/services/cloudinary-upload';
+import { invalidateNodeMediaInventory } from '@/lib/services/node-media-inventory';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
 
-export async function GET() {
+type Slot = 'card' | 'video';
+
+function parseSlot(raw: string): Slot | null {
+  const s = raw.toLowerCase();
+  if (s === 'video') return 'video';
+  if (s === 'card') return 'card';
+  return null;
+}
+
+async function resolveFolder(targetId: string, slot: Slot) {
+  const target = await findNodeMediaUploadTargetAsync(targetId);
+  if (!target) return { error: `Nodo desconocido: ${targetId}` as const };
+  const folder = slot === 'card' ? target.cardFolder : target.videoFolder;
+  try {
+    await assertNodeMediaSlotFolderAsync(folder, slot);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : String(e) };
+  }
+  return { target, folder };
+}
+
+export async function GET(req: NextRequest) {
   const admin = await getCurrentAdmin();
   if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  const { listNodeMediaUploadTargets } = await import('@/lib/mirror/contract');
-  return NextResponse.json({ targets: listNodeMediaUploadTargets() });
+  const { searchParams } = new URL(req.url);
+  const targetId = searchParams.get('targetId');
+  const slot = parseSlot(searchParams.get('slot') ?? '');
+
+  if (!targetId || !slot) {
+    return NextResponse.json({ targets: await listNodeMediaUploadTargetsResolved() });
+  }
+
+  const resolved = await resolveFolder(targetId, slot);
+  if ('error' in resolved && !('folder' in resolved)) {
+    return NextResponse.json({ error: resolved.error }, { status: 400 });
+  }
+  const { target, folder } = resolved as {
+    target: NodeMediaUploadTarget;
+    folder: string;
+  };
+
+  try {
+    const items = await listFolderResources(folder, 'all');
+    const primary =
+      items.find((i) => i.publicId.endsWith('/cover') || i.publicId.endsWith('/intro')) ??
+      items.find((i) => i.resourceType === (slot === 'video' ? 'video' : 'image')) ??
+      items[0] ??
+      null;
+    return NextResponse.json({
+      ok: true,
+      targetId: target.id,
+      slot,
+      folder,
+      items,
+      primary,
+      deleteAllowed: true,
+    });
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const admin = await getCurrentAdmin();
+  if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const targetId = searchParams.get('targetId') ?? '';
+  const slot = parseSlot(searchParams.get('slot') ?? '');
+  if (!targetId || !slot) {
+    return NextResponse.json({ error: 'Faltan targetId y slot' }, { status: 400 });
+  }
+
+  const resolved = await resolveFolder(targetId, slot);
+  if ('error' in resolved && !('folder' in resolved)) {
+    return NextResponse.json({ error: resolved.error }, { status: 400 });
+  }
+  const { target, folder } = resolved as {
+    target: NodeMediaUploadTarget;
+    folder: string;
+  };
+
+  try {
+    const { deleted } = await clearNodeMediaFolder(folder);
+    invalidateNodeMediaInventory();
+    return NextResponse.json({
+      ok: true,
+      deleted,
+      targetId: target.id,
+      slot,
+      folder,
+      message: deleted
+        ? `Eliminado(s) ${deleted}. Podés subir otro CARD/VIDEO.`
+        : 'Slot vacío.',
+    });
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -27,8 +142,8 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get('file');
   const targetId = String(formData.get('targetId') ?? '');
-  const slotRaw = String(formData.get('slot') ?? '').toLowerCase();
-  const slot = slotRaw === 'video' ? 'video' : slotRaw === 'card' ? 'card' : null;
+  const slot = parseSlot(String(formData.get('slot') ?? ''));
+  const replace = String(formData.get('replace') ?? '1') !== '0';
 
   if (!(file instanceof File)) {
     return NextResponse.json({ error: 'Falta archivo' }, { status: 400 });
@@ -40,63 +155,114 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const target = findNodeMediaUploadTarget(targetId);
-  if (!target) {
-    return NextResponse.json({ error: `Nodo desconocido: ${targetId}` }, { status: 400 });
-  }
-
-  const folder = slot === 'card' ? target.cardFolder : target.videoFolder;
-  try {
-    assertNodeMediaSlotFolder(folder, slot);
-  } catch (e) {
+  const kind = detectMediaKind({ name: file.name, type: file.type });
+  if (!kind) {
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : String(e) },
+      {
+        error:
+          'No se pudo clasificar el archivo. Subí una imagen, un video o un modelo 3D (glb/gltf).',
+      },
       { status: 400 },
     );
   }
 
+  if (slot === 'video' && kind !== 'video') {
+    return NextResponse.json(
+      { error: 'Esta ventana es VIDEO. Usá la ventana CARD para fotos/3D.' },
+      { status: 400 },
+    );
+  }
+  if (slot === 'card' && kind === 'video') {
+    return NextResponse.json(
+      { error: 'Esta ventana es CARD (foto/3D). Usá la ventana VIDEO para videos.' },
+      { status: 400 },
+    );
+  }
+
+  const resolved = await resolveFolder(targetId, slot);
+  if ('error' in resolved && !('folder' in resolved)) {
+    return NextResponse.json({ error: resolved.error }, { status: 400 });
+  }
+  const { target, folder } = resolved as {
+    target: NodeMediaUploadTarget;
+    folder: string;
+  };
+
   const buf = Buffer.from(await file.arrayBuffer());
-  const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^\w.-]+/g, '_').slice(0, 80) || slot;
+  const publicId =
+    kind === 'model3d' ? 'model' : slot === 'card' ? 'cover' : 'intro';
 
   try {
-    if (slot === 'video') {
-      const res = await uploadVideo(buf, {
-        folder,
-        publicId: `${baseName}`,
-        tags: ['neo_node_video', `neo_${target.level}`, target.id],
-        context: {
-          neo_node: target.nodePath,
-          neo_slot: 'video',
-          neo_level: target.level,
-        },
-      });
+    // Overwrite del mismo publicId. NO vaciar carpeta aquí (si falla el upload no se pierde el viejo).
+    const tags = buildNodeMediaUploadTags({
+      slot,
+      kind,
+      level: target.level,
+      targetId: target.id,
+    });
+    const context = buildNodeMediaUploadContext({
+      nodePath: target.nodePath,
+      slot,
+      level: target.level,
+      kind,
+      targetId: target.id,
+    });
+
+    const overwrite = {
+      folder,
+      publicId,
+      tags,
+      context,
+      pathPolicy: 'node-media' as const,
+    };
+
+    if (kind === 'video') {
+      const res = await uploadVideo(buf, { ...overwrite, industrial: true });
+      invalidateNodeMediaInventory();
       return NextResponse.json({
         ok: true,
+        replaced: Boolean(replace),
+        kind,
         slot,
         targetId: target.id,
         folder,
         publicId: res.public_id,
         secureUrl: res.secure_url,
+        tags,
+        optimized: true,
       });
     }
 
-    const res = await uploadImage(buf, {
-      folder,
-      publicId: `${baseName}`,
-      tags: ['neo_node_card', `neo_${target.level}`, target.id],
-      context: {
-        neo_node: target.nodePath,
-        neo_slot: 'card',
-        neo_level: target.level,
-      },
-    });
+    if (kind === 'model3d') {
+      const res = await uploadModel3d(buf, overwrite);
+      invalidateNodeMediaInventory();
+      return NextResponse.json({
+        ok: true,
+        replaced: Boolean(replace),
+        kind,
+        slot,
+        targetId: target.id,
+        folder,
+        publicId: res.public_id,
+        secureUrl: res.secure_url,
+        tags,
+        optimized: true,
+      });
+    }
+
+    const res = await uploadImage(buf, { ...overwrite, industrial: true });
+    invalidateNodeMediaInventory();
     return NextResponse.json({
       ok: true,
+      replaced: Boolean(replace),
+      kind,
       slot,
       targetId: target.id,
       folder,
       publicId: res.public_id,
       secureUrl: res.secure_url,
+      tags,
+      optimized: true,
     });
   } catch (e) {
     return NextResponse.json(

@@ -27,8 +27,18 @@ export interface AdminSpecimenRow extends SpecimenView {
   subspecies?: string | null;
 }
 
+/** Familia del catálogo (Cloudinary/DB), no solo de fichas existentes. */
+export type CatalogueFamilyOption = {
+  regionId: string;
+  categoryId: string;
+  id: string;
+  label: string;
+};
+
 interface Props {
   specimens: AdminSpecimenRow[];
+  /** Todas las familias instaladas en el árbol (17 Diurne, etc.). */
+  catalogueFamilies?: CatalogueFamilyOption[];
 }
 
 type Enriched = {
@@ -97,10 +107,13 @@ function Badge({
   );
 }
 
-export default function EspecimenesBrowse({ specimens }: Props) {
+export default function EspecimenesBrowse({
+  specimens,
+  catalogueFamilies = [],
+}: Props) {
   const [rubroId, setRubroId] = useState('');
-  const [regionId, setRegionId] = useState('');
-  const [categoryId, setCategoryId] = useState('');
+  const [regionId, setRegionId] = useState('neotropical');
+  const [categoryId, setCategoryId] = useState('butterflies-lepidoptera-diurne');
   const [orderKey, setOrderKey] = useState('');
   const [familyId, setFamilyId] = useState('');
   const [speciesQ, setSpeciesQ] = useState('');
@@ -191,19 +204,35 @@ export default function EspecimenesBrowse({ specimens }: Props) {
   }, [enriched, rubroId, regionId, categoryId]);
 
   const familyOptions = useMemo(() => {
-    const scoped = enriched.filter((e) => {
-      if (rubroId && e.rubroId !== rubroId) return false;
-      if (regionId && e.regionId !== regionId) return false;
-      if (categoryId && e.categoryId !== categoryId) return false;
-      if (orderKey && e.orderKey !== orderKey) return false;
-      return e.familyId !== 'sin-familia';
-    });
     const seen = new Map<string, string>();
-    for (const e of scoped) seen.set(e.familyId, e.familyLabel);
+
+    // 1) Familias del catálogo instalado (todas, no solo las con ficha).
+    for (const f of catalogueFamilies) {
+      if (regionId && f.regionId !== regionId) continue;
+      if (categoryId && f.categoryId !== categoryId) continue;
+      // Sin región/categoría: si hay defaults neotropical+diurne ya filtramos arriba;
+      // si ambos vacíos, mostrar unión de todas.
+      if (!regionId && !categoryId) {
+        seen.set(f.id, f.label);
+      } else {
+        seen.set(f.id, f.label);
+      }
+    }
+
+    // 2) Familias que aparecen en fichas (por si hay extras fuera del árbol).
+    for (const e of enriched) {
+      if (rubroId && e.rubroId !== rubroId) continue;
+      if (regionId && e.regionId !== regionId) continue;
+      if (categoryId && e.categoryId !== categoryId) continue;
+      if (orderKey && e.orderKey !== orderKey) continue;
+      if (e.familyId === 'sin-familia') continue;
+      seen.set(e.familyId, e.familyLabel);
+    }
+
     return [...seen.entries()]
       .map(([id, label]) => ({ id, label }))
       .sort((a, b) => a.label.localeCompare(b.label, 'es'));
-  }, [enriched, rubroId, regionId, categoryId, orderKey]);
+  }, [catalogueFamilies, enriched, rubroId, regionId, categoryId, orderKey]);
 
   const filtered = useMemo(() => {
     const q = speciesQ.trim().toLowerCase();
@@ -302,6 +331,74 @@ export default function EspecimenesBrowse({ specimens }: Props) {
     const regionOrder = DRIED_SPECIMEN_REGION_FOLDERS.map((r) => r.id);
     const catOrder = CATALOGUE_CATEGORIES.map((c) => c.id);
 
+    // Inyectar familias del catálogo sin fichas (para que se vean las 17, no solo Morphidae).
+    const injectRegion = regionId || 'neotropical';
+    const injectCat = categoryId || 'butterflies-lepidoptera-diurne';
+    const injectRubroId = 'dried-specimens';
+    const injectRubroLabel =
+      STOREFRONT_RUBROS.find((r) => r.id === injectRubroId)?.label ?? 'Especímenes secos';
+    const injectRegionLabel =
+      DRIED_SPECIMEN_REGION_FOLDERS.find((r) => r.id === injectRegion)?.folder ?? injectRegion;
+    const injectCatLabel =
+      CATALOGUE_CATEGORIES.find((c) => c.id === injectCat)?.label ?? injectCat;
+
+    if (!rubroId || rubroId === injectRubroId) {
+      let rubro = rubros.get(injectRubroId);
+      if (!rubro) {
+        rubro = {
+          rubroId: injectRubroId,
+          rubroLabel: injectRubroLabel,
+          regions: new Map(),
+        };
+        rubros.set(injectRubroId, rubro);
+      }
+      let region = rubro.regions.get(injectRegion);
+      if (!region) {
+        region = {
+          regionId: injectRegion,
+          regionLabel: injectRegionLabel,
+          categories: new Map(),
+        };
+        rubro.regions.set(injectRegion, region);
+      }
+      let cat = region.categories.get(injectCat);
+      if (!cat) {
+        cat = {
+          categoryId: injectCat,
+          categoryLabel: injectCatLabel,
+          orders: new Map(),
+        };
+        region.categories.set(injectCat, cat);
+      }
+      const orderId = orderKey || 'lepidoptera';
+      const orderLab = orderKey
+        ? enriched.find((e) => e.orderKey === orderKey)?.orderLabel ?? orderKey
+        : 'Lepidoptera';
+      let ord = cat.orders.get(orderId);
+      if (!ord) {
+        ord = { orderKey: orderId, orderLabel: orderLab, families: new Map() };
+        cat.orders.set(orderId, ord);
+      }
+      for (const f of catalogueFamilies) {
+        if (f.regionId !== injectRegion || f.categoryId !== injectCat) continue;
+        if (familyId && f.id !== familyId) continue;
+        if (!ord.families.has(f.id)) {
+          ord.families.set(f.id, {
+            familyId: f.id,
+            familyLabel: f.label,
+            breadcrumb: [
+              injectRubroLabel,
+              injectRegionLabel,
+              injectCatLabel,
+              orderLab,
+              f.label,
+            ].join(' › '),
+            rows: [],
+          });
+        }
+      }
+    }
+
     const sortKeys = (keys: string[], preferred: string[]) =>
       [...keys].sort((a, b) => {
         const ia = preferred.indexOf(a);
@@ -332,12 +429,12 @@ export default function EspecimenesBrowse({ specimens }: Props) {
       });
       return { ...rubro, regions };
     });
-  }, [filtered]);
+  }, [filtered, catalogueFamilies, regionId, categoryId, familyId, rubroId, orderKey, enriched]);
 
   function clearFilters() {
-    setRubroId('');
-    setRegionId('');
-    setCategoryId('');
+    setRubroId('dried-specimens');
+    setRegionId('neotropical');
+    setCategoryId('butterflies-lepidoptera-diurne');
     setOrderKey('');
     setFamilyId('');
     setSpeciesQ('');
@@ -349,22 +446,36 @@ export default function EspecimenesBrowse({ specimens }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-white">
             Fichas por especie / subespecie
           </h1>
           <p className="text-sm text-neutral-400">
-            Jerarquía visible:{' '}
+            Jerarquía:{' '}
             <span className="text-neutral-300">
               Rubro › Región › Categoría › Orden › Familia › especie
             </span>
-            . Sin esa ruta, la lista no sirve.
+            . El filtro Familia lista <strong className="text-emerald-300">todas</strong> las del
+            catálogo (no solo las que ya tienen ficha).
+          </p>
+          <p className="mt-2 text-xs text-amber-200/90">
+            <strong>Cambiar nombres de familia / orden:</strong> panel verde arriba «Clasificación ·
+            regenerativa». <strong>Editar una ficha</strong> (género, especie, subespecie, familia):
+            botón <em>Editar</em> en la fila o clic en el ID code.
           </p>
         </div>
-        <Link href="/admin/especimenes/nuevo" className={buttonPrimaryClass}>
-          <Plus size={16} /> Nueva ficha
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="#clasificacion-familias"
+            className="inline-flex items-center gap-1 rounded-md border border-emerald-700 bg-emerald-950/50 px-3 py-2 text-xs font-medium text-emerald-200 hover:bg-emerald-900/40"
+          >
+            Modificar familias ↑
+          </Link>
+          <Link href="/admin/especimenes/nuevo" className={buttonPrimaryClass}>
+            <Plus size={16} /> Nueva ficha
+          </Link>
+        </div>
       </div>
 
       <div className="rounded-lg border border-neutral-800 bg-neutral-950/60 p-4">
@@ -479,9 +590,8 @@ export default function EspecimenesBrowse({ specimens }: Props) {
               className={inputClass}
               value={familyId}
               onChange={(e) => setFamilyId(e.target.value)}
-              disabled={familyOptions.length === 0}
             >
-              <option value="">Todas</option>
+              <option value="">Todas ({familyOptions.length})</option>
               {familyOptions.map((f) => (
                 <option key={f.id} value={f.id}>
                   {f.label}
@@ -504,7 +614,11 @@ export default function EspecimenesBrowse({ specimens }: Props) {
         </div>
         <p className="mt-3 text-xs text-neutral-500">
           {filtered.length} ficha{filtered.length === 1 ? '' : 's'}
-          {hasFilters ? ' con filtros activos' : ' en total'}.
+          {hasFilters ? ' con filtros activos' : ' en total'}
+          {familyOptions.length > 0
+            ? ` · ${familyOptions.length} familias en el catálogo (filtro)`
+            : ''}
+          .
         </p>
       </div>
 
@@ -593,28 +707,41 @@ export default function EspecimenesBrowse({ specimens }: Props) {
                             key={`${ord.orderKey}-${fam.familyId}`}
                             className="flex flex-col gap-2 rounded-md border border-neutral-800 bg-neutral-950/40 p-3"
                           >
-                            {/* FAMILIA + breadcrumb completo */}
-                            <header className="flex flex-col gap-1">
-                              <div className="flex flex-wrap items-baseline gap-2">
-                                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
-                                  Familia
+                            <header className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                              <div className="flex flex-col gap-1">
+                                <div className="flex flex-wrap items-baseline gap-2">
+                                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                                    Familia
+                                  </p>
+                                  <h6 className="text-sm font-semibold text-white">
+                                    {fam.familyLabel}
+                                    <span className="ml-2 text-xs font-normal text-neutral-500">
+                                      ({fam.rows.length} ficha
+                                      {fam.rows.length === 1 ? '' : 's'})
+                                    </span>
+                                  </h6>
+                                </div>
+                                <p
+                                  className="font-mono text-[11px] leading-relaxed text-emerald-400/90"
+                                  title={fam.breadcrumb}
+                                >
+                                  {fam.breadcrumb}
                                 </p>
-                                <h6 className="text-sm font-semibold text-white">
-                                  {fam.familyLabel}
-                                  <span className="ml-2 text-xs font-normal text-neutral-500">
-                                    ({fam.rows.length} ficha
-                                    {fam.rows.length === 1 ? '' : 's'})
-                                  </span>
-                                </h6>
                               </div>
-                              <p
-                                className="font-mono text-[11px] leading-relaxed text-emerald-400/90"
-                                title={fam.breadcrumb}
+                              <Link
+                                href={`/admin/especimenes/nuevo?familia=${encodeURIComponent(fam.familyLabel)}&region=${encodeURIComponent(region.regionId)}&categoria=${encodeURIComponent(cat.categoryId)}`}
+                                className="shrink-0 rounded border border-sky-800 bg-sky-950/40 px-2 py-1 text-[11px] text-sky-200 hover:bg-sky-900/40"
                               >
-                                {fam.breadcrumb}
-                              </p>
+                                + Ficha en {fam.familyLabel}
+                              </Link>
                             </header>
 
+                            {fam.rows.length === 0 ? (
+                              <p className="rounded border border-dashed border-neutral-800 px-3 py-4 text-center text-xs text-neutral-500">
+                                Familia instalada en el catálogo · sin fichas aún. Usá «+ Ficha» o
+                                renombrá arriba en Clasificación.
+                              </p>
+                            ) : (
                             <AdminTable
                               columns={[
                                 'ID code',
@@ -624,6 +751,7 @@ export default function EspecimenesBrowse({ specimens }: Props) {
                                 'Género',
                                 'Grado',
                                 'Precio',
+                                'Acción',
                               ]}
                             >
                               {fam.rows.map(
@@ -658,10 +786,19 @@ export default function EspecimenesBrowse({ specimens }: Props) {
                                         ? `${s.price} ${s.currency}`
                                         : '—'}
                                     </td>
+                                    <td className="px-4 py-2">
+                                      <Link
+                                        href={`/admin/especimenes/${s.id}`}
+                                        className="rounded bg-violet-800 px-2 py-1 text-[11px] font-medium text-violet-50 hover:bg-violet-700"
+                                      >
+                                        Editar
+                                      </Link>
+                                    </td>
                                   </tr>
                                 ),
                               )}
                             </AdminTable>
+                            )}
                           </div>
                         ))}
                       </div>

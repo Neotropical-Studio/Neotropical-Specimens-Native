@@ -45,6 +45,13 @@ interface Props {
   specimen: SpecimenDetailView;
   /** Catálogo relacionado precargado en servidor (evita sección vacía). */
   relatedCatalog?: SpecimenDetailView[];
+  /** Volver a familia / categoría del árbol de catálogo. */
+  catalogueTrail?: {
+    familyHref: string | null;
+    familyLabel: string | null;
+    categoryHref: string | null;
+    categoryLabel: string | null;
+  } | null;
   strings: Record<string, string>;
   lang: string;
   dir: 'ltr' | 'rtl';
@@ -74,6 +81,7 @@ const VIEW_LABELS: Record<Exclude<MediaKey, '3d'>, { key: string; fallback: stri
 export default function SpecimenDetail({
   specimen: initial,
   relatedCatalog = [],
+  catalogueTrail = null,
   strings,
   lang,
   dir,
@@ -493,15 +501,40 @@ export default function SpecimenDetail({
       style={{ background: `radial-gradient(circle at center, ${hexA(primary, 0.18)} 0%, ${paletteState.surface} 70%)` }}
     >
       {/* Barra de ficha: volver + moneda + carrito (bajo el Header fijo del sitio) */}
-      <header className="sticky top-[108px] z-30 border-b border-white/10 bg-black/70 px-6 py-3 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
-          <Link
-            href={`/${lang}`}
-            className="shrink-0 font-mono text-xs text-emerald-300 transition hover:text-emerald-200 hover:underline"
-          >
-            {t('nav.back', '← Volver al Escaparate Principal')}
-          </Link>
-          <div className="flex flex-wrap items-center justify-end gap-2">
+      <header
+        className="sticky z-30 border-b border-white/10 bg-black/70 px-3 py-3 backdrop-blur sm:px-6"
+        style={{ top: 'max(108px, env(safe-area-inset-top, 0px))' }}
+      >
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            {catalogueTrail?.familyHref && catalogueTrail.familyLabel ? (
+              <Link
+                href={catalogueTrail.familyHref}
+                className="inline-flex min-h-[44px] w-full items-center justify-center rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-2 text-center font-mono text-xs text-emerald-200 transition hover:border-emerald-400/55 hover:bg-emerald-500/15 touch-manipulation sm:w-auto sm:justify-start"
+              >
+                {t('nav.back_family', `← Volver a ${catalogueTrail.familyLabel}`)}
+              </Link>
+            ) : null}
+            {catalogueTrail?.categoryHref && catalogueTrail.categoryLabel ? (
+              <Link
+                href={catalogueTrail.categoryHref}
+                className="inline-flex min-h-[44px] w-full items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-center font-mono text-xs text-white/75 transition hover:border-emerald-400/40 hover:text-emerald-200 touch-manipulation sm:w-auto sm:justify-start"
+              >
+                {t(
+                  'nav.back_families_catalog',
+                  `← Volver al catálogo de familias · ${catalogueTrail.categoryLabel}`,
+                )}
+              </Link>
+            ) : (
+              <Link
+                href={`/${lang}/catalogue`}
+                className="inline-flex min-h-[44px] w-full items-center justify-center rounded-xl border border-emerald-500/30 px-3 py-2 font-mono text-xs text-emerald-300 touch-manipulation sm:w-auto"
+              >
+                {t('nav.back', '← Volver al Catálogo')}
+              </Link>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:justify-end">
             {morphoCampaign && discountPercent != null ? (
               <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] text-emerald-400">
                 + {t('product.campaign_label', 'Campaña')}: {campaignTitle} (-{discountPercent}%)

@@ -19,6 +19,7 @@ import { pickRelatedSpecimens } from '@/lib/specimens/related';
 import { resolveTaxonPalette } from '@/lib/theme/taxon';
 import { resolveRegulatory } from '@/lib/geo/regulations';
 import { getActiveCampaign, type ActiveCampaignBanner } from '@/lib/campaigns/getActive';
+import { resolveSpecimenCatalogueTrail } from '@/lib/specimens/catalogueNav';
 import {
   isMorphoGodartyDidiusTingomarensis,
   MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID,
@@ -64,10 +65,18 @@ async function loadRelatedCatalog(
 
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ lang: string; id: string }>;
+  searchParams: Promise<{
+    backFamily?: string;
+    backFamilyLabel?: string;
+    backFamilies?: string;
+    backFamiliesLabel?: string;
+  }>;
 }) {
   const { lang, id } = await params;
+  const back = await searchParams;
 
   const i18n = await getI18n(lang);
 
@@ -118,6 +127,15 @@ export default async function ProductPage({
   });
 
   const geoCountry = regulatory.country ?? 'PE';
+  const inferred = resolveSpecimenCatalogueTrail(i18n.locale, specimen);
+  const catalogueTrail = {
+    familyHref: back.backFamily?.trim() || inferred?.familyHref || null,
+    familyLabel:
+      back.backFamilyLabel?.trim() || inferred?.familyLabel || null,
+    categoryHref: back.backFamilies?.trim() || inferred?.categoryHref || null,
+    categoryLabel:
+      back.backFamiliesLabel?.trim() || inferred?.categoryLabel || null,
+  };
 
   return (
     <>
@@ -126,6 +144,7 @@ export default async function ProductPage({
       <SpecimenDetail
         specimen={specimen}
         relatedCatalog={relatedCatalog}
+        catalogueTrail={catalogueTrail}
         strings={i18n.strings}
         lang={i18n.locale}
         dir={i18n.dir}

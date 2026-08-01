@@ -41,3 +41,4 @@ supabase/.branches
 .claude/settings.local.json
 \]+
 scripts/.venv/
+.env*

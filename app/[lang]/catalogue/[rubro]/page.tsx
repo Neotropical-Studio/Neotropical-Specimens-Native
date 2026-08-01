@@ -9,6 +9,7 @@ import {
   buildRubroNodes,
   catalogueHref,
   findRubroById,
+  regionEntryHref,
   rubroRegionsHref,
 } from '@/lib/specimens/catalogueNav';
 import { loadCatalogueSpecimens } from '@/lib/specimens/loadCatalogue';
@@ -35,6 +36,13 @@ export default async function CatalogueRubroPage({
   const videoPublicId = rubroMedia?.videoPublicId?.trim() || null;
   const showIntro = Boolean(videoPublicId) && view !== 'regions';
 
+  const regionsHref = rubroRegionsHref(i18n.locale, rubro.id);
+  const catalogueRootHref = catalogueHref(i18n.locale, {});
+  const backToCatalogueLabel = i18n.t(
+    'catalogue.back_to_catalogue',
+    '← Volver al Catálogo',
+  );
+
   if (showIntro && videoPublicId) {
     return (
       <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-text-dynamic)]">
@@ -45,7 +53,9 @@ export default async function CatalogueRubroPage({
             familyLabel={rubro.label}
             videoPublicId={videoPublicId}
             coverPublicId={rubroMedia?.coverPublicId}
-            catalogHref={rubroRegionsHref(i18n.locale, rubro.id)}
+            catalogHref={regionsHref}
+            backHref={catalogueRootHref}
+            backLabel={backToCatalogueLabel}
             skipLabel={i18n.t('catalogue.skip_to_regions', 'Ver regiones')}
             hintLabel={i18n.t(
               'catalogue.rubro_intro_hint',
@@ -75,23 +85,38 @@ export default async function CatalogueRubroPage({
           </div>
         ) : null}
         <CatalogBrowseShell
-          title={rubro.label}
+          title={i18n.t('catalogue.regions_title', 'Regiones')}
           subtitle={i18n.t(
             'catalogue.regions_subtitle',
-            'Elige una REGION. Cada card puede llevar video de entrada (_card / _video en Cloudinary).',
+            'Elige una región para ver sus categorías.',
           )}
+          lead={i18n.t(
+            'catalogue.search_below_world_regions',
+            'SEARCH BELOW WORLD REGIONS',
+          )}
+          backHref={catalogueRootHref}
+          backLabel={backToCatalogueLabel}
+          entryCoverPublicId={rubroMedia?.coverPublicId?.trim() || null}
+          entryVideoPublicId={videoPublicId}
           breadcrumbs={buildBreadcrumbs(i18n.locale, i18n.t, {
-            rubro: { id: rubro.id, label: rubro.label },
+            rubro: {
+              id: rubro.id,
+              label: i18n.t('catalogue.regions_title', 'Regiones'),
+            },
           })}
           nodes={nodes}
           hrefFor={(n) =>
-            catalogueHref(i18n.locale, { rubro: rubro.id, region: n.id })
+            regionEntryHref(
+              i18n.locale,
+              { rubro: rubro.id, region: n.id },
+              Boolean(n.videoPublicId?.trim()),
+            )
           }
           showCardVideo
           childLabel={i18n.t('catalogue.specimens', 'especímenes')}
           emptyMessage={i18n.t(
             'catalogue.empty_regions',
-            'Aún no hay regiones en este rubro. Cuando existan carpetas REGION… en Cloudinary aparecerán aquí.',
+            'Aún no hay regiones disponibles en este rubro.',
           )}
         />
       </main>
