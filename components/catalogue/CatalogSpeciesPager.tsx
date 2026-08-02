@@ -8,6 +8,7 @@
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SpecimenCard from '@/components/SpecimenCard';
+import { compareSpecimensAlphabetical } from '@/lib/specimens/catalogueNav';
 import type { SpecimenView } from '@/lib/specimens/view';
 import {
   buildCataloguePageList,
@@ -35,13 +36,20 @@ export default function CatalogSpeciesPager({
 }: Props) {
   const pageSize = catalogueSpeciesPerPage();
   const [page, setPage] = useState(1);
-  const totalPages = Math.max(1, Math.ceil(specimens.length / pageSize));
+
+  // A→Z por nombre científico (el inventario llega por fecha de alta).
+  const sorted = useMemo(
+    () => [...specimens].sort(compareSpecimensAlphabetical),
+    [specimens],
+  );
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const safePage = Math.min(page, totalPages);
 
   const pageItems = useMemo(() => {
     const start = (safePage - 1) * pageSize;
-    return specimens.slice(start, start + pageSize);
-  }, [specimens, safePage, pageSize]);
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, safePage, pageSize]);
 
   const pageNumbers = useMemo(
     () => buildCataloguePageList(safePage, totalPages),
@@ -55,12 +63,12 @@ export default function CatalogSpeciesPager({
     }
   }
 
-  if (specimens.length === 0) return null;
+  if (sorted.length === 0) return null;
 
   return (
     <div>
       <p className="mb-4 text-xs text-white/45">
-        {specimens.length} especies · {pageSize} por página · pág. {safePage}/{totalPages}
+        {sorted.length} especies · {pageSize} por página · pág. {safePage}/{totalPages} · A–Z
       </p>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
