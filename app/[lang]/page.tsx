@@ -1,36 +1,19 @@
-// app/[lang]/page.tsx — Portada dinámica: consume specimens desde Supabase en
-// tiempo real (sincronizados vía n8n desde Sanity/Cloudinary). Sin datos ni
-// textos en el repo: el idioma llega por ruta y las cadenas por getI18n.
-import { createClient } from '@supabase/supabase-js';
+// app/[lang]/page.tsx — Portada: Hero + 5 ventanas de categoría; al elegir
+// una se siguen las familias en el flujo jerárquico normal del catálogo.
 import { headers } from 'next/headers';
 import CampaignBanner from '@/components/CampaignBanner';
 import Header from '@/components/Header';
 import LiveShowcase from '@/components/LiveShowcase';
 import { getI18n } from '@/lib/i18n/index';
-import { loadCatalogRows } from '@/lib/specimens/catalog';
-import { toSpecimenView } from '@/lib/specimens/view';
+import { loadCatalogueSpecimens } from '@/lib/specimens/loadCatalogue';
 
 export const revalidate = 0; // siempre fresco (dinámico)
-
-async function loadSpecimens() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  if (!url || !key) return { rows: [], error: 'Supabase no configurado' };
-
-  try {
-    return await loadCatalogRows(createClient(url, key));
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Error cargando inventario';
-    return { rows: [], error: message };
-  }
-}
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const i18n = await getI18n(lang);
 
-  const { rows, error } = await loadSpecimens();
-  const specimens = rows.map((row) => toSpecimenView(row));
+  const { specimens, error } = await loadCatalogueSpecimens();
   const country = (await headers()).get('x-geo-country');
 
   return (
@@ -49,8 +32,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           </div>
         )}
 
-        {/* Hero + catálogo: un solo stream vivo. Empty states si no hay data;
-            aparición automática al subir productos reales (Cloudinary/Supabase). */}
         <LiveShowcase
           initial={specimens}
           strings={i18n.strings}
