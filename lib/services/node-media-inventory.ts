@@ -13,7 +13,7 @@
 import { unstable_cache, revalidateTag } from 'next/cache';
 import {
   bootstrapRegistryFromCloudinaryTags,
-  fetchTaggedNodeMediaPublicIds,
+  fetchTaggedNodeMediaInventory,
   listRegistryInventory,
   type NodeMediaInventoryEntry,
 } from '@/lib/services/node-media-registry';
@@ -39,27 +39,21 @@ async function loadInventoryUncached(): Promise<NodeMediaInventoryEntry[]> {
     if (fromDb && fromDb.length === 0 && isSupabaseAdminConfigured()) {
       const seeded = await bootstrapRegistryFromCloudinaryTags();
       if (seeded.length > 0) {
-        const entries = seeded.map((publicId) => ({
-          publicId,
-          version: null as number | null,
-          secureUrl: null as string | null,
-        }));
-        lastGoodInventory = entries;
-        return entries;
+        // Releer DB (con metadata/versión si se guardó); si falla, tags con versión.
+        const again = await listRegistryInventory();
+        if (again && again.length > 0) {
+          lastGoodInventory = again;
+          return again;
+        }
       }
     }
 
-    // 3) Fallback lectura tags (sin escribir DB si no hay service_role).
+    // 3) Fallback tags Cloudinary CON versión CDN (funciona sin tabla node_media).
     if (!fromDb || fromDb.length === 0) {
-      const tagged = await fetchTaggedNodeMediaPublicIds();
+      const tagged = await fetchTaggedNodeMediaInventory();
       if (tagged.length > 0) {
-        const entries = tagged.map((publicId) => ({
-          publicId,
-          version: null as number | null,
-          secureUrl: null as string | null,
-        }));
-        lastGoodInventory = entries;
-        return entries;
+        lastGoodInventory = tagged;
+        return tagged;
       }
     }
 
@@ -71,7 +65,7 @@ async function loadInventoryUncached(): Promise<NodeMediaInventoryEntry[]> {
 }
 
 export async function listNodeMediaInventoryEntries(): Promise<NodeMediaInventoryEntry[]> {
-  const cached = unstable_cache(loadInventoryUncached, ['neo-node-media-inventory-v5'], {
+  const cached = unstable_cache(loadInventoryUncached, ['neo-node-media-inventory-v6'], {
     revalidate: CACHE_SECONDS,
     tags: [CACHE_TAG],
   });

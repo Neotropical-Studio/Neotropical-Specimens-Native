@@ -233,8 +233,14 @@ export async function bootstrapRegistryFromCloudinaryTags(): Promise<string[]> {
 }
 
 export async function fetchTaggedNodeMediaPublicIds(): Promise<string[]> {
+  const entries = await fetchTaggedNodeMediaInventory();
+  return entries.map((e) => e.publicId);
+}
+
+/** Tags Cloudinary → inventario con versión CDN (bust tras overwrite). */
+export async function fetchTaggedNodeMediaInventory(): Promise<NodeMediaInventoryEntry[]> {
   if (!cloudConfigured()) return [];
-  const out = new Set<string>();
+  const byId = new Map<string, NodeMediaInventoryEntry>();
   const types = ['image', 'video', 'raw'] as const;
   for (const tag of NEO_NODE_INVENTORY_TAGS) {
     for (const rt of types) {
@@ -247,11 +253,31 @@ export async function fetchTaggedNodeMediaPublicIds(): Promise<string[]> {
             type: 'upload',
             next_cursor: nextCursor,
           })) as {
-            resources?: Array<{ public_id?: string }>;
+            resources?: Array<{
+              public_id?: string;
+              version?: number | string;
+              secure_url?: string;
+            }>;
             next_cursor?: string;
           };
           for (const r of res.resources ?? []) {
-            if (r.public_id) out.add(r.public_id);
+            if (!r.public_id) continue;
+            const versionRaw = r.version;
+            const version =
+              typeof versionRaw === 'number' && Number.isFinite(versionRaw)
+                ? Math.floor(versionRaw)
+                : typeof versionRaw === 'string' && /^\d+$/.test(versionRaw)
+                  ? Number(versionRaw)
+                  : parseCloudinaryVersion(r.secure_url ?? null);
+            const prev = byId.get(r.public_id);
+            // Conservar la versión más alta (overwrite reciente).
+            if (!prev || (version ?? 0) >= (prev.version ?? 0)) {
+              byId.set(r.public_id, {
+                publicId: r.public_id,
+                version,
+                secureUrl: r.secure_url ?? null,
+              });
+            }
           }
           nextCursor = res.next_cursor;
         } catch {
@@ -260,7 +286,7 @@ export async function fetchTaggedNodeMediaPublicIds(): Promise<string[]> {
       } while (nextCursor);
     }
   }
-  return [...out];
+  return [...byId.values()];
 }
 
 /**
