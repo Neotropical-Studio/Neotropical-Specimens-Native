@@ -296,7 +296,14 @@ async function upload(
 export async function listFolderResources(
   folder: string,
   resourceType: UploadTarget | 'all' = 'all',
-): Promise<Array<{ publicId: string; secureUrl: string; resourceType: string }>> {
+): Promise<
+  Array<{
+    publicId: string;
+    secureUrl: string;
+    resourceType: string;
+    version: number | null;
+  }>
+> {
   const f = folder.replace(/^\/+|\/+$/g, '');
   const prefix = `${f}/`;
   if (!isAllowedNodeMediaUploadFolder(f)) {
@@ -304,7 +311,12 @@ export async function listFolderResources(
   }
   const types: UploadTarget[] =
     resourceType === 'all' ? ['image', 'video', 'raw'] : [resourceType];
-  const out: Array<{ publicId: string; secureUrl: string; resourceType: string }> = [];
+  const out: Array<{
+    publicId: string;
+    secureUrl: string;
+    resourceType: string;
+    version: number | null;
+  }> = [];
   for (const rt of types) {
     try {
       const res = await cloudinary.api.resources({
@@ -317,12 +329,21 @@ export async function listFolderResources(
         public_id: string;
         secure_url: string;
         resource_type?: string;
+        version?: number | string;
       }>;
       for (const r of resources) {
+        const versionRaw = r.version;
+        const version =
+          typeof versionRaw === 'number' && Number.isFinite(versionRaw)
+            ? Math.floor(versionRaw)
+            : typeof versionRaw === 'string' && /^\d+$/.test(versionRaw)
+              ? Number(versionRaw)
+              : null;
         out.push({
           publicId: r.public_id,
           secureUrl: r.secure_url,
           resourceType: r.resource_type ?? rt,
+          version,
         });
       }
     } catch {
