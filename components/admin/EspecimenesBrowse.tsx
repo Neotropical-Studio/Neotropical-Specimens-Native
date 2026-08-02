@@ -1,17 +1,25 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { FolderInput, Plus, Trash2 } from 'lucide-react';
+import AdminCardsPager from '@/components/admin/AdminCardsPager';
 import AdminTable from '@/components/admin/AdminTable';
 import { buttonPrimaryClass, inputClass } from '@/components/admin/FormField';
 import {
+  deleteSpecimenAction,
+  placeSpecimenFamilyAction,
+} from '@/app/admin/(protected)/especimenes/actions';
+import {
   CATALOGUE_CATEGORIES,
+  compareSpecimensAlphabetical,
   resolveSpecimenCategoria,
   resolveSpecimenFamiliaLabel,
   resolveSpecimenRegion,
   slugifyCatalogue,
 } from '@/lib/specimens/catalogueNav';
+import { adminCardsPerPage } from '@/lib/specimens/cataloguePagination';
 import { GRADE_OPTIONS } from '@/lib/constants/grades';
 import {
   canonicalizeRubroId,
@@ -111,12 +119,19 @@ export default function EspecimenesBrowse({
   specimens,
   catalogueFamilies = [],
 }: Props) {
-  const [rubroId, setRubroId] = useState('');
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [rubroId, setRubroId] = useState('dried-specimens');
   const [regionId, setRegionId] = useState('neotropical');
   const [categoryId, setCategoryId] = useState('butterflies-lepidoptera-diurne');
   const [orderKey, setOrderKey] = useState('');
   const [familyId, setFamilyId] = useState('');
   const [speciesQ, setSpeciesQ] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(() => adminCardsPerPage());
+  const [placeSpecimenId, setPlaceSpecimenId] = useState<string | null>(null);
+  const [placeFamilyLabel, setPlaceFamilyLabel] = useState('');
+  const [actionMsg, setActionMsg] = useState<string | null>(null);
 
   const enriched: Enriched[] = useMemo(
     () =>
@@ -419,9 +434,14 @@ export default function EspecimenesBrowse({
             .sort((a, b) => a.orderLabel.localeCompare(b.orderLabel, 'es'))
             .map((ord) => ({
               ...ord,
-              families: [...ord.families.values()].sort((a, b) =>
-                a.familyLabel.localeCompare(b.familyLabel, 'es'),
-              ),
+              families: [...ord.families.values()]
+                .sort((a, b) => a.familyLabel.localeCompare(b.familyLabel, 'es'))
+                .map((fam) => ({
+                  ...fam,
+                  rows: [...fam.rows].sort((a, b) =>
+                    compareSpecimensAlphabetical(a.s, b.s),
+                  ),
+                })),
             }));
           return { ...cat, orders };
         });
@@ -431,6 +451,56 @@ export default function EspecimenesBrowse({
     });
   }, [filtered, catalogueFamilies, regionId, categoryId, familyId, rubroId, orderKey, enriched]);
 
+  /** Fichas de familia aplanadas para paginar (mín. 2 / página). */
+  const flatFamilies = useMemo(() => {
+    const out: Array<{
+      key: string;
+      rubroId: string;
+      rubroLabel: string;
+      regionId: string;
+      regionLabel: string;
+      categoryId: string;
+      categoryLabel: string;
+      orderLabel: string;
+      familyId: string;
+      familyLabel: string;
+      breadcrumb: string;
+      rows: Enriched[];
+    }> = [];
+    for (const rubro of tree) {
+      for (const region of rubro.regions) {
+        for (const cat of region.categories) {
+          for (const ord of cat.orders) {
+            for (const fam of ord.families) {
+              out.push({
+                key: `${rubro.rubroId}:${region.regionId}:${cat.categoryId}:${ord.orderKey}:${fam.familyId}`,
+                rubroId: rubro.rubroId,
+                rubroLabel: rubro.rubroLabel,
+                regionId: region.regionId,
+                regionLabel: region.regionLabel,
+                categoryId: cat.categoryId,
+                categoryLabel: cat.categoryLabel,
+                orderLabel: ord.orderLabel,
+                familyId: fam.familyId,
+                familyLabel: fam.familyLabel,
+                breadcrumb: fam.breadcrumb,
+                rows: fam.rows,
+              });
+            }
+          }
+        }
+      }
+    }
+    return out;
+  }, [tree]);
+
+  const totalPages = Math.max(1, Math.ceil(flatFamilies.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pageFamilies = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return flatFamilies.slice(start, start + pageSize);
+  }, [flatFamilies, safePage, pageSize]);
+
   function clearFilters() {
     setRubroId('dried-specimens');
     setRegionId('neotropical');
@@ -438,6 +508,53 @@ export default function EspecimenesBrowse({
     setOrderKey('');
     setFamilyId('');
     setSpeciesQ('');
+    setPage(1);
+  }
+
+  function onFilterChange<T>(setter: (v: T) => void, value: T) {
+    setter(value);
+    setPage(1);
+  }
+
+  async function onDeleteSpecimen(id: string, code: string) {
+    if (!window.confirm(`¿Eliminar ficha «${code}» de forma permanente?`)) return;
+    setActionMsg(null);
+    startTransition(async () => {
+      const res = await deleteSpecimenAction(id);
+      if ('error' in res) {
+        setActionMsg(res.error);
+        return;
+      }
+      setActionMsg(`Eliminada · ${code}`);
+      router.refresh();
+    });
+  }
+
+  async function onPlaceSpecimen(id: string) {
+    const familia = placeFamilyLabel.trim();
+    if (!familia) {
+      setActionMsg('Elegí una familia destino.');
+      return;
+    }
+    setActionMsg(null);
+    startTransition(async () => {
+      const res = await placeSpecimenFamilyAction({
+        specimenId: id,
+        familia,
+        categoria:
+          CATALOGUE_CATEGORIES.find((c) => c.id === categoryId)?.label ?? null,
+        region:
+          DRIED_SPECIMEN_REGION_FOLDERS.find((r) => r.id === regionId)?.folder ??
+          null,
+      });
+      if ('error' in res) {
+        setActionMsg(res.error);
+        return;
+      }
+      setPlaceSpecimenId(null);
+      setActionMsg(`Colocada en «${familia}»`);
+      router.refresh();
+    });
   }
 
   const hasFilters = Boolean(
@@ -445,24 +562,16 @@ export default function EspecimenesBrowse({
   );
 
   return (
-    <div className="flex flex-col gap-6">
+    <div id="fichas-especies" className="flex scroll-mt-6 flex-col gap-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-white">
             Fichas por especie / subespecie
           </h1>
           <p className="text-sm text-neutral-400">
-            Jerarquía:{' '}
-            <span className="text-neutral-300">
-              Rubro › Región › Categoría › Orden › Familia › especie
-            </span>
-            . El filtro Familia lista <strong className="text-emerald-300">todas</strong> las del
-            catálogo (no solo las que ya tienen ficha).
-          </p>
-          <p className="mt-2 text-xs text-amber-200/90">
-            <strong>Cambiar nombres de familia / orden:</strong> panel verde arriba «Clasificación ·
-            regenerativa». <strong>Editar una ficha</strong> (género, especie, subespecie, familia):
-            botón <em>Editar</em> en la fila o clic en el ID code.
+            Filtros categoría · familia · especie. Paginado compacto (
+            <strong className="text-neutral-200">{pageSize} fichas familia/pág</strong>
+            , mínimo 2). Especies A–Z. Crear · editar · colocar · eliminar.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -470,13 +579,19 @@ export default function EspecimenesBrowse({
             href="#clasificacion-familias"
             className="inline-flex items-center gap-1 rounded-md border border-emerald-700 bg-emerald-950/50 px-3 py-2 text-xs font-medium text-emerald-200 hover:bg-emerald-900/40"
           >
-            Modificar familias ↑
+            Familias ↑
           </Link>
           <Link href="/admin/especimenes/nuevo" className={buttonPrimaryClass}>
-            <Plus size={16} /> Nueva ficha
+            <Plus size={16} /> Crear ficha
           </Link>
         </div>
       </div>
+
+      {actionMsg ? (
+        <p className="rounded-md border border-emerald-800/50 bg-emerald-950/40 px-3 py-2 text-xs text-emerald-200">
+          {actionMsg}
+        </p>
+      ) : null}
 
       <div className="rounded-lg border border-neutral-800 bg-neutral-950/60 p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -500,7 +615,7 @@ export default function EspecimenesBrowse({
               className={inputClass}
               value={rubroId}
               onChange={(e) => {
-                setRubroId(e.target.value);
+                onFilterChange(setRubroId, e.target.value);
                 setRegionId('');
                 setCategoryId('');
                 setOrderKey('');
@@ -524,7 +639,7 @@ export default function EspecimenesBrowse({
               className={inputClass}
               value={regionId}
               onChange={(e) => {
-                setRegionId(e.target.value);
+                onFilterChange(setRegionId, e.target.value);
                 setCategoryId('');
                 setOrderKey('');
                 setFamilyId('');
@@ -547,7 +662,7 @@ export default function EspecimenesBrowse({
               className={inputClass}
               value={categoryId}
               onChange={(e) => {
-                setCategoryId(e.target.value);
+                onFilterChange(setCategoryId, e.target.value);
                 setOrderKey('');
                 setFamilyId('');
               }}
@@ -569,7 +684,7 @@ export default function EspecimenesBrowse({
               className={inputClass}
               value={orderKey}
               onChange={(e) => {
-                setOrderKey(e.target.value);
+                onFilterChange(setOrderKey, e.target.value);
                 setFamilyId('');
               }}
             >
@@ -589,7 +704,7 @@ export default function EspecimenesBrowse({
             <select
               className={inputClass}
               value={familyId}
-              onChange={(e) => setFamilyId(e.target.value)}
+              onChange={(e) => onFilterChange(setFamilyId, e.target.value)}
             >
               <option value="">Todas ({familyOptions.length})</option>
               {familyOptions.map((f) => (
@@ -607,208 +722,178 @@ export default function EspecimenesBrowse({
             <input
               className={inputClass}
               value={speciesQ}
-              onChange={(e) => setSpeciesQ(e.target.value)}
+              onChange={(e) => onFilterChange(setSpeciesQ, e.target.value)}
               placeholder="Morpho, NEO-…"
             />
           </label>
         </div>
         <p className="mt-3 text-xs text-neutral-500">
-          {filtered.length} ficha{filtered.length === 1 ? '' : 's'}
-          {hasFilters ? ' con filtros activos' : ' en total'}
-          {familyOptions.length > 0
-            ? ` · ${familyOptions.length} familias en el catálogo (filtro)`
-            : ''}
-          .
+          {filtered.length} especie{filtered.length === 1 ? '' : 's'} ·{' '}
+          {flatFamilies.length} ficha{flatFamilies.length === 1 ? '' : 's'} familia
+          {hasFilters ? ' (filtros activos)' : ''}
         </p>
       </div>
 
-      {tree.length === 0 ? (
+      {flatFamilies.length === 0 ? (
         <AdminTable
-          columns={[
-            'ID code',
-            'Región',
-            'Especie',
-            'N. común',
-            'Grado',
-            'Precio',
-          ]}
+          columns={['ID code', 'Región', 'Especie', 'N. común', 'Grado', 'Precio']}
           empty={
             specimens.length === 0
-              ? 'Todavía no hay fichas. Crea una por especie o subespecie.'
+              ? 'Todavía no hay fichas. Creá una por especie o subespecie.'
               : 'Ninguna ficha coincide con los filtros.'
           }
         >
           {null}
         </AdminTable>
       ) : (
-        tree.map((rubro) => (
-          <section key={rubro.rubroId} className="flex flex-col gap-5">
-            {/* RUBRO */}
-            <header className="rounded-md border border-emerald-900/70 bg-emerald-950/40 px-4 py-3">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-500">
-                Rubro
-              </p>
-              <h2 className="text-lg font-semibold text-emerald-200">{rubro.rubroLabel}</h2>
-            </header>
-
-            {rubro.regions.map((region) => (
-              <div
-                key={`${rubro.rubroId}-${region.regionId}`}
-                className="flex flex-col gap-4 border-l-2 border-sky-800/60 pl-3 sm:pl-4"
-              >
-                {/* REGIÓN */}
-                <header>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-500">
-                    Región geográfica
-                  </p>
-                  <h3 className="text-base font-semibold text-sky-100">{region.regionLabel}</h3>
-                  <p className="mt-0.5 font-mono text-[11px] text-neutral-500">
-                    {rubro.rubroLabel} › {region.regionLabel}
-                  </p>
-                </header>
-
-                {region.categories.map((cat) => (
-                  <div
-                    key={`${region.regionId}-${cat.categoryId}`}
-                    className="flex flex-col gap-3 border-l-2 border-amber-800/50 pl-3"
-                  >
-                    {/* CATEGORÍA */}
-                    <header>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-500">
-                        Categoría
-                      </p>
-                      <h4 className="text-sm font-semibold text-amber-100">{cat.categoryLabel}</h4>
-                      <p className="mt-0.5 font-mono text-[11px] text-neutral-500">
-                        {rubro.rubroLabel} › {region.regionLabel} › {cat.categoryLabel}
-                      </p>
-                    </header>
-
-                    {cat.orders.map((ord) => (
-                      <div
-                        key={`${cat.categoryId}-${ord.orderKey}`}
-                        className="flex flex-col gap-3 border-l-2 border-violet-800/50 pl-3"
-                      >
-                        {/* ORDEN */}
-                        <header>
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400">
-                            Orden biológico
-                          </p>
-                          <h5 className="text-sm font-semibold text-violet-100">
-                            {ord.orderLabel}
-                          </h5>
-                          <p className="mt-0.5 font-mono text-[11px] text-neutral-500">
-                            {rubro.rubroLabel} › {region.regionLabel} › {cat.categoryLabel} ›{' '}
-                            {ord.orderLabel}
-                          </p>
-                        </header>
-
-                        {ord.families.map((fam) => (
-                          <div
-                            key={`${ord.orderKey}-${fam.familyId}`}
-                            className="flex flex-col gap-2 rounded-md border border-neutral-800 bg-neutral-950/40 p-3"
-                          >
-                            <header className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                              <div className="flex flex-col gap-1">
-                                <div className="flex flex-wrap items-baseline gap-2">
-                                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
-                                    Familia
-                                  </p>
-                                  <h6 className="text-sm font-semibold text-white">
-                                    {fam.familyLabel}
-                                    <span className="ml-2 text-xs font-normal text-neutral-500">
-                                      ({fam.rows.length} ficha
-                                      {fam.rows.length === 1 ? '' : 's'})
-                                    </span>
-                                  </h6>
-                                </div>
-                                <p
-                                  className="font-mono text-[11px] leading-relaxed text-emerald-400/90"
-                                  title={fam.breadcrumb}
-                                >
-                                  {fam.breadcrumb}
-                                </p>
-                              </div>
-                              <Link
-                                href={`/admin/especimenes/nuevo?familia=${encodeURIComponent(fam.familyLabel)}&region=${encodeURIComponent(region.regionId)}&categoria=${encodeURIComponent(cat.categoryId)}`}
-                                className="shrink-0 rounded border border-sky-800 bg-sky-950/40 px-2 py-1 text-[11px] text-sky-200 hover:bg-sky-900/40"
-                              >
-                                + Ficha en {fam.familyLabel}
-                              </Link>
-                            </header>
-
-                            {fam.rows.length === 0 ? (
-                              <p className="rounded border border-dashed border-neutral-800 px-3 py-4 text-center text-xs text-neutral-500">
-                                Familia instalada en el catálogo · sin fichas aún. Usá «+ Ficha» o
-                                renombrá arriba en Clasificación.
-                              </p>
-                            ) : (
-                            <AdminTable
-                              columns={[
-                                'ID code',
-                                'Región',
-                                'Especie',
-                                'N. común',
-                                'Género',
-                                'Grado',
-                                'Precio',
-                                'Acción',
-                              ]}
-                            >
-                              {fam.rows.map(
-                                ({ s, regionLabel, speciesLabel, breadcrumb }) => (
-                                  <tr key={s.id} className="hover:bg-neutral-900/60">
-                                    <td className="whitespace-nowrap px-4 py-2 font-mono text-xs text-neutral-300">
-                                      <Link
-                                        href={`/admin/especimenes/${s.id}`}
-                                        className="hover:text-emerald-400"
-                                        title={breadcrumb}
-                                      >
-                                        {s.code}
-                                      </Link>
-                                    </td>
-                                    <td className="px-4 py-2">
-                                      <Badge tone="sky">{regionLabel}</Badge>
-                                    </td>
-                                    <td className="px-4 py-2 italic text-neutral-100">
-                                      {speciesLabel}
-                                    </td>
-                                    <td className="px-4 py-2 text-neutral-400">
-                                      {s.commonName ?? '—'}
-                                    </td>
-                                    <td className="px-4 py-2 text-neutral-400">
-                                      {s.genus ?? '—'}
-                                    </td>
-                                    <td className="px-4 py-2 text-neutral-400">
-                                      {gradeLabel(s.grade)}
-                                    </td>
-                                    <td className="px-4 py-2 text-neutral-400">
-                                      {s.price != null
-                                        ? `${s.price} ${s.currency}`
-                                        : '—'}
-                                    </td>
-                                    <td className="px-4 py-2">
-                                      <Link
-                                        href={`/admin/especimenes/${s.id}`}
-                                        className="rounded bg-violet-800 px-2 py-1 text-[11px] font-medium text-violet-50 hover:bg-violet-700"
-                                      >
-                                        Editar
-                                      </Link>
-                                    </td>
-                                  </tr>
-                                ),
-                              )}
-                            </AdminTable>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
+        <div className="flex flex-col gap-3">
+          {pageFamilies.map((fam) => (
+            <div
+              key={fam.key}
+              className="rounded-md border border-neutral-800 bg-neutral-950/50 p-3"
+            >
+              <header className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge tone="emerald">{fam.familyLabel}</Badge>
+                    <Badge tone="amber">{fam.categoryLabel}</Badge>
+                    <Badge tone="sky">{fam.regionLabel}</Badge>
+                    <span className="text-[10px] text-neutral-500">
+                      {fam.rows.length} especie{fam.rows.length === 1 ? '' : 's'} · A–Z
+                    </span>
                   </div>
-                ))}
-              </div>
-            ))}
-          </section>
-        ))
+                  <p className="mt-1 truncate font-mono text-[10px] text-neutral-500">
+                    {fam.breadcrumb}
+                  </p>
+                </div>
+                <Link
+                  href={`/admin/especimenes/nuevo?familia=${encodeURIComponent(fam.familyLabel)}&region=${encodeURIComponent(fam.regionId)}&categoria=${encodeURIComponent(fam.categoryId)}`}
+                  className="shrink-0 rounded border border-sky-800 bg-sky-950/40 px-2 py-1 text-[11px] text-sky-200 hover:bg-sky-900/40"
+                >
+                  + Crear en {fam.familyLabel}
+                </Link>
+              </header>
+
+              {fam.rows.length === 0 ? (
+                <p className="rounded border border-dashed border-neutral-800 px-3 py-3 text-center text-xs text-neutral-500">
+                  Familia sin fichas · usá «+ Crear».
+                </p>
+              ) : (
+                <AdminTable
+                  columns={[
+                    'ID',
+                    'Especie',
+                    'Género',
+                    'Grado',
+                    'Precio',
+                    'Acciones',
+                  ]}
+                >
+                  {fam.rows.map(({ s, speciesLabel }) => (
+                    <tr key={s.id} className="hover:bg-neutral-900/60">
+                      <td className="whitespace-nowrap px-3 py-1.5 font-mono text-[11px] text-neutral-300">
+                        <Link
+                          href={`/admin/especimenes/${s.id}`}
+                          className="hover:text-emerald-400"
+                        >
+                          {s.code}
+                        </Link>
+                      </td>
+                      <td className="px-3 py-1.5 text-sm italic text-neutral-100">
+                        {speciesLabel}
+                      </td>
+                      <td className="px-3 py-1.5 text-xs text-neutral-400">
+                        {s.genus ?? '—'}
+                      </td>
+                      <td className="px-3 py-1.5 text-xs text-neutral-400">
+                        {gradeLabel(s.grade)}
+                      </td>
+                      <td className="px-3 py-1.5 text-xs text-neutral-400">
+                        {s.price != null ? `${s.price} ${s.currency}` : '—'}
+                      </td>
+                      <td className="px-3 py-1.5">
+                        <div className="flex flex-wrap gap-1">
+                          <Link
+                            href={`/admin/especimenes/${s.id}`}
+                            className="rounded bg-violet-800 px-2 py-0.5 text-[10px] font-medium text-violet-50 hover:bg-violet-700"
+                          >
+                            Editar
+                          </Link>
+                          <button
+                            type="button"
+                            disabled={pending}
+                            onClick={() => {
+                              setPlaceSpecimenId(
+                                placeSpecimenId === s.id ? null : s.id,
+                              );
+                              setPlaceFamilyLabel(fam.familyLabel);
+                            }}
+                            className="inline-flex items-center gap-0.5 rounded border border-amber-900/50 px-1.5 py-0.5 text-[10px] text-amber-200 hover:bg-amber-950 disabled:opacity-40"
+                          >
+                            <FolderInput size={10} />
+                            Colocar
+                          </button>
+                          <button
+                            type="button"
+                            disabled={pending}
+                            onClick={() => void onDeleteSpecimen(s.id, s.code)}
+                            className="inline-flex items-center gap-0.5 rounded border border-red-900/50 px-1.5 py-0.5 text-[10px] text-red-300 hover:bg-red-950 disabled:opacity-40"
+                          >
+                            <Trash2 size={10} />
+                            Eliminar
+                          </button>
+                        </div>
+                        {placeSpecimenId === s.id ? (
+                          <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                            <select
+                              value={placeFamilyLabel}
+                              onChange={(e) => setPlaceFamilyLabel(e.target.value)}
+                              className="rounded border border-neutral-700 bg-neutral-900 px-1.5 py-0.5 text-[10px] text-white"
+                            >
+                              {familyOptions.map((f) => (
+                                <option key={f.id} value={f.label}>
+                                  {f.label}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              disabled={pending}
+                              onClick={() => void onPlaceSpecimen(s.id)}
+                              className="rounded bg-amber-700 px-2 py-0.5 text-[10px] font-semibold text-white"
+                            >
+                              Mover
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setPlaceSpecimenId(null)}
+                              className="text-[10px] text-neutral-500"
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        ) : null}
+                      </td>
+                    </tr>
+                  ))}
+                </AdminTable>
+              )}
+            </div>
+          ))}
+
+          <AdminCardsPager
+            page={safePage}
+            totalPages={totalPages}
+            totalItems={flatFamilies.length}
+            pageSize={pageSize}
+            onPage={setPage}
+            onPageSize={(n) => {
+              setPageSize(Math.max(2, n));
+              setPage(1);
+            }}
+            label="fichas familia"
+          />
+        </div>
       )}
     </div>
   );

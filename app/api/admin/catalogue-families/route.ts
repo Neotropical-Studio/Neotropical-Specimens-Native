@@ -3,7 +3,9 @@ import { getCurrentAdmin } from '@/lib/auth/admin';
 import {
   bootstrapAllCatalogueFamilies,
   createCatalogueFamily,
+  deleteCatalogueFamilyHard,
   listCatalogueFamiliesAdmin,
+  relocateCatalogueFamily,
   reorderCatalogueFamilies,
   resyncFamiliesFromCloudinary,
   seedCatalogueFamiliesIfEmpty,
@@ -180,6 +182,44 @@ export async function POST(req: NextRequest) {
       return okJson(
         { ok: true, families, editable: true },
         `catalogue-families:reorder:${regionId}:${categoryId}`,
+      );
+    }
+
+    if (action === 'relocate') {
+      const id = String(body.id ?? '').trim();
+      const targetRegionId = String(body.targetRegionId ?? '').trim();
+      const targetCategoryId = String(body.targetCategoryId ?? '').trim();
+      if (!id) return bad('id requerido');
+      if (!REGION_IDS.has(targetRegionId) || !CATEGORY_IDS.has(targetCategoryId)) {
+        return bad('destino regionId/categoryId inválido');
+      }
+      // Lista de origen (panel actual) para refrescar tras sacar la ficha.
+      if (!REGION_IDS.has(regionId) || !CATEGORY_IDS.has(categoryId)) {
+        return bad('regionId o categoryId de origen inválido');
+      }
+      const row = await relocateCatalogueFamily({
+        id,
+        targetRegionId,
+        targetCategoryId,
+      });
+      const families = await listCatalogueFamiliesAdmin(regionId, categoryId);
+      return okJson(
+        { ok: true, family: row, families, editable: true },
+        `catalogue-families:relocate:${id}`,
+      );
+    }
+
+    if (action === 'delete') {
+      const id = String(body.id ?? '').trim();
+      if (!id) return bad('id requerido');
+      const where = await deleteCatalogueFamilyHard(id);
+      const families = await listCatalogueFamiliesAdmin(
+        regionId || where.regionId,
+        categoryId || where.categoryId,
+      );
+      return okJson(
+        { ok: true, families, editable: true },
+        `catalogue-families:delete:${id}`,
       );
     }
 

@@ -309,3 +309,65 @@ export async function updateSpecimenAction(
   revalidatePath(`/admin/especimenes/${specimenId}`);
   redirect(`/admin/especimenes/${specimenId}?grabado=1`);
 }
+
+/** Borra una ficha de especie (media relacionada si la BD lo permite en cascada). */
+export async function deleteSpecimenAction(
+  specimenId: string,
+): Promise<{ ok: true } | { error: string }> {
+  await requireAdmin();
+  const id = specimenId.trim();
+  if (!id) return { error: 'id vacío' };
+
+  const db = getSupabaseAdmin();
+  try {
+    await db.from('specimen_media').delete().eq('specimen_id', id);
+  } catch {
+    /* media opcional */
+  }
+  const { error } = await db.from('specimens').delete().eq('id', id);
+  if (error) return { error: error.message };
+
+  revalidatePath('/admin/especimenes');
+  return { ok: true };
+}
+
+/**
+ * Coloca / mueve una ficha a otra familia (y opcionalmente categoría / región plana).
+ * Orden alfabético del listado se mantiene por nombre científico.
+ */
+export async function placeSpecimenFamilyAction(input: {
+  specimenId: string;
+  familia: string;
+  categoria?: string | null;
+  region?: string | null;
+}): Promise<{ ok: true } | { error: string }> {
+  await requireAdmin();
+  const id = input.specimenId.trim();
+  const familia = input.familia.trim();
+  if (!id || !familia) return { error: 'specimenId y familia obligatorios' };
+
+  const db = getSupabaseAdmin();
+  const patch: Record<string, unknown> = {
+    familia,
+  };
+  if (input.categoria != null && input.categoria.trim()) {
+    patch.categoria = input.categoria.trim();
+  }
+  if (input.region != null && input.region.trim()) {
+    patch.region = input.region.trim();
+  }
+
+  const { error } = await db.from('specimens').update(patch).eq('id', id);
+  if (error) {
+    // Fallback: solo familia si faltan columnas planas
+    const { error: e2 } = await db
+      .from('specimens')
+      .update({ familia })
+      .eq('id', id);
+    if (e2) return { error: e2.message };
+  }
+
+  revalidatePath('/admin/especimenes');
+  revalidatePath(`/admin/especimenes/${id}`);
+  return { ok: true };
+}

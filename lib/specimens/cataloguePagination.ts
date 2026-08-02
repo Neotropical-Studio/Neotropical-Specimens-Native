@@ -33,6 +33,19 @@ export function catalogueNavPerPage(): number {
   );
 }
 
+/**
+ * Fichas admin (familias / bloques de especie) por página.
+ * Mínimo industrial = 2 (evita scroll infinito). Override:
+ *   NEXT_PUBLIC_ADMIN_CARDS_PER_PAGE
+ */
+export function adminCardsPerPage(): number {
+  const n = parsePositiveInt(
+    process.env.NEXT_PUBLIC_ADMIN_CARDS_PER_PAGE,
+    2,
+  );
+  return Math.max(2, n);
+}
+
 /** Lista de botones de página: 1 2 3 … N (crece sin tope). */
 export function buildCataloguePageList(
   current: number,
