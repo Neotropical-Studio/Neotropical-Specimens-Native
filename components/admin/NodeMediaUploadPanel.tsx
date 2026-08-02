@@ -1,19 +1,20 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  RefreshCw,
   Save,
   Trash2,
 } from 'lucide-react';
 import type { NodeMediaUploadTarget } from '@/lib/mirror/contract';
 import { CATALOGUE_CATEGORIES, familyCatalogHref, slugifyCatalogue } from '@/lib/specimens/catalogueNav';
 import { NEO_FAMILIES_CHANGED } from '@/lib/specimens/catalogue-families-events';
+import { acceptForKind } from '@/lib/media/universal-capture';
 import UniversalMediaCapture from '@/components/admin/UniversalMediaCapture';
-import PublishProductionButton from '@/components/admin/PublishProductionButton';
 
 type Props = {
   targets: NodeMediaUploadTarget[];
@@ -75,6 +76,8 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
   /** Archivo elegido pero aún no grabado en Cloudinary. */
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [pendingPreviewUrl, setPendingPreviewUrl] = useState<string | null>(null);
+  const updateCardInputRef = useRef<HTMLInputElement>(null);
+  const updateVideoInputRef = useRef<HTMLInputElement>(null);
   const [lastSaved, setLastSaved] = useState<LastSaved | null>(null);
 
   /** Misma fuente que storefront (meta Cloudinary / DB), no lista hardcoded. */
@@ -337,8 +340,10 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
     setPendingPreviewUrl(URL.createObjectURL(file));
   }
 
-  async function grabarFile(file: File) {
+  async function grabarFile(file: File, slotOverride?: Slot) {
     if (!selected || stage === 'catalogo') return;
+    const activeSlot = slotOverride ?? slot;
+    setSlot(activeSlot);
     setBusy(true);
     setError(null);
     setOk(null);
@@ -346,7 +351,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
     const fd = new FormData();
     fd.append('file', file);
     fd.append('targetId', selected.id);
-    fd.append('slot', slot);
+    fd.append('slot', activeSlot);
     fd.append('replace', '1');
 
     try {
@@ -360,10 +365,11 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
       };
       if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
       const folder =
-        json.folder ?? (slot === 'card' ? selected.cardFolder : selected.videoFolder);
+        json.folder ??
+        (activeSlot === 'card' ? selected.cardFolder : selected.videoFolder);
       const at = new Date().toLocaleString('es-PE', { hour12: false });
       setLastSaved({
-        slot,
+        slot: activeSlot,
         label: selected.label,
         publicId: json.publicId ?? '—',
         folder,
@@ -374,19 +380,21 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         json.production?.ok === false
           ? ' · prod: revisar'
           : ' · producción actualizada';
-      setOk(`GRABADO ${slot.toUpperCase()} · ${selected.label} · ${at}${prodNote}`);
+      setOk(
+        `ACTUALIZADO ${activeSlot.toUpperCase()} · ${selected.label} · ${at}${prodNote}`,
+      );
       setUploads((n) => n + 1);
       clearPending();
       if (json.secureUrl && json.publicId) {
         const next: MediaItem = {
           publicId: json.publicId,
           secureUrl: json.secureUrl,
-          resourceType: slot === 'video' ? 'video' : 'image',
+          resourceType: activeSlot === 'video' ? 'video' : 'image',
         };
         setCurrent(next);
-        setSlotStatus((prev) => ({ ...prev, [slot]: next }));
+        setSlotStatus((prev) => ({ ...prev, [activeSlot]: next }));
       } else {
-        await refreshCurrent(selected.id, slot);
+        await refreshCurrent(selected.id, activeSlot);
       }
     } catch (err) {
       setError((err as Error).message);
@@ -398,6 +406,27 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
   async function handleGrabar() {
     if (!pendingFile) return;
     await grabarFile(pendingFile);
+  }
+
+  /** Abrir selector → subir/reemplazar CARD o VIDEO de una. */
+  function openUpdatePicker(which: Slot) {
+    if (!selected || busy || stage === 'catalogo') return;
+    setSlot(which);
+    setError(null);
+    setOk(null);
+    clearPending();
+    if (which === 'video') updateVideoInputRef.current?.click();
+    else updateCardInputRef.current?.click();
+  }
+
+  async function handleUpdateFileChange(
+    which: Slot,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    await grabarFile(file, which);
   }
 
   async function handleDeleteSlot(which: Slot) {
@@ -488,11 +517,6 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         })}
       </div>
 
-      <PublishProductionButton
-        variant="field"
-        reason={`node-media:${stage}:${slot}`}
-      />
-
       {stage === 'catalogo' ? (
         <div className="rounded-lg border border-emerald-900/60 bg-emerald-950/20 p-4">
           <h2 className="text-sm font-semibold text-emerald-200">
@@ -532,10 +556,6 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
             </a>
           </div>
           <div className="mt-4">
-            <PublishProductionButton
-              variant="field"
-              reason="node-media:catalogo"
-            />
           </div>
         </div>
       ) : (
@@ -838,23 +858,62 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                     ) : (
                       <p className="mb-2 text-[11px] text-neutral-600">Sin archivo</p>
                     )}
-                    <button
-                      type="button"
-                      disabled={busy || !selected}
-                      onClick={() => void handleDeleteSlot(s)}
-                      className="inline-flex w-full items-center justify-center gap-1.5 rounded border border-red-800 bg-red-950/60 px-2 py-1.5 text-xs font-semibold text-red-200 hover:bg-red-900/70 disabled:cursor-not-allowed disabled:opacity-35"
-                    >
-                      <Trash2 size={13} />
-                      {deletingSlot === s
-                        ? 'Eliminando…'
-                        : s === 'video'
-                          ? 'Eliminar VIDEO'
-                          : 'Eliminar CARD'}
-                    </button>
+                    <div className="flex flex-col gap-1.5">
+                      <button
+                        type="button"
+                        disabled={busy || !selected}
+                        onClick={() => openUpdatePicker(s)}
+                        className={`inline-flex min-h-[48px] w-full items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 text-sm font-bold touch-manipulation disabled:cursor-not-allowed disabled:opacity-35 ${
+                          s === 'video'
+                            ? 'border-violet-500 bg-violet-700 text-white hover:bg-violet-600'
+                            : 'border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500'
+                        }`}
+                      >
+                        <RefreshCw size={15} />
+                        {busy && slot === s
+                          ? 'Actualizando…'
+                          : item
+                            ? s === 'video'
+                              ? 'Actualizar VIDEO'
+                              : 'Actualizar CARD'
+                            : s === 'video'
+                              ? 'Subir VIDEO'
+                              : 'Subir CARD'}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy || !selected}
+                        onClick={() => void handleDeleteSlot(s)}
+                        className="inline-flex w-full items-center justify-center gap-1.5 rounded border border-red-800 bg-red-950/60 px-2 py-1.5 text-xs font-semibold text-red-200 hover:bg-red-900/70 disabled:cursor-not-allowed disabled:opacity-35"
+                      >
+                        <Trash2 size={13} />
+                        {deletingSlot === s
+                          ? 'Eliminando…'
+                          : s === 'video'
+                            ? 'Eliminar VIDEO'
+                            : 'Eliminar CARD'}
+                      </button>
+                    </div>
                   </div>
                 );
               })}
             </div>
+            <input
+              ref={updateCardInputRef}
+              type="file"
+              className="hidden"
+              accept={acceptForKind('image')}
+              disabled={busy || !selected}
+              onChange={(e) => void handleUpdateFileChange('card', e)}
+            />
+            <input
+              ref={updateVideoInputRef}
+              type="file"
+              className="hidden"
+              accept={acceptForKind('video')}
+              disabled={busy || !selected}
+              onChange={(e) => void handleUpdateFileChange('video', e)}
+            />
             {current ? (
               <p className="break-all text-[10px] text-neutral-500">
                 Slot activo: <span className="text-neutral-300">{current.publicId}</span>
@@ -882,9 +941,13 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                 <Save size={16} />
                 {busy
                   ? 'Grabando…'
-                  : isVideo
-                    ? 'GRABAR VIDEO'
-                    : 'GRABAR CARD'}
+                  : current
+                    ? isVideo
+                      ? 'GRABAR / ACTUALIZAR VIDEO'
+                      : 'GRABAR / ACTUALIZAR CARD'
+                    : isVideo
+                      ? 'GRABAR VIDEO'
+                      : 'GRABAR CARD'}
               </button>
               {pendingFile ? (
                 <button
@@ -911,15 +974,10 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                 {isVideo ? 'Eliminar VIDEO' : 'Eliminar CARD'}
               </button>
             </div>
-            <PublishProductionButton
-              variant="field"
-              reason={`node-media:grabar:${stage}:${slot}:${selected?.id ?? 'none'}`}
-            />
             <p className="text-[11px] text-neutral-500">
-              Dinámico · regenerativo · sin hardcode de dispositivo · elegí o escaneá → GRABAR · el
-              catálogo se actualiza solo. Si no ves el cambio en la tienda, usá{' '}
-              <strong className="text-emerald-300">Actualizar producción</strong> o{' '}
-              <strong className="text-violet-300">Redeploy completo</strong>.
+              Usá <strong className="text-emerald-300">Actualizar CARD</strong> o{' '}
+              <strong className="text-violet-300">Actualizar VIDEO</strong> arriba para
+              reemplazar la foto/video de una. También podés Galería/Cámara → GRABAR.
             </p>
           </div>
 
@@ -985,10 +1043,6 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                 Ya está grabado. Entrá al website (hard refresh) para ver el cambio en ese nodo.
               </p>
               <div className="mt-3">
-                <PublishProductionButton
-                  variant="field"
-                  reason={`node-media:after-ok:${lastSaved?.publicId ?? 'ok'}`}
-                />
               </div>
             </div>
           )}
