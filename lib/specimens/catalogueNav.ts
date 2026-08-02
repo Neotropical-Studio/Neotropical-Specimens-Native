@@ -209,6 +209,33 @@ export function slugifyCatalogue(label: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+/**
+ * Evita fichas huérfanas tipo «Nymphalidae» cuando el catálogo canónico ya
+ * tiene lotes «Nymphalidae 1»…«Nymphalidae 6» (Neotropical Diurne).
+ * No afecta regiones donde el nombre suelto es la carpeta real (p.ej. Africa).
+ */
+export function isOrphanBaseOfNumberedFamilySeries(
+  label: string,
+  peerLabels: readonly string[],
+): boolean {
+  const base = label.trim();
+  if (!base || /\s+\d+\s*$/.test(base)) return false;
+  const escaped = base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const numbered = new RegExp(`^${escaped}\\s+\\d+\\b`, 'i');
+  return peerLabels.some((peer) => numbered.test(peer.trim()));
+}
+
+/** Quita bases huérfanas si hay pares numerados en la misma lista. */
+export function dropOrphanNumberedFamilyBases<T extends string | { label: string }>(
+  entries: readonly T[],
+): T[] {
+  const labels = entries.map((e) => (typeof e === 'string' ? e : e.label));
+  return entries.filter((e) => {
+    const label = typeof e === 'string' ? e : e.label;
+    return !isOrphanBaseOfNumberedFamilySeries(label, labels);
+  });
+}
+
 export function findRubroById(id: string) {
   const canonical = canonicalizeRubroId(id) ?? id;
   return STOREFRONT_RUBROS.find((r) => r.id === canonical) ?? null;
@@ -754,7 +781,7 @@ export function buildFamilyNodes(
   const regionFolder = regionMeta?.folder ?? REGION_FOLDER;
   const resolvedRegionId = regionMeta?.id ?? regionId;
   const categorySegment = catMeta?.segment ?? categoryId;
-  const expectedEntries: Array<{ label: string; folder: string }> =
+  const rawExpected: Array<{ label: string; folder: string }> =
     familyLabelsOverride && familyLabelsOverride.length > 0
       ? familyLabelsOverride.map((e) =>
           typeof e === 'string'
@@ -774,6 +801,9 @@ export function buildFamilyNodes(
                     ? rareGynanFamiliesForRegion(resolvedRegionId)
                     : (catMeta?.expectedFamilies ?? [])
         ).map((label) => ({ label, folder: label }));
+
+  // Neotropical Diurne: no mostrar «Nymphalidae» suelto si ya hay 1…6.
+  const expectedEntries = dropOrphanNumberedFamilyBases(rawExpected);
 
   const inScope = specimens.filter((s) => {
     if (s.primaryImage && isNodeMediaPublicId(s.primaryImage)) return false;
@@ -843,11 +873,13 @@ export function buildFamilyNodes(
     });
   }
 
+  const expectedLabels = expectedEntries.map((e) => e.label);
   const expectedNodes = expectedEntries.map(
     (fam) => buckets.get(slugifyCatalogue(fam.label))!,
   );
   const extras = [...buckets.values()]
     .filter((n) => !expectedIds.has(n.id) && n.count > 0)
+    .filter((n) => !isOrphanBaseOfNumberedFamilySeries(n.label, expectedLabels))
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
 
   return [...expectedNodes, ...extras];

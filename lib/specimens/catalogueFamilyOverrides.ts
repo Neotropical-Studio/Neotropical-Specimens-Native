@@ -5,6 +5,7 @@
  * Solo Server / API — no importar en client components.
  */
 import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase/client';
+import { dropOrphanNumberedFamilyBases } from '@/lib/specimens/catalogueNav';
 import {
   DRIED_SPECIMEN_CATEGORY_FOLDERS,
   DRIED_SPECIMEN_REGION_ROOTS,
@@ -228,12 +229,14 @@ export async function familyEntriesForScope(
 ): Promise<FamilyNavEntry[]> {
   try {
     const rows = await listCatalogueFamilies(regionId, categoryId);
-    return rows.map(entryFromRow);
+    return dropOrphanNumberedFamilyBases(rows.map(entryFromRow));
   } catch {
-    return bootstrapFamiliesForScope(regionId, categoryId).map((label) => ({
-      label,
-      folder: label,
-    }));
+    return dropOrphanNumberedFamilyBases(
+      bootstrapFamiliesForScope(regionId, categoryId).map((label) => ({
+        label,
+        folder: label,
+      })),
+    );
   }
 }
 
