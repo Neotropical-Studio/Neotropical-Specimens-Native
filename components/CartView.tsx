@@ -292,7 +292,7 @@ export default function CartView({ lang, locale, country, strings }: Props) {
     }
   }
 
-  const catalogueBrowseHref = `/${lang}/catalogue/dried-specimens?view=regions`;
+  const catalogueBrowseHref = `/${lang}/catalogue/dried-specimens/neotropical?view=categories`;
   const backLabel = t('cart.regresar', 'Regresar');
   const keepShoppingLabel = t('cart.keep_shopping', 'Continuar comprando');
   const buyLabel = submitting

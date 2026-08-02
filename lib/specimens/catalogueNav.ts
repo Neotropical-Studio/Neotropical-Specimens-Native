@@ -912,12 +912,33 @@ export function rubroRegionsHref(lang: string, rubroId: string): string {
   return `${catalogueHref(lang, { rubro: rubroId })}?view=regions`;
 }
 
-/** Click rubro: video de ingreso si hay; si no, directo a regiones/categorías. */
+/** Región por defecto al entrar a categorías (Neotropical / principal). */
+export const DEFAULT_CATALOGUE_REGION_ID = 'neotropical';
+
+/** Tras el rubro: ir directo a categorías (luego familias/catálogos). */
+export function rubroCategoriesHref(
+  lang: string,
+  rubroId: string,
+  regionId: string = DEFAULT_CATALOGUE_REGION_ID,
+): string {
+  return regionCategoriesHref(lang, { rubro: rubroId, region: regionId });
+}
+
+/**
+ * Click rubro:
+ * - dried-specimens → intro (si hay video) o categorías (Neotropical)
+ * - otros rubros → intro o regiones
+ */
 export function rubroEntryHref(
   lang: string,
   rubroId: string,
   hasVideo: boolean,
 ): string {
+  if (rubroId === 'dried-specimens') {
+    return hasVideo
+      ? rubroIntroHref(lang, rubroId)
+      : rubroCategoriesHref(lang, rubroId);
+  }
   return hasVideo ? rubroIntroHref(lang, rubroId) : rubroRegionsHref(lang, rubroId);
 }
 

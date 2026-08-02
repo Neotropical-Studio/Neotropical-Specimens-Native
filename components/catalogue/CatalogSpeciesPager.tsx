@@ -1,9 +1,9 @@
 'use client';
 
 /**
- * Grid de especies del catálogo: 9 por página, páginas 1·2·3…∞.
+ * Grid de especies del catálogo: 6 por página, páginas 1·2·3…∞.
  * Misma config regenerativa que el resto del storefront
- * (NEXT_PUBLIC_CATALOGUE_SPECIES_PER_PAGE, default 9).
+ * (NEXT_PUBLIC_CATALOGUE_SPECIES_PER_PAGE, default 6).
  */
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';

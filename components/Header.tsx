@@ -44,7 +44,7 @@ export default function Header({ strings, lang: langProp, country = 'PE' }: Prop
   const cartHref = `/${lang}/cart`;
 
   const catalogueHref = `${homeHref}/catalogue`;
-  const driedHref = `${catalogueHref}/dried-specimens?view=regions`;
+  const driedHref = `${catalogueHref}/dried-specimens/neotropical?view=categories`;
   const nav = [
     { label: t('nav.catalog', 'Catálogo'), href: catalogueHref },
     {
