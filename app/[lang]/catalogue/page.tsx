@@ -36,7 +36,7 @@ export default async function CatalogueHubPage({
           title={i18n.t('catalogue.rubros_title', 'Catálogo por rubro')}
           subtitle={i18n.t(
             'catalogue.rubros_subtitle',
-            'Elige un rubro para explorar regiones, categorías y familias.',
+            'Elige un rubro: primero categorías, luego catálogos (familias) y especies.',
           )}
           breadcrumbs={buildBreadcrumbs(i18n.locale, i18n.t, {})}
           nodes={nodes}

@@ -2,10 +2,10 @@
  * Paginación del catálogo storefront (familias / especies / nodos).
  * Sin hardcode cerrado: se puede cambiar en Vercel con
  *   NEXT_PUBLIC_CATALOGUE_SPECIES_PER_PAGE
- * sin tocar código. Default industrial = 9 (grilla 3×3).
+ * sin tocar código. Default industrial = 6 (2 filas × 3).
  */
 
-const DEFAULT = 9;
+const DEFAULT = 6;
 
 function parsePositiveInt(raw: string | undefined, fallback: number): number {
   if (!raw?.trim()) return fallback;
