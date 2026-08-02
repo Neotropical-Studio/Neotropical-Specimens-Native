@@ -341,7 +341,12 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
   }
 
   async function grabarFile(file: File, slotOverride?: Slot) {
-    if (!selected || stage === 'catalogo') return;
+    if (stage === 'catalogo') return;
+    const target = selected ?? filtered[0] ?? null;
+    if (!target) {
+      setError('No hay nodo seleccionado para actualizar.');
+      return;
+    }
     const activeSlot = slotOverride ?? slot;
     setSlot(activeSlot);
     setBusy(true);
@@ -350,7 +355,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
 
     const fd = new FormData();
     fd.append('file', file);
-    fd.append('targetId', selected.id);
+    fd.append('targetId', target.id);
     fd.append('slot', activeSlot);
     fd.append('replace', '1');
 
@@ -366,11 +371,11 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
       if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
       const folder =
         json.folder ??
-        (activeSlot === 'card' ? selected.cardFolder : selected.videoFolder);
+        (activeSlot === 'card' ? target.cardFolder : target.videoFolder);
       const at = new Date().toLocaleString('es-PE', { hour12: false });
       setLastSaved({
         slot: activeSlot,
-        label: selected.label,
+        label: target.label,
         publicId: json.publicId ?? '—',
         folder,
         secureUrl: json.secureUrl,
@@ -381,7 +386,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
           ? ' · prod: revisar'
           : ' · producción actualizada';
       setOk(
-        `ACTUALIZADO ${activeSlot.toUpperCase()} · ${selected.label} · ${at}${prodNote}`,
+        `ACTUALIZADO ${activeSlot.toUpperCase()} · ${target.label} · ${at}${prodNote}`,
       );
       setUploads((n) => n + 1);
       clearPending();
@@ -394,7 +399,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         setCurrent(next);
         setSlotStatus((prev) => ({ ...prev, [activeSlot]: next }));
       } else {
-        await refreshCurrent(selected.id, activeSlot);
+        await refreshCurrent(target.id, activeSlot);
       }
     } catch (err) {
       setError((err as Error).message);
@@ -404,19 +409,32 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
   }
 
   async function handleGrabar() {
-    if (!pendingFile) return;
-    await grabarFile(pendingFile);
+    if (pendingFile) {
+      await grabarFile(pendingFile);
+      return;
+    }
+    // Foto/video ya subido: abrir selector para reemplazar (no dejar el botón apagado).
+    openUpdatePicker(slot);
   }
 
   /** Abrir selector → subir/reemplazar CARD o VIDEO de una. */
   function openUpdatePicker(which: Slot) {
-    if (!selected || busy || stage === 'catalogo') return;
+    if (busy || stage === 'catalogo') return;
+    const target = selected ?? filtered[0] ?? null;
+    if (!target) {
+      setError('No hay nodo seleccionado para actualizar.');
+      return;
+    }
+    if (selected?.id !== target.id) setTargetId(target.id);
     setSlot(which);
     setError(null);
     setOk(null);
     clearPending();
-    if (which === 'video') updateVideoInputRef.current?.click();
-    else updateCardInputRef.current?.click();
+    // next tick: el input no debe estar disabled al abrir el diálogo
+    window.setTimeout(() => {
+      if (which === 'video') updateVideoInputRef.current?.click();
+      else updateCardInputRef.current?.click();
+    }, 0);
   }
 
   async function handleUpdateFileChange(
@@ -861,7 +879,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                     <div className="flex flex-col gap-1.5">
                       <button
                         type="button"
-                        disabled={busy || !selected}
+                        disabled={busy || (!selected && filtered.length === 0)}
                         onClick={() => openUpdatePicker(s)}
                         className={`inline-flex min-h-[48px] w-full items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 text-sm font-bold touch-manipulation disabled:cursor-not-allowed disabled:opacity-35 ${
                           s === 'video'
@@ -874,8 +892,8 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                           ? 'Actualizando…'
                           : item
                             ? s === 'video'
-                              ? 'Actualizar VIDEO'
-                              : 'Actualizar CARD'
+                              ? 'Actualizar video subido'
+                              : 'Actualizar foto subida'
                             : s === 'video'
                               ? 'Subir VIDEO'
                               : 'Subir CARD'}
@@ -903,7 +921,6 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
               type="file"
               className="hidden"
               accept={acceptForKind('image')}
-              disabled={busy || !selected}
               onChange={(e) => void handleUpdateFileChange('card', e)}
             />
             <input
@@ -911,7 +928,6 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
               type="file"
               className="hidden"
               accept={acceptForKind('video')}
-              disabled={busy || !selected}
               onChange={(e) => void handleUpdateFileChange('video', e)}
             />
             {current ? (
@@ -934,20 +950,26 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
             <div className="flex w-full flex-wrap gap-2">
               <button
                 type="button"
-                disabled={busy || !selected || !pendingFile}
+                disabled={busy || (!selected && filtered.length === 0)}
                 onClick={() => void handleGrabar()}
                 className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-600 bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white touch-manipulation hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-[44px] sm:flex-none"
               >
                 <Save size={16} />
                 {busy
-                  ? 'Grabando…'
-                  : current
+                  ? pendingFile
+                    ? 'Grabando…'
+                    : 'Actualizando…'
+                  : pendingFile
                     ? isVideo
-                      ? 'GRABAR / ACTUALIZAR VIDEO'
-                      : 'GRABAR / ACTUALIZAR CARD'
-                    : isVideo
                       ? 'GRABAR VIDEO'
-                      : 'GRABAR CARD'}
+                      : 'GRABAR CARD'
+                    : current
+                      ? isVideo
+                        ? 'Actualizar video subido'
+                        : 'Actualizar foto subida'
+                      : isVideo
+                        ? 'Subir VIDEO'
+                        : 'Subir CARD'}
               </button>
               {pendingFile ? (
                 <button
@@ -975,9 +997,9 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
               </button>
             </div>
             <p className="text-[11px] text-neutral-500">
-              Usá <strong className="text-emerald-300">Actualizar CARD</strong> o{' '}
-              <strong className="text-violet-300">Actualizar VIDEO</strong> arriba para
-              reemplazar la foto/video de una. También podés Galería/Cámara → GRABAR.
+              Con foto/video ya en el nodo, tocá{' '}
+              <strong className="text-emerald-300">Actualizar foto subida</strong> (o Actualizar
+              CARD / VIDEO arriba) para elegir otro archivo y reemplazarlo de una.
             </p>
           </div>
 
