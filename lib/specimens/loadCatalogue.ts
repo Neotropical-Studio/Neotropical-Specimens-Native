@@ -19,6 +19,8 @@ function nodeMediaPseudoViews(
       order: null,
       family: null,
       genus: null,
+      speciesEpithet: null,
+      subspecies: null,
       regionName: null,
       regionCode: null,
       country: null,

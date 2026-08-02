@@ -1,5 +1,5 @@
 // GET /api/admin/media-gallery
-// Devuelve specimen_media enriquecido con datos del espécimen (columnas LIVE).
+// Devuelve specimen_media enriquecido con taxonomía para filtros de clasificación.
 import { NextResponse } from 'next/server';
 import { getCurrentAdmin } from '@/lib/auth/admin';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
@@ -15,10 +15,12 @@ type TaxonomyLite = {
 
 type SpecimenLite = {
   id: string;
+  specimen_code?: string | null;
   species_name?: string | null;
   familia?: string | null;
   genero?: string | null;
   especie?: string | null;
+  subespecie?: string | null;
   rubro?: string | null;
   categoria?: string | null;
   taxonomy?: TaxonomyLite | TaxonomyLite[] | null;
@@ -41,15 +43,39 @@ export async function GET() {
 
   const { data: mediaRows, error: mediaError } = await db
     .from('specimen_media')
-    .select('id, specimen_id, public_id, media_type, display_order, media_url')
+    .select('id, specimen_id, public_id, media_type, display_order, media_url, view')
     .order('display_order', { ascending: true })
-    .limit(2000);
+    .limit(4000);
 
-  if (mediaError) return NextResponse.json({ error: mediaError.message }, { status: 500 });
+  if (mediaError) {
+    // `view` puede no existir en schemas viejos
+    const fallback = await db
+      .from('specimen_media')
+      .select('id, specimen_id, public_id, media_type, display_order, media_url')
+      .order('display_order', { ascending: true })
+      .limit(4000);
+    if (fallback.error) {
+      return NextResponse.json({ error: fallback.error.message }, { status: 500 });
+    }
+    return enrichAndRespond(fallback.data ?? [], db);
+  }
 
-  const media = mediaRows ?? [];
+  return enrichAndRespond(mediaRows ?? [], db);
+}
+
+async function enrichAndRespond(
+  media: Array<{
+    id: string;
+    specimen_id: string | null;
+    public_id: string;
+    media_type: string;
+    display_order: number | null;
+    media_url?: string | null;
+    view?: string | null;
+  }>,
+  db: ReturnType<typeof getSupabaseAdmin>,
+) {
   const specimenIds = [...new Set(media.map((m) => m.specimen_id).filter(Boolean))] as string[];
-
   const bySpecimen = new Map<string, SpecimenLite>();
 
   if (specimenIds.length > 0) {
@@ -58,10 +84,12 @@ export async function GET() {
       .select(
         `
         id,
+        specimen_code,
         species_name,
         familia,
         genero,
         especie,
+        subespecie,
         rubro,
         categoria,
         taxonomy:taxonomy!taxonomy_id (
@@ -74,10 +102,31 @@ export async function GET() {
       .in('id', specimenIds);
 
     if (enriched.error) {
-      return NextResponse.json({ error: enriched.error.message }, { status: 500 });
-    }
-    for (const row of (enriched.data ?? []) as SpecimenLite[]) {
-      bySpecimen.set(row.id, row);
+      // Sin specimen_code / subespecie en schemas viejos
+      const soft = await db
+        .from('specimens')
+        .select(
+          `
+          id,
+          species_name,
+          familia,
+          genero,
+          especie,
+          rubro,
+          categoria
+        `,
+        )
+        .in('id', specimenIds);
+      if (soft.error) {
+        return NextResponse.json({ error: soft.error.message }, { status: 500 });
+      }
+      for (const row of (soft.data ?? []) as SpecimenLite[]) {
+        bySpecimen.set(row.id, row);
+      }
+    } else {
+      for (const row of (enriched.data ?? []) as SpecimenLite[]) {
+        bySpecimen.set(row.id, row);
+      }
     }
   }
 
@@ -86,31 +135,38 @@ export async function GET() {
     const tax = asTaxonomy(sp?.taxonomy);
 
     const family = str(tax?.family_name) ?? str(sp?.familia) ?? null;
-    const composedName = [str(sp?.genero) ?? str(tax?.genus_name), str(sp?.especie)]
-      .filter(Boolean)
-      .join(' ');
+    const genus = str(sp?.genero) ?? str(tax?.genus_name) ?? null;
+    const speciesEpithet = str(sp?.especie) ?? null;
+    const subspecies = str(sp?.subespecie) ?? null;
+    const composedName = [genus, speciesEpithet, subspecies].filter(Boolean).join(' ');
     const species =
       str(tax?.species_name) ?? str(sp?.species_name) ?? (composedName || null);
-    const kind = str(sp?.rubro) ?? str(sp?.categoria) ?? null;
-    const code = sp?.id
-      ? `LEGACY-${sp.id.replace(/-/g, '').slice(0, 8).toUpperCase()}`
-      : '';
+    const rubro = str(sp?.rubro) ?? null;
+    const category = str(sp?.categoria) ?? null;
+    const kind = rubro ?? category;
+    const code =
+      str(sp?.specimen_code) ??
+      (sp?.id ? `LEGACY-${sp.id.replace(/-/g, '').slice(0, 8).toUpperCase()}` : '');
 
     return {
       id: row.id,
       specimenId: row.specimen_id,
       publicId: row.public_id,
       mediaType: row.media_type,
-      view: null as string | null,
+      view: str(row.view) ?? null,
       displayOrder: row.display_order ?? 9,
       secureUrl: row.media_url ?? null,
       code,
       family,
+      genus,
+      speciesEpithet,
+      subspecies,
+      category,
       kind,
       species,
       commonName: null as string | null,
     };
   });
 
-  return NextResponse.json({ items });
+  return NextResponse.json({ items, autoStudio: true, pageSizeDefault: 10 });
 }

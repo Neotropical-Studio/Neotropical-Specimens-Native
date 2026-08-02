@@ -144,6 +144,8 @@ export function buildMorphoGodartyDetailView(): SpecimenDetailView {
     order: n.order,
     family: n.family,
     genus: n.genus,
+    speciesEpithet: 'didius',
+    subspecies: 'tingomarensis',
     regionName: n.regionName,
     regionCode: n.regionCode,
     country: n.country,
