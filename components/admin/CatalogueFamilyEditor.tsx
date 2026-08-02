@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowDown,
   ArrowUp,
   CloudDownload,
+  FolderInput,
   Loader2,
   Pencil,
   Plus,
@@ -13,7 +14,9 @@ import {
   Trash2,
   Undo2,
 } from 'lucide-react';
+import AdminCardsPager from '@/components/admin/AdminCardsPager';
 import PublishProductionButton from '@/components/admin/PublishProductionButton';
+import { adminCardsPerPage } from '@/lib/specimens/cataloguePagination';
 
 type FamilyRow = {
   id: string;
@@ -53,6 +56,12 @@ export default function CatalogueFamilyEditor({
   const [newLabel, setNewLabel] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editLabel, setEditLabel] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(() => adminCardsPerPage());
+  const [placeId, setPlaceId] = useState<string | null>(null);
+  const [placeRegionId, setPlaceRegionId] = useState(initialRegionId);
+  const [placeCategoryId, setPlaceCategoryId] = useState(initialCategoryId);
+  const [familyQ, setFamilyQ] = useState('');
 
   const loadMeta = useCallback(async () => {
     const res = await fetch('/api/admin/catalogue-families');
@@ -73,6 +82,7 @@ export default function CatalogueFamilyEditor({
       };
       if (!res.ok) throw new Error(json.error ?? 'Error al cargar');
       setFamilies(json.families ?? []);
+      setPage(1);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -87,6 +97,19 @@ export default function CatalogueFamilyEditor({
   useEffect(() => {
     void loadFamilies();
   }, [loadFamilies]);
+
+  const filteredFamilies = useMemo(() => {
+    const q = familyQ.trim().toLowerCase();
+    if (!q) return families;
+    return families.filter((f) => f.label.toLowerCase().includes(q));
+  }, [families, familyQ]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredFamilies.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pageRows = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return filteredFamilies.slice(start, start + pageSize);
+  }, [filteredFamilies, safePage, pageSize]);
 
   async function post(body: Record<string, unknown>) {
     setError(null);
@@ -114,7 +137,6 @@ export default function CatalogueFamilyEditor({
           json.families ? ` · ${json.families.filter((f) => f.active).length} activas` : ''
         }`,
       );
-      // Avisa al panel CARD/VIDEO para refrescar nombres sin hardcode / sin pedirle a nadie.
       const { notifyCatalogueFamiliesChanged } = await import(
         '@/lib/specimens/catalogue-families-events'
       );
@@ -128,7 +150,6 @@ export default function CatalogueFamilyEditor({
     }
   }
 
-  /** Activa edición: guarda lista en Supabase o JSON Cloudinary (sin SQL obligatorio). */
   async function ensureEditable(): Promise<FamilyRow[] | null> {
     if (families.length > 0 && !families.some((f) => isEphemeral(f.id))) {
       return families;
@@ -136,9 +157,7 @@ export default function CatalogueFamilyEditor({
     const json = await post({ action: 'seed', regionId, categoryId });
     if (!json?.families) return null;
     if (json.families.some((f) => isEphemeral(f.id))) {
-      setError(
-        'No se pudo guardar la lista. Revisá Cloudinary API keys en Vercel.',
-      );
+      setError('No se pudo guardar la lista. Revisá Cloudinary API keys en Vercel.');
       return null;
     }
     setOkMsg(
@@ -149,18 +168,11 @@ export default function CatalogueFamilyEditor({
     return json.families;
   }
 
-  async function enableEdit() {
-    await ensureEditable();
-  }
-
-  async function resync() {
-    await ensureEditable();
-    await post({ action: 'resync', regionId, categoryId });
-  }
-
-  async function bootstrapAll() {
-    await post({ action: 'bootstrap_all' });
-    await loadFamilies();
+  async function resolveId(id: string, rows: FamilyRow[]): Promise<string> {
+    if (!isEphemeral(id)) return id;
+    return (
+      rows.find((r) => r.label === families.find((f) => f.id === id)?.label)?.id ?? id
+    );
   }
 
   async function create() {
@@ -176,10 +188,7 @@ export default function CatalogueFamilyEditor({
     if (!label) return;
     const rows = await ensureEditable();
     if (!rows) return;
-    const realId = isEphemeral(id)
-      ? rows.find((r) => r.label === families.find((f) => f.id === id)?.label)?.id ??
-        id
-      : id;
+    const realId = await resolveId(id, rows);
     const ok = await post({ action: 'update', id: realId, label });
     if (ok) {
       setEditingId(null);
@@ -190,22 +199,54 @@ export default function CatalogueFamilyEditor({
   async function setActive(id: string, active: boolean) {
     const rows = await ensureEditable();
     if (!rows) return;
-    const realId = isEphemeral(id)
-      ? rows.find((r) => r.label === families.find((f) => f.id === id)?.label)?.id ??
-        id
-      : id;
+    const realId = await resolveId(id, rows);
     await post({ action: 'update', id: realId, active });
   }
 
-  async function move(index: number, dir: -1 | 1) {
-    const next = index + dir;
+  async function hardDelete(id: string, label: string) {
+    if (
+      !window.confirm(
+        `¿BORRAR permanentemente «${label}»?\n(No borra CARD/VIDEO en Cloudinary. Las fichas de especie no se borran.)`,
+      )
+    ) {
+      return;
+    }
+    const rows = await ensureEditable();
+    if (!rows) return;
+    const realId = await resolveId(id, rows);
+    await post({ action: 'delete', id: realId, regionId, categoryId });
+  }
+
+  async function relocate(id: string) {
+    if (
+      placeRegionId === regionId &&
+      placeCategoryId === categoryId
+    ) {
+      setError('Elegí otra región o categoría para colocar.');
+      return;
+    }
+    const rows = await ensureEditable();
+    if (!rows) return;
+    const realId = await resolveId(id, rows);
+    const ok = await post({
+      action: 'relocate',
+      id: realId,
+      regionId,
+      categoryId,
+      targetRegionId: placeRegionId,
+      targetCategoryId: placeCategoryId,
+    });
+    if (ok) setPlaceId(null);
+  }
+
+  async function move(indexInFull: number, dir: -1 | 1) {
+    const next = indexInFull + dir;
     if (next < 0 || next >= families.length) return;
     const rows = await ensureEditable();
     if (!rows) return;
 
-    // Reordenar sobre la lista persistida (mismos labels)
     const labelsOrder = [...families];
-    const [row] = labelsOrder.splice(index, 1);
+    const [row] = labelsOrder.splice(indexInFull, 1);
     labelsOrder.splice(next, 0, row);
     setFamilies(labelsOrder);
 
@@ -234,25 +275,23 @@ export default function CatalogueFamilyEditor({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
-            Clasificación · regenerativa · industrial · cero hardcode
+            Consola taxonomía · familias · paginado
           </p>
           <h2 className="mt-0.5 text-sm font-semibold text-white">
-            Crear · ordenar · renombrar · eliminar · colocar
+            Crear · ordenar · colocar · renombrar · eliminar
           </h2>
           <p className="mt-1 max-w-2xl text-xs text-neutral-400">
-            Libre para modificar el catálogo cuando quieras:{' '}
-            <strong className="text-neutral-200">↑↓ ordenar</strong>,{' '}
-            <strong className="text-neutral-200">lápiz renombrar</strong>,{' '}
-            <strong className="text-neutral-200">papelera ocultar/eliminar</strong>,{' '}
-            <strong className="text-neutral-200">Crear</strong> abajo. CARD/VIDEO → panel Node
-            Media arriba (grabar / eliminar / reemplazar). Taxonomía de cada pieza → Especímenes.
+            Filtro por región/categoría. Máximo compacto:{' '}
+            <strong className="text-neutral-200">{pageSize} fichas/página</strong>. Orden ↑↓ en
+            el mismo scope; <strong className="text-neutral-200">Colocar</strong> mueve a otra
+            región/categoría.
           </p>
         </div>
         <Link
-          href="/admin/especimenes"
+          href="/admin/especimenes#fichas-especies"
           className="rounded-md border border-violet-800/60 bg-violet-950/40 px-3 py-1.5 text-xs text-violet-200 hover:bg-violet-900/50"
         >
-          Taxonomía por espécimen →
+          Fichas especie ↓
         </Link>
       </div>
 
@@ -263,12 +302,15 @@ export default function CatalogueFamilyEditor({
         />
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <label className="flex flex-col gap-1 text-xs text-neutral-400">
           Región
           <select
             value={regionId}
-            onChange={(e) => setRegionId(e.target.value)}
+            onChange={(e) => {
+              setRegionId(e.target.value);
+              setPage(1);
+            }}
             className="rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-sm text-neutral-100"
           >
             {(meta?.regions ?? [{ id: regionId, label: regionId }]).map((r) => (
@@ -282,7 +324,10 @@ export default function CatalogueFamilyEditor({
           Categoría
           <select
             value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
+            onChange={(e) => {
+              setCategoryId(e.target.value);
+              setPage(1);
+            }}
             className="rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-sm text-neutral-100"
           >
             {(meta?.categories ?? [{ id: categoryId, label: categoryId }]).map((c) => (
@@ -291,6 +336,18 @@ export default function CatalogueFamilyEditor({
               </option>
             ))}
           </select>
+        </label>
+        <label className="flex flex-col gap-1 text-xs text-neutral-400">
+          Filtrar familia
+          <input
+            value={familyQ}
+            onChange={(e) => {
+              setFamilyQ(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Nymphalidae…"
+            className="rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-sm text-neutral-100 placeholder:text-neutral-600"
+          />
         </label>
       </div>
 
@@ -306,16 +363,16 @@ export default function CatalogueFamilyEditor({
         </button>
         <button
           type="button"
-          onClick={() => void enableEdit()}
+          onClick={() => void ensureEditable()}
           disabled={Boolean(busy)}
           className="inline-flex items-center gap-1 rounded-md bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600"
         >
           {busy === 'seed' ? <Loader2 size={12} className="animate-spin" /> : <Pencil size={12} />}
-          {ready ? 'Edición activa' : 'Activar edición (guardar lista)'}
+          {ready ? 'Edición activa' : 'Activar edición'}
         </button>
         <button
           type="button"
-          onClick={() => void resync()}
+          onClick={() => void post({ action: 'resync', regionId, categoryId })}
           disabled={Boolean(busy)}
           className="inline-flex items-center gap-1 rounded-md border border-sky-800 bg-sky-950/50 px-2.5 py-1 text-xs text-sky-200 hover:bg-sky-900/40"
         >
@@ -324,11 +381,14 @@ export default function CatalogueFamilyEditor({
           ) : (
             <CloudDownload size={12} />
           )}
-          Sync carpetas Cloudinary
+          Sync Cloudinary
         </button>
         <button
           type="button"
-          onClick={() => void bootstrapAll()}
+          onClick={async () => {
+            await post({ action: 'bootstrap_all' });
+            await loadFamilies();
+          }}
           disabled={Boolean(busy)}
           className="inline-flex items-center gap-1 rounded-md border border-amber-800/60 bg-amber-950/30 px-2.5 py-1 text-xs text-amber-100 hover:bg-amber-900/30"
         >
@@ -339,15 +399,9 @@ export default function CatalogueFamilyEditor({
           )}
           Bootstrap todas
         </button>
-        {ready ? (
-          <span className="rounded-full bg-emerald-950 px-2 py-0.5 text-[10px] text-emerald-300">
-            Lista viva · {activeCount} activas / {families.length}
-          </span>
-        ) : (
-          <span className="rounded-full bg-amber-950 px-2 py-0.5 text-[10px] text-amber-200">
-            Solo lectura hasta «Activar edición»
-          </span>
-        )}
+        <span className="rounded-full bg-emerald-950 px-2 py-0.5 text-[10px] text-emerald-300">
+          {activeCount} activas / {families.length}
+        </span>
       </div>
 
       {error ? (
@@ -356,142 +410,216 @@ export default function CatalogueFamilyEditor({
         </p>
       ) : null}
       {okMsg ? (
-        <p className="mt-3 rounded-md border border-emerald-700 bg-emerald-950/50 px-3 py-2.5 text-sm font-medium text-emerald-200">
+        <p className="mt-3 rounded-md border border-emerald-700 bg-emerald-950/50 px-3 py-2 text-xs font-medium text-emerald-200">
           ✓ {okMsg}
         </p>
       ) : null}
 
       <ul className="mt-4 divide-y divide-neutral-800 rounded-lg border border-neutral-800">
-        {families.map((f, i) => (
-          <li
-            key={f.id}
-            className={`flex flex-wrap items-center gap-2 px-3 py-2 text-sm ${
-              f.active ? 'bg-neutral-950/40' : 'bg-neutral-900/30 opacity-60'
-            }`}
-          >
-            <span className="w-6 shrink-0 text-center text-[10px] text-neutral-500">
-              {i + 1}
-            </span>
-            {editingId === f.id ? (
-              <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <input
-                  value={editLabel}
-                  onChange={(e) => setEditLabel(e.target.value)}
-                  autoFocus
-                  placeholder="Nombre visible"
-                  className="w-full rounded border border-neutral-600 bg-neutral-900 px-2 py-1 text-sm text-white"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') void saveRename(f.id);
-                    if (e.key === 'Escape') setEditingId(null);
-                  }}
-                />
-                <span className="text-[10px] text-neutral-500">
-                  Carpeta media (no cambia al renombrar):{' '}
-                  <span className="font-mono text-neutral-400">
-                    {f.folder ?? f.label}
-                  </span>
+        {pageRows.map((f) => {
+          const fullIndex = families.findIndex((x) => x.id === f.id);
+          return (
+            <li
+              key={f.id}
+              className={`px-3 py-2 text-sm ${
+                f.active ? 'bg-neutral-950/40' : 'bg-neutral-900/30 opacity-70'
+              }`}
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="w-6 shrink-0 text-center text-[10px] text-neutral-500">
+                  {fullIndex + 1}
                 </span>
-              </div>
-            ) : (
-              <div className="min-w-0 flex-1">
-                <span className="block truncate text-neutral-100">{f.label}</span>
-                {f.folder && f.folder !== f.label ? (
-                  <span className="block truncate font-mono text-[10px] text-neutral-500">
-                    media: {f.folder}
-                  </span>
-                ) : null}
-              </div>
-            )}
-            <div className="flex shrink-0 flex-wrap items-center gap-1">
-              <button
-                type="button"
-                title="Subir en el orden"
-                disabled={i === 0 || Boolean(busy)}
-                onClick={() => void move(i, -1)}
-                className="inline-flex items-center gap-0.5 rounded border border-neutral-800 px-1.5 py-1 text-[10px] text-neutral-400 hover:border-neutral-600 hover:text-white disabled:opacity-30"
-              >
-                <ArrowUp size={12} />
-                Subir
-              </button>
-              <button
-                type="button"
-                title="Bajar en el orden"
-                disabled={i === families.length - 1 || Boolean(busy)}
-                onClick={() => void move(i, 1)}
-                className="inline-flex items-center gap-0.5 rounded border border-neutral-800 px-1.5 py-1 text-[10px] text-neutral-400 hover:border-neutral-600 hover:text-white disabled:opacity-30"
-              >
-                <ArrowDown size={12} />
-                Bajar
-              </button>
-              {editingId === f.id ? (
-                <button
-                  type="button"
-                  onClick={() => void saveRename(f.id)}
-                  className="rounded bg-emerald-700 px-2 py-0.5 text-[10px] font-semibold text-white"
-                >
-                  GRABAR
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  title="Renombrar / modificar"
-                  disabled={Boolean(busy)}
-                  onClick={() => {
-                    setEditingId(f.id);
-                    setEditLabel(f.label);
-                  }}
-                  className="inline-flex items-center gap-0.5 rounded border border-sky-900/60 px-1.5 py-1 text-[10px] text-sky-300 hover:bg-sky-950 disabled:opacity-30"
-                >
-                  <Pencil size={12} />
-                  Modificar
-                </button>
-              )}
-              {f.active ? (
-                <button
-                  type="button"
-                  title="Ocultar del catálogo (se puede reactivar)"
-                  disabled={Boolean(busy)}
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        `¿Ocultar «${f.label}» del catálogo?\n(Podés reactivarla después. CARD/VIDEO en Cloudinary no se borran.)`,
-                      )
-                    ) {
-                      void setActive(f.id, false);
+                {editingId === f.id ? (
+                  <input
+                    value={editLabel}
+                    onChange={(e) => setEditLabel(e.target.value)}
+                    autoFocus
+                    className="min-w-0 flex-1 rounded border border-neutral-600 bg-neutral-900 px-2 py-1 text-sm text-white"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') void saveRename(f.id);
+                      if (e.key === 'Escape') setEditingId(null);
+                    }}
+                  />
+                ) : (
+                  <div className="min-w-0 flex-1">
+                    <span className="block truncate text-neutral-100">{f.label}</span>
+                  </div>
+                )}
+                <div className="flex shrink-0 flex-wrap items-center gap-1">
+                  <button
+                    type="button"
+                    title="Subir"
+                    disabled={fullIndex <= 0 || Boolean(busy) || Boolean(familyQ)}
+                    onClick={() => void move(fullIndex, -1)}
+                    className="rounded border border-neutral-800 px-1.5 py-1 text-[10px] text-neutral-400 hover:text-white disabled:opacity-30"
+                  >
+                    <ArrowUp size={12} />
+                  </button>
+                  <button
+                    type="button"
+                    title="Bajar"
+                    disabled={
+                      fullIndex < 0 ||
+                      fullIndex >= families.length - 1 ||
+                      Boolean(busy) ||
+                      Boolean(familyQ)
                     }
-                  }}
-                  className="inline-flex items-center gap-0.5 rounded border border-red-900/50 px-1.5 py-1 text-[10px] text-red-300 hover:bg-red-950 disabled:opacity-30"
-                >
-                  <Trash2 size={12} />
-                  Eliminar
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  title="Volver a mostrar en el catálogo"
-                  disabled={Boolean(busy)}
-                  onClick={() => void setActive(f.id, true)}
-                  className="inline-flex items-center gap-0.5 rounded border border-emerald-900/50 px-1.5 py-1 text-[10px] text-emerald-300 hover:bg-emerald-950 disabled:opacity-30"
-                >
-                  <Undo2 size={12} />
-                  Reactivar
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
-        {families.length === 0 && !busy ? (
+                    onClick={() => void move(fullIndex, 1)}
+                    className="rounded border border-neutral-800 px-1.5 py-1 text-[10px] text-neutral-400 hover:text-white disabled:opacity-30"
+                  >
+                    <ArrowDown size={12} />
+                  </button>
+                  {editingId === f.id ? (
+                    <button
+                      type="button"
+                      onClick={() => void saveRename(f.id)}
+                      className="rounded bg-emerald-700 px-2 py-0.5 text-[10px] font-semibold text-white"
+                    >
+                      GRABAR
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={Boolean(busy)}
+                      onClick={() => {
+                        setEditingId(f.id);
+                        setEditLabel(f.label);
+                      }}
+                      className="inline-flex items-center gap-0.5 rounded border border-sky-900/60 px-1.5 py-1 text-[10px] text-sky-300 hover:bg-sky-950 disabled:opacity-30"
+                    >
+                      <Pencil size={12} />
+                      Renombrar
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    disabled={Boolean(busy)}
+                    onClick={() => {
+                      setPlaceId(placeId === f.id ? null : f.id);
+                      setPlaceRegionId(regionId);
+                      setPlaceCategoryId(categoryId);
+                    }}
+                    className="inline-flex items-center gap-0.5 rounded border border-amber-900/50 px-1.5 py-1 text-[10px] text-amber-200 hover:bg-amber-950 disabled:opacity-30"
+                  >
+                    <FolderInput size={12} />
+                    Colocar
+                  </button>
+                  {f.active ? (
+                    <button
+                      type="button"
+                      disabled={Boolean(busy)}
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            `¿Ocultar «${f.label}» del catálogo? (reactivable)`,
+                          )
+                        ) {
+                          void setActive(f.id, false);
+                        }
+                      }}
+                      className="inline-flex items-center gap-0.5 rounded border border-red-900/50 px-1.5 py-1 text-[10px] text-red-300 hover:bg-red-950 disabled:opacity-30"
+                    >
+                      <Trash2 size={12} />
+                      Ocultar
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={Boolean(busy)}
+                      onClick={() => void setActive(f.id, true)}
+                      className="inline-flex items-center gap-0.5 rounded border border-emerald-900/50 px-1.5 py-1 text-[10px] text-emerald-300 hover:bg-emerald-950 disabled:opacity-30"
+                    >
+                      <Undo2 size={12} />
+                      Reactivar
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    disabled={Boolean(busy)}
+                    onClick={() => void hardDelete(f.id, f.label)}
+                    className="rounded border border-red-950 px-1.5 py-1 text-[10px] text-red-400/80 hover:bg-red-950 disabled:opacity-30"
+                    title="Borrar permanente"
+                  >
+                    Borrar
+                  </button>
+                </div>
+              </div>
+
+              {placeId === f.id ? (
+                <div className="mt-2 flex flex-wrap items-end gap-2 rounded border border-amber-900/40 bg-amber-950/20 p-2">
+                  <label className="flex flex-col gap-0.5 text-[10px] text-amber-200/80">
+                    Región destino
+                    <select
+                      value={placeRegionId}
+                      onChange={(e) => setPlaceRegionId(e.target.value)}
+                      className="rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-xs text-white"
+                    >
+                      {(meta?.regions ?? []).map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="flex flex-col gap-0.5 text-[10px] text-amber-200/80">
+                    Categoría destino
+                    <select
+                      value={placeCategoryId}
+                      onChange={(e) => setPlaceCategoryId(e.target.value)}
+                      className="rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-xs text-white"
+                    >
+                      {(meta?.categories ?? []).map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    disabled={Boolean(busy)}
+                    onClick={() => void relocate(f.id)}
+                    className="rounded bg-amber-700 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-amber-600"
+                  >
+                    Mover aquí
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPlaceId(null)}
+                    className="rounded border border-neutral-700 px-2 py-1 text-[11px] text-neutral-400"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              ) : null}
+            </li>
+          );
+        })}
+        {pageRows.length === 0 && !busy ? (
           <li className="px-3 py-4 text-center text-xs text-neutral-500">
-            Lista vacía — creá la primera familia abajo.
+            Sin familias en esta página / filtro.
           </li>
         ) : null}
       </ul>
+
+      <AdminCardsPager
+        page={safePage}
+        totalPages={totalPages}
+        totalItems={filteredFamilies.length}
+        pageSize={pageSize}
+        onPage={setPage}
+        onPageSize={(n) => {
+          setPageSize(Math.max(2, n));
+          setPage(1);
+        }}
+        label="familias"
+      />
 
       <div className="mt-3 flex flex-wrap gap-2">
         <input
           value={newLabel}
           onChange={(e) => setNewLabel(e.target.value)}
-          placeholder="Nuevo nombre (libre) = carpeta Cloudinary"
+          placeholder="Nueva familia = carpeta Cloudinary"
           disabled={Boolean(busy)}
           className="min-w-[14rem] flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-sm text-white placeholder:text-neutral-600 disabled:opacity-40"
           onKeyDown={(e) => {
@@ -505,7 +633,7 @@ export default function CatalogueFamilyEditor({
           className="inline-flex items-center gap-1 rounded-md bg-sky-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-600 disabled:opacity-40"
         >
           <Plus size={14} />
-          Crear / agregar
+          Crear ficha familia
         </button>
       </div>
     </section>

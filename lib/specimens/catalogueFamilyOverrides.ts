@@ -669,6 +669,130 @@ export async function updateCatalogueFamily(input: {
   return row;
 }
 
+/** Mueve una familia a otra región y/o categoría (mismo rubro secos u otro scope). */
+export async function relocateCatalogueFamily(input: {
+  id: string;
+  targetRegionId: string;
+  targetCategoryId: string;
+}): Promise<CatalogueFamilyRow> {
+  if (isEphemeralId(input.id)) {
+    throw new Error('Lista aún no guardada. Tocá «Activar edición» primero.');
+  }
+  const targetRegionId = input.targetRegionId.trim();
+  const targetCategoryId = input.targetCategoryId.trim();
+  if (!targetRegionId || !targetCategoryId) {
+    throw new Error('Región y categoría destino obligatorias.');
+  }
+
+  await ensurePersistedScope(targetRegionId, targetCategoryId);
+
+  if (!input.id.startsWith('meta:') && isSupabaseAdminConfigured()) {
+    try {
+      const db = getSupabaseAdmin();
+      const { data: maxRow } = await db
+        .from('catalogue_nav_families')
+        .select('sort_order')
+        .eq('region_id', targetRegionId)
+        .eq('category_id', targetCategoryId)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const sortOrder =
+        typeof maxRow?.sort_order === 'number' ? maxRow.sort_order + 1 : 0;
+      const { data, error } = await db
+        .from('catalogue_nav_families')
+        .update({
+          region_id: targetRegionId,
+          category_id: targetCategoryId,
+          sort_order: sortOrder,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', input.id)
+        .select('id, region_id, category_id, label, sort_order, active')
+        .single();
+      if (!error && data) {
+        return {
+          id: data.id,
+          regionId: data.region_id,
+          categoryId: data.category_id,
+          label: data.label,
+          sortOrder: data.sort_order,
+          active: data.active,
+        };
+      }
+      if (error && !tableMissing(error.message)) throw new Error(error.message);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (!tableMissing(msg) && !/0 rows|PGRST116/i.test(msg)) throw e;
+    }
+  }
+
+  const { readCatalogueFamiliesMeta, writeCatalogueFamiliesMeta } =
+    await loadMetaStore();
+  const store = await readCatalogueFamiliesMeta();
+  if (!store) throw new Error('No hay store de familias. Tocá «Activar edición».');
+  const idx = store.families.findIndex((f) => f.id === input.id);
+  if (idx < 0) throw new Error('Familia no encontrada.');
+  const targetList =
+    store.families.filter(
+      (f) =>
+        f.regionId === targetRegionId &&
+        f.categoryId === targetCategoryId &&
+        f.id !== input.id,
+    ) ?? [];
+  const row = {
+    ...store.families[idx],
+    regionId: targetRegionId,
+    categoryId: targetCategoryId,
+    sortOrder: targetList.length,
+  };
+  const next = [...store.families];
+  next[idx] = row;
+  await writeCatalogueFamiliesMeta(next);
+  return row;
+}
+
+/** Borrado permanente de la ficha taxonómica de familia (no toca Cloudinary media). */
+export async function deleteCatalogueFamilyHard(
+  id: string,
+): Promise<{ regionId: string; categoryId: string }> {
+  if (isEphemeralId(id)) {
+    throw new Error('Lista aún no guardada. Tocá «Activar edición» primero.');
+  }
+
+  if (!id.startsWith('meta:') && isSupabaseAdminConfigured()) {
+    try {
+      const db = getSupabaseAdmin();
+      const { data: existing, error: readErr } = await db
+        .from('catalogue_nav_families')
+        .select('id, region_id, category_id')
+        .eq('id', id)
+        .maybeSingle();
+      if (readErr && !tableMissing(readErr.message)) throw new Error(readErr.message);
+      if (existing) {
+        const { error } = await db.from('catalogue_nav_families').delete().eq('id', id);
+        if (error) throw new Error(error.message);
+        return {
+          regionId: existing.region_id as string,
+          categoryId: existing.category_id as string,
+        };
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (!tableMissing(msg) && !/0 rows|PGRST116/i.test(msg)) throw e;
+    }
+  }
+
+  const { readCatalogueFamiliesMeta, writeCatalogueFamiliesMeta } =
+    await loadMetaStore();
+  const store = await readCatalogueFamiliesMeta();
+  if (!store) throw new Error('Familia no encontrada.');
+  const row = store.families.find((f) => f.id === id);
+  if (!row) throw new Error('Familia no encontrada.');
+  await writeCatalogueFamiliesMeta(store.families.filter((f) => f.id !== id));
+  return { regionId: row.regionId, categoryId: row.categoryId };
+}
+
 export async function reorderCatalogueFamilies(
   regionId: string,
   categoryId: string,
