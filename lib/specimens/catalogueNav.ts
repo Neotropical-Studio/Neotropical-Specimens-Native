@@ -210,22 +210,30 @@ export function slugifyCatalogue(label: string): string {
 }
 
 /**
- * Evita fichas huérfanas tipo «Nymphalidae» cuando el catálogo canónico ya
- * tiene lotes «Nymphalidae 1»…«Nymphalidae 6» (Neotropical Diurne).
- * No afecta regiones donde el nombre suelto es la carpeta real (p.ej. Africa).
+ * Evita fichas huérfanas tipo «Nymphalidae» cuando ya existe un par más
+ * específico en el mismo scope:
+ *   · «Nymphalidae 1»…«6»
+ *   · «Nymphalidae Cathonopheles y Diversos species» (label renombrado)
+ * No afecta regiones donde el nombre suelto es la única carpeta (p.ej. Africa).
  */
 export function isOrphanBaseOfNumberedFamilySeries(
   label: string,
   peerLabels: readonly string[],
 ): boolean {
   const base = label.trim();
-  if (!base || /\s+\d+\s*$/.test(base)) return false;
-  const escaped = base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const numbered = new RegExp(`^${escaped}\\s+\\d+\\b`, 'i');
-  return peerLabels.some((peer) => numbered.test(peer.trim()));
+  if (!base) return false;
+  // Ya tiene sufijo («Nymphalidae 1» o «Nymphalidae Cathonopheles…») → no es base.
+  if (/\s+\S/.test(base)) return false;
+
+  const baseLower = base.toLowerCase();
+  const prefix = `${baseLower} `;
+  return peerLabels.some((peer) => {
+    const p = peer.trim().toLowerCase();
+    return p !== baseLower && p.startsWith(prefix);
+  });
 }
 
-/** Quita bases huérfanas si hay pares numerados en la misma lista. */
+/** Quita bases huérfanas si hay pares con sufijo en la misma lista. */
 export function dropOrphanNumberedFamilyBases<T extends string | { label: string }>(
   entries: readonly T[],
 ): T[] {
@@ -234,6 +242,17 @@ export function dropOrphanNumberedFamilyBases<T extends string | { label: string
     const label = typeof e === 'string' ? e : e.label;
     return !isOrphanBaseOfNumberedFamilySeries(label, labels);
   });
+}
+
+/** True si el slug base queda cubierto por un slug hijo (nymphalidae → nymphalidae-1 / nymphalidae-cathonopheles…). */
+export function isOrphanFamilySlug(
+  id: string,
+  peerIds: readonly string[],
+): boolean {
+  const slug = id.trim().toLowerCase();
+  if (!slug) return false;
+  const childPrefix = `${slug}-`;
+  return peerIds.some((p) => p !== slug && p.startsWith(childPrefix));
 }
 
 export function findRubroById(id: string) {
@@ -877,12 +896,42 @@ export function buildFamilyNodes(
   const expectedNodes = expectedEntries.map(
     (fam) => buckets.get(slugifyCatalogue(fam.label))!,
   );
+
+  /** Neotropical Diurne: «Nymphalidae» suelto nunca es carpeta canónica (sí 1…6 / renombres). */
+  const blockBareNymphalidae =
+    categoryId === 'butterflies-lepidoptera-diurne' &&
+    resolvedRegionId === 'neotropical';
+
   const extras = [...buckets.values()]
     .filter((n) => !expectedIds.has(n.id) && n.count > 0)
-    .filter((n) => !isOrphanBaseOfNumberedFamilySeries(n.label, expectedLabels))
+    .filter((n) => {
+      if (
+        blockBareNymphalidae &&
+        n.label.trim().toLowerCase() === 'nymphalidae'
+      ) {
+        return false;
+      }
+      return (
+        !isOrphanBaseOfNumberedFamilySeries(n.label, expectedLabels) &&
+        !isOrphanFamilySlug(n.id, [...expectedIds])
+      );
+    })
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
 
-  return [...expectedNodes, ...extras];
+  const merged = [...expectedNodes, ...extras].filter((n) => {
+    if (
+      blockBareNymphalidae &&
+      n.label.trim().toLowerCase() === 'nymphalidae'
+    ) {
+      return false;
+    }
+    return !isOrphanFamilySlug(n.id, [
+      ...expectedNodes.map((x) => x.id),
+      ...extras.map((x) => x.id),
+    ]);
+  });
+
+  return merged;
 }
 
 /** Comparación A→Z por nombre científico (catálogo de familia). */
