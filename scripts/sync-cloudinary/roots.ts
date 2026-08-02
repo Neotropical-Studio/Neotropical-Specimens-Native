@@ -563,7 +563,7 @@ export const MOTHS_CATEGORY =
 export const MOTHS_CATEGORY_SEGMENT = MOTHS_CATEGORY.segment;
 
 /** Label UI / usuario — “Nocturnas”; path Cloudinary sigue siendo Nocturne. */
-export const MOTHS_DISPLAY_LABEL = 'Butterflies Nocturne';
+export const MOTHS_DISPLAY_LABEL = 'Moths (Butterflies Nocturne)';
 
 /** Moths bajo Neotropical. */
 export const NEOTROPICAL_MOTHS_ROOT = `${DEFAULT_ROOT}/${MOTHS_CATEGORY_SEGMENT}`;

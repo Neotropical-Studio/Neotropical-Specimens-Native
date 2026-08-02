@@ -2,12 +2,11 @@
 
 // ============================================================================
 // Cuerpo vivo del escaparate: un solo stream de inventario (Supabase) alimenta
-// Hero + catálogo. Empty states profesionales cuando no hay data; aparición
-// automática de productos reales en cuanto se sincronizan (Cloudinary +
-// taxonomía), sin tocar el código.
+// Hero + catálogo. Primero las 5 ventanas de categoría; al elegir una se
+// siguen las familias en el flujo jerárquico normal.
 // ============================================================================
 import Hero, { type HeroStats } from './Hero';
-import SpecimenExplorer from './SpecimenExplorer';
+import HomeCategoryWindows from './HomeCategoryWindows';
 import { useLiveSpecimens } from '@/lib/specimens/useLiveSpecimens';
 import type { SpecimenView } from '@/lib/specimens/view';
 
@@ -28,7 +27,7 @@ function computeStats(specimens: SpecimenView[]): HeroStats {
 }
 
 export default function LiveShowcase({ initial, strings, lang, country }: Props) {
-  const { specimens, mode } = useLiveSpecimens(initial);
+  const { specimens } = useLiveSpecimens(initial);
   const stats = computeStats(specimens);
 
   return (
@@ -40,7 +39,18 @@ export default function LiveShowcase({ initial, strings, lang, country }: Props)
         lang={lang}
         country={country}
       />
-      <SpecimenExplorer initial={specimens} strings={strings} lang={lang} syncMode={mode} liveOwned />
+      {/* Parte de abajo de la portada: 5 ventanas → luego familias. */}
+      <HomeCategoryWindows
+        specimens={specimens}
+        mediaSeed={initial}
+        lang={lang}
+        title={strings['catalogue.categories_title'] || 'Categorías'}
+        subtitle={
+          strings['catalogue.categories_home_subtitle'] ||
+          'Butterflies Diurne · Moths · Beetles · Insects · Rare, Gynan, Hybrid, Freak. Elige una; después las familias como siempre.'
+        }
+        childLabel={strings['catalogue.specimens'] || 'especímenes'}
+      />
     </>
   );
 }
