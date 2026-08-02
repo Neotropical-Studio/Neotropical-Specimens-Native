@@ -84,10 +84,18 @@ export default function MediaSlot({
 
     try {
       const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
-      const data = (await res.json()) as { error?: string; publicId?: string };
+      const data = (await res.json()) as {
+        error?: string;
+        publicId?: string;
+        production?: { ok?: boolean };
+      };
       if (!res.ok) throw new Error(data.error ?? 'Error al subir');
       const at = new Date().toLocaleString('es-PE', { hour12: false });
-      setOk(`GRABADO · ${label} · ${data.publicId ?? 'ok'} · ${at}`);
+      const prodNote =
+        data.production?.ok === false
+          ? ' · prod: revisar'
+          : ' · producción actualizada';
+      setOk(`GRABADO · ${label} · ${data.publicId ?? 'ok'} · ${at}${prodNote}`);
       clearPending();
       window.setTimeout(() => window.location.reload(), 900);
     } catch (err) {

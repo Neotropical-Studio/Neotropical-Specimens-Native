@@ -7,6 +7,7 @@ import {
 } from '@/lib/supabase/client';
 import AdminStructurePanel from '@/components/admin/AdminStructurePanel';
 import AdminModulesProbe from '@/components/admin/AdminModulesProbe';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
@@ -47,6 +48,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
+      <PublishProductionButton variant="panel" />
       {missingServiceRole ? (
         <div className="rounded-xl border border-amber-700/60 bg-amber-950/40 p-4 text-sm text-amber-50">
           <p className="font-semibold text-amber-100">

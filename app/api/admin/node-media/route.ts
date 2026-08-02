@@ -24,6 +24,7 @@ import {
   uploadVideo,
 } from '@/lib/services/cloudinary-upload';
 import { invalidateNodeMediaInventory } from '@/lib/services/node-media-inventory';
+import { publishProduction } from '@/lib/admin/publish-production';
 import {
   deleteNodeMediaSlot,
   upsertNodeMedia,
@@ -127,6 +128,10 @@ export async function DELETE(req: NextRequest) {
       folder,
     });
     invalidateNodeMediaInventory(folder);
+    const production = await publishProduction({
+      mode: 'cache',
+      reason: `node-media:delete:${target.id}:${slot}`,
+    });
     return NextResponse.json({
       ok: true,
       deleted,
@@ -134,6 +139,7 @@ export async function DELETE(req: NextRequest) {
       targetId: target.id,
       slot,
       folder,
+      production,
       message: deleted || registryDeleted
         ? `Eliminado Cloudinary=${deleted}, registry=${registryDeleted}. Podés subir otro CARD/VIDEO.`
         : 'Slot vacío (Cloudinary + registry).',
@@ -240,6 +246,10 @@ export async function POST(req: NextRequest) {
         secure_url: res.secure_url,
       });
       invalidateNodeMediaInventory();
+      const production = await publishProduction({
+        mode: 'cache',
+        reason: `node-media:upload:${target.id}:${slot}:video`,
+      });
       return NextResponse.json({
         ok: true,
         replaced: Boolean(replace),
@@ -253,6 +263,7 @@ export async function POST(req: NextRequest) {
         optimized: true,
         autoStudio: true,
         registry: true,
+        production,
       });
     }
 
@@ -269,6 +280,10 @@ export async function POST(req: NextRequest) {
         secure_url: res.secure_url,
       });
       invalidateNodeMediaInventory();
+      const production = await publishProduction({
+        mode: 'cache',
+        reason: `node-media:upload:${target.id}:card:model3d`,
+      });
       return NextResponse.json({
         ok: true,
         replaced: Boolean(replace),
@@ -282,6 +297,7 @@ export async function POST(req: NextRequest) {
         optimized: true,
         autoStudio: true,
         registry: true,
+        production,
       });
     }
 
@@ -298,6 +314,10 @@ export async function POST(req: NextRequest) {
       secure_url: res.secure_url,
     });
     invalidateNodeMediaInventory();
+    const production = await publishProduction({
+      mode: 'cache',
+      reason: `node-media:upload:${target.id}:${slot}:image`,
+    });
     return NextResponse.json({
       ok: true,
       replaced: Boolean(replace),
@@ -311,6 +331,7 @@ export async function POST(req: NextRequest) {
       optimized: true,
       autoStudio: false,
       registry: true,
+      production,
     });
   } catch (e) {
     return NextResponse.json(

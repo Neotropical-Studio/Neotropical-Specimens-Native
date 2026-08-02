@@ -355,6 +355,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         publicId?: string;
         folder?: string;
         secureUrl?: string;
+        production?: { ok?: boolean };
       };
       if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
       const folder =
@@ -368,7 +369,11 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         secureUrl: json.secureUrl,
         at,
       });
-      setOk(`GRABADO ${slot.toUpperCase()} · ${selected.label} · ${at}`);
+      const prodNote =
+        json.production?.ok === false
+          ? ' · prod: revisar'
+          : ' · producción actualizada';
+      setOk(`GRABADO ${slot.toUpperCase()} · ${selected.label} · ${at}${prodNote}`);
       setUploads((n) => n + 1);
       clearPending();
       if (json.secureUrl && json.publicId) {

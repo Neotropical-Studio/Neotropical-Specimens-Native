@@ -27,7 +27,7 @@ let lastGoodInventory: string[] = [];
 async function loadInventoryUncached(): Promise<string[]> {
   try {
     // 1) Registry DB (industrial, O(slots), regenerativo).
-    let fromDb = await listRegistryPublicIds();
+    const fromDb = await listRegistryPublicIds();
 
     if (fromDb && fromDb.length > 0) {
       lastGoodInventory = fromDb;

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { LogOut, LayoutDashboard, Bug, ImagePlay, Megaphone, Truck, FolderInput, Cpu, Layers } from 'lucide-react';
 import type { AdminUser } from '@/lib/auth/admin';
 import { signOutAction } from '@/app/admin/actions';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 
 const NAV = [
   { href: '/admin',             label: 'Panel',                 icon: LayoutDashboard, status: 'ok' as const },
@@ -43,7 +44,8 @@ export default function AdminNav({ admin }: { admin: AdminUser }) {
             ))}
           </nav>
         </div>
-        <div className="flex items-center gap-3 text-sm text-neutral-400">
+        <div className="flex items-center gap-2 text-sm text-neutral-400 sm:gap-3">
+          {admin.role !== 'viewer' ? <PublishProductionButton variant="nav" /> : null}
           <span className="hidden sm:inline">
             {admin.email} · <span className="text-neutral-500">{admin.role}</span>
           </span>

@@ -20,6 +20,7 @@ import {
   assertNotNodeMediaSlotPath,
   isAutoStudioEnabled,
 } from '@/lib/services/cloudinary-upload';
+import { publishProduction } from '@/lib/admin/publish-production';
 
 export const runtime = 'nodejs';
 
@@ -210,7 +211,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (documentFolder) {
-    return NextResponse.json({ cloudinaryId: result.public_id });
+    const production = await publishProduction({
+      mode: 'cache',
+      reason: `upload:document:${documentFolder}`,
+    });
+    return NextResponse.json({ cloudinaryId: result.public_id, production });
   }
 
   const publicId = result.public_id;
@@ -312,9 +317,15 @@ export async function POST(req: NextRequest) {
     // opcional
   }
 
+  const production = await publishProduction({
+    mode: 'cache',
+    reason: `upload:specimen:${specimenId}:${view ?? mediaType}`,
+  });
+
   return NextResponse.json({
     asset: { type: mediaType, cloudinary_id: publicId, view: view ?? null },
     publicId,
     folder,
+    production,
   });
 }

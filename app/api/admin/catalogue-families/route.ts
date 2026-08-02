@@ -11,6 +11,7 @@ import {
 } from '@/lib/specimens/catalogueFamilyOverrides';
 import { DRIED_SPECIMEN_REGION_FOLDERS } from '@/scripts/sync-cloudinary/roots';
 import { CATALOGUE_CATEGORIES } from '@/lib/specimens/catalogueNav';
+import { publishProduction } from '@/lib/admin/publish-production';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
@@ -22,6 +23,14 @@ const REGION_IDS = new Set<string>(DRIED_SPECIMEN_REGION_FOLDERS.map((r) => r.id
 
 function bad(msg: string, status = 400) {
   return NextResponse.json({ error: msg }, { status });
+}
+
+async function okJson(
+  payload: Record<string, unknown>,
+  reason: string,
+) {
+  const production = await publishProduction({ mode: 'cache', reason });
+  return NextResponse.json({ ...payload, production });
 }
 
 function isEditable(families: Array<{ id: string }>): boolean {
@@ -85,7 +94,7 @@ export async function POST(req: NextRequest) {
   try {
     if (action === 'bootstrap_all') {
       const result = await bootstrapAllCatalogueFamilies();
-      return NextResponse.json({ ok: true, ...result });
+      return okJson({ ok: true, ...result }, 'catalogue-families:bootstrap_all');
     }
 
     if (action === 'seed') {
@@ -97,12 +106,15 @@ export async function POST(req: NextRequest) {
         allowEmpty: true,
       });
       const families = await listCatalogueFamiliesAdmin(regionId, categoryId);
-      return NextResponse.json({
-        ok: true,
-        ...result,
-        families,
-        editable: isEditable(families) || families.length === 0,
-      });
+      return okJson(
+        {
+          ok: true,
+          ...result,
+          families,
+          editable: isEditable(families) || families.length === 0,
+        },
+        `catalogue-families:seed:${regionId}:${categoryId}`,
+      );
     }
 
     if (action === 'resync') {
@@ -111,12 +123,15 @@ export async function POST(req: NextRequest) {
       }
       const result = await resyncFamiliesFromCloudinary(regionId, categoryId);
       const families = await listCatalogueFamiliesAdmin(regionId, categoryId);
-      return NextResponse.json({
-        ok: true,
-        ...result,
-        families,
-        editable: true,
-      });
+      return okJson(
+        {
+          ok: true,
+          ...result,
+          families,
+          editable: true,
+        },
+        `catalogue-families:resync:${regionId}:${categoryId}`,
+      );
     }
 
     if (action === 'create') {
@@ -126,7 +141,10 @@ export async function POST(req: NextRequest) {
       const label = String(body.label ?? '').trim();
       const row = await createCatalogueFamily({ regionId, categoryId, label });
       const families = await listCatalogueFamiliesAdmin(regionId, categoryId);
-      return NextResponse.json({ ok: true, family: row, families, editable: true });
+      return okJson(
+        { ok: true, family: row, families, editable: true },
+        `catalogue-families:create:${regionId}:${categoryId}`,
+      );
     }
 
     if (action === 'update') {
@@ -143,7 +161,10 @@ export async function POST(req: NextRequest) {
       if (body.sortOrder != null) patch.sortOrder = Number(body.sortOrder);
       const row = await updateCatalogueFamily(patch);
       const families = await listCatalogueFamiliesAdmin(row.regionId, row.categoryId);
-      return NextResponse.json({ ok: true, family: row, families, editable: true });
+      return okJson(
+        { ok: true, family: row, families, editable: true },
+        `catalogue-families:update:${id}`,
+      );
     }
 
     if (action === 'reorder') {
@@ -156,7 +177,10 @@ export async function POST(req: NextRequest) {
       if (orderedIds.length === 0) return bad('orderedIds vacío');
       await reorderCatalogueFamilies(regionId, categoryId, orderedIds);
       const families = await listCatalogueFamiliesAdmin(regionId, categoryId);
-      return NextResponse.json({ ok: true, families, editable: true });
+      return okJson(
+        { ok: true, families, editable: true },
+        `catalogue-families:reorder:${regionId}:${categoryId}`,
+      );
     }
 
     return bad(`action desconocida: ${action}`);

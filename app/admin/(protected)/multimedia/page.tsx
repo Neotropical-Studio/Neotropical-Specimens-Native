@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
 import { SPECIMEN_SELECT, toSpecimenView, type SpecimenRow } from '@/lib/specimens/view';
 import AdminTable from '@/components/admin/AdminTable';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 import MediaGalleryLoader from './MediaGalleryLoader';
 
 export const revalidate = 0;
@@ -26,6 +27,7 @@ export default async function MultimediaPickerPage() {
 
   return (
     <div className="flex flex-col gap-10">
+      <PublishProductionButton variant="panel" />
       {/* ── Header ────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
         <div>

@@ -3,6 +3,7 @@ import ClassificationVisionPanel from '@/components/admin/ClassificationVisionPa
 import NodeMediaUploadPanel from '@/components/admin/NodeMediaUploadPanel';
 import CatalogueFamilyEditor from '@/components/admin/CatalogueFamilyEditor';
 import AdminStructurePanel from '@/components/admin/AdminStructurePanel';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 import Link from 'next/link';
 import {
   AFRICA_BUTTERFLIES_ROOT,
@@ -62,6 +63,7 @@ export default async function EspejoAdminPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <PublishProductionButton variant="panel" />
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-white">Espejo Cloudinary ↔ Supabase</h1>
