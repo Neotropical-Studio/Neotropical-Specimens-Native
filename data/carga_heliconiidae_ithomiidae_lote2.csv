@@ -1,0 +1,41 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+HE-010,Dione juno,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,4.50,6-7.0 cm
+HE-011,Dione juno,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,3M,12.00,6-7.0 cm
+HE-012,Dryadula phaetusa,null,Heliconidae,null,null,Lepidoptera,Costa Rica,null,null,A1,M or F,5.50,6.0 cm
+HE-013,Dryas iulia,null,Heliconidae,null,null,Lepidoptera,Peru/Ecuador,null,null,A1,M,3.50,6-7.0 cm
+HE-014,Dryas iulia,null,Heliconidae,null,null,Lepidoptera,Peru/Ecuador,null,null,A1,3M,9.00,6-7.0 cm
+HE-015,Eueides isabella dissolutus,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,4.25,5.5-6.0 cm
+HE-016,Eueides isabella eva?,null,Heliconidae,null,null,Lepidoptera,Belize,null,null,A1,P,12.00,6.0 cm
+HE-017,Eueides tales,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,?,4.00,5-6.0 cm
+IT-004,Godyris duillia (Ithomidae),null,Ithomiidae,null,null,Lepidoptera,Peru,null,null,A1,M,5.50,6.5 cm
+IT-005,Godyris duillia (Ithomidae),null,Ithomiidae,null,null,Lepidoptera,Peru,null,null,A1,3M,15.00,6.5 cm
+IT-006,Godyris zavalata huanaco,null,Ithomiidae,null,null,Lepidoptera,Peru,null,null,A1,M,3.75,6.0 cm
+HE-018,Heliconius hecale sisyphus?,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,3.50,7-8.0 cm
+HE-019,Heliconius antiochus antiochus,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,3M,12.00,7.0 cm
+HE-020,Heliconius antiochus antiochus,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,4.50,7.0 cm
+HE-021,Heliconius besckei,null,Heliconidae,null,null,Lepidoptera,Brazil,null,null,A1/A1- to A1-,M,2.50,6.0 cm
+HE-022,Heliconius besckei,null,Heliconidae,null,null,Lepidoptera,Brazil,null,null,A1,3M,13.50,6-7.0 cm
+HE-023,Heliconius burneyi huebneri,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,6.25,8.0 cm
+HE-024,Heliconius burneyi huebneri,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,3M,15.75,8.0 cm
+HE-025,Heliconius doris doris (Peru),null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M or F,2.50,7.0 cm
+HE-026,Heliconius doris doris (Peru),null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,3M or F,6.00,7.0 cm
+HE-027,Heliconius eleuchia eleuchia,null,Heliconidae,null,null,Lepidoptera,Costa Rica,null,null,A1,M,18.00,8.0 cm
+HE-028,Heliconius erato - 2 patch forewing form,null,Heliconidae,null,null,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,M,10.00,7.0 cm
+HE-029,Heliconius himera (Ecuador),null,Heliconidae,null,null,Lepidoptera,Ecuador,null,null,A1,M,7.00,6.0 cm
+HE-030,Heliconius ismenius metaphorus (Ecuador),null,Heliconidae,null,null,Lepidoptera,Ecuador,null,null,A1,M,7.00,8.0 cm
+HE-031,Heliconius ismenius metaphorus (Ecuador),null,Heliconidae,null,null,Lepidoptera,Ecuador,null,null,A1,3M,18.00,8.0 cm
+HE-032,Heliconius melpomene amaryllis,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,3.75,7.0 cm
+HE-033,Heliconius melpomene amaryllis,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,5M,15.00,7.0 cm
+HE-034,Heliconius melpomene ecuadorensis (Ecuador),null,Heliconidae,null,null,Lepidoptera,Ecuador,null,null,A1,M,4.00,6-6.5 cm
+HE-035,Heliconius melpomene ecuadorensis (Ecuador),null,Heliconidae,null,null,Lepidoptera,Ecuador,null,null,A1,3M,10.50,6-6.5 cm
+HE-036,Heliconius melpomene nanna,null,Heliconidae,null,null,Lepidoptera,Brazil,null,null,A1,M,4.00,6.5 cm
+HE-037,Heliconius numata bicoloratus (Ecuador),null,Heliconidae,null,null,Lepidoptera,Ecuador,null,null,A1,3 PCS,7.50,7-8.0 cm
+HE-038,Heliconius numata talboti?,null,Heliconidae,null,null,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,M,8.00,7-7.5 cm
+HE-039,Heliconius telesiphe cretaceous,null,Heliconidae,null,null,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,M,15.00,8.0 cm
+HE-040,Heliconius telesiphe cretaceous,null,Heliconidae,null,null,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,3M,36.00,8.0 cm
+HE-041,Heliconius wallacei flavescens,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,3M,7.50,7.0 cm
+IT-007,Hypothyris semifulva,null,Ithomiidae,null,null,Lepidoptera,Peru,Tingo Maria,null,A1,M,2.75,6.0 cm
+IT-008,Mechanitis polymnia,null,Ithomiidae,null,null,Lepidoptera,Peru,null,null,A1,M,3.00,6.0 cm
+IT-009,Melinaea idae vespertina (Ecuador),null,Ithomiidae,null,null,Lepidoptera,Ecuador,null,null,A1,3 pcs,9.00,6.5-7.0 cm
+HE-042,Philaethria (Metamorpha) dido,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,6.00,8.5-9.0 cm
+IT-010,Tithorea harmonia hermina (Ecuador),null,Ithomiidae,null,null,Lepidoptera,Ecuador,null,null,A1,M,3.50,6-7.0 cm

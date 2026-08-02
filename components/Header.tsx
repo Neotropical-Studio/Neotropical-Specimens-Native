@@ -44,9 +44,13 @@ export default function Header({ strings, lang: langProp, country = 'PE' }: Prop
   const cartHref = `/${lang}/cart`;
 
   const catalogueHref = `${homeHref}/catalogue`;
+  const driedHref = `${catalogueHref}/dried-specimens?view=regions`;
   const nav = [
     { label: t('nav.catalog', 'Catálogo'), href: catalogueHref },
-    { label: t('nav.regions', 'Regiones'), href: `${homeHref}#regiones` },
+    {
+      label: t('nav.dried_specimens', 'Especímenes secos biológicos'),
+      href: driedHref,
+    },
     { label: t('nav.wholesale', 'Mayorista'), href: `${homeHref}#mayorista` },
     { label: t('nav.contact', 'Contacto'), href: `${homeHref}#contacto` },
   ];

@@ -1,0 +1,999 @@
+2026-08-01 11:10:29  OK  L2  [BR-001]  specimen_id=b54aa27c-17ab-4f14-b195-cfecca65773e  taxon=Brassolis sophorae vulpeculus
+2026-08-01 11:10:31  OK  L3  [BR-002]  specimen_id=e71fed72-0bf9-4e49-a4aa-b4aa6a0d0e25  taxon=Brassolis sophorae vulpeculus
+2026-08-01 11:10:34  OK  L4  [BR-003]  specimen_id=6ad67135-80a4-4d0b-aa2f-e704018ee915  taxon=Caligo atreus agesilaus
+2026-08-01 11:22:19  OK  L2  [BR-001]  specimen_id=bfd45733-f6dd-4019-bb32-924dd2ad4896  taxon=Brassolis sophorae vulpeculus
+2026-08-01 11:22:21  OK  L3  [BR-002]  specimen_id=b751a752-c1d5-47b5-b5b3-af7ac0601e98  taxon=Brassolis sophorae vulpeculus
+2026-08-01 11:22:24  OK  L4  [BR-003]  specimen_id=e2a96582-3365-4efd-a2f2-e537363dc661  taxon=Caligo atreus agesilaus
+2026-08-01 11:22:25  OK  L5  [BR-004]  specimen_id=709dd183-a46f-4278-9e57-b5da93390d3b  taxon=Caligo atreus agesilaus
+2026-08-01 11:22:27  OK  L6  [BR-005]  specimen_id=db1ace82-4772-4d5c-9cb3-bd34ce65b2cd  taxon=Caligo atreus agesilaus
+2026-08-01 11:22:29  OK  L7  [BR-006]  specimen_id=b55d7bcc-4160-42d9-8037-88ed1d3da40a  taxon=Caligo atreus ajax
+2026-08-01 11:22:31  OK  L8  [BR-007]  specimen_id=53fd2eaa-1eeb-4056-962f-2599d30c34f1  taxon=Caligo atreus ajax
+2026-08-01 11:22:33  OK  L9  [BR-008]  specimen_id=04777c52-73ee-47d6-a504-fe041107c10f  taxon=Caligo brasiliensis sulanus
+2026-08-01 11:22:35  OK  L10  [BR-009]  specimen_id=842462b7-b68e-49e6-96e1-849f729ff798  taxon=Caligo eurilochus livius
+2026-08-01 11:22:37  OK  L11  [BR-010]  specimen_id=b438aa38-d0ba-48fc-9822-ba5cb8353966  taxon=Caligo eurilochus livius
+2026-08-01 11:22:39  OK  L12  [BR-011]  specimen_id=e7e00baa-78b0-40ae-af8f-f8d62a08df3d  taxon=Caligo idomeneus idomenides
+2026-08-01 11:22:40  OK  L13  [BR-012]  specimen_id=74842540-6369-408c-b129-4d8d99192e1c  taxon=Caligo idomeneus idomenides
+2026-08-01 11:22:42  OK  L14  [BR-013]  specimen_id=d629d6d0-5f32-466b-abf3-461421bfa6c8  taxon=Caligo illioneus
+2026-08-01 11:22:43  OK  L15  [BR-014]  specimen_id=d01e918e-9b99-479e-ab09-29c79d4cd0ff  taxon=Caligo illioneus
+2026-08-01 11:22:45  OK  L16  [BR-015]  specimen_id=feb17966-4030-44ce-b7f7-aafe1832bf80  taxon=Caligo placidianus
+2026-08-01 11:22:46  OK  L17  [BR-016]  specimen_id=9ad9cffe-a60e-403a-918b-e493f2370a72  taxon=Caligo placidianus
+2026-08-01 11:22:48  OK  L18  [BR-017]  specimen_id=0253fa22-84c3-4769-97d6-b3f24f53948e  taxon=Caligo placidianus
+2026-08-01 11:22:49  OK  L19  [BR-018]  specimen_id=eda1a0ea-e0e2-40a6-a968-7ced972b5d9a  taxon=Caligo placidianus
+2026-08-01 11:22:51  OK  L20  [BR-019]  specimen_id=7e33205b-604e-44fa-8fe4-09f9d6ca389e  taxon=Caligo teucer semicaerulea
+2026-08-01 11:22:53  OK  L21  [BR-020]  specimen_id=787db601-ea70-49b9-9ebe-58e68de005f4  taxon=Caligo teucer semicaerulea
+2026-08-01 11:22:54  OK  L22  [BR-021]  specimen_id=6bb1b85d-8b79-4b77-9537-3a02a67290be  taxon=Caligo teucer semicaerulea
+2026-08-01 11:22:57  OK  L23  [BR-022]  specimen_id=abde8e8d-523f-450c-a700-2cd2edb8ab94  taxon=Dynastor darius darius
+2026-08-01 11:22:58  OK  L24  [BR-023]  specimen_id=18fafe68-19e9-4df6-8b32-7b0db390844b  taxon=Opsiphanes bogatanus
+2026-08-01 11:23:00  OK  L25  [BR-024]  specimen_id=13c8b06a-3363-4747-bdf8-2ae5c505da08  taxon=Opsiphanes cassiae rubigatus
+2026-08-01 11:23:02  OK  L26  [BR-025]  specimen_id=1ac86639-41d1-4651-95dc-e0f55036cce2  taxon=Opsiphanes cassina barkeri
+2026-08-01 11:23:04  OK  L27  [BR-026]  specimen_id=eb29e74a-963d-4695-9fd4-03d80a97a53e  taxon=Opsiphanes cassina barkeri
+2026-08-01 11:23:06  OK  L28  [BR-027]  specimen_id=d46aed32-706d-4e6f-9131-0beb2b11129a  taxon=Opsiphanes cassina barkeri
+2026-08-01 11:23:08  OK  L29  [BR-028]  specimen_id=9dd8f6ec-c9b2-45ae-a996-a952b4cf3394  taxon=Opsiphanes invirae aequatorialis
+2026-08-01 11:23:09  OK  L30  [BR-029]  specimen_id=790a17cc-4f54-4574-b2e7-1f92140faeda  taxon=Opsiphanes invirae aequatorialis
+2026-08-01 11:23:11  OK  L31  [BR-030]  specimen_id=05a4e0f6-9772-472d-b029-eb3ced723168  taxon=Opsiphanes tamarindi incolumis
+2026-08-01 12:06:27  OK  L2  [DA-001]  specimen_id=9e95317b-1db3-41ba-b7c9-cba1b36eacc0  taxon=Danaus plexippus nigrippus
+2026-08-01 12:06:29  OK  L3  [DA-002]  specimen_id=efbe1ccb-f5d1-4922-937e-75d4e4caf45b  taxon=Danaus plexippus nigrippus
+2026-08-01 12:06:30  OK  L4  [DA-003]  specimen_id=1fdf1f39-0db3-49bc-9992-82d2a1c13340  taxon=Danaus plexippus nigrippus
+2026-08-01 12:06:32  OK  L5  [DA-004]  specimen_id=6ca69a4b-78f4-478d-b359-6b5acbcb56f4  taxon=Danaus plexippus nigrippus
+2026-08-01 12:06:34  OK  L6  [DA-005]  specimen_id=abcde380-8450-4859-af20-6f87a6087abc  taxon=Danaus plexippus nigrippus
+2026-08-01 12:06:36  OK  L7  [DA-006]  specimen_id=801205f0-eb37-4615-a437-508f3edb4cbb  taxon=Lycorea halia
+2026-08-01 12:06:37  OK  L8  [DA-007]  specimen_id=3195299a-cb71-4df4-85d6-bae3c8a59168  taxon=Lycorea halia
+2026-08-01 12:06:39  OK  L9  [DA-008]  specimen_id=c47874aa-6604-4b66-b7b8-27a3cce64796  taxon=Lycorea ilione lamaris
+2026-08-01 12:06:41  OK  L10  [DA-009]  specimen_id=5c6d4048-5df5-4100-92f1-bac621d4ff2b  taxon=Lycorea ilione lamaris
+2026-08-01 12:06:43  OK  L11  [DA-010]  specimen_id=d5fe008c-4798-45b1-8861-371202ceedcb  taxon=Lycorea ilione lamaris
+2026-08-01 12:26:41  OK  L2  [HE-001]  specimen_id=d402bd12-3699-4c65-8814-48516af7c098  taxon=Heliconius melpomene amaryllis
+2026-08-01 12:26:43  OK  L3  [HE-002]  specimen_id=2c514a25-d74d-4845-bbae-6aecdeda6d1b  taxon=Heliconius melpomene amaryllis
+2026-08-01 12:26:45  OK  L4  [HE-003]  specimen_id=b0d949e2-f6c3-4c67-a424-7d71d3a51a40  taxon=Heliconius erato lativitta
+2026-08-01 12:26:46  OK  L5  [HE-004]  specimen_id=c1c2c158-7d0f-4d79-a55b-b53b09dad361  taxon=Heliconius erato lativitta
+2026-08-01 12:26:48  OK  L6  [HE-005]  specimen_id=25c45a9a-a028-4b78-9bb8-110b901e3270  taxon=Heliconius sara thamar
+2026-08-01 12:26:50  OK  L7  [HE-006]  specimen_id=10bf3e09-79d1-4b7b-a8b8-8a34d0b4d43c  taxon=Heliconius sara thamar
+2026-08-01 12:26:53  OK  L8  [HE-007]  specimen_id=b13d4ea7-e254-440e-8e48-f041c851d09e  taxon=Agraulis vanillae lucina
+2026-08-01 12:26:55  OK  L9  [HE-008]  specimen_id=d1799e9a-4e1f-4845-84ee-336ea9aeb4f5  taxon=Dryas iulia alcionea
+2026-08-01 12:26:56  OK  L10  [HE-009]  specimen_id=464210fd-5b6e-45ca-8395-7a4755a210a1  taxon=Dryas iulia alcionea
+2026-08-01 12:26:59  OK  L11  [IT-001]  specimen_id=13e7b0dd-6d08-46d2-b327-3ec3770cf9f4  taxon=Oleria baizana
+2026-08-01 12:27:01  OK  L12  [IT-002]  specimen_id=7ae70044-87ba-4894-9977-817c50efa863  taxon=Pteronymia alcidameia
+2026-08-01 12:27:03  OK  L13  [IT-003]  specimen_id=62c48cd6-1267-4fbb-80e8-0b6e284a44c0  taxon=Hypoleria lavinia
+2026-08-01 12:33:48  OK  L2  [HE-010]  specimen_id=27b01ae7-bac4-4a53-8559-afc3b7ce38e1  taxon=Dione juno
+2026-08-01 12:33:50  OK  L3  [HE-011]  specimen_id=42631082-7949-437d-a0c0-3b71495156a6  taxon=Dione juno
+2026-08-01 12:34:21  OK  L2  [HE-010]  specimen_id=0c567e3f-1112-4f72-be50-44087da9dcf7  taxon=Dione juno
+2026-08-01 12:34:22  OK  L3  [HE-011]  specimen_id=9ccfed80-5644-458e-a9d7-b22a8b2f6180  taxon=Dione juno
+2026-08-01 12:34:24  OK  L4  [HE-012]  specimen_id=48006f28-ff9e-4447-8591-38b4949ea6b8  taxon=Dryadula phaetusa
+2026-08-01 12:34:27  OK  L5  [HE-013]  specimen_id=f732fecf-b71a-4478-89eb-b05a48840f98  taxon=Dryas iulia
+2026-08-01 12:34:28  OK  L6  [HE-014]  specimen_id=1fed4344-0220-49c4-b0ed-33489d4ac76d  taxon=Dryas iulia
+2026-08-01 12:34:30  OK  L7  [HE-015]  specimen_id=362d2dee-7f18-4e94-b01d-ae3a06d3ec7e  taxon=Eueides isabella dissolutus
+2026-08-01 12:34:32  OK  L8  [HE-016]  specimen_id=87b73a62-5500-415a-87b4-5fd7ebb3c120  taxon=Eueides isabella eva
+2026-08-01 12:34:34  OK  L9  [HE-017]  specimen_id=805ff2d5-adaa-4d24-bec4-a1ad0c03bddd  taxon=Eueides tales
+2026-08-01 12:34:36  OK  L10  [IT-004]  specimen_id=802f0ee9-fcd1-4953-93ce-c5b1bb930e81  taxon=Godyris duillia
+2026-08-01 12:34:37  OK  L11  [IT-005]  specimen_id=2e9de2f6-1fe2-4563-b052-d75131f0c86f  taxon=Godyris duillia
+2026-08-01 12:34:39  OK  L12  [IT-006]  specimen_id=b2a18800-455c-4d1e-b74b-343e65fe90cd  taxon=Godyris zavalata huanaco
+2026-08-01 12:34:42  OK  L13  [HE-018]  specimen_id=1ad42e9d-4c7f-4c2e-ba6b-b64ac3c6fce5  taxon=Heliconius hecale sisyphus
+2026-08-01 12:34:44  OK  L14  [HE-019]  specimen_id=de468d4f-fa58-4d57-90ec-27489202a9be  taxon=Heliconius antiochus antiochus
+2026-08-01 12:34:45  OK  L15  [HE-020]  specimen_id=71b7d1e5-e928-4213-a0db-69c0dd912a7e  taxon=Heliconius antiochus antiochus
+2026-08-01 12:34:47  OK  L16  [HE-021]  specimen_id=1c6786ac-0dc4-4b04-bd9c-3129b5b43c40  taxon=Heliconius besckei
+2026-08-01 12:34:48  OK  L17  [HE-022]  specimen_id=61031b27-abd5-4c36-b547-87f59daf57cc  taxon=Heliconius besckei
+2026-08-01 12:34:50  OK  L18  [HE-023]  specimen_id=00dbe710-8386-4647-a0a8-45824685d042  taxon=Heliconius burneyi huebneri
+2026-08-01 12:34:52  OK  L19  [HE-024]  specimen_id=c6c7ac12-58e3-463a-9209-3ce913027bb8  taxon=Heliconius burneyi huebneri
+2026-08-01 12:34:54  OK  L20  [HE-025]  specimen_id=e2710203-ba6f-4f39-8955-4fbf77053db1  taxon=Heliconius doris doris
+2026-08-01 12:34:55  OK  L21  [HE-026]  specimen_id=cec4de85-067c-4561-8561-9ac91c147d79  taxon=Heliconius doris doris
+2026-08-01 12:34:57  OK  L22  [HE-027]  specimen_id=16e4a872-d1b4-4df5-bace-a50a1c673e2c  taxon=Heliconius eleuchia eleuchia
+2026-08-01 12:34:59  OK  L23  [HE-028]  specimen_id=d70663f2-3280-409c-9720-ac14c96745ee  taxon=Heliconius erato
+2026-08-01 12:35:01  OK  L24  [HE-029]  specimen_id=cf94b573-6f5f-47bc-b7db-7f387804cc90  taxon=Heliconius himera
+2026-08-01 12:35:03  OK  L25  [HE-030]  specimen_id=7c57478b-7382-438b-b44c-bb99dc2217e5  taxon=Heliconius ismenius metaphorus
+2026-08-01 12:35:04  OK  L26  [HE-031]  specimen_id=60fea7be-eab6-4ac4-9e14-f4fa5a9d1d3e  taxon=Heliconius ismenius metaphorus
+2026-08-01 12:35:07  OK  L27  [HE-032]  specimen_id=21afdf06-adbc-4cba-918e-c0eb056de97b  taxon=Heliconius melpomene amaryllis
+2026-08-01 12:35:08  OK  L28  [HE-033]  specimen_id=3d38b93d-448b-4b21-9df7-baca39c1479d  taxon=Heliconius melpomene amaryllis
+2026-08-01 12:35:10  OK  L29  [HE-034]  specimen_id=949edd6c-6d41-42fa-897d-c4ecb2893961  taxon=Heliconius melpomene ecuadorensis
+2026-08-01 12:35:11  OK  L30  [HE-035]  specimen_id=92610fcf-a07c-475f-af7d-3c97239a472f  taxon=Heliconius melpomene ecuadorensis
+2026-08-01 12:35:13  OK  L31  [HE-036]  specimen_id=0f1d11b4-5fb0-4d0b-b153-49c894019553  taxon=Heliconius melpomene nanna
+2026-08-01 12:35:15  OK  L32  [HE-037]  specimen_id=7d900985-ea78-45e5-bcc9-cba8bf3b9396  taxon=Heliconius numata bicoloratus
+2026-08-01 12:35:16  OK  L33  [HE-038]  specimen_id=a1be85c5-97f2-474c-8de7-f01803975b84  taxon=Heliconius numata talboti
+2026-08-01 12:35:18  OK  L34  [HE-039]  specimen_id=3dea1179-ac1f-4996-ac45-2bb5222618d8  taxon=Heliconius telesiphe cretaceous
+2026-08-01 12:35:20  OK  L35  [HE-040]  specimen_id=d7a374e1-8ecb-44ce-a2f5-f5ea215aa106  taxon=Heliconius telesiphe cretaceous
+2026-08-01 12:35:22  OK  L36  [HE-041]  specimen_id=99f8169b-6ab7-4aed-b544-f8a913c184e2  taxon=Heliconius wallacei flavescens
+2026-08-01 12:35:24  OK  L37  [IT-007]  specimen_id=bfd71ed1-4b80-43fc-aa66-30cfa386a40e  taxon=Hypothyris semifulva
+2026-08-01 12:35:26  OK  L38  [IT-008]  specimen_id=ca45d7f5-852c-432b-966b-76a5871baa6b  taxon=Mechanitis polymnia
+2026-08-01 12:35:28  OK  L39  [IT-009]  specimen_id=c0f627db-a6ba-4971-aa0c-7cd2d9dd6086  taxon=Melinaea idae vespertina
+2026-08-01 12:35:30  OK  L40  [HE-042]  specimen_id=10d59fea-98e2-4e4f-8bc4-bd8ec3cfa9cb  taxon=Philaethria dido
+2026-08-01 12:35:32  OK  L41  [IT-010]  specimen_id=99312a81-74b0-4f22-8b4d-fc99e90b901c  taxon=Tithorea harmonia hermina
+2026-08-01 12:49:19  OK  L2  [LY-001]  specimen_id=27ce1ce5-e2a1-45c9-9fe3-e5228ca19f2b  taxon=Arawacus seperata
+2026-08-01 12:49:21  OK  L3  [LY-002]  specimen_id=2a57a6e1-6ab3-488e-bf28-63f070e204a2  taxon=Arawacus seperata
+2026-08-01 12:49:22  OK  L4  [LY-003]  specimen_id=d3b990bb-f48c-4187-997e-59ac37f6c35b  taxon=Arcas imperialis
+2026-08-01 12:49:24  OK  L5  [LY-004]  specimen_id=081eae6c-6e67-47b4-ae5d-cef3c3d8f543  taxon=Arcas tuneta
+2026-08-01 12:49:25  OK  L6  [LY-005]  specimen_id=6abc8c44-8707-434b-b8a0-fd660c804126  taxon=Arcas tuneta
+2026-08-01 12:49:27  OK  L7  [LY-006]  specimen_id=c63082e8-5832-40ab-a963-e4417b5e566c  taxon=Eumaeus toxana
+2026-08-01 12:49:29  OK  L8  [LY-007]  specimen_id=d7c052cb-c143-4b3b-b90d-8f155cfb79d9  taxon=Eumaeus toxea
+2026-08-01 12:49:31  OK  L9  [LY-008]  specimen_id=2b557a60-5282-430d-8838-f02d93dff52e  taxon=Eumaeus toxea
+2026-08-01 12:49:32  OK  L10  [LY-009]  specimen_id=bfaecafe-6ec9-48f9-8a42-ab99d19d0b97  taxon=Eumaeus toxea
+2026-08-01 12:49:34  OK  L11  [LY-010]  specimen_id=a879b1ba-db36-4df5-a983-3f2557cdde9d  taxon=Thecla platyptera
+2026-08-01 12:58:10  OK  L2  [MO-001]  specimen_id=884a7d09-a263-4a88-a0bf-ddc80b50633b  taxon=Morpho deidamia mariae
+2026-08-01 12:58:12  OK  L3  [MO-002]  specimen_id=5cee5c5a-a434-4ac9-9a66-107816b5617a  taxon=Morpho deidamia mariae
+2026-08-01 12:58:13  OK  L4  [MO-003]  specimen_id=c9d83e14-79cc-451b-a0bb-93bd3e0ee06f  taxon=Morpho deidamia pyrrhus
+2026-08-01 12:58:15  OK  L5  [MO-004]  specimen_id=6dacaeed-fc0a-4d53-bbf9-5bbaa806c98b  taxon=Morpho deidamia pyrrhus
+2026-08-01 12:58:17  OK  L6  [MO-005]  specimen_id=5de15f90-bb2b-4927-9820-993387376385  taxon=Morpho epistrophus catanaria
+2026-08-01 12:58:19  OK  L7  [MO-006]  specimen_id=790579c3-e5bd-4ca0-a2ab-1cb24502dff7  taxon=Morpho godarti didius
+2026-08-01 12:58:21  OK  L8  [MO-007]  specimen_id=359a3da7-affe-4f32-a815-c45848b9da21  taxon=Morpho godarti didius
+2026-08-01 12:58:22  OK  L9  [MO-008]  specimen_id=c11bcbe0-1ee1-4719-a964-a9a70ee7176d  taxon=Morpho godarti julanthiscus
+2026-08-01 12:58:24  OK  L10  [MO-009]  specimen_id=80e78a91-4070-414a-890d-0418ed6a2d5e  taxon=Morpho godarti julanthiscus
+2026-08-01 12:58:25  OK  L11  [MO-010]  specimen_id=b029768d-8a32-400e-817e-3965440759b8  taxon=Morpho godarti julanthiscus
+2026-08-01 12:58:27  OK  L12  [MO-011]  specimen_id=46b20498-693c-41de-9f30-1814a04c23f2  taxon=Morpho godarti julanthiscus
+2026-08-01 12:58:29  OK  L13  [MO-012]  specimen_id=1f164d2d-c5f6-4686-a130-0fa023678f38  taxon=Morpho helenor achillides
+2026-08-01 12:58:31  OK  L14  [MO-013]  specimen_id=a5a3712e-5926-4514-9f67-ce7f41ed536c  taxon=Morpho helenor montezuma
+2026-08-01 12:58:33  OK  L15  [MO-014]  specimen_id=ea40314b-1724-4651-8b8c-0e74d5c846dc  taxon=Morpho helenor narcissus
+2026-08-01 12:58:35  OK  L16  [MO-015]  specimen_id=e9bb9941-ffa7-4dda-ae5e-67eada236f1b  taxon=Morpho helenor narcissus
+2026-08-01 12:58:37  OK  L17  [MO-016]  specimen_id=06ae7b8b-8121-4500-b342-88bab356af03  taxon=Morpho helenor narcissus
+2026-08-01 12:58:38  OK  L18  [MO-017]  specimen_id=4de9cef6-902f-461a-9d8c-4a02e804831f  taxon=Morpho helenor narcissus
+2026-08-01 12:58:40  OK  L19  [MO-018]  specimen_id=58e0b89a-09e2-4649-b788-9c13065d1386  taxon=Morpho helenor narcissus
+2026-08-01 12:58:42  OK  L20  [MO-019]  specimen_id=a5dca3db-c440-4b8c-aeb0-b19f4ea418f4  taxon=Morpho helenor narcissus
+2026-08-01 12:58:44  OK  L21  [MO-020]  specimen_id=0c6a3c47-b430-4045-b878-298610bd125f  taxon=Morpho helenor peleides
+2026-08-01 12:58:45  OK  L22  [MO-021]  specimen_id=5c2be71c-dcdd-42f8-ad2c-cee15780d5fb  taxon=Morpho helenor peleides
+2026-08-01 12:58:47  OK  L23  [MO-022]  specimen_id=50d062db-6021-4fd4-873b-03b214e980b3  taxon=Morpho helenor peleides
+2026-08-01 12:58:49  OK  L24  [MO-023]  specimen_id=7eef49b7-cea5-4d22-b9b9-a08bf8709b72  taxon=Morpho helenor peleides
+2026-08-01 12:58:50  OK  L25  [MO-024]  specimen_id=a507d37b-0efd-49b9-aef7-73ac043b0535  taxon=Morpho helenor peleides
+2026-08-01 12:58:52  OK  L26  [MO-025]  specimen_id=a925bae9-6fdb-4baa-a5b0-44db4fb64b17  taxon=Morpho helenor rugitaeniatus
+2026-08-01 12:58:53  OK  L27  [MO-026]  specimen_id=4addbad0-cdf4-43c9-9139-2ab37652b993  taxon=Morpho helenor theodorus
+2026-08-01 12:58:55  OK  L28  [MO-027]  specimen_id=6337c91d-199f-497b-9030-ab7245ef8e2d  taxon=Morpho helenor violaceus
+2026-08-01 12:58:57  OK  L29  [MO-028]  specimen_id=e2521dc2-00c8-4ca5-9efa-42b24b997e45  taxon=Morpho helenor violaceus
+2026-08-01 12:58:58  OK  L30  [MO-029]  specimen_id=7c600f96-ea9e-4ba6-ad2b-d68553a8cc8f  taxon=Morpho helenor violaceus
+2026-08-01 12:59:00  OK  L31  [MO-030]  specimen_id=c574d6ef-a24d-4c2a-aea5-3a7738c31593  taxon=Morpho hercules diadema
+2026-08-01 12:59:02  OK  L32  [MO-031]  specimen_id=6de7154c-cdb5-47cd-80ee-6dddd1a0f13d  taxon=Morpho hercules diadema
+2026-08-01 12:59:03  OK  L33  [MO-032]  specimen_id=cd3c6b30-17ec-494f-ac03-e34fdfb84dc2  taxon=Morpho hercules diadema
+2026-08-01 12:59:05  OK  L34  [MO-033]  specimen_id=61793cf0-0289-4b0d-8478-e2956502b1ee  taxon=Morpho marcus major=
+2026-08-01 12:59:07  OK  L35  [MO-034]  specimen_id=8ddbcd03-2eda-41cd-9cbf-e535486c6422  taxon=Morpho marcus major=
+2026-08-01 12:59:09  OK  L36  [MO-035]  specimen_id=8344a6b2-e7cb-40b1-bfec-524a42da7f66  taxon=Morpho marcus major=
+2026-08-01 12:59:10  OK  L37  [MO-036]  specimen_id=5398ceca-f47b-4ff4-98ab-6c2d1e6765f6  taxon=Morpho marcus major=
+2026-08-01 12:59:12  OK  L38  [MO-037]  specimen_id=89f1ca0e-1842-4008-9a5b-a2b7b6f2fd29  taxon=Morpho menelaus alexandrovana
+2026-08-01 12:59:14  OK  L39  [MO-038]  specimen_id=fadf278f-b79f-4583-9af1-3bb66668df3b  taxon=Morpho menelaus coeruleus
+2026-08-01 12:59:15  OK  L40  [MO-039]  specimen_id=305b812b-6317-4ec2-a103-d857245d024e  taxon=Morpho menelaus melichaelus
+2026-08-01 12:59:17  OK  L41  [MO-040]  specimen_id=c2e851c7-b208-4d6b-9d7e-22162f821e83  taxon=Morpho menelaus melichaelus
+2026-08-01 12:59:19  OK  L42  [MO-041]  specimen_id=4d23e4a3-074e-40e8-9ec6-ea4d8032cad0  taxon=Morpho menelaus occidentalis
+2026-08-01 12:59:21  OK  L43  [MO-042]  specimen_id=b8c599bb-aecb-4b47-a01d-901f54b1feef  taxon=Morpho rhetenor cacica
+2026-08-01 12:59:22  OK  L44  [MO-043]  specimen_id=381615f6-4aee-4b8f-8d6a-753c55832d75  taxon=Morpho rhetenor cacica
+2026-08-01 12:59:24  OK  L45  [MO-044]  specimen_id=ebf02583-358c-45ec-abaf-ecc9fc7600d2  taxon=Morpho rhetenor cacica
+2026-08-01 12:59:25  OK  L46  [MO-045]  specimen_id=5773053e-490c-45fd-9bc6-74984982f493  taxon=Morpho rhetenor cacica
+2026-08-01 12:59:27  OK  L47  [MO-046]  specimen_id=5212dbf1-95af-4dfa-8c5e-b5d03857e462  taxon=Morpho rhetenor cacica
+2026-08-01 12:59:29  OK  L48  [MO-047]  specimen_id=1f9284f5-2d12-4c55-949a-198e6bc4fdf2  taxon=Morpho rhetenor cacica
+2026-08-01 12:59:30  OK  L49  [MO-048]  specimen_id=e56810f6-3ee6-4357-8b1c-f78c4c64a9aa  taxon=Morpho rhetenor cacica
+2026-08-01 12:59:32  OK  L50  [MO-049]  specimen_id=7b34605a-59c7-4a0e-892a-460a08dc7a56  taxon=Morpho rhetenor cacica
+2026-08-01 12:59:34  OK  L51  [MO-050]  specimen_id=86b6937f-2332-4af0-a4e8-0f752c3d2b08  taxon=Morpho rhetenor helena
+2026-08-01 12:59:35  OK  L52  [MO-051]  specimen_id=b0470b51-57a8-42c2-bd74-77cdef7a969d  taxon=Morpho rhetenor helena
+2026-08-01 12:59:37  OK  L53  [MO-052]  specimen_id=3ab9f2d7-b02b-447c-bcd0-cc4d26c876ad  taxon=Morpho rhetenor helena
+2026-08-01 12:59:38  OK  L54  [MO-053]  specimen_id=a8a8be93-a5af-4bd9-a9ae-03fc941682a0  taxon=Morpho rhetenor mariajosianae
+2026-08-01 12:59:40  OK  L55  [MO-054]  specimen_id=69804749-27f7-4257-b5dd-50af39db4001  taxon=Morpho rhetenor mariajosianae
+2026-08-01 12:59:42  OK  L56  [MO-055]  specimen_id=44ac948e-df36-4a0a-9d5e-278c79172453  taxon=Morpho rhetenor mariajosianae
+2026-08-01 12:59:43  OK  L57  [MO-056]  specimen_id=5fe13e51-c1c1-4c32-b3b4-c7d92c34b51a  taxon=Morpho sulkowskyi descimokoenigi
+2026-08-01 12:59:45  OK  L58  [MO-057]  specimen_id=9a24d882-fe9a-4ecb-8c56-b7bc5accb28a  taxon=Morpho sulkowskyi descimokoenigi
+2026-08-01 12:59:47  OK  L59  [MO-058]  specimen_id=b73597a4-d72a-4f79-9764-0c1bd6af1bce  taxon=Morpho sulkowskyi selenaris
+2026-08-01 12:59:48  OK  L60  [MO-059]  specimen_id=f121caf2-b974-4629-a786-5f802aac8fe5  taxon=Morpho sulkowskyi selenaris
+2026-08-01 12:59:50  OK  L61  [MO-060]  specimen_id=7f128fff-147a-4ef2-81d4-aceb9f990289  taxon=Morpho sulkowskyi selenaris
+2026-08-01 12:59:52  OK  L62  [MO-061]  specimen_id=2687e5b4-e4d3-4c64-b841-bd05cab1d5a4  taxon=Morpho sulkowskyi selenaris
+2026-08-01 12:59:53  OK  L63  [MO-062]  specimen_id=a627c817-7467-4412-961f-1de06982eee5  taxon=Morpho sulkowskyi selenaris
+2026-08-01 12:59:55  OK  L64  [MO-063]  specimen_id=7c6a1053-c192-4883-a3c1-7f7d1e840a14  taxon=Morpho telemachus penelope
+2026-08-01 12:59:57  OK  L65  [MO-064]  specimen_id=0d46132a-02b6-4879-bee7-4ea49894eb78  taxon=Morpho telemachus penelope
+2026-08-01 12:59:58  OK  L66  [MO-065]  specimen_id=32d23e9a-0ad3-4a68-bcf6-ab7fb39def76  taxon=Morpho telemachus penelope
+2026-08-01 13:00:00  OK  L67  [MO-066]  specimen_id=4168f333-c3bd-4977-bf78-4c8e5d9e4c34  taxon=Morpho telemachus penelope
+2026-08-01 13:00:02  OK  L68  [MO-067]  specimen_id=90804f66-2b84-48d6-a78c-8e9685a2255f  taxon=Morpho telemachus penelope
+2026-08-01 13:00:03  OK  L69  [MO-068]  specimen_id=f09a4cbd-0bea-4265-b091-a8250ef440e2  taxon=Morpho telemachus penelope
+2026-08-01 13:00:05  OK  L70  [MO-069]  specimen_id=f40f0a82-d486-4f7a-ad39-c8851b8ac3e3  taxon=Morpho theseus juturna
+2026-08-01 13:00:07  OK  L71  [MO-070]  specimen_id=4c07b552-74d3-4e9f-b681-53b430420630  taxon=Morpho theseus juturna
+2026-08-01 13:00:09  OK  L72  [MO-071]  specimen_id=8291c15c-b813-4fc8-9356-6acee69309a5  taxon=Morpho theseus juturna
+2026-08-01 13:00:10  OK  L73  [MO-072]  specimen_id=ded526ce-1b5f-42a5-9457-ed450acad69d  taxon=Morpho zephyritis
+2026-08-01 13:00:11  OK  L74  [MO-073]  specimen_id=05c1a005-bbde-4586-a8fe-90b89f499342  taxon=Morpho zephyritis
+2026-08-01 13:01:20  OK  L2  [NY-001]  specimen_id=018a8757-1fbd-49c2-a1d3-a40b95d11fd4  taxon=Adelpha boreas boreas
+2026-08-01 13:01:23  OK  L3  [NY-002]  specimen_id=55f468dc-e11b-410a-800f-e7644dc3b45f  taxon=Adelpha erotia erotia
+2026-08-01 13:01:24  OK  L4  [NY-003]  specimen_id=eadad8bc-2fc2-46d5-8174-5f5edfeeda13  taxon=Adelpha erotia erotia
+2026-08-01 13:01:26  OK  L5  [NY-004]  specimen_id=9d27243d-cfdc-4eda-a881-804fb5eddccb  taxon=Adelpha erotia
+2026-08-01 13:01:27  OK  L6  [NY-005]  specimen_id=1ecf407a-e280-4dfa-8218-ed179abc617c  taxon=Adelpha iphiclus
+2026-08-01 13:01:29  OK  L7  [NY-006]  specimen_id=828de980-1550-4a67-9be1-3a9d721ffe48  taxon=Adelpha iphiclus
+2026-08-01 13:01:30  OK  L8  [NY-007]  specimen_id=89624b95-abc7-4ba7-ac10-8a148607a04e  taxon=Adelpha iphiclus estrecha
+2026-08-01 13:01:32  OK  L9  [NY-008]  specimen_id=6817c1e0-a934-4a18-be61-13b93e0bcc33  taxon=Adelpha lycorias lara
+2026-08-01 13:01:34  OK  L10  [NY-009]  specimen_id=5cb8c4cb-b6d7-45b2-859c-2506e97b2a3a  taxon=Adelpha lycorias lara
+2026-08-01 13:06:06  OK  L2  [NY-010]  specimen_id=b85f540e-39f0-4a67-914c-70aa7fb1909b  taxon=Adelpha mesentina
+2026-08-01 13:06:08  OK  L3  [NY-011]  specimen_id=0710adfa-243f-42f7-a23d-ae35b95df477  taxon=Adelpha mesentina
+2026-08-01 13:06:09  OK  L4  [NY-012]  specimen_id=7f269870-2f35-44fc-b8ef-5b1719774207  taxon=Adelpha phylaca
+2026-08-01 13:06:11  OK  L5  [NY-013]  specimen_id=776cadc5-e13f-4877-99d9-e752c53525c6  taxon=Adelpha phylaca
+2026-08-01 13:06:12  OK  L6  [NY-014]  specimen_id=7b2f1cd9-5c9b-4e8b-b7b2-f92a8b246cfd  taxon=Adelpha ximena
+2026-08-01 13:06:15  OK  L7  [HE-100]  specimen_id=f4a3dc3e-90af-4206-9a64-c40724108caa  taxon=Agraulis vanillae lucina
+2026-08-01 13:06:17  OK  L8  [HE-101]  specimen_id=a56ce0d1-c85e-405a-b128-3bb1d8414084  taxon=Agraulis vanillae lucina
+2026-08-01 13:06:19  OK  L9  [NY-015]  specimen_id=ee226ffe-4a72-460c-8be2-9f18b6f78407  taxon=Agrias amydon athenais
+2026-08-01 13:06:21  OK  L10  [NY-016]  specimen_id=95847e39-7141-4e59-b08c-bb754a9b9c1c  taxon=Agrias amydon athenais
+2026-08-01 13:06:22  OK  L11  [NY-017]  specimen_id=6ba079d5-1539-4f31-af89-60244d8b853e  taxon=Agrias amydon zenodorus
+2026-08-01 13:06:24  OK  L12  [NY-018]  specimen_id=5f045b3c-cd63-46ed-a537-fee616dcccb5  taxon=Agrias amydon zenodorus
+2026-08-01 13:06:26  OK  L13  [NY-019]  specimen_id=9a2d59b9-fd2b-41fc-a467-88f7bbff069a  taxon=Agrias claudina lugens
+2026-08-01 13:06:27  OK  L14  [NY-020]  specimen_id=96439be0-00a1-41ad-8a85-385429544d59  taxon=Agrias claudina lugens
+2026-08-01 13:06:29  OK  L15  [NY-021]  specimen_id=39c92daa-cdd2-44f5-8783-dd30fb8d876c  taxon=Agrias claudina lugens
+2026-08-01 13:06:31  OK  L16  [NY-022]  specimen_id=130d0876-02b8-4a42-8e52-bc250a8a78b1  taxon=Agrias hewitsonius beata
+2026-08-01 13:06:32  OK  L17  [NY-023]  specimen_id=fce32252-59e3-44af-a654-a366ca72ec92  taxon=Agrias hewitsonius beata
+2026-08-01 13:06:34  OK  L18  [NY-024]  specimen_id=83e7b848-37de-40e6-957f-68df50fba164  taxon=Agrias hewitsonius beata
+2026-08-01 13:06:36  OK  L19  [NY-025]  specimen_id=dc130f9a-af44-4346-b324-4aff9d982f08  taxon=Agrias hewitsonius beata
+2026-08-01 13:06:37  OK  L20  [NY-026]  specimen_id=77ae56ef-13e8-4f59-8634-123ca52bf639  taxon=Agrias hewitsonius beata
+2026-08-01 13:06:39  OK  L21  [NY-027]  specimen_id=11089285-6234-4202-8517-b802c06d85ad  taxon=Agrias hewitsonius stuarti
+2026-08-01 13:06:41  OK  L22  [NY-028]  specimen_id=9af61d70-7b1f-428f-99bd-39eb8dabdabb  taxon=Agrias hewitsonius stuarti
+2026-08-01 13:06:42  OK  L23  [NY-029]  specimen_id=b2e1d16d-7ff3-432c-af07-17e457043939  taxon=Agrias hewitsonius stuarti
+2026-08-01 13:06:44  OK  L24  [NY-030]  specimen_id=a4bfde2b-1171-4969-be3c-9e79d0c2ea02  taxon=Agrias hewitsonius stuarti-
+2026-08-01 13:06:46  OK  L25  [NY-031]  specimen_id=a53876f3-6238-4c37-8a18-33dea1c46999  taxon=Agrias pericles peruviana
+2026-08-01 13:06:48  OK  L26  [NY-032]  specimen_id=ac108c9e-d149-4445-ad28-bc2c738c1541  taxon=Agrias phalcidon fournierae
+2026-08-01 13:06:49  OK  L27  [NY-033]  specimen_id=f709667d-8087-445e-a9c2-ec05f6f3487a  taxon=Agrias sardanapulis
+2026-08-01 13:06:51  OK  L28  [NY-034]  specimen_id=8fed5797-d98a-4f94-ae7d-f1bc660a7194  taxon=Agrias sardanapulis
+2026-08-01 13:06:53  OK  L29  [NY-035]  specimen_id=58b74b04-891a-4878-99cb-f93831cb2666  taxon=Asterope degandii allyni
+2026-08-01 13:06:55  OK  L30  [NY-036]  specimen_id=dcbb2760-7fcc-45e5-af6d-ede2f8e11812  taxon=Asterope degandii bartletti
+2026-08-01 13:06:56  OK  L31  [NY-037]  specimen_id=408c5bd6-f149-45c8-9c1c-e69ea1d5cfa9  taxon=Asterope degandii bartletti
+2026-08-01 13:06:58  OK  L32  [NY-038]  specimen_id=06835d37-b26d-4b00-8a4e-07fef5903d92  taxon=Asterope degandii bartletti
+2026-08-01 13:06:59  OK  L33  [NY-039]  specimen_id=e56c4b33-7d21-40d5-85bc-163e3ffcd111  taxon=Asterope degandii bartletti
+2026-08-01 13:07:01  OK  L34  [NY-040]  specimen_id=e5f6c6d6-7812-42c1-a298-20ef4cf4fb07  taxon=Asterope degandii bartletti
+2026-08-01 13:07:03  OK  L35  [NY-041]  specimen_id=454f297d-55ee-4ec6-9966-82c3de78867e  taxon=Asterope degandii caelestis
+2026-08-01 13:07:04  OK  L36  [NY-042]  specimen_id=bc4ef6b6-cf87-4513-abf1-7bdcfdc05186  taxon=Asterope degandii caelestis
+2026-08-01 13:07:06  OK  L37  [NY-043]  specimen_id=0d127e2b-2dc8-4e7f-a9c4-2adcfbf4494a  taxon=Asterope markii davisi
+2026-08-01 13:07:08  OK  L38  [NY-044]  specimen_id=0c11b06e-b735-41f1-a958-5ffa44608aae  taxon=Asterope markii davisi
+2026-08-01 13:07:09  OK  L39  [NY-045]  specimen_id=a2b3daaf-b8f7-48ef-a607-46c50d66d0c1  taxon=Asterope markii hewitsoni
+2026-08-01 13:07:11  OK  L40  [NY-046]  specimen_id=d61af0c6-980b-4ef4-9997-ff5c67d5e610  taxon=Asterope markii hewitsoni
+2026-08-01 13:07:12  OK  L41  [NY-047]  specimen_id=30ec5d3f-b74c-48f3-87ab-9f31876e11c9  taxon=Asterope optima
+2026-08-01 13:07:14  OK  L42  [NY-048]  specimen_id=e991e1c2-66f8-40f6-9eb8-9bb3696279d7  taxon=Asterope optima
+2026-08-01 13:07:15  OK  L43  [NY-049]  specimen_id=1a1521de-1a7e-43af-9961-73be26f1e026  taxon=Asterope optima
+2026-08-01 13:07:16  OK  L44  [NY-050]  specimen_id=8d7b1494-2c39-4707-a1f6-883f799973b6  taxon=Asterope optima philotina
+2026-08-01 13:07:18  OK  L45  [NY-051]  specimen_id=a4cffe55-9a24-4b54-9a3c-7420794d65d3  taxon=Asterope optima philotina
+2026-08-01 13:07:20  OK  L46  [NY-052]  specimen_id=22197bb9-008c-4049-ba19-e28d3a16e25e  taxon=Asterope whitelyi whitelyi
+2026-08-01 13:07:22  OK  L47  [NY-053]  specimen_id=6541a456-a264-464f-920d-f0541bf10a82  taxon=Baeotus amazonicus
+2026-08-01 13:07:23  OK  L48  [NY-054]  specimen_id=c5536f78-867e-4715-99e4-188728bb5a69  taxon=Baeotus baeotus
+2026-08-01 13:07:25  OK  L49  [NY-055]  specimen_id=06ce4ae5-915b-4f43-a419-269db6618762  taxon=Baeotus deucalion
+2026-08-01 13:07:27  OK  L50  [NY-056]  specimen_id=77f34150-04b2-44ca-9f21-11135b5fe6c2  taxon=Baeotus japetus
+2026-08-01 13:07:28  OK  L51  [NY-057]  specimen_id=a43e32a1-33be-4dac-9dfe-ce9d57e6b8f2  taxon=Batesia hypochlora
+2026-08-01 13:07:30  OK  L52  [NY-058]  specimen_id=0b12c09c-6564-475e-bb9e-9e9d7af30794  taxon=Biblis hyperia
+2026-08-01 13:07:32  OK  L53  [NY-059]  specimen_id=27153d94-9e57-44fe-9851-08729bf696cf  taxon=Callicore hytaspes
+2026-08-01 13:07:34  OK  L54  [NY-060]  specimen_id=bf2094cf-ce55-49ea-a981-e46cb580fb18  taxon=Callicore hytaspes
+2026-08-01 13:07:35  OK  L55  [NY-061]  specimen_id=1d8029b2-65e6-47d3-8fdd-aad77b060e7f  taxon=Callicore cynosura
+2026-08-01 13:07:36  OK  L56  [NY-062]  specimen_id=626c78e5-a646-401e-ab8d-9b7f9b303315  taxon=Callicore cynosura
+2026-08-01 13:07:38  OK  L57  [NY-063]  specimen_id=7a5d09b5-6166-4f87-85a3-f0feb35b1a55  taxon=Callicore cynosura
+2026-08-01 13:07:39  OK  L58  [NY-064]  specimen_id=7231a648-e618-4585-8269-847150ceacf4  taxon=Callicore cynosura
+2026-08-01 13:07:40  OK  L59  [NY-065]  specimen_id=156bbc20-b79b-4305-bf64-f718b268d94a  taxon=Callicore cynosura
+2026-08-01 13:07:41  OK  L60  [NY-066]  specimen_id=b0132f94-fe9c-4441-8a13-bc222a02cd29  taxon=Callicore cynosura
+2026-08-01 13:07:43  OK  L61  [NY-067]  specimen_id=53c92e68-3275-4ad7-b989-11196a78dc15  taxon=Callicore cynosura cynosura
+2026-08-01 13:07:45  OK  L62  [NY-068]  specimen_id=2f9095c1-ed22-493c-ae66-5cfdb905c47b  taxon=Callicore cynosura cynosura
+2026-08-01 13:07:46  OK  L63  [NY-069]  specimen_id=af994d94-1487-433d-aca7-c28d651fa817  taxon=Callicore discrepans
+2026-08-01 13:07:48  OK  L64  [NY-070]  specimen_id=0fbd60c4-2c45-471a-8b8f-0b4b1dac52ad  taxon=Callicore eunomia
+2026-08-01 13:07:49  OK  L65  [NY-071]  specimen_id=f2969b1e-34af-421f-9ea4-077572956160  taxon=Callicore eunomia
+2026-08-01 13:07:50  OK  L66  [NY-072]  specimen_id=cec97071-5700-402e-a97d-2d840bdfc2de  taxon=Callicore eunomia
+2026-08-01 13:07:52  OK  L67  [NY-073]  specimen_id=5f3a7c68-3180-408e-bb5d-5a317dc11616  taxon=Callicore excelsior pastazza
+2026-08-01 13:07:54  OK  L68  [NY-074]  specimen_id=8f6a48f8-c11d-4eef-bf8c-18d8f479eedc  taxon=Callicore excelsior pastazza
+2026-08-01 13:07:56  OK  L69  [NY-075]  specimen_id=672ddd94-12e7-4f43-9add-38770e61404b  taxon=Callicore felderi cajetani
+2026-08-01 13:07:57  OK  L70  [NY-076]  specimen_id=04c06ed6-eaf9-4ae4-b35c-3fa98d204238  taxon=Callicore felderi cajetani
+2026-08-01 13:07:59  OK  L71  [NY-077]  specimen_id=685f3a67-d278-4a8e-904f-97fcfeeb1d9e  taxon=Callicore hesperis
+2026-08-01 13:08:00  OK  L72  [NY-078]  specimen_id=3bfadba0-26c1-4ef4-aa26-e6083e77e565  taxon=Callicore hesperis
+2026-08-01 13:08:02  OK  L73  [NY-079]  specimen_id=4e3637a7-f25c-4696-afda-822051e5e435  taxon=Callicore lyca aegina
+2026-08-01 13:08:03  OK  L74  [NY-080]  specimen_id=f552cb69-52c1-4f1a-8ff8-553c282e3d89  taxon=Callicore lyca aegina
+2026-08-01 13:08:05  OK  L75  [NY-081]  specimen_id=2a9bb816-362a-486a-9a08-9cfc64e79d26  taxon=Callicore pygas cyllene
+2026-08-01 13:08:07  OK  L76  [NY-082]  specimen_id=6e357ffd-2197-4b2d-8693-e43ae5287db1  taxon=Callicore pygas cyllene
+2026-08-01 13:08:09  OK  L77  [NY-083]  specimen_id=cfa5f04f-d088-467b-b555-c261ea5dfc11  taxon=Callicore texa maimuna
+2026-08-01 13:08:11  OK  L78  [NY-084]  specimen_id=0532a8ce-db73-4337-9081-0c29741586b7  taxon=Callicore tolima
+2026-08-01 13:08:12  OK  L79  [NY-085]  specimen_id=1ac80de3-40e6-46f6-9a73-a3d11e1fde6b  taxon=Callicore tolima
+2026-08-01 13:08:14  OK  L80  [NY-086]  specimen_id=3d9a63d9-5868-42ac-9727-d01071d66975  taxon=Callidula pyramus
+2026-08-01 13:08:16  OK  L81  [NY-087]  specimen_id=1428ce48-cd33-4f71-abdf-ac89223ce381  taxon=Catonephele salambria
+2026-08-01 13:08:17  OK  L82  [NY-088]  specimen_id=13646c08-4882-4be8-84f7-b1bd1b2d3a99  taxon=Catonephele acontius
+2026-08-01 13:08:19  OK  L83  [NY-089]  specimen_id=00006c65-f373-41bb-b831-f0a6177dd893  taxon=Catonephele acontius
+2026-08-01 13:08:20  OK  L84  [NY-090]  specimen_id=ee5dd10a-fb50-4501-b0e8-1362ece5c577  taxon=Catonephele acontius
+2026-08-01 13:08:21  OK  L85  [NY-091]  specimen_id=2a513a47-f608-41b8-99b0-fb6b49efb388  taxon=Catonephele acontius
+2026-08-01 13:08:23  OK  L86  [NY-092]  specimen_id=55a9e84b-0d61-40b9-8e37-c8a759dcb4dd  taxon=Catonephele chromis chromis
+2026-08-01 13:08:25  OK  L87  [NY-093]  specimen_id=29be8c07-2f9e-4f19-a29e-4ba230f2e068  taxon=Catonephele numilia
+2026-08-01 13:08:26  OK  L88  [NY-094]  specimen_id=320153d7-2d80-4b1a-b7c9-868a63f526ab  taxon=Catonephele numilia
+2026-08-01 13:08:27  OK  L89  [NY-095]  specimen_id=e20b632d-348c-4b8c-adf1-95c12e6e9beb  taxon=Catonephele numilia
+2026-08-01 13:08:29  OK  L90  [NY-096]  specimen_id=bfc136e3-a151-40cf-b59f-3fa87f6fa424  taxon=Catonephele numilia
+2026-08-01 13:08:30  OK  L91  [NY-097]  specimen_id=581de3fb-1678-4caf-98f8-79622bad269c  taxon=Catonephele numilia
+2026-08-01 13:16:20  OK  L2  [NY-098]  specimen_id=77419610-6a47-46b7-aca8-de54c5f77a1c  taxon=Catonephele numilia esite
+2026-08-01 13:16:22  OK  L3  [NY-099]  specimen_id=8c29e0d0-31c9-41fd-949d-98daf15ced28  taxon=Catonephele numilia esite
+2026-08-01 13:16:24  OK  L4  [NY-100]  specimen_id=a5290028-df56-4e9a-8fda-c9828a096e10  taxon=Catonephele numilia esite
+2026-08-01 13:16:26  OK  L5  [NY-101]  specimen_id=46158c16-f081-4449-9ab1-6e84d7728f84  taxon=Catonephele numilia esite
+2026-08-01 13:16:28  OK  L6  [NY-102]  specimen_id=b05fe41d-9f91-4213-821d-03a8c8766e4c  taxon=Catonephele selambria
+2026-08-01 13:16:30  OK  L7  [NY-103]  specimen_id=3dd68bce-9e8b-405a-8ff7-616f3269a936  taxon=Coenophlebia archidona
+2026-08-01 13:16:31  OK  L8  [NY-104]  specimen_id=68c84653-540a-4a82-90c5-e03f30b54558  taxon=Coenophlebia archidona
+2026-08-01 13:16:33  OK  L9  [NY-105]  specimen_id=4e91fda3-c085-47f6-a667-9f5557c31465  taxon=Colobura dirce
+2026-08-01 13:16:34  OK  L10  [NY-106]  specimen_id=1e0f05b1-b12e-4cd4-9153-20f5976dd636  taxon=Colobura dirce
+2026-08-01 13:16:35  OK  L11  [NY-107]  specimen_id=1ec71e3b-1d8f-4ad6-b290-edb172b6738a  taxon=Colobura dirce
+2026-08-01 13:16:37  OK  L12  [NY-108]  specimen_id=8156bf48-d91a-4b25-b7cd-f4684b153be7  taxon=Colobura dirce
+2026-08-01 13:16:39  OK  L13  [NY-109]  specimen_id=4974f92f-1a4f-4fdf-8493-774b82156182  taxon=Consul fabius divisus
+2026-08-01 13:16:40  OK  L14  [NY-110]  specimen_id=8147d425-dd75-4513-9e9e-604550d39901  taxon=Consul fabius divisus
+2026-08-01 13:16:42  OK  L15  [NY-111]  specimen_id=d245bb43-0906-48b5-b07d-6d936f929ce5  taxon=Diaethria kolyma
+2026-08-01 13:16:44  OK  L16  [NY-112]  specimen_id=7a6c9c10-1705-414f-b090-758ff1715d04  taxon=Diaethria clymena consobrina
+2026-08-01 13:16:46  OK  L17  [NY-113]  specimen_id=329ad4c4-2a4e-45af-9e12-d4a77f10c07f  taxon=Diaethria clymena peruviana
+2026-08-01 13:16:48  OK  L18  [NY-114]  specimen_id=bb0541b8-b9d2-4121-a748-e0f623e516c9  taxon=Diaethria clymena peruviana
+2026-08-01 13:16:49  OK  L19  [NY-115]  specimen_id=f61f9b13-45da-4421-a03e-b8a76026de6c  taxon=Diaethria clymena peruviana
+2026-08-01 13:16:51  OK  L20  [NY-116]  specimen_id=2242f93a-cfe0-4673-a31b-a41c511ff6a8  taxon=Diaethria clymena peruviana
+2026-08-01 13:16:52  OK  L21  [NY-117]  specimen_id=52b16f67-7821-494b-b127-d819746cff4d  taxon=Diaethria clymena
+2026-08-01 13:16:53  OK  L22  [NY-118]  specimen_id=098b7c9d-9857-4dfb-88fb-6cd6e0c56c4d  taxon=Diaethria clymena
+2026-08-01 13:16:55  OK  L23  [NY-119]  specimen_id=a601928b-15ff-4089-82c1-566ae8e79260  taxon=Diaethria eluina
+2026-08-01 13:16:57  OK  L24  [NY-120]  specimen_id=5f43080d-5fd9-4530-9199-93140beeb84c  taxon=Diaethria euclides gueneei
+2026-08-01 13:16:59  OK  L25  [NY-121]  specimen_id=26e3d008-9524-4b68-8332-6c21a52e1a16  taxon=Diaethria neglecta neglecta
+2026-08-01 13:17:01  OK  L26  [NY-122]  specimen_id=07ef39f0-c942-47dd-9122-c903e710ac86  taxon=Diaethria neglecta neglecta
+2026-08-01 13:17:03  OK  L27  [NY-123]  specimen_id=46a5efb4-014f-4c2a-838e-f64f9c02f6b9  taxon=Doxocopa agathina
+2026-08-01 13:17:04  OK  L28  [NY-124]  specimen_id=f8ed297e-7baa-43b8-aeff-c32d6c843c05  taxon=Doxocopa agathina
+2026-08-01 13:17:06  OK  L29  [NY-125]  specimen_id=dc894325-8186-4bcc-8c6b-caa0db39ed7a  taxon=Doxocopa cherubina
+2026-08-01 13:17:07  OK  L30  [NY-126]  specimen_id=aa709d5b-f6e4-4203-a727-fcbafaf64bbb  taxon=Doxocopa cherubina
+2026-08-01 13:17:09  OK  L31  [NY-127]  specimen_id=268503b0-4733-40c4-8199-4197d8eee5aa  taxon=Doxocopa elis
+2026-08-01 13:17:10  OK  L32  [NY-128]  specimen_id=c0e799b3-a49e-4a42-8cba-2db61b3cd324  taxon=Doxocopa elis
+2026-08-01 13:17:11  OK  L33  [NY-129]  specimen_id=8a926ee5-beb8-4833-801e-51654e9ce450  taxon=Doxocopa elis
+2026-08-01 13:17:13  OK  L34  [NY-130]  specimen_id=3646d11f-29a5-490d-b5ea-e1a471bfcdd2  taxon=Doxocopa lavinia
+2026-08-01 13:17:14  OK  L35  [NY-131]  specimen_id=38d3d1b8-f176-4d25-99ed-509470b95c4b  taxon=Doxocopa linda
+2026-08-01 13:17:16  OK  L36  [NY-132]  specimen_id=c459e82f-9d90-446a-8323-3b99865d6f50  taxon=Doxocopa linda
+2026-08-01 13:17:17  OK  L37  [NY-133]  specimen_id=6d700c7b-f920-45e1-92c4-a74c1ac3f949  taxon=Doxocopa linda
+2026-08-01 13:17:19  OK  L38  [NY-134]  specimen_id=c08e7f8a-e215-42a8-bf1d-01ab33a3e32c  taxon=Doxocopa pavon
+2026-08-01 13:17:20  OK  L39  [NY-135]  specimen_id=0be57eae-8939-458f-a3ae-3137664f8d70  taxon=Doxocopa zunilda floris
+2026-08-01 13:17:22  OK  L40  [NY-136]  specimen_id=50ea1d52-3284-4e91-b20b-e589dd275b49  taxon=Doxocopa zunilda floris
+2026-08-01 13:17:24  OK  L41  [NY-137]  specimen_id=3871c73b-4c11-4dbd-a3cc-85af146cd985  taxon=Doxocopa zunilda floris
+2026-08-01 13:17:25  OK  L42  [NY-138]  specimen_id=0cc8c996-9c54-4665-8b4b-14cfa2ce280a  taxon=Doxocopa zunilda floris
+2026-08-01 13:17:27  OK  L43  [NY-139]  specimen_id=eac5bcea-6082-4620-bf24-a46bac47770f  taxon=Eunica carias ninetta
+2026-08-01 13:17:29  OK  L44  [NY-140]  specimen_id=4ef9b1a3-47ad-4276-8d2a-0e7c2a09498e  taxon=Eunica alcmena flora
+2026-08-01 13:17:31  OK  L45  [NY-141]  specimen_id=670b73db-5e11-4bd6-849f-4ab2fceab3ed  taxon=Eunica alcmena flora
+2026-08-01 13:17:33  OK  L46  [NY-142]  specimen_id=bb4c5cb8-e818-475e-b1bc-b1bc8085c701  taxon=Eunica alphais aspasia
+2026-08-01 13:17:34  OK  L47  [NY-143]  specimen_id=6b0bf9d3-6158-4f58-b231-6b98c0e3ab69  taxon=Eunica ameliae
+2026-08-01 13:17:36  OK  L48  [NY-144]  specimen_id=42272dfe-51db-49e5-89ff-219e843ad2f8  taxon=Eunica bechina
+2026-08-01 13:17:38  OK  L49  [NY-145]  specimen_id=bff08056-1ba7-4c4a-9285-6b9532a7212a  taxon=Eunica caralis caralis
+2026-08-01 13:17:40  OK  L50  [NY-146]  specimen_id=d9b2005e-fb4c-46bb-9caf-76277c51f431  taxon=Eunica chlorochroa
+2026-08-01 13:17:41  OK  L51  [NY-147]  specimen_id=057b682d-e30e-41fe-a6a0-643938ab79ac  taxon=Eunica clytia
+2026-08-01 13:17:43  OK  L52  [NY-148]  specimen_id=709c406c-0766-4844-9caa-44136e6120bb  taxon=Eunica clytia
+2026-08-01 13:17:44  OK  L53  [NY-149]  specimen_id=9149009a-cdb9-41c7-b18f-83080972e201  taxon=Eunica eurota
+2026-08-01 13:17:46  OK  L54  [NY-150]  specimen_id=aba6c9f3-ccac-46ec-8419-8bab514b1785  taxon=Eunica excelsa
+2026-08-01 13:17:47  OK  L55  [NY-151]  specimen_id=d0f99e0a-5464-4e0e-bc39-1ebd44903405  taxon=Eunica excelsa
+2026-08-01 13:17:48  OK  L56  [NY-152]  specimen_id=e918dbf3-ad03-47ba-91b6-bb25cf95ed47  taxon=Eunica excelsa
+2026-08-01 13:17:50  OK  L57  [NY-153]  specimen_id=c354c601-31ca-4041-b729-51b147e58678  taxon=Eunica malvina
+2026-08-01 13:17:51  OK  L58  [NY-154]  specimen_id=6d28537f-15e3-4ca1-ac05-3a841bc8692c  taxon=Eunica malvina
+2026-08-01 13:17:53  OK  L59  [NY-155]  specimen_id=5545b5c4-1ffa-4de0-8f2c-9fab6a11759a  taxon=Eunica mygdona
+2026-08-01 13:17:54  OK  L60  [NY-156]  specimen_id=5cd2dafa-8914-4f4e-ae29-71f625b3d5e7  taxon=Eunica norica
+2026-08-01 13:17:56  OK  L61  [NY-157]  specimen_id=e6fff7b8-d459-4d8e-b9fb-fd2652c61449  taxon=Eunica norica
+2026-08-01 13:17:57  OK  L62  [NY-158]  specimen_id=61133781-30a8-423a-af76-5572ae214664  taxon=Eunica orphise
+2026-08-01 13:17:59  OK  L63  [NY-159]  specimen_id=93f4af85-e92f-4160-9738-9f8331cb19e9  taxon=Eunica pomona pomona
+2026-08-01 13:18:01  OK  L64  [NY-160]  specimen_id=adca3960-7aad-4d66-9a08-eed60a4c7284  taxon=Eunica sophonisba agele
+2026-08-01 13:18:03  OK  L65  [NY-161]  specimen_id=0e306d4a-a1d7-4e4a-bb42-54550deb0eb2  taxon=Eunica sydonia
+2026-08-01 13:18:04  OK  L66  [NY-162]  specimen_id=7f258ec5-dca0-4cc6-a952-e1c18bbd6344  taxon=Eunica veronica
+2026-08-01 13:18:06  OK  L67  [NY-163]  specimen_id=330334b9-27fa-47e7-af68-fc0d1ac15087  taxon=Eunica volumna celma
+2026-08-01 13:18:08  OK  L68  [NY-164]  specimen_id=4a749477-8a7d-4814-acbd-006d9b59226c  taxon=Fountainea eurypyle
+2026-08-01 13:18:10  OK  L69  [NY-165]  specimen_id=ac0f3592-51ea-4ca2-9056-297e50061879  taxon=Fountainea eurypyle
+2026-08-01 13:18:11  OK  L70  [NY-166]  specimen_id=07583bd8-3d3e-4d2c-b4af-6d914a84b90f  taxon=Fountainea eurypyle
+2026-08-01 13:18:12  OK  L71  [NY-167]  specimen_id=d450a3a4-091f-4a09-8b56-d4402e2174ef  taxon=Fountainea eurypyle
+2026-08-01 13:18:14  OK  L72  [NY-168]  specimen_id=7e22cbeb-8d7a-46e1-8175-64da6e5fd634  taxon=Fountainea eurypyle
+2026-08-01 13:18:16  OK  L73  [NY-169]  specimen_id=f6b6a740-091f-4983-b83d-e07f7cab21ef  taxon=Fountainea nobilis caudata
+2026-08-01 13:18:17  OK  L74  [NY-170]  specimen_id=0f9d65ba-58a9-48aa-b554-b2f8b7792902  taxon=Fountainea nobilis pacifica
+2026-08-01 13:18:19  OK  L75  [NY-171]  specimen_id=eaf1cf52-6aa1-4b6c-9f7b-ff375f80ca35  taxon=Fountainea rayonensis
+2026-08-01 13:18:20  OK  L76  [NY-172]  specimen_id=2d565cd2-a292-4cc7-8b0d-957b4fc16be5  taxon=Fountainea rayonensis
+2026-08-01 13:18:22  OK  L77  [NY-173]  specimen_id=06b54ef5-47a1-49b3-a4e2-8590e60482f6  taxon=Fountainea rayonensis
+2026-08-01 13:18:23  OK  L78  [NY-174]  specimen_id=1bdd8a1b-8c74-469f-939e-afbf6668c25d  taxon=Fountainea rayonensis
+2026-08-01 13:18:25  OK  L79  [NY-175]  specimen_id=c7bcc1c8-bb19-48ff-8c47-0063e71dab51  taxon=Fountainea ryphea ryphea
+2026-08-01 13:18:26  OK  L80  [NY-176]  specimen_id=c6ff5581-9514-497b-8a13-7a155e4ceb6a  taxon=Fountainea ryphea ryphea
+2026-08-01 13:18:28  OK  L81  [NY-177]  specimen_id=3e11e790-5f39-45ce-ad22-efbfb00574cd  taxon=Fountainea ryphea ryphea
+2026-08-01 13:18:30  OK  L82  [NY-178]  specimen_id=edc61bb1-1678-4ea7-a86a-5e95a09b26ba  taxon=Fountainea ryphea ryphea
+2026-08-01 13:18:32  OK  L83  [NY-179]  specimen_id=81055c87-5978-4c50-a327-9593481114a9  taxon=Hamadryas alicia
+2026-08-01 13:18:33  OK  L84  [NY-180]  specimen_id=e1f9f133-17b3-4504-afc2-c8b4467a681e  taxon=Hamadryas amphinome
+2026-08-01 13:18:34  OK  L85  [NY-181]  specimen_id=8c9a1984-30a3-4c98-8cdf-977d9a1c08b0  taxon=Hamadryas amphinome
+2026-08-01 13:18:36  OK  L86  [NY-182]  specimen_id=3e3700a5-5cb1-4fab-904b-711449d5b0d9  taxon=Hamadryas amphinome fumosa
+2026-08-01 13:18:38  OK  L87  [NY-183]  specimen_id=cfddb3ce-cf3c-48a5-a2d0-36591e8768e7  taxon=Hamadryas amphinome fumosa
+2026-08-01 13:18:39  OK  L88  [NY-184]  specimen_id=b5b3c468-d01f-42cd-b40f-f763d9f09d75  taxon=Hamadryas arinome
+2026-08-01 13:18:41  OK  L89  [NY-185]  specimen_id=65ff0922-68f4-42be-b9c3-0f7a3fd3e7cd  taxon=Hamadryas arinome
+2026-08-01 13:18:42  OK  L90  [NY-186]  specimen_id=04c50e23-7f89-4281-a39d-1422798c14a3  taxon=Hamadryas arinome
+2026-08-01 13:18:43  OK  L91  [NY-187]  specimen_id=a53acf68-7d26-4943-91d1-1d4af9497fdc  taxon=Hamadryas arinome
+2026-08-01 13:18:45  OK  L92  [NY-188]  specimen_id=c607b275-c5ed-4ed2-89e5-2adc906c6fef  taxon=Hamadryas belladonna
+2026-08-01 13:18:46  OK  L93  [NY-189]  specimen_id=730e130f-05c6-4a41-980a-0e6b1b29c5fa  taxon=Hamadryas chloe
+2026-08-01 13:18:48  OK  L94  [NY-190]  specimen_id=8b02062d-5162-43cd-83f3-c28888225ae0  taxon=Hamadryas chloe
+2026-08-01 13:18:49  OK  L95  [NY-191]  specimen_id=62f82122-00ac-41be-b45c-f81daa6f1eec  taxon=Hamadryas epinome
+2026-08-01 13:22:34  OK  L2  [NY-192]  specimen_id=48ba37dc-dae0-46f7-bd9b-2d5374355393  taxon=Diaethria kolyma
+2026-08-01 13:22:36  OK  L3  [NY-193]  specimen_id=9dbf49d4-4689-45be-a7d5-1d68c372ec79  taxon=Doxocopa cyane
+2026-08-01 13:22:37  OK  L4  [NY-194]  specimen_id=806c56ea-3820-4499-b2df-973ba28a3cf9  taxon=Doxocopa cyane
+2026-08-01 13:22:38  OK  L5  [NY-195]  specimen_id=0b8cd04a-99b6-47af-84fc-cedb7a4f2f9c  taxon=Doxocopa lavinia
+2026-08-01 13:22:40  OK  L6  [NY-196]  specimen_id=2b3410cc-e2a5-4cd8-8335-96c5324ccb5b  taxon=Eunica bechina
+2026-08-01 13:22:42  OK  L7  [NY-197]  specimen_id=f69bfdb3-1157-46e9-ad54-dcd01b35ab26  taxon=Eunica carias ninetta
+2026-08-01 13:22:44  OK  L8  [NY-198]  specimen_id=a7b4f7bf-a19e-4ca2-83ab-52443bd16ea4  taxon=Hamadryas epinome
+2026-08-01 13:22:46  OK  L9  [NY-199]  specimen_id=f8db57a7-749d-45f0-aa39-469bc5b25dec  taxon=Hamadryas februa farentina
+2026-08-01 13:22:48  OK  L10  [NY-200]  specimen_id=ecfd594f-e5a8-4a2d-ad30-3e4192748d3a  taxon=Hamadryas feronia
+2026-08-01 13:22:49  OK  L11  [NY-201]  specimen_id=8dbbc6f5-92c4-42e1-9d6c-de0f910c4c25  taxon=Hamadryas feronia
+2026-08-01 13:22:51  OK  L12  [NY-202]  specimen_id=6c756c48-1c35-4f98-8bd7-364250c22646  taxon=Hamadryas fornax
+2026-08-01 13:22:53  OK  L13  [NY-203]  specimen_id=300fe0ee-0374-44b9-87e8-37787ade9a1e  taxon=Hamadryas fornax
+2026-08-01 13:22:55  OK  L14  [NY-204]  specimen_id=6a54a435-d325-4e0d-a7b4-27fb94d75287  taxon=Hamadryas glauconome
+2026-08-01 13:22:57  OK  L15  [NY-205]  specimen_id=93f75510-03bd-410b-b8bb-e32b7c617e2c  taxon=Hamadryas iphthime iphthime
+2026-08-01 13:22:58  OK  L16  [NY-206]  specimen_id=93672f39-b00c-4122-a21f-f1a5f8814b3e  taxon=Hamadryas iphthime iphthime
+2026-08-01 13:30:55  OK  L2  [NY-192]  specimen_id=a391414d-372a-4d48-abb8-1dc3d9f703bb  taxon=Diaethria kolyma
+2026-08-01 13:30:57  OK  L3  [NY-193]  specimen_id=8ac90544-4c66-45e2-b5d1-174f868f0f65  taxon=Doxocopa cyane
+2026-08-01 13:30:58  OK  L4  [NY-194]  specimen_id=05f7b59d-dcd3-4d02-8f90-d6c1e25f5d71  taxon=Doxocopa cyane
+2026-08-01 13:31:00  OK  L5  [NY-195]  specimen_id=a23fb721-7251-44cf-822f-8c4865294009  taxon=Doxocopa lavinia
+2026-08-01 13:31:02  OK  L6  [NY-196]  specimen_id=dad49593-36bc-4350-a36c-e2ff3c1d12bd  taxon=Eunica bechina
+2026-08-01 13:31:04  OK  L7  [NY-197]  specimen_id=2c87672d-d86c-4eb5-a48e-70fde2290922  taxon=Eunica carias ninetta
+2026-08-01 13:31:07  OK  L8  [NY-198]  specimen_id=aa00a475-a8c8-4885-a6d0-cfdb42dc5276  taxon=Hamadryas epinome
+2026-08-01 13:31:09  OK  L9  [NY-199]  specimen_id=98454326-fa88-463b-b50d-32468791ae16  taxon=Hamadryas februa farentina
+2026-08-01 13:31:10  OK  L10  [NY-200]  specimen_id=32c762da-7818-43d0-94cd-bca8f6d4e48f  taxon=Hamadryas feronia
+2026-08-01 13:31:12  OK  L11  [NY-201]  specimen_id=9fafa3ee-08fa-499c-981a-faa551dcbea7  taxon=Hamadryas feronia
+2026-08-01 13:31:14  OK  L12  [NY-202]  specimen_id=959fd229-1b90-408a-8c9f-99eaaf61ea57  taxon=Hamadryas fornax
+2026-08-01 13:31:15  OK  L13  [NY-203]  specimen_id=209e4393-3611-41a2-9079-f76115cb793c  taxon=Hamadryas fornax
+2026-08-01 13:31:17  OK  L14  [NY-204]  specimen_id=a7aeb887-ffba-4191-8535-babbad299ded  taxon=Hamadryas glauconome
+2026-08-01 13:31:19  OK  L15  [NY-205]  specimen_id=b62a830c-7bde-4a22-ba4d-3d444acff0f1  taxon=Hamadryas iphthime iphthime
+2026-08-01 13:31:21  OK  L16  [NY-206]  specimen_id=1beaf29c-fc44-4cce-8a52-c06625d8c9f4  taxon=Hamadryas iphthime iphthime
+2026-08-01 13:31:23  OK  L17  [NY-207]  specimen_id=e8f159b1-e946-40c0-b349-f0b301b5eb49  taxon=Hamadryas laodamia laodamia
+2026-08-01 13:31:24  OK  L18  [NY-208]  specimen_id=8e538396-9142-4458-8ea3-83eff1440f92  taxon=Hamadryas laodamia laodamia
+2026-08-01 13:31:26  OK  L19  [NY-209]  specimen_id=5e3db840-6cf9-481b-a54f-926157c6d03f  taxon=Hamadryas laodamia saurites
+2026-08-01 13:31:29  OK  L20  [NY-210]  specimen_id=8c529efc-35ce-4862-83f7-4b308784bcbb  taxon=Historis odius
+2026-08-01 13:31:30  OK  L21  [NY-211]  specimen_id=e90a6789-64a5-4544-b81e-4633e4730dfc  taxon=Historis odius
+2026-08-01 13:31:32  OK  L22  [NY-212]  specimen_id=4216de8f-7bc1-4a0f-a279-22cbe714dcb8  taxon=Agrias beatifica beata
+2026-08-01 13:31:34  OK  L23  [NY-213]  specimen_id=8b2e03bd-31e1-4f78-812f-637ee296d7e1  taxon=Agrias claudina lugens
+2026-08-01 13:31:36  OK  L24  [NY-214]  specimen_id=3b997f26-1519-4be0-8963-1dafc0584797  taxon=Agrias beatifica beata
+2026-08-01 13:31:37  OK  L25  [NY-215]  specimen_id=51473c40-1448-441f-a3a6-073e3ede426e  taxon=Agrias claudina lugens
+2026-08-01 13:31:39  OK  L26  [NY-216]  specimen_id=c7e51164-e7e5-44c3-88c7-7ce59a499d37  taxon=Agrias claudina lugens
+2026-08-01 13:31:41  OK  L27  [NY-217]  specimen_id=41309aca-fff6-4f5c-bbe5-498a9c391982  taxon=Agrias claudina lugens
+2026-08-01 13:31:42  OK  L28  [NY-218]  specimen_id=a1d10e93-96a6-459c-8c79-1cdfb5200910  taxon=Agrias claudina lugens
+2026-08-01 13:31:44  OK  L29  [NY-219]  specimen_id=36722f3f-17ce-4015-810a-9791e57ac918  taxon=Agrias claudina lugens
+2026-08-01 13:31:46  OK  L30  [NY-220]  specimen_id=c8d9db05-1262-499f-b646-8d943479358a  taxon=Hypna clymenestra negra
+2026-08-01 13:31:48  OK  L31  [NY-221]  specimen_id=76b05dec-f456-477b-a0f1-756d0133fd94  taxon=Hypna clymenestra negra
+2026-08-01 13:31:50  OK  L32  [NY-222]  specimen_id=26f2e8f9-9a82-445c-b95c-6ce326a7c8c8  taxon=Junonia l lavinia
+2026-08-01 13:31:52  OK  L33  [NY-223]  specimen_id=a03770ec-5f6e-4ef9-b19c-582dffad396e  taxon=Marpesia berania
+2026-08-01 13:31:53  OK  L34  [NY-224]  specimen_id=55ccf92d-b207-4ef9-a9b8-67aa85e5e0b9  taxon=Marpesia berania
+2026-08-01 13:31:55  OK  L35  [NY-225]  specimen_id=30f78e24-9302-4a86-b59d-c8455ba151d4  taxon=Marpesia coresia
+2026-08-01 13:31:56  OK  L36  [NY-226]  specimen_id=f9247e08-a0d9-47c7-a51c-01ac6eb19678  taxon=Marpesia coresia
+2026-08-01 13:31:58  OK  L37  [NY-227]  specimen_id=47b6477a-1760-4ef4-949b-a593638db668  taxon=Marpesia crethon
+2026-08-01 13:31:59  OK  L38  [NY-228]  specimen_id=4a9d06ff-4c7a-4c2d-a30b-986652fe503e  taxon=Marpesia crethon
+2026-08-01 13:32:01  OK  L39  [NY-229]  specimen_id=da9477e5-e809-40ea-89d5-9386087ee818  taxon=Marpesia hermione
+2026-08-01 13:32:02  OK  L40  [NY-230]  specimen_id=9b69c130-d20b-4004-bc11-2f655aa553fc  taxon=Marpesia hermione
+2026-08-01 13:32:04  OK  L41  [NY-231]  specimen_id=a15da86b-20c8-4aec-b8b5-cf1c01956788  taxon=Marpesia livius
+2026-08-01 13:32:05  OK  L42  [NY-232]  specimen_id=cf1730a2-3256-4d0b-baae-3eee33344d52  taxon=Marpesia marcella
+2026-08-01 13:32:06  OK  L43  [NY-233]  specimen_id=1adfdd7f-8cc3-4add-8a9c-f020ba414330  taxon=Marpesia marcella
+2026-08-01 13:32:08  OK  L44  [NY-234]  specimen_id=b7e3e765-eea7-4f26-a950-54598383ff62  taxon=Marpesia petreus
+2026-08-01 13:32:09  OK  L45  [NY-235]  specimen_id=e5ff8f16-12f4-42a8-8c06-fa2daba4aa38  taxon=Marpesia petreus
+2026-08-01 13:32:11  OK  L46  [NY-236]  specimen_id=01265e3f-ee4a-49a1-bbc7-9e3382cb8de1  taxon=Memphis acaudata
+2026-08-01 13:32:13  OK  L47  [NY-237]  specimen_id=f8327358-607f-46ff-ab82-131d1b953735  taxon=Memphis acidalia memphis
+2026-08-01 13:32:15  OK  L48  [NY-238]  specimen_id=a67dbbad-be0f-450f-99cd-f15ced14ac66  taxon=Memphis alberta
+2026-08-01 13:32:16  OK  L49  [NY-239]  specimen_id=586c03c4-7102-4465-8a17-9ef05dc032cc  taxon=Memphis alberta
+2026-08-01 13:32:18  OK  L50  [NY-240]  specimen_id=da8b8734-1c25-47a0-bb9d-c85af4e10cd7  taxon=Memphis arachne psammis
+2026-08-01 13:32:20  OK  L51  [NY-241]  specimen_id=6b99ec23-bef8-4658-a24f-8f4716e7de76  taxon=Memphis arginussa
+2026-08-01 13:32:21  OK  L52  [NY-242]  specimen_id=e2f8b8f5-62a0-472f-b2d2-165703e1fecc  taxon=Memphis arginussa
+2026-08-01 13:32:22  OK  L53  [NY-243]  specimen_id=ca45a2db-c6da-4a9a-9d44-7d89150031f9  taxon=Memphis arginussa
+2026-08-01 13:32:24  OK  L54  [NY-244]  specimen_id=ca38ab89-96c5-4704-9f7c-f3360bae96c0  taxon=Memphis arginussa onophis
+2026-08-01 13:32:26  OK  L55  [NY-245]  specimen_id=9aeccbd8-3d2e-4068-bb0d-10fa34ab592b  taxon=Memphis arginussa onophis
+2026-08-01 13:32:27  OK  L56  [NY-246]  specimen_id=f9ec7655-6afc-4788-8cb3-2e52ca122f59  taxon=Memphis cerelia
+2026-08-01 13:32:29  OK  L57  [NY-247]  specimen_id=7a3c53c7-fab2-42b2-be4a-c9886023f17b  taxon=Memphis cleomnestra
+2026-08-01 13:32:30  OK  L58  [NY-248]  specimen_id=f7d43c68-3fba-4520-8587-e768f8ac14be  taxon=Memphis cleomnestra
+2026-08-01 13:32:31  OK  L59  [NY-249]  specimen_id=6580ea30-c121-4ba4-a4b2-dddab178f95a  taxon=Memphis cleomnestra
+2026-08-01 13:32:33  OK  L60  [NY-250]  specimen_id=38f3b3ef-d5c1-4eca-8893-c0c4a3fbeb2b  taxon=Memphis falcata
+2026-08-01 13:32:35  OK  L61  [NY-251]  specimen_id=f986d9d9-d224-4f9b-92dc-a83f6d49bc38  taxon=Memphis florita
+2026-08-01 13:32:37  OK  L62  [NY-252]  specimen_id=7d245fea-e5d0-4ee6-b303-581bcd1c22e6  taxon=Memphis glauce felderi
+2026-08-01 13:32:38  OK  L63  [NY-253]  specimen_id=4e4741e4-8577-4fcd-b9c6-b035cc40a4e5  taxon=Memphis glauce felderi
+2026-08-01 13:32:40  OK  L64  [NY-254]  specimen_id=37805b09-bbd7-4c30-9892-2b000146dd88  taxon=Memphis glauce felderi
+2026-08-01 13:32:41  OK  L65  [NY-255]  specimen_id=2a5b2f1d-4e7b-48e0-8c61-ec1470d083a7  taxon=Memphis glauce felderi
+2026-08-01 13:32:43  OK  L66  [NY-256]  specimen_id=744fdb57-8463-4cbd-82ca-a0abc2bdc557  taxon=Memphis glaucone glaucone
+2026-08-01 13:32:45  OK  L67  [NY-257]  specimen_id=b568cb40-f445-4b99-a1d8-939ed5c27e42  taxon=Memphis glaucone glaucone
+2026-08-01 13:32:47  OK  L68  [NY-258]  specimen_id=4a19f80f-0eaf-4a7b-9632-b55d089429bb  taxon=Memphis juliani
+2026-08-01 13:32:48  OK  L69  [NY-259]  specimen_id=9215ed28-3ebe-475f-a848-dee7906aefdb  taxon=Memphis juliani
+2026-08-01 13:32:49  OK  L70  [NY-260]  specimen_id=f77d30c0-b3f0-474d-be25-a747bc35cda0  taxon=Memphis juliani
+2026-08-01 13:32:51  OK  L71  [NY-261]  specimen_id=512f8fb8-f6be-4e46-8a68-7aa5b717c47b  taxon=Memphis lemnos
+2026-08-01 13:32:52  OK  L72  [NY-262]  specimen_id=fc34c6a7-7d23-4a17-888c-ade224846bc2  taxon=Memphis lemnos
+2026-08-01 13:32:54  OK  L73  [NY-263]  specimen_id=f13e2fcc-bfeb-4b7b-aaf7-2f761b42302a  taxon=Memphis lineata
+2026-08-01 13:32:55  OK  L74  [NY-264]  specimen_id=6a5d7768-cb30-43b2-bdc7-2f2ffe6e3e6b  taxon=Memphis lineata
+2026-08-01 13:32:56  OK  L75  [NY-265]  specimen_id=3cf2c17d-5b1a-467e-aac4-a97b7c47a9a7  taxon=Memphis lyceus
+2026-08-01 13:32:58  OK  L76  [NY-266]  specimen_id=a2d6da73-16b8-404f-a385-50fffcafca68  taxon=Memphis lyceus
+2026-08-01 13:32:59  OK  L77  [NY-267]  specimen_id=8b889d5b-14af-49a2-a190-3477d03e5f19  taxon=Memphis lyceus
+2026-08-01 13:33:00  OK  L78  [NY-268]  specimen_id=1fda5df1-dad1-4342-a431-e051439cd756  taxon=Memphis lyceus
+2026-08-01 13:33:02  OK  L79  [NY-269]  specimen_id=ce7a54c2-cbff-475f-9bc6-f89e9628f0bf  taxon=Memphis mora montana
+2026-08-01 13:33:04  OK  L80  [NY-270]  specimen_id=39e6a0dc-4adb-4953-919f-52f71f7556b1  taxon=Memphis moruus leonila
+2026-08-01 13:33:06  OK  L81  [NY-271]  specimen_id=2576701a-7be9-4684-b3f8-ed86b1e9ab87  taxon=Memphis moruus leonila
+2026-08-01 13:33:07  OK  L82  [NY-272]  specimen_id=d432e331-49bb-42ff-b6c3-b6091ca58442  taxon=Memphis moruus morpheus
+2026-08-01 13:33:10  OK  L83  [NY-273]  specimen_id=9ab0bdae-b5f8-429d-8008-9b7d1a48c16f  taxon=Memphis nenia threnadion
+2026-08-01 13:33:11  OK  L84  [NY-274]  specimen_id=a236b150-9a8e-41f8-ad5f-a19710191df8  taxon=Memphis nenia threnadion
+2026-08-01 13:33:13  OK  L85  [NY-275]  specimen_id=8020ebfb-e3c7-44f7-b537-bf18f57e24d4  taxon=Memphis nenia threnadion
+2026-08-01 13:33:14  OK  L86  [NY-276]  specimen_id=8828873d-28a7-434f-9dee-4d7712c02bbd  taxon=Memphis offa
+2026-08-01 13:33:16  OK  L87  [NY-277]  specimen_id=78f0f3c0-f103-4543-8ec6-1a873cc1f3db  taxon=Memphis offa gudrun
+2026-08-01 13:33:18  OK  L88  [NY-278]  specimen_id=e90f0724-baeb-452a-963a-68b9a3b189ed  taxon=Memphis offa gudrun
+2026-08-01 13:33:19  OK  L89  [NY-279]  specimen_id=251224fe-d86c-4250-a327-6337431de4d4  taxon=Memphis philumena philumena
+2026-08-01 13:33:21  OK  L90  [NY-280]  specimen_id=a45812e7-5fd5-4a0c-a9fb-adc4a0837d31  taxon=Memphis philumena philumena
+2026-08-01 13:33:23  OK  L91  [NY-281]  specimen_id=f86eb620-c213-44f4-8f45-94fd7b4961fa  taxon=Memphis philumena philumena
+2026-08-01 13:33:25  OK  L92  [NY-282]  specimen_id=abf47c48-b269-4777-8555-1ae8f2726891  taxon=Memphis pithyusa pithyusa
+2026-08-01 13:33:26  OK  L93  [NY-283]  specimen_id=668a1ff3-d2af-44f8-98e9-d390be0a8a6a  taxon=Memphis pithyusa pithyusa
+2026-08-01 13:33:28  OK  L94  [NY-284]  specimen_id=228d2768-4923-4a7b-80d2-a2d0b001c8fe  taxon=Memphis polycarmes
+2026-08-01 13:33:29  OK  L95  [NY-285]  specimen_id=e11471de-8f62-4e28-973d-671aef7632fe  taxon=Memphis polycarmes
+2026-08-01 13:33:31  OK  L96  [NY-286]  specimen_id=e4a68109-e870-465c-be57-e3334163b9ab  taxon=Memphis polyxo
+2026-08-01 13:33:32  OK  L97  [NY-287]  specimen_id=2dd1fb69-56af-4a30-ac53-0767d30cc7ce  taxon=Memphis praxias
+2026-08-01 13:33:34  OK  L98  [NY-288]  specimen_id=fb67650b-6eb6-460a-8f48-4a6995e8e454  taxon=Memphis xenocles xenocles
+2026-08-01 13:33:36  OK  L99  [NY-289]  specimen_id=4a385fb6-854b-4bc0-b2dd-ab0869d5b184  taxon=Memphis xenocles xenocles
+2026-08-01 13:33:38  OK  L100  [NY-290]  specimen_id=f0df3d96-0d13-44ef-ac9d-5b8538db16ed  taxon=Memphis xenocles xenocles
+2026-08-01 13:33:40  OK  L101  [NY-291]  specimen_id=2da9503e-5c6d-47a3-8f37-91fad36e87b0  taxon=Metamorpha elissa elissa
+2026-08-01 13:33:42  OK  L102  [NY-292]  specimen_id=a3a288e7-b1e5-4a06-bc53-50bd2b36a23c  taxon=Myscelia ethusa
+2026-08-01 13:33:43  OK  L103  [NY-293]  specimen_id=78431aea-535f-45ea-8341-538407d1f267  taxon=Myscelia ethusa
+2026-08-01 13:33:46  OK  L104  [NY-294]  specimen_id=ad0b9478-efaf-4597-98c6-af9f287fcce5  taxon=Myscelias cyaniris cyaniris
+2026-08-01 13:33:47  OK  L105  [NY-295]  specimen_id=29e25e79-4ec0-40f4-b297-236409281c83  taxon=Myscelias cyaniris cyaniris
+2026-08-01 13:33:49  OK  L106  [NY-296]  specimen_id=db098b4a-ff0c-49a0-af32-7e7b93f386ad  taxon=Napocles jucunda
+2026-08-01 13:33:51  OK  L107  [NY-297]  specimen_id=263eacfb-782f-4d45-b1f2-2f1bb8b7f523  taxon=Napocles jucunda
+2026-08-01 13:33:56  OK  L2  [NY-298]  specimen_id=9a8e9176-32cb-499d-bf82-7314fc7dd521  taxon=Nessaea hewitsoni
+2026-08-01 13:33:57  OK  L3  [NY-299]  specimen_id=5b956d3a-d714-4bf3-96a5-468fc0aafc88  taxon=Nessaea hewitsoni
+2026-08-01 13:33:58  OK  L4  [NY-300]  specimen_id=b8c5ec65-9335-4ba8-9695-964170b2ef7c  taxon=Nessaea hewitsoni
+2026-08-01 13:34:00  OK  L5  [NY-301]  specimen_id=38fbb1e9-1d8a-44ed-b635-a4b5b601b8a5  taxon=Nessaea hewitsoni
+2026-08-01 13:34:01  OK  L6  [NY-302]  specimen_id=0cab55f6-2e0e-4bf8-8a05-113c056c900e  taxon=Nessaea hewitsoni
+2026-08-01 13:34:02  OK  L7  [NY-303]  specimen_id=169062b5-2f7e-4369-9e53-a784217bbdcb  taxon=Nessaea hewitsoni
+2026-08-01 13:34:04  OK  L8  [NY-304]  specimen_id=1ce5f668-46da-4a51-a5c4-9065c24a935d  taxon=Nessaea obrinus
+2026-08-01 13:34:07  OK  L9  [NY-305]  specimen_id=a1cd89aa-ebf1-4bf9-9095-40dae7a6c23f  taxon=Orophila diotima cecidas
+2026-08-01 13:34:09  OK  L10  [NY-306]  specimen_id=ebd46a7d-1d20-4196-b0ea-746b1e45909a  taxon=Orophila diotima cecidas
+2026-08-01 13:34:11  OK  L11  [NY-307]  specimen_id=8b6361c8-715f-4556-91b7-18fb592f75f6  taxon=Panacea procilla divalis
+2026-08-01 13:34:12  OK  L12  [NY-308]  specimen_id=ce15eb82-d4ea-46a1-9f15-9990b8bc9110  taxon=Panacea prola
+2026-08-01 13:34:14  OK  L13  [NY-309]  specimen_id=01f10141-aaa9-4b0e-b956-86dbc1a9142a  taxon=Panacea prola
+2026-08-01 13:34:15  OK  L14  [NY-310]  specimen_id=75599d22-80b7-4817-a48f-ed9a24eec9b8  taxon=Panacea prola
+2026-08-01 13:34:16  OK  L15  [NY-311]  specimen_id=1995e778-f5a5-44d2-bcb9-56be05104ea6  taxon=Panacea prola
+2026-08-01 13:34:18  OK  L16  [NY-312]  specimen_id=491d8183-671e-4c20-93dd-cee20656b9d7  taxon=Panacea regina chalcothea
+2026-08-01 13:34:20  OK  L17  [NY-313]  specimen_id=0a5578a6-4fae-4753-843f-7f40492e30f9  taxon=Panacea regina chalcothea
+2026-08-01 13:34:22  OK  L18  [NY-314]  specimen_id=ec1f6206-ced9-4be4-a93c-19ead67f6971  taxon=Paulogramma pyracmon peristera
+2026-08-01 13:34:24  OK  L19  [NY-315]  specimen_id=e6c02c76-a520-4705-a293-4c5e9c6d60b6  taxon=Paulogramma pyracmon peristera
+2026-08-01 13:34:25  OK  L20  [NY-316]  specimen_id=77a4433e-d189-46de-bab7-4abec59bc28f  taxon=Paulogramma pyracmon peristera
+2026-08-01 13:34:27  OK  L21  [NY-317]  specimen_id=c91fbdbb-cfef-4b39-97c4-14a393479abd  taxon=Perisama alicia
+2026-08-01 13:34:28  OK  L22  [NY-318]  specimen_id=f394d6e5-6a35-4152-832c-ee6f9b29a187  taxon=Perisama alicia
+2026-08-01 13:34:30  OK  L23  [NY-319]  specimen_id=24b6838b-f4ad-4990-8514-ed0b8104883b  taxon=Perisama ambatensis
+2026-08-01 13:34:32  OK  L24  [NY-320]  specimen_id=7f1d2096-e737-409d-8225-3aef169f637d  taxon=Perisama bomplandii albipenis
+2026-08-01 13:34:34  OK  L25  [NY-321]  specimen_id=d7dd722c-9ce9-4b56-94da-d0494890cecc  taxon=Perisama canoma
+2026-08-01 13:34:35  OK  L26  [NY-322]  specimen_id=80265eb2-d69e-4ed3-aea0-84fff6bd3c38  taxon=Perisama canoma
+2026-08-01 13:34:36  OK  L27  [NY-323]  specimen_id=0c22f369-7e97-42bc-aa2c-5fd98cb5ed4b  taxon=Perisama cecidas
+2026-08-01 13:34:38  OK  L28  [NY-324]  specimen_id=9624b9af-93ac-4404-89dd-7d5f2608d158  taxon=Perisama commena
+2026-08-01 13:34:39  OK  L29  [NY-325]  specimen_id=0203ac78-79f2-40e2-aa2e-1ac271d5c58a  taxon=Perisama commena
+2026-08-01 13:34:41  OK  L30  [NY-326]  specimen_id=78a37b67-bb92-4019-b257-836a5cc54717  taxon=Perisama hilara
+2026-08-01 13:34:42  OK  L31  [NY-327]  specimen_id=8e3449f3-ed5d-4faa-9935-7d6f45ecc40b  taxon=Perisama hilara
+2026-08-01 13:34:44  OK  L32  [NY-328]  specimen_id=3fc22ded-4cda-48b4-9b33-2118f5626a03  taxon=Perisama humboldti
+2026-08-01 13:34:46  OK  L33  [NY-329]  specimen_id=bf416cc2-e383-444f-8c2c-af0964a056a4  taxon=Perisama jurinei jurinei
+2026-08-01 13:34:47  OK  L34  [NY-330]  specimen_id=d8002741-2e23-4d37-84ad-0c8789afa44d  taxon=Perisama jurinei klugi
+2026-08-01 13:34:49  OK  L35  [NY-331]  specimen_id=1d9f75fb-a2a3-4563-8a82-90e3eb6d89c4  taxon=Perisama lanice picteti
+2026-08-01 13:34:51  OK  L36  [NY-332]  specimen_id=87e22192-089b-411b-bf1c-fd00ead0740f  taxon=Perisama lanice picteti
+2026-08-01 13:34:53  OK  L37  [NY-333]  specimen_id=4c7769b9-2653-4974-83ee-c8da3733e94f  taxon=Perisama oppellii eribina
+2026-08-01 13:34:55  OK  L38  [NY-334]  specimen_id=4ad4f4bc-069e-45bc-a33a-5944cdae58aa  taxon=Perisama oppellii viridinota
+2026-08-01 13:34:56  OK  L39  [NY-335]  specimen_id=57926cd9-848e-47c6-9964-785b5519d6a2  taxon=Perisama oppellii viridinota
+2026-08-01 13:34:58  OK  L40  [NY-336]  specimen_id=f460983d-9827-44d6-890c-f4fefcc02396  taxon=Perisama pericles
+2026-08-01 13:34:59  OK  L41  [NY-337]  specimen_id=17e0d3cd-2f52-4973-bcb7-3399c589a3ce  taxon=Perisama pericles
+2026-08-01 13:35:01  OK  L42  [NY-338]  specimen_id=af883603-5f04-4f43-9393-0c188ddc6021  taxon=Perisama philinus saussurei
+2026-08-01 13:35:03  OK  L43  [NY-339]  specimen_id=b6e74948-1266-4c4c-9b9b-570b6a059899  taxon=Perisama tringa
+2026-08-01 13:35:05  OK  L44  [NY-340]  specimen_id=c0501071-eff7-4691-8c5d-b8747859864a  taxon=Perisama vitringa vitringa
+2026-08-01 13:35:07  OK  L45  [NY-341]  specimen_id=5a43ae5d-5c20-4216-8f84-f8a6606aa619  taxon=Perisama xanthica xanthica
+2026-08-01 13:35:09  OK  L46  [NY-342]  specimen_id=fd3f81a2-aa84-4e7c-802e-afe65c6867bf  taxon=Polygrapha cyanea cyanea
+2026-08-01 13:35:11  OK  L47  [NY-343]  specimen_id=5f5b943f-ae4e-42a6-9954-3a57538aedd5  taxon=Polygrapha cyanea silvaorum
+2026-08-01 13:35:12  OK  L48  [NY-344]  specimen_id=a1711062-7293-4b53-b9b8-d0512b182e9a  taxon=Polygrapha cyanea silvaorum
+2026-08-01 13:35:14  OK  L49  [NY-345]  specimen_id=c0d832ce-6481-4b8d-bf5a-0ae5ae98d1fb  taxon=Polygrapha cyanea silvaorum
+2026-08-01 13:35:16  OK  L50  [NY-346]  specimen_id=18c5de2d-182c-4e85-bd63-af7852a850e8  taxon=Polygrapha suprema
+2026-08-01 13:35:18  OK  L51  [NY-347]  specimen_id=3202592b-1117-4b15-9b6b-40e1a22435a0  taxon=Polygrapha tyrianthina
+2026-08-01 13:35:19  OK  L52  [NY-348]  specimen_id=1d490814-ac22-4e2f-be38-545a425e8929  taxon=Polygrapha tyrianthina
+2026-08-01 13:35:20  OK  L53  [NY-349]  specimen_id=6120ded9-d129-4910-8980-20bdffb44a5a  taxon=Polygrapha tyrianthina
+2026-08-01 13:35:21  OK  L54  [NY-350]  specimen_id=20ee5057-fa28-441b-aa02-8b3034881615  taxon=Polygrapha tyrianthina
+2026-08-01 13:35:23  OK  L55  [NY-351]  specimen_id=d5520377-2ff1-41bc-aaa0-7e60e85f2dbc  taxon=Polygrapha tyrianthina
+2026-08-01 13:35:25  OK  L56  [NY-352]  specimen_id=47a61805-ce9a-4657-b929-e6e0c9bbeca4  taxon=Polygrapha xenocrates ernestoi
+2026-08-01 13:35:26  OK  L57  [NY-353]  specimen_id=06e225e2-4e76-405b-a87c-b8df60be0366  taxon=Polygrapha xenocrates xenocrates
+2026-08-01 13:35:29  OK  L58  [NY-354]  specimen_id=c8a7de2a-0f40-4d40-966e-9d51794a797b  taxon=Prepona amphimachus
+2026-08-01 13:35:30  OK  L59  [NY-355]  specimen_id=f2ca6afa-8159-4373-b91e-1106ca261f64  taxon=Prepona amphimachus
+2026-08-01 13:35:32  OK  L60  [NY-356]  specimen_id=c4e6e0a1-a1ef-4699-9f64-b028b530c5e4  taxon=Prepona amphimachus symaithus
+2026-08-01 13:35:33  OK  L61  [NY-357]  specimen_id=b3425318-51c8-499a-a39d-9506e1ee1175  taxon=Prepona camilla
+2026-08-01 13:35:35  OK  L62  [NY-358]  specimen_id=c9657ad5-fa58-4f19-9321-778741d2cc4d  taxon=Prepona camilla
+2026-08-01 13:35:37  OK  L63  [NY-359]  specimen_id=2fe0229c-8a02-4584-8a6d-87e9c65111ff  taxon=Prepona demophon centralis
+2026-08-01 13:35:39  OK  L64  [NY-360]  specimen_id=3621492b-78ce-4fbb-b386-8d51fa7c4868  taxon=Prepona demophon centralis
+2026-08-01 13:35:40  OK  L65  [NY-361]  specimen_id=8463c865-3214-4008-adce-c05392be70ce  taxon=Prepona demophon centralis
+2026-08-01 13:35:42  OK  L66  [NY-362]  specimen_id=117a6cc8-9734-4da3-b32d-c2bd945b3932  taxon=Prepona demophon centralis
+2026-08-01 13:35:44  OK  L67  [NY-363]  specimen_id=f99dcc04-f710-4084-810d-88db9f74fb64  taxon=Prepona demophon muson
+2026-08-01 13:35:45  OK  L68  [NY-364]  specimen_id=c4744f34-ef40-4157-b704-c054a8ae380d  taxon=Prepona demophon muson
+2026-08-01 13:35:47  OK  L69  [NY-365]  specimen_id=cdfea814-2088-473f-acdf-23605de42081  taxon=Prepona demophon muson
+2026-08-01 13:35:49  OK  L70  [NY-366]  specimen_id=75619b83-0488-40e7-8a94-5c35db518184  taxon=Prepona demophon niklasi
+2026-08-01 13:35:50  OK  L71  [NY-367]  specimen_id=39004330-1efb-4e73-b88d-3004981850cd  taxon=Prepona demophoon
+2026-08-01 13:35:52  OK  L72  [NY-368]  specimen_id=ed21b50f-cdf9-4966-8d92-5ccbbf586e35  taxon=Prepona licomedes
+2026-08-01 13:35:53  OK  L73  [NY-369]  specimen_id=8f9dec3f-6a52-46e1-8ea5-db8bca83563b  taxon=Prepona licomedes
+2026-08-01 13:35:55  OK  L74  [NY-370]  specimen_id=a1f53c67-b5c4-40eb-ad78-74204ca4f776  taxon=Prepona meander megabates
+2026-08-01 13:35:57  OK  L75  [NY-371]  specimen_id=68390fa1-8861-4390-b4d6-0b6b919e9199  taxon=Prepona meander megabates
+2026-08-01 13:35:59  OK  L76  [NY-372]  specimen_id=e2db01ad-dea1-4bc1-b194-ebf79a27b40d  taxon=Prepona phaedra
+2026-08-01 13:36:00  OK  L77  [NY-373]  specimen_id=b782b15b-5e7d-449a-b192-e70e4598e6c3  taxon=Prepona chromus
+2026-08-01 13:36:01  OK  L78  [NY-374]  specimen_id=4ec7fb21-ef8e-45aa-ad02-0109a48cd591  taxon=Prepona chromus
+2026-08-01 13:36:04  OK  L79  [NY-375]  specimen_id=b118f701-ff55-49c1-85d8-84a435402f43  taxon=Prepona deiphile brooksiana
+2026-08-01 13:36:05  OK  L80  [NY-376]  specimen_id=f68b6fa5-c5f1-4320-a9b8-339d9763e15e  taxon=Prepona deiphile brooksiana
+2026-08-01 13:36:07  OK  L81  [NY-377]  specimen_id=3354591f-d5a6-4ce0-b8c0-6f49f8a13cb5  taxon=Prepona dexamenes
+2026-08-01 13:36:08  OK  L82  [NY-378]  specimen_id=836b069a-685c-4dc6-b56a-d8b9742f5ba5  taxon=Prepona dexamenes
+2026-08-01 13:36:10  OK  L83  [NY-379]  specimen_id=527d7280-39d3-4d5c-96b5-af05630e3784  taxon=Prepona eugenes
+2026-08-01 13:36:11  OK  L84  [NY-380]  specimen_id=756cdc09-c392-4d45-9f5a-8bafdcddd68e  taxon=Prepona eugenes
+2026-08-01 13:36:13  OK  L85  [NY-381]  specimen_id=ceebf908-b47b-44fb-8a1d-e4fee4aadf13  taxon=Prepona laertes
+2026-08-01 13:36:14  OK  L86  [NY-382]  specimen_id=75c53274-105b-42a7-87b8-ca7883f7ca37  taxon=Prepona laertes
+2026-08-01 13:36:15  OK  L87  [NY-383]  specimen_id=4c5f2c96-b2e5-45ab-aa72-73b393d73780  taxon=Prepona laertes
+2026-08-01 13:36:17  OK  L88  [NY-384]  specimen_id=952a1519-6a3a-4911-b5ab-cf0366a5588a  taxon=Prepona laertes
+2026-08-01 13:36:19  OK  L89  [NY-385]  specimen_id=ed65ee75-59c0-4624-90df-c661a38ed4bb  taxon=Prepona laertes octavia
+2026-08-01 13:36:20  OK  L90  [NY-386]  specimen_id=a5478243-a36a-4f59-811d-d5338c01baa3  taxon=Prepona laertes octavia
+2026-08-01 13:36:22  OK  L91  [NY-387]  specimen_id=c649f7bb-a25f-4ca5-82e2-a0d77ba90dff  taxon=Prepona laertes octavia
+2026-08-01 13:36:23  OK  L92  [NY-388]  specimen_id=6e20c5d4-0a95-4f02-bde9-bf617f7a768f  taxon=Prepona pheridamas
+2026-08-01 13:36:25  OK  L93  [NY-389]  specimen_id=72a67b09-d34f-411f-bed7-79d6ed6409d9  taxon=Prepona praeneste
+2026-08-01 13:36:26  OK  L94  [NY-390]  specimen_id=14a58c3b-a12f-4bc4-aef6-4074f0594930  taxon=Prepona praeneste confusa
+2026-08-01 13:36:28  OK  L95  [NY-391]  specimen_id=8d5f7491-295c-4336-b8f9-f0d093f2ac77  taxon=Prepona praeneste confusa
+2026-08-01 13:36:28  OK  L2  [NY-398]  specimen_id=8534ee3e-8aa2-4c71-af24-37fdeb28a384  taxon=Prepona werneri
+2026-08-01 13:36:30  OK  L96  [NY-392]  specimen_id=be4958a7-0ba3-4b0f-a05b-92b36f590f2c  taxon=Prepona praeneste confusa
+2026-08-01 13:36:31  OK  L3  [NY-399]  specimen_id=1a752dbe-0629-463f-9312-e774ff1ee2ce  taxon=Pycina zamba
+2026-08-01 13:36:31  OK  L97  [NY-393]  specimen_id=0b10db31-88a5-49c1-8592-7c3e767b54f1  taxon=Prepona praeneste confusa
+2026-08-01 13:36:33  OK  L98  [NY-394]  specimen_id=aae8ed14-2a81-4eb3-89f7-abecb6a2c6aa  taxon=Prepona praeneste praenestina
+2026-08-01 13:36:33  OK  L4  [NY-400]  specimen_id=c87900fc-fbf7-4764-9fb9-21a7fd0e5be4  taxon=Pyrrhogyra amphiro juani
+2026-08-01 13:36:35  OK  L99  [NY-395]  specimen_id=df2a6a85-cd6d-4cb6-b3d0-3b61db86f013  taxon=Prepona pyrene proschion
+2026-08-01 13:36:35  OK  L5  [NY-401]  specimen_id=730ad1ec-064c-4f07-a0a7-d0d5e036a6a2  taxon=Pyrrhogyra edocla maculata
+2026-08-01 13:36:37  OK  L6  [NY-402]  specimen_id=09a169de-fb7a-4db0-bcdf-ba59cdb1d88d  taxon=Pyrrhogyra edocla maculata
+2026-08-01 13:36:37  OK  L100  [NY-396]  specimen_id=99e194a5-a871-43b0-a5f8-d39382bf7617  taxon=Prepona sub-omphale pseudoomphale
+2026-08-01 13:36:38  OK  L7  [NY-403]  specimen_id=4bd23571-0e69-40a5-a5d7-88767f493b22  taxon=Pyrrhogyra neaerea
+2026-08-01 13:36:39  OK  L101  [NY-397]  specimen_id=3b38306e-ff5f-4e9c-a5b1-3c1b42ab46a3  taxon=Prepona werneri
+2026-08-01 13:36:39  OK  L8  [NY-404]  specimen_id=dc900a52-c901-447f-a8af-b524bcec9836  taxon=Pyrrhogyra neaerea
+2026-08-01 13:36:41  OK  L9  [NY-405]  specimen_id=2a0abff9-8d9e-4c12-8487-25a9eec413f8  taxon=Pyrrhogyra otalais
+2026-08-01 13:36:44  OK  L10  [NY-406]  specimen_id=9ea809d6-dc12-46ff-a71e-0942110adfa1  taxon=Siderone galanthis galanthis
+2026-08-01 13:36:46  OK  L11  [NY-407]  specimen_id=a74ffc5d-1a28-43fb-83c8-31ba2dd697b1  taxon=Siderone galanthis galanthis
+2026-08-01 13:36:47  OK  L12  [NY-408]  specimen_id=49f9404a-94ad-492d-9e9c-852e2007d313  taxon=Siderone galanthis thebais
+2026-08-01 13:36:49  OK  L13  [NY-409]  specimen_id=2a9a3d9a-b606-4015-9678-5d92ae567362  taxon=Siproeta stelenes
+2026-08-01 13:36:51  OK  L14  [NY-410]  specimen_id=f19c1e74-c094-4275-9519-1138a18b3f4f  taxon=Siproeta stelenes
+2026-08-01 13:36:52  OK  L15  [NY-411]  specimen_id=3f57e5cd-8d53-4cad-a675-dac74f59397b  taxon=Siproeta stelenes
+2026-08-01 13:36:53  OK  L16  [NY-412]  specimen_id=ed159963-12ff-403b-9ffb-324cf3bad263  taxon=Siproeta epaphus
+2026-08-01 13:36:55  OK  L17  [NY-413]  specimen_id=11417283-3800-4b91-ade1-5573f6a949ed  taxon=Siproeta epaphus
+2026-08-01 13:36:57  OK  L18  [NY-414]  specimen_id=74e4ba06-3532-4980-8ae8-554958707ba5  taxon=Siproeta epaphus trayja
+2026-08-01 13:36:58  OK  L19  [NY-415]  specimen_id=6db83a1b-8f9a-4146-b58b-10799fc20c1c  taxon=Siproeta epaphus trayja
+2026-08-01 13:37:00  OK  L20  [NY-416]  specimen_id=52588d34-050e-4557-94fb-2e14d7323e5c  taxon=Siproeta epaphus trayja
+2026-08-01 13:37:02  OK  L21  [NY-417]  specimen_id=44c9c7d5-4386-4bc2-9bd9-9025bfcfe510  taxon=Smyrna blomfieldia
+2026-08-01 13:37:03  OK  L22  [NY-418]  specimen_id=de221001-3db7-4a77-bf7d-35280a4bb82f  taxon=Smyrna blomfieldia
+2026-08-01 13:37:04  OK  L23  [NY-419]  specimen_id=cefadab8-cbdd-445e-b441-76995573f1f1  taxon=Smyrna blomfieldia
+2026-08-01 13:37:06  OK  L24  [NY-420]  specimen_id=bb4028bf-66d6-424d-88a6-de788edf0db3  taxon=Smyrna blomfieldia datis
+2026-08-01 13:37:08  OK  L25  [NY-421]  specimen_id=b75d8c96-dd36-4769-aa61-40bb4ba2980d  taxon=Smyrna blomfieldia datis
+2026-08-01 13:37:09  OK  L26  [NY-422]  specimen_id=d0e3b9a7-6ddb-4bd6-964d-7ec3d3bde233  taxon=Smyrna blomfieldia
+2026-08-01 13:37:11  OK  L27  [NY-423]  specimen_id=2a6a8b5f-09c4-40c9-8d08-8272bdc50d44  taxon=Smyrna blomfieldia
+2026-08-01 13:37:13  OK  L28  [NY-424]  specimen_id=b58e8f87-c357-4e69-b60e-e954fac8eafc  taxon=Temenis lathoe
+2026-08-01 13:37:14  OK  L29  [NY-425]  specimen_id=0ef8b790-6fdd-4b8b-8d0b-9732889bf726  taxon=Temenis lathoe
+2026-08-01 13:37:15  OK  L30  [NY-426]  specimen_id=4dee3a1a-35d6-4659-94f2-67e5c247d222  taxon=Temenis lathoe
+2026-08-01 13:37:16  OK  L31  [NY-427]  specimen_id=8c7df5a9-e26d-448a-a91a-adbc8c4943df  taxon=Temenis lathoe
+2026-08-01 13:37:19  OK  L32  [NY-428]  specimen_id=59d47f05-6bac-45db-9cd9-260db51fd076  taxon=Temenis pulchra pallidior
+2026-08-01 13:37:21  OK  L33  [NY-429]  specimen_id=70d41986-6e24-471f-b8bb-ead3f69d9538  taxon=Villa emilia
+2026-08-01 13:37:23  OK  L34  [NY-430]  specimen_id=34464c0f-ca9b-4325-8ff0-bf2e99799822  taxon=Zaretis isidora
+2026-08-01 13:37:24  OK  L35  [NY-431]  specimen_id=3cb2da29-699d-4b14-ad43-9e96803b2238  taxon=Zaretis isidora
+2026-08-01 13:37:25  OK  L36  [NY-432]  specimen_id=8bbb1927-811f-429b-b26b-8455265264ca  taxon=Zaretis isidora
+2026-08-01 13:37:26  OK  L37  [NY-433]  specimen_id=4268fe0b-b678-4e97-b0ae-2c75f73982eb  taxon=Zaretis isidora
+2026-08-01 13:37:28  OK  L38  [NY-434]  specimen_id=dd3293d8-1920-40a1-ab7d-26f8124c35b3  taxon=Zaretis isidora
+2026-08-01 13:44:03  OK  L2  [PA-001]  specimen_id=b6c86814-5afc-466c-9077-2df0613e437d  taxon=Battus belus varus
+2026-08-01 13:44:05  OK  L3  [PA-002]  specimen_id=fdda528e-1fe9-4330-967c-1fadfce93fbd  taxon=Battus belus varus
+2026-08-01 13:44:07  OK  L4  [PA-003]  specimen_id=fab46caf-0e61-40ba-a062-421d08327fd8  taxon=Battus chalceus ingenuus
+2026-08-01 13:44:08  OK  L5  [PA-004]  specimen_id=23f45346-5d2b-472c-a088-b1879eedef4b  taxon=Battus chalceus ingenuus
+2026-08-01 13:44:10  OK  L6  [PA-005]  specimen_id=75096d80-50c0-4b2b-8817-3c341957f6e4  taxon=Battus chalceus ingenuus
+2026-08-01 13:44:12  OK  L7  [PA-006]  specimen_id=e904f70c-61d6-459e-ac32-2c17786f6f4f  taxon=Battus crassus
+2026-08-01 13:44:13  OK  L8  [PA-007]  specimen_id=e38771aa-7352-468b-8791-4c2da288d2ba  taxon=Battus crassus
+2026-08-01 13:44:14  OK  L9  [PA-008]  specimen_id=bcbdc1f5-90a0-450a-a6ab-429a9c1113a6  taxon=Battus crassus
+2026-08-01 13:44:15  OK  L10  [PA-009]  specimen_id=a9d8f2a5-7e80-4b2a-9a28-3dd36982a66e  taxon=Battus crassus
+2026-08-01 13:44:17  OK  L11  [PA-010]  specimen_id=b17494e8-347a-4b10-89d1-b0881b254a9a  taxon=Battus crassus
+2026-08-01 13:44:18  OK  L12  [PA-011]  specimen_id=cdfaa612-b254-4a3d-9cdd-244927d4f9ae  taxon=Battus crassus
+2026-08-01 13:44:20  OK  L13  [PA-012]  specimen_id=09bcc79d-b1d2-48e0-a304-ecb0dbb66be4  taxon=Battus ingenuus
+2026-08-01 13:44:21  OK  L14  [PA-013]  specimen_id=a3c09324-1bd2-4bd9-ba1c-7638eb4838ba  taxon=Battus ingenuus
+2026-08-01 13:44:23  OK  L15  [PA-014]  specimen_id=964c4155-7b9e-4c5c-a8e2-7eb8769a1116  taxon=Battus madyes chlorodamas
+2026-08-01 13:44:25  OK  L16  [PA-015]  specimen_id=97b1e91e-03b0-4398-8c89-008f58a5b130  taxon=Battus madyes chlorodamas
+2026-08-01 13:44:26  OK  L17  [PA-016]  specimen_id=e3b8526f-1277-4256-a6b9-88ce227c0209  taxon=Battus madyes plinius
+2026-08-01 13:44:28  OK  L18  [PA-017]  specimen_id=f03165f1-263f-4d96-ae92-c68eb0c61f49  taxon=Battus madyes plinius
+2026-08-01 13:44:30  OK  L19  [PA-018]  specimen_id=713bfff5-1b06-47b1-981e-9454b7451c54  taxon=Battus polydamas
+2026-08-01 13:44:31  OK  L20  [PA-019]  specimen_id=baffba4b-73ba-4088-b50e-53d3ac8fc885  taxon=Battus polydamas
+2026-08-01 13:44:33  OK  L21  [PA-020]  specimen_id=b65a4fb6-1e2d-4f49-a9da-0b62c82b6a52  taxon=Battus streckerianus
+2026-08-01 13:44:34  OK  L22  [PA-021]  specimen_id=19bf9d3d-4940-45f0-9beb-b9c6e905c421  taxon=Battus streckerianus
+2026-08-01 13:44:35  OK  L23  [PA-022]  specimen_id=97081359-9c71-42e6-83ce-b16dc017dc33  taxon=Battus streckerianus
+2026-08-01 13:44:36  OK  L24  [PA-023]  specimen_id=1ee6a94d-9a21-44d4-9688-ff5ec8393d55  taxon=Battus streckerianus
+2026-08-01 13:44:38  OK  L25  [PA-024]  specimen_id=56ca82a6-2a49-441a-b32e-4686cf83934d  taxon=Battus streckerianus
+2026-08-01 13:44:40  OK  L26  [PA-025]  specimen_id=87a3675d-3bd9-4066-88a8-951f584d6595  taxon=Eurytides ascius
+2026-08-01 13:44:41  OK  L27  [PA-026]  specimen_id=0c9fa9d6-bbfc-4bfd-abf4-0625a66f6e77  taxon=Eurytides ascius
+2026-08-01 13:44:43  OK  L28  [PA-027]  specimen_id=57570d38-68c9-49e4-8be7-812653f86241  taxon=Eurytides calliste
+2026-08-01 13:44:45  OK  L29  [PA-028]  specimen_id=d95eaad3-8980-49f7-86f0-35a632e7dfe5  taxon=Eurytides dolicaon deileion
+2026-08-01 13:44:47  OK  L30  [PA-029]  specimen_id=463f7eee-3e42-4ac7-af0a-1bfad15255b3  taxon=Eurytides dolicaon deileion
+2026-08-01 13:44:48  OK  L31  [PA-030]  specimen_id=eff2b555-5949-4242-9178-745b78165efe  taxon=Eurytides leucaspis
+2026-08-01 13:44:49  OK  L32  [PA-031]  specimen_id=4e7f164d-c683-44ef-8151-f3fa8094d500  taxon=Eurytides leucaspis
+2026-08-01 13:44:51  OK  L33  [PA-032]  specimen_id=d7606fb6-102b-4e2e-83df-561f8da0c39c  taxon=Eurytides serville
+2026-08-01 13:44:52  OK  L34  [PA-033]  specimen_id=fc88a2d3-2244-4203-a5c0-fde56cc328af  taxon=Eurytides serville
+2026-08-01 13:44:54  OK  L35  [PA-034]  specimen_id=124b8679-0e2e-4889-a67b-10f0703e1d5f  taxon=Heraclides anchisiades
+2026-08-01 13:44:55  OK  L36  [PA-035]  specimen_id=47cd3fd5-726d-44fd-8942-ef5cdc389053  taxon=Heraclides anchisiades
+2026-08-01 13:44:57  OK  L37  [PA-036]  specimen_id=ef491386-61e0-4242-90e4-d8e69c736e8d  taxon=Heraclides anchisiades
+2026-08-01 13:44:58  OK  L38  [PA-037]  specimen_id=4fdd4f81-ef80-489a-b36a-923affdbf476  taxon=Heraclides anchisiades
+2026-08-01 13:44:59  OK  L39  [PA-038]  specimen_id=ba4cc1c4-d74b-40a7-b788-4ea68757bd6a  taxon=Heraclides anchisiades
+2026-08-01 13:45:01  OK  L40  [PA-039]  specimen_id=5426eb17-5a63-42ac-afb9-7af04e1d49ca  taxon=Heraclides anchisiades
+2026-08-01 13:45:02  OK  L41  [PA-040]  specimen_id=1edb5652-9bcd-4aeb-8213-e3ec68a18801  taxon=Heraclides anchisiades idaeus
+2026-08-01 13:45:03  OK  L42  [PA-041]  specimen_id=2ba82667-a357-4ffc-8e1f-165e94076bc8  taxon=Heraclides anchisiades
+2026-08-01 13:45:05  OK  L43  [PA-042]  specimen_id=6cd86dd6-a875-408c-aab7-d0c39fea0bb5  taxon=Heraclides anchisiades
+2026-08-01 13:45:06  OK  L44  [PA-043]  specimen_id=483f083d-ece2-4e20-8474-f0359573869f  taxon=Heraclides anchisiades
+2026-08-01 13:45:08  OK  L45  [PA-044]  specimen_id=ada91676-135a-4361-a024-0c9c370d8150  taxon=Heraclides chiansiades chiansiades
+2026-08-01 13:45:10  OK  L46  [PA-045]  specimen_id=b6d29c6f-ad7f-404f-90c6-b0d5798974a4  taxon=Heraclides chiansiades chiansiades
+2026-08-01 13:45:11  OK  L47  [PA-046]  specimen_id=a436a8dc-a36c-4455-9b39-be4d7acbbfcd  taxon=Heraclides chiansiades chiansiades
+2026-08-01 13:45:13  OK  L48  [PA-047]  specimen_id=33c19154-10e9-4576-839d-f8dba5646182  taxon=Heraclides hectorides
+2026-08-01 13:45:14  OK  L49  [PA-048]  specimen_id=79518989-d51b-4f76-95d1-3c9cd4d38ec9  taxon=Heraclides hectorides
+2026-08-01 13:45:16  OK  L50  [PA-049]  specimen_id=662ada5c-0232-458b-8a09-da504e01b691  taxon=Heraclides torquatus torquatus
+2026-08-01 13:45:18  OK  L51  [PA-050]  specimen_id=92182e19-58dc-4b88-9d3c-de3493079d31  taxon=Heraclides torquatus torquatus
+2026-08-01 13:45:19  OK  L52  [PA-051]  specimen_id=e6ebde75-a949-4a3f-b0a6-97d59b726633  taxon=Heraclides torquatus torquatus
+2026-08-01 13:45:21  OK  L53  [PA-052]  specimen_id=e38c3f93-f256-4522-afa3-88de4499a940  taxon=Heraclides torquatus torquatus
+2026-08-01 13:45:23  OK  L54  [PA-053]  specimen_id=05c136ed-936f-49c9-8825-55936561d225  taxon=Heraclides torquatus torquatus
+2026-08-01 13:45:24  OK  L55  [PA-054]  specimen_id=24b6a28e-5631-4bca-8bae-dd66df85bded  taxon=Heraclides torquatus torquatus
+2026-08-01 13:45:26  OK  L56  [PA-055]  specimen_id=c45cb8a9-d02d-4b63-b70e-d81627eda07b  taxon=Heraclides torquatus torquatus
+2026-08-01 13:45:28  OK  L57  [PA-056]  specimen_id=14f2ac70-094b-4e9d-a999-b592a31d3ae1  taxon=Mimoides ariarathes gayi
+2026-08-01 13:45:30  OK  L58  [PA-057]  specimen_id=6e87509a-b811-4d34-ae91-21d57f2072a0  taxon=Mimoides ariarathes gayi
+2026-08-01 13:45:31  OK  L59  [PA-058]  specimen_id=a11e3af8-986d-4b42-ba68-e1129b165df0  taxon=Mimoides ariarathes illuminatus
+2026-08-01 13:45:33  OK  L60  [PA-059]  specimen_id=761369f0-a640-4c78-80ba-9d1c4f5c4181  taxon=Mimoides euryleon anatmus
+2026-08-01 13:45:35  OK  L61  [PA-060]  specimen_id=116f808b-7f85-4530-96b2-3703e4b4b7aa  taxon=Mimoides pausianus cleombrotus
+2026-08-01 13:45:37  OK  L62  [PA-061]  specimen_id=4b3123e7-72e2-470f-9280-daa6c213f6a3  taxon=Mimoides pausianus cleombrotus
+2026-08-01 13:45:38  OK  L63  [PA-062]  specimen_id=483aec5a-6933-43a6-a541-16bb25fc3ec6  taxon=Mimoides protodamas
+2026-08-01 13:45:40  OK  L64  [PA-063]  specimen_id=572f45d2-f444-49ec-be0f-248a05c1c997  taxon=Mimoides xeniades
+2026-08-01 13:45:41  OK  L65  [PA-064]  specimen_id=a3c2a59b-11ee-4300-8a80-9a5630938b6f  taxon=Mimoides xeniades
+2026-08-01 13:45:42  OK  L66  [PA-065]  specimen_id=54f9aef6-3efe-480c-80cf-7762767d9813  taxon=Mimoides xeniades
+2026-08-01 13:45:43  OK  L67  [PA-066]  specimen_id=87bc2fd5-aa13-4c02-adc9-b01d94e5e4ec  taxon=Mimoides xeniades
+2026-08-01 13:45:45  OK  L68  [PA-067]  specimen_id=b93202f1-6591-48ee-ae7d-38ff9e730b43  taxon=Mimoides xynias trapeza
+2026-08-01 13:45:47  OK  L69  [PA-068]  specimen_id=add63bfe-9066-4fe2-ab6a-aba71593ddea  taxon=Mimoides xynias trapeza
+2026-08-01 13:45:49  OK  L70  [PA-069]  specimen_id=629c680b-92d2-47b9-a087-cf26e7938fd0  taxon=Mimoides xynias trapeza
+2026-08-01 13:45:50  OK  L71  [PA-070]  specimen_id=c78a6d03-be2a-4999-a64c-8aed47075efa  taxon=Mimoides xynias xynias
+2026-08-01 13:45:52  OK  L72  [PA-071]  specimen_id=d103150d-f552-4c18-a9ea-d25e2da5444a  taxon=Mimoides xynias xynias
+2026-08-01 13:45:55  OK  L73  [MO-074]  specimen_id=3a4353d7-5a45-466b-b433-cbd054d1e3a4  taxon=Morpho cypris cypris
+2026-08-01 13:45:57  OK  L74  [PA-072]  specimen_id=30a53d4b-6202-4fbf-9601-16b7ec9c7b08  taxon=Neographium agesilaus
+2026-08-01 13:45:58  OK  L75  [PA-073]  specimen_id=6ae27e6a-4eb6-4198-8ead-849e9285e924  taxon=Neographium agesilaus
+2026-08-01 13:46:00  OK  L76  [PA-074]  specimen_id=84378bdc-e602-493c-9a33-7eab1659a875  taxon=Neographium dioxippus diores
+2026-08-01 13:46:01  OK  L77  [PA-075]  specimen_id=05d9eba3-69ff-46a8-957d-cd73ea8dc1a4  taxon=Neographium dioxippus diores
+2026-08-01 13:46:03  OK  L78  [PA-076]  specimen_id=d434f444-a78e-43e9-a504-70689e2d80ad  taxon=Neographium dioxippus
+2026-08-01 13:46:05  OK  L79  [PA-077]  specimen_id=32308140-9c84-4e68-b1c6-c639554efdfc  taxon=Neographium thyastes thyastinus
+2026-08-01 13:46:06  OK  L80  [PA-078]  specimen_id=0996b9fe-12c0-4f8c-8611-9d6ce8a5fb10  taxon=Neographium thyastes thyastinus
+2026-08-01 13:46:08  OK  L81  [PA-079]  specimen_id=6707913c-a430-4586-bace-b60cff0eff85  taxon=Neographium thyastes thyastinus
+2026-08-01 13:46:10  OK  L82  [PA-080]  specimen_id=8613ee22-9931-459f-89a6-757616cd8293  taxon=Papilio androgeus
+2026-08-01 13:46:11  OK  L83  [PA-081]  specimen_id=9f1e7d1a-f7c5-432f-9e68-d1cbaff2b76a  taxon=Papilio androgeus
+2026-08-01 13:46:12  OK  L84  [PA-082]  specimen_id=a4b0df63-ae66-4083-ab55-4b0d55dc6315  taxon=Papilio androgeus
+2026-08-01 13:46:14  OK  L85  [PA-083]  specimen_id=bf174e6f-a9ab-489e-b4c4-e48a243c3e98  taxon=Papilio isodorus tingo
+2026-08-01 13:46:16  OK  L86  [PA-084]  specimen_id=9d127b09-40b6-4227-840c-b700e5ccb88a  taxon=Papilio isodorus tingo
+2026-08-01 13:46:17  OK  L87  [PA-085]  specimen_id=cbeab034-8a3a-48f7-a037-d5a8fc32e912  taxon=Papilio isodorus tingo
+2026-08-01 13:46:19  OK  L88  [PA-086]  specimen_id=195cb0e7-514e-4ce5-ae69-cf02b7d0f2b9  taxon=Papilio paeon escomeli
+2026-08-01 13:46:21  OK  L89  [PA-087]  specimen_id=7f15bdcb-e104-4cca-a146-465a1e152a49  taxon=Papilio thoas brasiliensis
+2026-08-01 13:46:23  OK  L90  [PA-088]  specimen_id=9c290732-b560-4476-8f6a-c15584050eee  taxon=Papilio thoas cinyras
+2026-08-01 13:46:24  OK  L91  [PA-089]  specimen_id=091e91c1-ecbc-4671-8d24-e2d3c2daa1c0  taxon=Papilio thoas cinyras
+2026-08-01 13:46:26  OK  L92  [PA-090]  specimen_id=4987a477-dcb9-4612-ae75-fe859e8c1e7d  taxon=Papilio thoas neacles
+2026-08-01 13:46:28  OK  L93  [PA-091]  specimen_id=efe6b467-50dc-4e27-b1e7-a3a014091f65  taxon=Papilio thoas neacles
+2026-08-01 13:46:29  OK  L94  [PA-092]  specimen_id=a99c8370-01ce-4825-abad-10cbd022068e  taxon=Papilio thoas neacles
+2026-08-01 13:46:31  OK  L95  [PA-093]  specimen_id=de6fbfee-4174-421f-a17c-5b2a8087f92b  taxon=Papilio xanthopleura
+2026-08-01 13:46:33  OK  L96  [PA-094]  specimen_id=64915090-f376-481f-9aaf-b3bf18d51938  taxon=Parides aeneas bolivar
+2026-08-01 13:46:35  OK  L97  [PA-095]  specimen_id=504ba435-9bf8-49ea-926f-00b06b17316c  taxon=Parides aeneas bolivar
+2026-08-01 13:46:37  OK  L98  [PA-096]  specimen_id=ea3d8c02-ef60-4b92-99e5-260e4e65af55  taxon=Parides aeneas bolivar
+2026-08-01 13:46:38  OK  L99  [PA-097]  specimen_id=b3edb5df-73ae-452f-8358-0611d53992f2  taxon=Parides aeneas bolivar
+2026-08-01 13:46:40  OK  L100  [PA-098]  specimen_id=06073d7c-28a0-4c83-ad1a-49127bd58369  taxon=Parides aeneas huallaga
+2026-08-01 13:46:41  OK  L101  [PA-099]  specimen_id=6db535b6-acfc-483b-bda1-f4d5a8688826  taxon=Parides aeneas huallaga
+2026-08-01 13:46:54  OK  L2  [PA-100]  specimen_id=f1b3d431-8f1a-4b10-ba35-dcbe76c3cf04  taxon=Parides anchises drucei
+2026-08-01 13:46:55  OK  L3  [PA-101]  specimen_id=17a05d6f-a980-4114-8aa9-16430880aad9  taxon=Parides anchises drucei
+2026-08-01 13:46:57  OK  L4  [PA-102]  specimen_id=46b890c5-f039-4783-ba12-7c98433f1b8d  taxon=Parides anchises koenigi
+2026-08-01 13:46:59  OK  L5  [PA-103]  specimen_id=4b49815a-ed13-459e-be11-8c3e1cd4e5ae  taxon=Parides anchises koenigi
+2026-08-01 13:47:00  OK  L6  [PA-104]  specimen_id=4ea3dc92-c774-451a-b3d2-cd03c5afa733  taxon=Parides anchises koenigi
+2026-08-01 13:47:02  OK  L7  [PA-105]  specimen_id=d64dca97-c216-4452-a742-adc91c1d08f4  taxon=Parides anchises nephalion
+2026-08-01 13:47:04  OK  L8  [PA-106]  specimen_id=611184f0-f5b9-4603-b22c-aa309fde4de8  taxon=Parides anchises nephalion
+2026-08-01 13:47:05  OK  L9  [PA-107]  specimen_id=456ce997-4c28-40a4-928a-10a24517fe52  taxon=Parides anchises nephalion
+2026-08-01 13:52:45  OK  L2  [PI-001]  specimen_id=0bd0df95-b84b-4960-9e51-bd581a09991c  taxon=Anteos clorinde
+2026-08-01 13:52:46  OK  L3  [PI-002]  specimen_id=52cbebdd-4283-454c-a755-20a1feef0599  taxon=Anteos clorinde
+2026-08-01 13:52:48  OK  L4  [PI-003]  specimen_id=baf37449-f8fd-4653-a8ff-6383f34006c2  taxon=Anteos menippe
+2026-08-01 13:52:49  OK  L5  [PI-004]  specimen_id=ffb02a2d-b182-4a48-83eb-3af1654170b6  taxon=Anteos menippe
+2026-08-01 13:52:51  OK  L6  [PI-005]  specimen_id=796e3db3-f60a-4b13-8136-ff993e65d6cd  taxon=Archonias ctemene strigosa
+2026-08-01 13:52:53  OK  L7  [PI-006]  specimen_id=f61c1de5-f156-4fa7-ae24-88c7ea222b8f  taxon=Archonias eurigania straminea
+2026-08-01 13:52:55  OK  L8  [PI-007]  specimen_id=a77d6aa3-1519-4b79-91f9-7cc2487a0831  taxon=Archonias hebra
+2026-08-01 13:52:56  OK  L9  [PI-008]  specimen_id=40676bc4-68b9-4d6f-a96f-a5c1c962b682  taxon=Archonias poujadei
+2026-08-01 13:52:58  OK  L10  [PI-009]  specimen_id=73c20718-6e1a-4003-9289-ead404e0332f  taxon=Archonias poujadei
+2026-08-01 13:53:00  OK  L11  [PI-010]  specimen_id=d53a6e26-b59e-4dd6-adf8-bfce79a4e848  taxon=Archonias sisamnus telasco
+2026-08-01 13:53:01  OK  L12  [PI-011]  specimen_id=3bdccfbf-e8c2-4bb4-96d5-298ef6bb5d0e  taxon=Archonias sisamnus telasco
+2026-08-01 13:53:03  OK  L13  [PI-012]  specimen_id=1e96acd9-8cb5-43c4-95c6-e5f596af1826  taxon=Archonias species
+2026-08-01 13:53:05  OK  L14  [PI-013]  specimen_id=67e1bdd0-9e2d-49ed-8fe1-f11783357575  taxon=Archonias bellona negrina
+2026-08-01 13:53:07  OK  L15  [PI-014]  specimen_id=2ad37c96-76a0-4019-9b4b-dfb7e64e3f1c  taxon=Ascia buniae
+2026-08-01 13:53:08  OK  L16  [PI-015]  specimen_id=6fac8ba2-c4b2-4ec4-9462-2a6c02612592  taxon=Ascia buniae
+2026-08-01 13:53:10  OK  L17  [PI-016]  specimen_id=28f50d46-aa4f-4b38-a03e-dce5bb6c5e26  taxon=Dismorphia amphione
+2026-08-01 13:53:12  OK  L18  [PI-017]  specimen_id=e9e0bf35-5dd3-4a41-8968-d4ebe3a19d44  taxon=Eurema arbela
+2026-08-01 13:53:14  OK  L19  [PI-018]  specimen_id=6850d596-c4f0-4e4e-82e8-bcdf0fec0458  taxon=Eurema arbela
+2026-08-01 13:53:15  OK  L20  [PI-019]  specimen_id=2918fc9c-5187-488c-b678-62eeed81ba43  taxon=Eurema reticulata
+2026-08-01 13:53:18  OK  L21  [PI-020]  specimen_id=7bbd5fc7-ce51-4254-a247-6cbc76a1e171  taxon=Hesperocharis marchali coloe
+2026-08-01 13:53:20  OK  L22  [PI-021]  specimen_id=19340539-af3d-4578-886b-522537e8cad8  taxon=Itaballia demophile demophile
+2026-08-01 13:53:22  OK  L23  [PI-022]  specimen_id=a01be8dc-2c93-4e50-89c3-439772523884  taxon=Itaballia demophile demophile
+2026-08-01 13:53:24  OK  L24  [PI-023]  specimen_id=a51b9c92-c8d8-4271-a7ef-a1f5039eb127  taxon=Leptophobia aripa aripa
+2026-08-01 13:53:26  OK  L25  [PI-024]  specimen_id=cead0c3a-fc70-424a-b740-ea6a5a6009c0  taxon=Leptophobia eleone eleone
+2026-08-01 13:53:27  OK  L26  [PI-025]  specimen_id=a81901c1-81d2-40da-a9a7-36f57e2efdc8  taxon=Leptophobia philoma
+2026-08-01 13:53:29  OK  L27  [PI-026]  specimen_id=ebf042a6-0158-4be5-923a-abaa888ca7c6  taxon=Leptophobia tovaria maruga
+2026-08-01 13:53:31  OK  L28  [PI-027]  specimen_id=ceada76d-4266-45bb-b988-01e46d1ee6ca  taxon=Lieinix nemesis
+2026-08-01 13:53:33  OK  L29  [PI-028]  specimen_id=51c5c925-80c8-4e32-bbce-20fd779bd8ea  taxon=Lieinix nemesis
+2026-08-01 13:53:35  OK  L30  [PI-029]  specimen_id=e76b5473-63f2-48c3-b8e5-8e2d74c579cd  taxon=Melete lycimnia aelia
+2026-08-01 13:53:37  OK  L31  [PI-030]  specimen_id=7a0e4d27-abc3-4dec-a383-3a741081f56d  taxon=Melete lycimnia aelia
+2026-08-01 13:53:38  OK  L32  [PI-031]  specimen_id=def5bfb9-1a94-430a-a637-8947c8a73fe0  taxon=Melete lycimnia napona
+2026-08-01 13:53:40  OK  L33  [PI-032]  specimen_id=434851ef-8e99-476c-b44d-1f40bb87b1a2  taxon=Melete lycimnia napona
+2026-08-01 13:53:42  OK  L34  [PI-033]  specimen_id=f714c6ff-7edc-4bbc-8e08-9acfda8de0ef  taxon=Methania agasicles
+2026-08-01 13:53:44  OK  L35  [PI-034]  specimen_id=79c6ee98-08a2-42e5-8e67-1b1dedc66ddd  taxon=Methania aureomaculata
+2026-08-01 13:53:46  OK  L36  [PI-035]  specimen_id=a1743bc3-4c23-4b20-8183-d53a2abae891  taxon=Pereute callinara
+2026-08-01 13:53:47  OK  L37  [PI-036]  specimen_id=d1e2c6b7-04c1-4544-b8a5-aacdd1edaf9c  taxon=Pereute callinara
+2026-08-01 13:53:48  OK  L38  [PI-037]  specimen_id=0bf91593-2c39-4655-bffb-2d17b45d1d10  taxon=Pereute callinara
+2026-08-01 13:53:49  OK  L39  [PI-038]  specimen_id=f7a601bc-749e-4d3e-8e01-a1b6e75fd27a  taxon=Pereute callinara
+2026-08-01 13:53:51  OK  L40  [PI-039]  specimen_id=b2ce1400-fcfd-4daf-a172-c45660a739d0  taxon=Pereute callinara
+2026-08-01 13:53:53  OK  L41  [PI-040]  specimen_id=f9a0a715-1ee7-4c06-9ce4-956ac4e1d8cf  taxon=Pereute charops peruviana
+2026-08-01 13:53:54  OK  L42  [PI-041]  specimen_id=40515465-43d1-473c-84ad-d6a847bcd3a1  taxon=Pereute charops peruviana
+2026-08-01 13:53:56  OK  L43  [PI-042]  specimen_id=c5f705e1-1213-4170-97cb-0527dc99b3d0  taxon=Pereute leucodrosime beryllina
+2026-08-01 13:53:58  OK  L44  [PI-043]  specimen_id=c30582d2-68e5-4667-affa-9a2a410f9271  taxon=Perrhybris lorena lorena
+2026-08-01 13:54:00  OK  L45  [PI-044]  specimen_id=8fad8c43-21bf-4dc4-9853-10b400a589c2  taxon=Perrhybris lorena lorena
+2026-08-01 13:54:02  OK  L46  [PI-045]  specimen_id=e006ff0e-b801-490e-be33-756687edd63a  taxon=Perrhybris pyrrha carmenta
+2026-08-01 13:54:04  OK  L47  [PI-046]  specimen_id=4cc46fb8-ed3b-409f-af00-5e04e0f15049  taxon=Perrhybris pyrrha carmenta
+2026-08-01 13:54:05  OK  L48  [PI-047]  specimen_id=22cd6291-4d6a-46ff-a3b1-cb491276bad1  taxon=Perrhybris pyrrha carmenta
+2026-08-01 13:54:07  OK  L49  [PI-048]  specimen_id=c8b7a2f7-d0bb-4219-a712-1c1c53f400f7  taxon=Phoebis statira
+2026-08-01 13:54:09  OK  L50  [PI-049]  specimen_id=044cf444-5d0b-445a-80ad-f52bf7e27de1  taxon=Phoebis statira
+2026-08-01 13:54:10  OK  L51  [PI-050]  specimen_id=8887e453-8a4e-4a74-b5de-a6eb5d30de03  taxon=Phoebis trite
+2026-08-01 13:54:12  OK  L52  [PI-051]  specimen_id=b5a48f26-f242-4490-a643-20cb9f1501b2  taxon=Phoebis trite
+2026-08-01 13:54:13  OK  L53  [PI-052]  specimen_id=7c4037eb-74ad-4701-af7e-0695791a43b2  taxon=Phoebis trite
+2026-08-01 13:54:14  OK  L54  [PI-053]  specimen_id=92485d5a-d887-414c-a50c-47e254b3c91f  taxon=Phoebis trite
+2026-08-01 13:54:16  OK  L55  [PI-054]  specimen_id=53faec12-41fa-43ac-b954-38847c86e98e  taxon=Phoebis argante
+2026-08-01 13:54:17  OK  L56  [PI-055]  specimen_id=98051aa8-9eb0-4f06-971b-fce87f1dd253  taxon=Phoebis argante
+2026-08-01 13:54:19  OK  L57  [PI-056]  specimen_id=f8ae0202-d5f3-416f-8bd0-c348aa52905c  taxon=Phoebis argante
+2026-08-01 13:54:21  OK  L58  [PI-057]  specimen_id=e04a1310-092e-4448-a482-58aa7867bbf1  taxon=Phoebis neocypris rurina
+2026-08-01 13:54:22  OK  L59  [PI-058]  specimen_id=728a596f-4595-40f2-bf78-1925c0c57e97  taxon=Phoebis neocypris rurina
+2026-08-01 13:54:24  OK  L60  [PI-059]  specimen_id=07930584-8cf8-435c-88e8-366767004d79  taxon=Phoebis neocypris rurina
+2026-08-01 13:54:26  OK  L61  [PI-060]  specimen_id=8d7043c6-0cea-44f8-a883-d7d45cc23395  taxon=Phoebis philea
+2026-08-01 13:54:27  OK  L62  [PI-061]  specimen_id=1c397725-3111-44a4-b1cc-94b446f5c6af  taxon=Phoebis philea
+2026-08-01 13:54:28  OK  L63  [PI-062]  specimen_id=90104387-0b22-43b6-964b-ee39ad075857  taxon=Phoebis philea
+2026-08-01 13:54:30  OK  L64  [PI-063]  specimen_id=f7f355d2-1d1d-4201-9e40-91e6081213d9  taxon=Phoebis philea
+2026-08-01 13:54:31  OK  L65  [PI-064]  specimen_id=438195bf-0ec1-4915-b874-a3d04840e4e8  taxon=Phoebis philea
+2026-08-01 13:54:32  OK  L66  [PI-065]  specimen_id=2785be7c-76a9-454a-abd3-363a6c8df332  taxon=Phoebis philea
+2026-08-01 13:54:34  OK  L67  [PI-066]  specimen_id=ad1529c5-0258-4f7a-b7a6-776f5b78c747  taxon=Phoebis philea
+2026-08-01 13:54:36  OK  L68  [PI-067]  specimen_id=7305733a-b8a7-4b60-9e67-906791c9ff9c  taxon=Pieriballia mandela apicalis
+2026-08-01 13:54:38  OK  L69  [PI-068]  specimen_id=a6e54e3d-d161-42ef-a221-5f8728bfec58  taxon=Pieriballia mandela apicalis
+2026-08-01 14:01:31  OK  L2  [ST-001]  specimen_id=a286b713-4eab-4098-ab27-e8f6671cc5c8  taxon=Cithaerais pireta
+2026-08-01 14:01:33  OK  L3  [ST-002]  specimen_id=37d1274f-3e56-4cd4-873d-49ee295d06d8  taxon=Cithaerais aurorina
+2026-08-01 14:01:34  OK  L4  [ST-003]  specimen_id=7e568fa7-de09-4815-b517-8e3ed513e633  taxon=Cithaerais merolina
+2026-08-01 14:01:35  OK  L5  [ST-004]  specimen_id=179de6d0-6ce5-4f5a-bf29-a05db493039d  taxon=Cithaerais merolina
+2026-08-01 14:01:37  OK  L6  [ST-005]  specimen_id=461ded61-ee81-473f-8911-2f8d3e7ae69c  taxon=Cithaerais merolina
+2026-08-01 14:01:38  OK  L7  [ST-006]  specimen_id=3ce4e0ff-0ea4-44b2-8b59-1c1e951524ab  taxon=Cithaerais merolina
+2026-08-01 14:01:39  OK  L8  [ST-007]  specimen_id=3cdf062a-ff5a-4073-8526-335bb45e3eba  taxon=Cithaerais merolina
+2026-08-01 14:01:41  OK  L9  [ST-008]  specimen_id=e76db521-cfba-4cef-b7be-070c75b89cb4  taxon=Cithaerais pyropina
+2026-08-01 14:01:42  OK  L10  [ST-009]  specimen_id=9af4844d-ed63-4a8f-85d1-36bceb674338  taxon=Cithaerais pyropina
+2026-08-01 14:01:44  OK  L11  [ST-010]  specimen_id=2bf454d4-5a3d-4bc2-91d2-940e4eecb979  taxon=Corades enyo
+2026-08-01 14:01:45  OK  L12  [ST-011]  specimen_id=d1012114-faf0-4a78-9439-9270c35a80bf  taxon=Corades enyo
+2026-08-01 14:01:47  OK  L13  [ST-012]  specimen_id=0972339e-b55e-409d-bec2-f96111360bd2  taxon=Corades iduna
+2026-08-01 14:01:48  OK  L14  [ST-013]  specimen_id=c37455ff-960f-4b4d-ac90-aa11463cd728  taxon=Corades iduna
+2026-08-01 14:01:50  OK  L15  [ST-014]  specimen_id=4de1307f-249f-4fe0-8706-9c00f7f95471  taxon=Corades medeba
+2026-08-01 14:01:52  OK  L16  [ST-015]  specimen_id=8c8adc99-4525-4a68-9c49-de8c86eea773  taxon=Dolcedo polita
+2026-08-01 14:01:55  OK  L17  [ST-016]  specimen_id=67d3c908-c22e-4890-ab5e-697fa221325e  taxon=Elymnias cumaea borenmanni
+2026-08-01 14:01:57  OK  L18  [ST-017]  specimen_id=dee7f40c-5fd5-438a-8f7d-d3e5d7cb00a7  taxon=Haetera macleannania
+2026-08-01 14:01:58  OK  L19  [ST-018]  specimen_id=920d9dfc-81c5-4a14-9e6d-87a616bfafe7  taxon=Haetera macleannania
+2026-08-01 14:02:00  OK  L20  [ST-019]  specimen_id=a5597958-f5ef-4097-a757-9c900a468e32  taxon=Haetera piera
+2026-08-01 14:02:01  OK  L21  [ST-020]  specimen_id=ff53505c-8005-436a-9447-731b3f366868  taxon=Haetera piera
+2026-08-01 14:02:02  OK  L22  [ST-021]  specimen_id=77684043-3248-458a-be70-30fc9f33b1d6  taxon=Haetera piera
+2026-08-01 14:02:04  OK  L23  [ST-022]  specimen_id=c1b0739c-8b11-4ed2-88c0-9d4a0a514f6f  taxon=Haetera piera
+2026-08-01 14:02:06  OK  L24  [ST-023]  specimen_id=7940bb4e-2054-46ec-84df-9f74a5f824af  taxon=Oressinoma typhia
+2026-08-01 14:02:08  OK  L25  [ST-024]  specimen_id=67687236-8b34-47d5-adce-0522121725d1  taxon=Oxeoschistus iphigenia
+2026-08-01 14:02:09  OK  L26  [ST-025]  specimen_id=a8e8c938-e115-4ad1-9c0b-f3766c0146de  taxon=Pierella albofasciata
+2026-08-01 14:02:11  OK  L27  [ST-026]  specimen_id=ddc94c01-c08d-44ad-b1d0-c3f87fca140f  taxon=Pierella albofasciata
+2026-08-01 14:02:12  OK  L28  [ST-027]  specimen_id=8155d47c-3ba7-48d6-877c-fbda8ff2e7b7  taxon=Pierella amalia
+2026-08-01 14:02:14  OK  L29  [ST-028]  specimen_id=240bc715-9ded-4689-a8e6-7e16ae05479c  taxon=Pierella helvetia
+2026-08-01 14:02:16  OK  L30  [ST-029]  specimen_id=bbb1cd93-236b-431a-8ea9-4cdfa479f665  taxon=Pierella helvina pacifica
+2026-08-01 14:02:18  OK  L31  [ST-030]  specimen_id=186545fa-c636-4796-a54d-00def52d0743  taxon=Pierella helvina pacifica
+2026-08-01 14:02:20  OK  L32  [ST-031]  specimen_id=eeb02d1e-71e9-4170-948b-5c4b096734ea  taxon=Pierella hortona hortona
+2026-08-01 14:02:22  OK  L33  [ST-032]  specimen_id=da3d8905-1687-4ea2-9848-5ae5990f6099  taxon=Pierella hyceta
+2026-08-01 14:02:23  OK  L34  [ST-033]  specimen_id=93f05116-d892-4f74-8d77-a1bb380b318e  taxon=Pierella hyceta
+2026-08-01 14:02:25  OK  L35  [ST-034]  specimen_id=30068acd-720e-4673-9407-05aedc488c10  taxon=Pierella lamia chalybaea
+2026-08-01 14:02:27  OK  L36  [ST-035]  specimen_id=58a84343-9177-4bea-8c50-8812a86b7c83  taxon=Pierella lamia chalybaea
+2026-08-01 14:02:28  OK  L37  [ST-036]  specimen_id=da4502db-01d2-44cc-96e2-049ddb3fd62e  taxon=Pierella lena
+2026-08-01 14:02:29  OK  L38  [ST-037]  specimen_id=0b389559-8693-4934-8821-faab4b10c221  taxon=Pierella lena
+2026-08-01 14:02:31  OK  L39  [ST-038]  specimen_id=9b2225e9-03d1-4539-8f1b-94fbcf3febfb  taxon=Pierella lena
+2026-08-01 14:02:32  OK  L40  [ST-039]  specimen_id=0c5ff786-e199-498e-b346-f2c3ced9dc6e  taxon=Pierella lena
+2026-08-01 14:02:34  OK  L41  [ST-040]  specimen_id=54d48bf2-5417-4548-96b5-44ee56f84017  taxon=Pierella lucia
+2026-08-01 14:02:35  OK  L42  [ST-041]  specimen_id=a01d7fab-a740-4e10-b559-a04897caa5dc  taxon=Pierella lucia
+2026-08-01 14:02:37  OK  L43  [ST-042]  specimen_id=22b2ff18-7277-4c53-a044-01a74c61b0f9  taxon=Pierella lucia
+2026-08-01 14:02:39  OK  L44  [ST-043]  specimen_id=fe746688-09c4-429a-ad8c-d62902dbebbf  taxon=Pierella luna lesbia
+2026-08-01 14:02:40  OK  L45  [ST-044]  specimen_id=3a7dc7b2-a7a0-4491-b4d1-158522aa4f53  taxon=Pierella luna lesbia
+2026-08-01 14:02:42  OK  L46  [ST-045]  specimen_id=b346e1c7-024d-4c17-8e17-464261adc263  taxon=Pierella ocreata
+2026-08-01 14:02:44  OK  L47  [ST-046]  specimen_id=bbcfd910-d7eb-4803-9ac9-a4a76de99808  taxon=Taygetis albinotata
+2026-08-01 14:02:45  OK  L48  [ST-047]  specimen_id=fbb0520a-d933-47e9-a351-a29f5f887779  taxon=Taygetis xenana
+2026-08-01 14:30:18  OK  L2  [RI-001]  specimen_id=c6a10b18-9cbb-4f57-ab86-b7f5e887e29d  taxon=Ancyluris aulestes
+2026-08-01 14:30:20  OK  L3  [RI-002]  specimen_id=207c53fa-3c5b-460e-9e57-731da3fb3147  taxon=Ancyluris cacica latifasciata
+2026-08-01 14:30:22  OK  L4  [RI-003]  specimen_id=68cb1db7-659e-4f14-92c6-1d0fde8d7063  taxon=Ancyluris colubra
+2026-08-01 14:30:23  OK  L5  [RI-004]  specimen_id=536cb134-2833-4031-a494-0c6f406fc0d6  taxon=Ancyluris endaemon
+2026-08-01 14:30:25  OK  L6  [RI-005]  specimen_id=c72283bc-eb95-4cef-b76a-b4660845b958  taxon=Ancyluris endaemon
+2026-08-01 14:30:26  OK  L7  [RI-006]  specimen_id=fe2218f2-98f8-41b0-8e14-e8f9e8d7c778  taxon=Ancyluris etias
+2026-08-01 14:30:27  OK  L8  [RI-007]  specimen_id=3058d5a2-75dd-4b84-9d3d-69800ce7f820  taxon=Ancyluris etias
+2026-08-01 14:30:29  OK  L9  [RI-008]  specimen_id=44946cc2-c8b0-4bbf-92ab-782f26168e99  taxon=Ancyluris formisissima venerabilis
+2026-08-01 14:30:31  OK  L10  [RI-009]  specimen_id=fd5b80be-9007-448d-8949-5a11f6cf5dc7  taxon=Ancyluris formisissima venerabilis
+2026-08-01 14:30:33  OK  L11  [RI-010]  specimen_id=8029dcca-9231-4f3a-9ce1-14245923af8b  taxon=Ancyluris formisissima venerabilis
+2026-08-01 14:30:34  OK  L12  [RI-011]  specimen_id=4cc90f03-3a88-4462-ac6d-e2e1e29b60f3  taxon=Ancyluris formisissima venerabilis
+2026-08-01 14:30:36  OK  L13  [RI-012]  specimen_id=d3ff5ae3-a1ce-4154-bbcd-cf16a10c9def  taxon=Ancyluris formisissima venerabilis
+2026-08-01 14:30:37  OK  L14  [RI-013]  specimen_id=655feb36-b8b1-40e9-aa03-cbda14ed4a08  taxon=Ancyluris formisissima venerabilis
+2026-08-01 14:30:39  OK  L15  [RI-014]  specimen_id=50e96ffa-8c97-430d-9d26-8ebd43cfc4e3  taxon=Ancyluris formisissima venerabilis
+2026-08-01 14:30:40  OK  L16  [RI-015]  specimen_id=a55e4a82-b287-4c26-8278-b00a018027eb  taxon=Ancyluris huscar
+2026-08-01 14:30:42  OK  L17  [RI-016]  specimen_id=7c01fb1e-7454-48e2-a8c2-c49e2bec20a9  taxon=Ancyluris inca huscar
+2026-08-01 14:30:44  OK  L18  [RI-017]  specimen_id=a9b63342-b6f7-4fdf-b324-b1d328fcc76c  taxon=Ancyluris meliboeus eudaemon
+2026-08-01 14:30:46  OK  L19  [RI-018]  specimen_id=57aa65a5-b937-40a9-ae48-529c6269bc49  taxon=Ancyluris meliboeus eudaemon
+2026-08-01 14:30:47  OK  L20  [RI-019]  specimen_id=b8d18b43-3925-426b-bc77-b7f11710735d  taxon=Ancyluris mira
+2026-08-01 14:30:49  OK  L21  [RI-020]  specimen_id=e4e38c99-05a4-4d36-b036-977e5fdf3b55  taxon=Ancyluris mira
+2026-08-01 14:30:50  OK  L22  [RI-021]  specimen_id=84af4eaf-4e07-40f8-87c1-0c982c5c8e3b  taxon=Ancyluris mira
+2026-08-01 14:30:51  OK  L23  [RI-022]  specimen_id=71e3f502-b277-4553-b8f7-44b34aed6a49  taxon=Ancyluris pulchra
+2026-08-01 14:30:53  OK  L24  [RI-023]  specimen_id=3fc2a0ae-94ee-432f-96d0-95b4a3df6b38  taxon=Ancyluris pulchra
+2026-08-01 14:30:54  OK  L25  [RI-024]  specimen_id=51a48ae2-70d6-426d-afc7-09ee6390787e  taxon=Cartea vitula
+2026-08-01 14:30:56  OK  L26  [RI-025]  specimen_id=a1ac3581-db75-4a5c-8ecf-0ae3d90b6c66  taxon=Cartea vitula
+2026-08-01 14:30:58  OK  L27  [RI-026]  specimen_id=b20b0a86-8bb7-465f-9214-5fa8191e9bac  taxon=Chorinea amazon
+2026-08-01 14:30:59  OK  L28  [RI-027]  specimen_id=f6e0806a-ad71-4ecc-afef-456562480d43  taxon=Chorinea amazon
+2026-08-01 14:31:00  OK  L29  [RI-028]  specimen_id=34fbd9a4-eeab-4a2c-b5f0-65b7022544e7  taxon=Chorinea batesii
+2026-08-01 14:31:02  OK  L30  [RI-029]  specimen_id=3b4006dd-7156-4bd6-821b-f3a4783dd556  taxon=Chorinea sylphina
+2026-08-01 14:31:03  OK  L31  [RI-030]  specimen_id=52daeca4-cc89-41e2-9799-5a818fd45027  taxon=Chorinea sylphina
+2026-08-01 14:31:05  OK  L32  [RI-031]  specimen_id=d5e3212f-efe4-4c6c-bbec-54c21c2a8cad  taxon=Cremna acoris
+2026-08-01 14:31:07  OK  L33  [RI-032]  specimen_id=bef6264b-cbdb-4a72-9361-9035682c7fc6  taxon=Eurybia halimede
+2026-08-01 14:31:09  OK  L34  [RI-033]  specimen_id=d2b503c0-4541-4dc6-956f-38f72d4950fa  taxon=Lyropteryx appollonia
+2026-08-01 14:31:10  OK  L35  [RI-034]  specimen_id=e629dc96-b0e8-4abf-a9c3-ba378a2e1bc9  taxon=Lyropteryx appollonia
+2026-08-01 14:31:13  OK  L36  [RI-035]  specimen_id=328dd2d7-0677-470a-8977-9857dadaeb33  taxon=Mesosemia loruhama
+2026-08-01 14:31:15  OK  L37  [RI-036]  specimen_id=9ac3dec8-ce62-407b-ae29-eadfedd09650  taxon=Necyria bellona juturna
+2026-08-01 14:31:16  OK  L38  [RI-037]  specimen_id=27cd4dc1-0ba9-41a1-a537-246be70d519d  taxon=Necyria bellona westwoodi
+2026-08-01 14:31:18  OK  L39  [RI-038]  specimen_id=48253a73-10e1-4795-8e22-a93389a6e303  taxon=Necyria bellona westwoodi
+2026-08-01 14:31:20  OK  L40  [RI-039]  specimen_id=fcf80d8b-b57a-46b2-be1a-3e9659ed7ea9  taxon=Nymphidium cachrus
+2026-08-01 14:31:22  OK  L41  [RI-040]  specimen_id=2de49db4-eec8-4be5-830e-14992c8a9e09  taxon=Rhetus arcius
+2026-08-01 14:31:23  OK  L42  [RI-041]  specimen_id=b4e5bb84-9d45-4c0a-b92c-c2114df94a85  taxon=Rhetus arcius beutelspacheri
+2026-08-01 14:31:25  OK  L43  [RI-042]  specimen_id=80c9967d-dd08-4714-b3c0-85b9169159e3  taxon=Rhetus dysoni
+2026-08-01 14:31:26  OK  L44  [RI-043]  specimen_id=ae612239-2a44-490c-be37-ee2ecd84ce49  taxon=Rhetus dysoni
+2026-08-01 14:31:27  OK  L45  [RI-044]  specimen_id=3ef6b71b-59f6-4c05-84a7-407ab4b56200  taxon=Rhetus dysoni
+2026-08-01 14:31:29  OK  L46  [RI-045]  specimen_id=dd0fc415-1174-4060-a567-a8ed9ee5a3f1  taxon=Rhetus periander
+2026-08-01 14:31:30  OK  L47  [RI-046]  specimen_id=5bc3f74d-5faa-4d60-b6dd-e5f8d669ce8d  taxon=Rhetus periander
+2026-08-01 14:31:31  OK  L48  [RI-047]  specimen_id=74da4132-417d-4a48-b882-a595129b709b  taxon=Rhetus periander
+2026-08-01 14:31:33  OK  L49  [RI-048]  specimen_id=86e7b710-7b58-4d54-a0a3-329119e58cde  taxon=Rhetus periander
+2026-08-01 14:31:34  OK  L50  [RI-049]  specimen_id=61d8ba2d-643f-402e-8905-54bcc670ce76  taxon=Siseme hellotis
+2026-08-01 14:31:36  OK  L51  [RI-050]  specimen_id=3ecda2b7-c8fd-4cbd-985a-c952c836302f  taxon=Stalachtis euterpe
+2026-08-01 14:31:38  OK  L52  [RI-051]  specimen_id=aaac22d6-6459-413f-b402-444c6f3c9c5c  taxon=Stalachtis euterpe
+2026-08-01 14:31:39  OK  L53  [RI-052]  specimen_id=8e3e9c50-b607-4f9b-a129-1a46793d5330  taxon=Stalachtis phaedusa
+2026-08-01 14:31:41  OK  L54  [RI-053]  specimen_id=5aa7bfe2-d2ef-4ade-8078-9843c472815d  taxon=Thisbe irene
+2026-08-01 14:31:42  OK  L55  [RI-054]  specimen_id=95303e9e-5379-4550-b633-9988e1e5cd7e  taxon=Thisbe irene
+2026-08-01 14:54:36  OK  L2  [PA-100]  specimen_id=e96dd6be-b554-4152-b51c-472227e050ea  taxon=Parides anchises drucei
+2026-08-01 14:54:37  OK  L3  [PA-101]  specimen_id=84a5a9e0-5e02-4d7e-9117-ecf1109889b4  taxon=Parides anchises drucei
+2026-08-01 14:54:39  OK  L4  [PA-102]  specimen_id=85701073-3a9b-4cc1-b4c9-587986aaadb4  taxon=Parides anchises koenigi
+2026-08-01 14:54:41  OK  L5  [PA-103]  specimen_id=f5553124-eb4d-41a5-bdda-ddb37052fb81  taxon=Parides anchises koenigi
+2026-08-01 14:54:42  OK  L6  [PA-104]  specimen_id=69a647a6-87b4-48d4-a79e-dc6e0812fbe2  taxon=Parides anchises koenigi
+2026-08-01 14:54:44  OK  L7  [PA-105]  specimen_id=a0ef361d-4d9d-4682-aa41-1b0865340664  taxon=Parides anchises nephalion
+2026-08-01 14:54:46  OK  L8  [PA-106]  specimen_id=2affed44-d375-42c3-9918-34a63d3e12a7  taxon=Parides anchises nephalion
+2026-08-01 14:54:47  OK  L9  [PA-107]  specimen_id=7a445817-e892-4953-8505-318c0dde9bac  taxon=Parides anchises nephalion
+2026-08-01 14:54:49  OK  L10  [PA-108]  specimen_id=5574a810-b331-49b4-a109-984480de1691  taxon=Parides bunichus chamissionia
+2026-08-01 14:54:51  OK  L11  [PA-109]  specimen_id=60bbc1b7-6533-482a-b824-e190a7f6c7d1  taxon=Parides bunichus chamissionia
+2026-08-01 14:54:52  OK  L12  [PA-110]  specimen_id=249b4b1b-dfd5-4ec1-83eb-a5b5d6e63cb8  taxon=Parides bunichus
+2026-08-01 14:54:53  OK  L13  [PA-111]  specimen_id=22457851-bb73-4bd1-ac3f-368be5da65b3  taxon=Parides chabrias
+2026-08-01 14:54:55  OK  L14  [PA-112]  specimen_id=e8696f32-d65f-4ba6-b773-eadbd8377706  taxon=Parides chabrias
+2026-08-01 14:54:56  OK  L15  [PA-113]  specimen_id=61ce0c83-d22e-488a-b71a-4c30480f55a1  taxon=Parides cutorina
+2026-08-01 14:54:57  OK  L16  [PA-114]  specimen_id=49d2e549-a0b8-4996-95d4-ae56880a6626  taxon=Parides cutorina
+2026-08-01 14:54:59  OK  L17  [PA-115]  specimen_id=6bf68ffa-c5d3-4af6-bc7a-a698d90cb200  taxon=Parides erlaces lacydes
+2026-08-01 14:55:01  OK  L18  [PA-116]  specimen_id=2881a808-28ab-4cfa-a513-368ed1929167  taxon=Parides erlaces xanthias
+2026-08-01 14:55:02  OK  L19  [PA-117]  specimen_id=8d265b91-aeb6-4504-bb37-f076cacd0943  taxon=Parides erlaces xanthias
+2026-08-01 14:55:04  OK  L20  [PA-118]  specimen_id=0795182f-2085-477b-a823-8c87078432c0  taxon=Parides erlaces xanthias
+2026-08-01 14:55:05  OK  L21  [PA-119]  specimen_id=0d18dddc-ff5b-4528-8665-172955f4b964  taxon=Parides erlaces xanthias
+2026-08-01 14:55:07  OK  L22  [PA-120]  specimen_id=df6fbd6b-f1ce-46e7-9905-a3098a46dad4  taxon=Parides erlaces xanthias
+2026-08-01 14:55:09  OK  L23  [PA-121]  specimen_id=6f100c39-4414-42e5-87a1-700c17fcf1a3  taxon=Parides eurimedes mylotes
+2026-08-01 14:55:11  OK  L24  [PA-122]  specimen_id=40eb44fb-2b10-43b2-91db-5527aed3794e  taxon=Parides iphadamas calogyna
+2026-08-01 14:55:13  OK  L25  [PA-123]  specimen_id=c50a60e2-3d67-40c4-9c36-262c8e746c84  taxon=Parides iphadamas calogyna
+2026-08-01 14:55:14  OK  L26  [PA-124]  specimen_id=a87bbd15-8c94-4630-b856-fb2fec24f82f  taxon=Parides iphadamas calogyna
+2026-08-01 14:55:16  OK  L27  [PA-125]  specimen_id=504406c5-f93f-448a-8ec3-c2096286ee06  taxon=Parides iphadamas iphadamas
+2026-08-01 14:55:18  OK  L28  [PA-126]  specimen_id=2d842a25-70cd-4f69-8f44-53ae8f2d16b0  taxon=Parides lysander brissonius
+2026-08-01 14:55:19  OK  L29  [PA-127]  specimen_id=553a3499-1f1c-44a5-8c60-7404c640ad64  taxon=Parides lysander brissonius
+2026-08-01 14:55:21  OK  L30  [PA-128]  specimen_id=37ecdf92-248c-4cf0-b729-650a2cafbb3e  taxon=Parides neophilus anaximenes
+2026-08-01 14:55:23  OK  L31  [PA-129]  specimen_id=ae92c026-eb18-4195-8f93-21ee76ae3103  taxon=Parides neophilus anaximenes
+2026-08-01 14:55:24  OK  L32  [PA-130]  specimen_id=e0bd45fb-5d8f-4b3c-8615-4c4eca134a79  taxon=Parides neophilus
+2026-08-01 14:55:25  OK  L33  [PA-131]  specimen_id=9a348acc-15d8-4d05-9be5-38d0c8ae400a  taxon=Parides neophilus
+2026-08-01 14:55:26  OK  L34  [PA-132]  specimen_id=0a4439e2-feec-40fb-9db7-0178d88715bd  taxon=Parides neophilus
+2026-08-01 14:55:28  OK  L35  [PA-133]  specimen_id=72089981-9021-4d3e-8f52-cd4958049aef  taxon=Parides phalaceus nieva
+2026-08-01 14:55:30  OK  L36  [PA-134]  specimen_id=c9928344-e6f1-491b-9208-4d9cfe5d5a8c  taxon=Parides phalaceus nieva
+2026-08-01 14:55:31  OK  L37  [PA-135]  specimen_id=30cdf822-6473-405c-9383-e4a68863bea5  taxon=Parides pizzaro
+2026-08-01 14:55:33  OK  L38  [PA-136]  specimen_id=e11f02f9-7ffd-4259-b117-56ef54aba1cf  taxon=Parides pizzaro
+2026-08-01 14:55:34  OK  L39  [PA-137]  specimen_id=ee11969a-04d2-455f-8cc5-033510b82c83  taxon=Parides pizzaro
+2026-08-01 14:55:35  OK  L40  [PA-138]  specimen_id=732e7dd7-0540-4dab-a70e-469b9dd4ef63  taxon=Parides pizzaro
+2026-08-01 14:55:37  OK  L41  [PA-139]  specimen_id=dd9cc87f-1a56-4a26-957d-b03cb2221fcc  taxon=Parides sesostris
+2026-08-01 14:55:38  OK  L42  [PA-140]  specimen_id=728e8cb4-4983-428d-bf38-fcd2b844264f  taxon=Parides sesostris
+2026-08-01 14:55:39  OK  L43  [PA-141]  specimen_id=8636e19b-7515-4381-9a0f-828d3a76ac26  taxon=Parides sesostris
+2026-08-01 14:55:40  OK  L44  [PA-142]  specimen_id=def3d5dd-cc66-4164-b25e-abd177e9dbbe  taxon=Parides sesostris
+2026-08-01 14:55:42  OK  L45  [PA-143]  specimen_id=a9bd2c9a-1e01-4206-bf0a-4703937e659f  taxon=Parides vertumnus astorius
+2026-08-01 14:55:44  OK  L46  [PA-144]  specimen_id=1dd8d431-abe8-4aa9-9268-d38dbb8629be  taxon=Parides vertumnus astorius
+2026-08-01 14:55:45  OK  L47  [PA-145]  specimen_id=6991ca0d-2b71-4f9f-a4d2-98b34fe03ed8  taxon=Parides vertumnus astorius
+2026-08-01 14:55:47  OK  L48  [PA-146]  specimen_id=47a2d06e-018a-4726-8515-bcd229a777c6  taxon=Parides vertumnus astorius
+2026-08-01 14:55:48  OK  L49  [PA-147]  specimen_id=01a405c3-cbb6-45b9-9740-ad1a2f0d8591  taxon=Parides vertumnus astorius
+2026-08-01 14:55:50  OK  L50  [PA-148]  specimen_id=d930f0f2-252e-4d27-9054-6ba9bc598551  taxon=Parides vertumnus autumnus
+2026-08-01 14:55:51  OK  L51  [PA-149]  specimen_id=f3107032-323a-45d4-a1b4-3c8f1b5b3e42  taxon=Parides vertumnus bogatanus
+2026-08-01 14:55:53  OK  L52  [PA-150]  specimen_id=58405511-6ba1-4bba-aa00-00a72c90a1e1  taxon=Parides vertumnus bogatanus
+2026-08-01 14:55:55  OK  L53  [PA-151]  specimen_id=93fc8262-fda4-41aa-b089-c196584072b4  taxon=Parides vertumnus bogatanus
+2026-08-01 14:55:56  OK  L54  [PA-152]  specimen_id=41e67abe-0118-410b-845d-3503e393662a  taxon=Parides vertumnus bogatanus
+2026-08-01 14:55:58  OK  L55  [PA-153]  specimen_id=a29ba376-5b6f-44cf-9296-24ea695435b2  taxon=Protesilaus protesilaus archesilaus
+2026-08-01 14:56:00  OK  L56  [PA-154]  specimen_id=db363712-a22a-4bd4-9bb9-1be0d276e60a  taxon=Protesilaus protesilaus archesilaus
+2026-08-01 14:56:01  OK  L57  [PA-155]  specimen_id=57dca1bb-9a21-4d35-af02-49d59dd5d85a  taxon=Protesilaus protesilaus archesilaus
+2026-08-01 14:56:03  OK  L58  [PA-156]  specimen_id=a7e1d700-ea43-49a4-9166-750bf3498895  taxon=Protesilaus protesilaus nigricornis
+2026-08-01 14:56:05  OK  L59  [PA-157]  specimen_id=80698f04-bd99-4ec4-aa1c-4b516da77cd8  taxon=Pterourus ascolius ascolius
+2026-08-01 14:56:07  OK  L60  [PA-158]  specimen_id=22f95ff3-6cfb-487e-927e-a9ae75b3c01c  taxon=Pterourus ascolius rosenbergi
+2026-08-01 14:56:09  OK  L61  [PA-159]  specimen_id=5a3ac57d-707e-42fd-b7f3-4dfe534354a5  taxon=Pterourus bachus chrysomelus
+2026-08-01 14:56:10  OK  L62  [PA-160]  specimen_id=c81eb55d-5c56-4875-a83e-1acc2c2bdee8  taxon=Pterourus bachus chrysomelus
+2026-08-01 14:56:12  OK  L63  [PA-161]  specimen_id=e3e365a9-80bd-4fa1-a41b-036461dcf6f3  taxon=Pterourus bachus chrysomelus
+2026-08-01 14:56:14  OK  L64  [PA-162]  specimen_id=35073a8b-9608-4904-baf3-b02b4ba7d9c3  taxon=Pterourus birchalli birchalli
+2026-08-01 14:56:15  OK  L65  [PA-163]  specimen_id=cb606960-d0c3-4729-8863-751508370be4  taxon=Pterourus cacicus inca
+2026-08-01 14:56:17  OK  L66  [PA-164]  specimen_id=4c57fd74-60a8-4275-bac6-d6e00658ac12  taxon=Pterourus cacicus mendozaensis
+2026-08-01 14:56:19  OK  L67  [PA-165]  specimen_id=4a539808-fd7d-4ce5-8a58-80886fe7565c  taxon=Pterourus cacicus mendozaensis
+2026-08-01 14:56:20  OK  L68  [PA-166]  specimen_id=b972466a-9c02-4a0e-8ce5-6ea06763b828  taxon=Pterourus euterpinus
+2026-08-01 14:56:22  OK  L69  [PA-167]  specimen_id=fec9ec92-20a7-45e7-9edc-598ca4caa2b2  taxon=Pterourus menatius bitias
+2026-08-01 14:56:24  OK  L70  [PA-168]  specimen_id=ebab7ee9-6a57-4bcb-896b-9b8d5a62970e  taxon=Pterourus menatius bitias
+2026-08-01 14:56:25  OK  L71  [PA-169]  specimen_id=d6556d6f-c70c-4fb9-bb98-897b4734c766  taxon=Pterourus menatius bitias
+2026-08-01 14:56:27  OK  L72  [PA-170]  specimen_id=13cfb384-c800-4220-b691-6cc9d3412f00  taxon=Pterourus menatius bitias
+2026-08-01 14:56:28  OK  L73  [PA-171]  specimen_id=1b810c2e-4464-4b6b-8ff6-01442c6d632e  taxon=Pterourus menatius bitias
+2026-08-01 14:56:30  OK  L74  [PA-172]  specimen_id=0ee913de-a0ab-47f9-8cb8-733711e21714  taxon=Pterourus menatius coelebs
+2026-08-01 14:56:32  OK  L75  [PA-173]  specimen_id=2b65e448-e464-41c7-9c72-939110d5ffda  taxon=Pterourus warscewiczi jelskii
+2026-08-01 14:56:33  OK  L76  [PA-174]  specimen_id=85c2ab93-0f22-4265-bf1b-0486196b5209  taxon=Pterourus warscewiczi jelskii
+2026-08-01 14:56:35  OK  L77  [PA-175]  specimen_id=cc06dd2a-0779-4761-bdcd-0167c4ae57f5  taxon=Pterourus warscewiczi mercedes
+2026-08-01 14:56:36  OK  L78  [PA-176]  specimen_id=a23675d5-c123-4c4c-a6d0-9b5b0f917d44  taxon=Pterourus warscewiczi mercedes
+2026-08-01 14:56:38  OK  L79  [PA-177]  specimen_id=830163c2-777b-4114-a971-6b2b5c2fb25d  taxon=Pterourus warscewiczi mercedes
+2026-08-01 14:56:39  OK  L80  [PA-178]  specimen_id=0cfa3ad7-5fa0-453b-8817-e88e86e80e4a  taxon=Pterourus warscewiczi mercedes
+2026-08-01 14:56:41  OK  L81  [PA-179]  specimen_id=789c6970-222f-4a32-bda7-0baea89cb30d  taxon=Pterourus zagreus batesi
+2026-08-01 14:56:43  OK  L82  [PA-180]  specimen_id=49bae8d0-eb22-4127-8d1c-2a0066c5e1bb  taxon=Pterourus zagreus batesi
+2026-08-01 14:56:44  OK  L83  [PA-181]  specimen_id=6479cfa8-82da-40e1-875f-f9bbb7157f1c  taxon=Pterourus zagreus batesi
+2026-08-01 14:56:46  OK  L84  [PA-182]  specimen_id=07bcf30e-8d20-4cba-a754-7c99835f9dbf  taxon=Pterourus zagreus batesi
+2026-08-01 14:56:47  OK  L85  [PA-183]  specimen_id=df2b5454-8d89-412d-b539-71e82c454350  taxon=Pterourus zagreus chrysoxanthus
+2026-08-01 14:56:49  OK  L86  [PA-184]  specimen_id=946fdbe1-4410-4d59-8ab4-f3df6744ef10  taxon=Pterourus zagreus chrysoxanthus
+2026-08-01 14:56:51  OK  L87  [PA-185]  specimen_id=2c1d6a70-b68b-440c-b820-7ae1d3764b7f  taxon=Pterourus zagreus chrysoxanthus
+2026-08-01 14:56:52  OK  L88  [PA-186]  specimen_id=4051efb3-4864-4388-899c-9402b02ae200  taxon=Pterourus zagreus chrysoxanthus
+2026-08-01 14:56:54  OK  L89  [PA-187]  specimen_id=1024b671-432c-4cf4-ba83-57b6ca0da97f  taxon=Pterourus zagreus chrysoxanthus
+2026-08-01 14:56:55  OK  L90  [PA-188]  specimen_id=f4898794-d012-4c8f-a481-004eebeb45b0  taxon=Pterourus zagreus
+2026-08-01 14:56:56  OK  L91  [PA-189]  specimen_id=785afd94-7b20-4e58-8dfb-abefab9c04e8  taxon=Pterourus zagreus
+2026-08-01 14:56:57  OK  L92  [PA-190]  specimen_id=9b121b37-ac76-4575-b0ab-099fcd0dcd00  taxon=Pterourus zagreus

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
 import { SPECIMEN_SELECT, toSpecimenView, type SpecimenRow } from '@/lib/specimens/view';
 import AdminTable from '@/components/admin/AdminTable';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 import MediaGalleryLoader from './MediaGalleryLoader';
 
 export const revalidate = 0;
@@ -26,12 +27,21 @@ export default async function MultimediaPickerPage() {
 
   return (
     <div className="flex flex-col gap-10">
+      <PublishProductionButton variant="panel" />
       {/* ── Header ────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold text-white">Multimedia y Estudio 3D</h1>
           <p className="text-sm text-neutral-400">
             Galería clasificada · filtros por tipo, rubro, familia y especie.
+          </p>
+          <p className="mt-2 max-w-2xl rounded-lg border border-emerald-800/60 bg-emerald-950/40 px-3 py-2 text-[12px] leading-relaxed text-emerald-200/95">
+            <strong className="text-emerald-300">Modo automático ON:</strong> al GRABAR foto de
+            espécimen se hace solo cutout + nitidez + peso bajo. Video Blender → MP4/HLS
+            liviano. 3D (.glb) se etiqueta y guarda. También podés soltar archivos en{' '}
+            <code className="text-emerald-100">hot_folder/</code> y correr{' '}
+            <code className="text-emerald-100">python scripts/auto_studio_daemon.py</code> sin
+            mirar la pantalla.
           </p>
         </div>
         <Link

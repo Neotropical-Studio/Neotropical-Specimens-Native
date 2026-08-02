@@ -41,3 +41,15 @@ supabase/.branches
 .claude/settings.local.json
 \]+
 scripts/.venv/
+.env*
+
+# Estudio automático (solo .gitkeep versionado)
+hot_folder/*
+!hot_folder/.gitkeep
+procesados_finales/*
+!procesados_finales/.gitkeep
+revision_humana/*
+!revision_humana/.gitkeep
+auto_studio.log
+ingesta.log
+ingesta_errores.log

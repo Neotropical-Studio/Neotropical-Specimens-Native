@@ -13,7 +13,7 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
       <AdminNav admin={admin} />
-      <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-7xl px-3 py-4 pb-24 sm:px-4 sm:py-8">{children}</main>
     </div>
   );
 }

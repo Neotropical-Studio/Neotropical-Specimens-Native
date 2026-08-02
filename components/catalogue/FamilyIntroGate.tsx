@@ -5,6 +5,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { imageUrl, videoMp4, videoPoster } from '@/lib/cloudinary/url';
 
 interface Props {
@@ -14,6 +16,9 @@ interface Props {
   coverPublicId?: string | null;
   /** Destino tras ended/skip (?view=families o ?view=catalog). */
   catalogHref: string;
+  /** Volver al nivel anterior (sin avanzar). */
+  backHref?: string | null;
+  backLabel?: string | null;
   skipLabel?: string;
   hintLabel?: string;
   footerLabel?: string;
@@ -25,6 +30,8 @@ export default function FamilyIntroGate({
   videoPublicId,
   coverPublicId,
   catalogHref,
+  backHref,
+  backLabel,
   skipLabel = 'Ver catálogo',
   hintLabel = 'Al terminar el video entrarás al catálogo de esta familia.',
   footerLabel,
@@ -69,8 +76,22 @@ export default function FamilyIntroGate({
     );
   }
 
+  const back =
+    backHref?.trim() && backLabel?.trim()
+      ? { href: backHref.trim(), label: backLabel.trim() }
+      : null;
+
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 pb-24 pt-6">
+      {back ? (
+        <Link
+          href={back.href}
+          className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-2.5 text-sm font-medium text-emerald-200 transition hover:border-emerald-400/55 hover:bg-emerald-500/15 touch-manipulation sm:w-fit sm:justify-start"
+        >
+          <ArrowLeft className="h-4 w-4 shrink-0" aria-hidden />
+          {back.label}
+        </Link>
+      ) : null}
       <header className="max-w-2xl">
         <p className="text-xs uppercase tracking-[0.2em] text-emerald-400/80">
           {familyId}

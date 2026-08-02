@@ -13,6 +13,7 @@ import {
   resolveCanonicalSpecimenFolder,
 } from '@/lib/mirror/contract';
 import { uploadImage, uploadVideo, uploadModel3d } from '@/lib/services/cloudinary-upload';
+import { publishProduction } from '@/lib/admin/publish-production';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60; // rembg-AI puede tardar hasta ~30s en Cloudinary
@@ -190,6 +191,11 @@ export async function POST(req: NextRequest) {
       .eq('id', specimenId);
   }
 
+  const production = await publishProduction({
+    mode: 'cache',
+    reason: `ingest-batch:${specimenId}:${view ?? assetType}`,
+  });
+
   return NextResponse.json({
     ok:        true,
     publicId,
@@ -197,5 +203,6 @@ export async function POST(req: NextRequest) {
     view,
     specimenId,
     secureUrl: result.secure_url,
+    production,
   });
 }

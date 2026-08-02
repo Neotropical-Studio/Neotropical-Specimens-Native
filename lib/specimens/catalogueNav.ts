@@ -18,12 +18,19 @@ import {
   EXPECTED_EUROPE_BUTTERFLY_FAMILIES,
   EXPECTED_NEARCTIC_BUTTERFLY_FAMILIES,
   EXPECTED_NEOTROPICAL_BUTTERFLY_FAMILIES,
+  EXPECTED_NEOTROPICAL_MOTHS_FAMILIES,
+  EXPECTED_SHARED_INSECTS_FAMILIES,
+  MOTHS_DISPLAY_LABEL,
+  RARE_GYNAN_DISPLAY_LABEL,
   REGION_FOLDER,
   RUBRO_FOLDER,
   RUBROS_CHILD_FOLDERS,
   beetleFamiliesForRegion,
   butterflyFamiliesForRegion,
+  insectFamiliesForRegion,
   isNodeMediaFolderName,
+  mothFamiliesForRegion,
+  rareGynanFamiliesForRegion,
 } from '@/scripts/sync-cloudinary/roots';
 import {
   isNodeMediaPublicId,
@@ -58,11 +65,14 @@ export interface CatalogueBreadcrumb {
 
 type DriedCategoryFolder = (typeof DRIED_SPECIMEN_CATEGORY_FOLDERS)[number];
 
-function categoryMetaFromRoot(folder: DriedCategoryFolder) {
+function categoryMetaFromRoot(
+  folder: DriedCategoryFolder,
+  displayLabel?: string,
+) {
   // Familias Butterflies / Beetles por REGION via *FamiliesForRegion(regionId).
   return {
     id: folder.id,
-    label: folder.segment,
+    label: displayLabel ?? folder.segment,
     segment: folder.segment,
     aliases: folder.aliases,
     rubroId: 'dried-specimens' as InventoryRubroId,
@@ -89,30 +99,68 @@ function isKnownButterflyFamily(family: string): boolean {
   });
 }
 
+function isKnownMothFamily(family: string): boolean {
+  const fam = family.trim();
+  if (!fam) return false;
+  return EXPECTED_NEOTROPICAL_MOTHS_FAMILIES.some(
+    (f) => f.toLowerCase() === fam.toLowerCase(),
+  );
+}
+
+function isKnownInsectFamily(family: string): boolean {
+  const fam = family.trim();
+  if (!fam) return false;
+  return EXPECTED_SHARED_INSECTS_FAMILIES.some(
+    (f) => f.toLowerCase() === fam.toLowerCase(),
+  );
+}
+
+function driedCategoryById(id: DriedCategoryFolder['id']): DriedCategoryFolder {
+  const hit = DRIED_SPECIMEN_CATEGORY_FOLDERS.find((c) => c.id === id);
+  if (!hit) throw new Error(`Categoría canónica no encontrada: ${id}`);
+  return hit;
+}
+
 /**
- * Las 5 categorías canónicas bajo especímenes secos (orden Cloudinary).
+ * Las 5 categorías canónicas bajo especímenes secos.
+ * Orden: Butterflies Diurne → Nocturne → Beetles → Insects → Rare/Gynan.
  * Cada una → card + videoPublicId opcional → familias.
  */
 export const CATALOGUE_CATEGORIES = [
   {
-    ...categoryMetaFromRoot(DRIED_SPECIMEN_CATEGORY_FOLDERS[0]),
-    match: /gynan|aberration/i,
+    ...categoryMetaFromRoot(
+      driedCategoryById('butterflies-lepidoptera-diurne'),
+      'Butterflies (Lepidoptera) Diurne',
+    ),
+    match: /butterflies.*diurne|diurne.*lepidoptera/i,
   },
   {
-    ...categoryMetaFromRoot(DRIED_SPECIMEN_CATEGORY_FOLDERS[1]),
-    match: /insects?\s*\(arthropoda\)|insects-arthropoda/i,
+    ...categoryMetaFromRoot(
+      driedCategoryById('moths-lepidoptera-nocturne'),
+      MOTHS_DISPLAY_LABEL,
+    ),
+    match: /moths.*nocturn[ae]|nocturn[ae].*lepidoptera|butterflies\s*nocturne/i,
   },
   {
-    ...categoryMetaFromRoot(DRIED_SPECIMEN_CATEGORY_FOLDERS[2]),
+    ...categoryMetaFromRoot(
+      driedCategoryById('beetles-coleoptera-insects'),
+      'Beetles (Coleoptera)',
+    ),
     match: /beetles.*coleoptera|coleoptera.*insects/i,
   },
   {
-    ...categoryMetaFromRoot(DRIED_SPECIMEN_CATEGORY_FOLDERS[3]),
-    match: /moths.*nocturn[ae]|nocturn[ae].*lepidoptera/i,
+    ...categoryMetaFromRoot(
+      driedCategoryById('insects-arthropoda'),
+      'Insects (Arthropoda)',
+    ),
+    match: /insects?\s*\(arthropoda\)|insects-arthropoda/i,
   },
   {
-    ...categoryMetaFromRoot(DRIED_SPECIMEN_CATEGORY_FOLDERS[4]),
-    match: /butterflies.*diurne|diurne.*lepidoptera/i,
+    ...categoryMetaFromRoot(
+      driedCategoryById('rare-gynan-aberrations'),
+      RARE_GYNAN_DISPLAY_LABEL,
+    ),
+    match: /gynan|aberration|hybrid|freak/i,
   },
 ] as const;
 
@@ -401,9 +449,17 @@ function resolveCategoria(
     };
   }
 
-  // Fallback: orden biológico + familia esperada → Butterflies Diurne
+  // Fallback: orden biológico + familia esperada → Insects / Nocturne / Diurne / Beetles
   if (s.rubroId === 'dried-specimens' || !s.rubroId) {
     const family = (s.family ?? '').trim();
+    if (isKnownInsectFamily(family)) {
+      const cat = findCategoryById('insects-arthropoda');
+      if (cat) return { id: cat.id, label: cat.label };
+    }
+    if (isKnownMothFamily(family)) {
+      const cat = findCategoryById('moths-lepidoptera-nocturne');
+      if (cat) return { id: cat.id, label: cat.label };
+    }
     if (isKnownButterflyFamily(family) || /lepidoptera/i.test(s.order ?? '')) {
       const cat = findCategoryById('butterflies-lepidoptera-diurne');
       if (cat) return { id: cat.id, label: cat.label };
@@ -644,13 +700,15 @@ export function buildCategoryNodes(
 /**
  * Familias dentro de categoría (nivel 4).
  * Butterflies: por REGION (Africa 5 / Neotropical 17).
- * Media: `{…/Familia}/_card|_video`.
+ * Media: `{…/Familia}/_card|_video` — folder Cloudinary (no el label renombrado).
  */
 export function buildFamilyNodes(
   specimens: SpecimenView[],
   rubroId: InventoryRubroId,
   regionId: string,
   categoryId: string,
+  /** Labels o {label, folder} ordenados (meta/DB). Si omitido → EXPECTED_*. */
+  familyLabelsOverride?: readonly (string | { label: string; folder: string })[] | null,
 ): CatalogueNavNode[] {
   const inventoryIds = collectInventoryPublicIds(specimens);
   const catMeta = findCategoryById(categoryId);
@@ -658,12 +716,26 @@ export function buildFamilyNodes(
   const regionFolder = regionMeta?.folder ?? REGION_FOLDER;
   const resolvedRegionId = regionMeta?.id ?? regionId;
   const categorySegment = catMeta?.segment ?? categoryId;
-  const expectedFamilies =
-    categoryId === 'butterflies-lepidoptera-diurne'
-      ? butterflyFamiliesForRegion(resolvedRegionId)
-      : categoryId === 'beetles-coleoptera-insects'
-        ? beetleFamiliesForRegion(resolvedRegionId)
-        : (catMeta?.expectedFamilies ?? []);
+  const expectedEntries: Array<{ label: string; folder: string }> =
+    familyLabelsOverride && familyLabelsOverride.length > 0
+      ? familyLabelsOverride.map((e) =>
+          typeof e === 'string'
+            ? { label: e, folder: e }
+            : { label: e.label, folder: e.folder || e.label },
+        )
+      : (
+          categoryId === 'butterflies-lepidoptera-diurne'
+            ? butterflyFamiliesForRegion(resolvedRegionId)
+            : categoryId === 'moths-lepidoptera-nocturne'
+              ? mothFamiliesForRegion(resolvedRegionId)
+              : categoryId === 'insects-arthropoda'
+                ? insectFamiliesForRegion(resolvedRegionId)
+                : categoryId === 'beetles-coleoptera-insects'
+                  ? beetleFamiliesForRegion(resolvedRegionId)
+                  : categoryId === 'rare-gynan-aberrations'
+                    ? rareGynanFamiliesForRegion(resolvedRegionId)
+                    : (catMeta?.expectedFamilies ?? [])
+        ).map((label) => ({ label, folder: label }));
 
   const inScope = specimens.filter((s) => {
     if (s.primaryImage && isNodeMediaPublicId(s.primaryImage)) return false;
@@ -685,13 +757,13 @@ export function buildFamilyNodes(
 
   const buckets = new Map<string, CatalogueNavNode>();
   const expectedIds = new Set<string>();
-  for (const fam of expectedFamilies) {
-    const id = slugifyCatalogue(fam);
+  for (const fam of expectedEntries) {
+    const id = slugifyCatalogue(fam.label);
     expectedIds.add(id);
-    const path = familyCloudPath(rubroId, regionFolder, categorySegment, fam);
+    const path = familyCloudPath(rubroId, regionFolder, categorySegment, fam.folder);
     buckets.set(id, {
       id,
-      label: fam,
+      label: fam.label,
       count: 0,
       ...resolveEntryMedia(
         path,
@@ -731,8 +803,8 @@ export function buildFamilyNodes(
     });
   }
 
-  const expectedNodes = expectedFamilies.map(
-    (fam) => buckets.get(slugifyCatalogue(fam))!,
+  const expectedNodes = expectedEntries.map(
+    (fam) => buckets.get(slugifyCatalogue(fam.label))!,
   );
   const extras = [...buckets.values()]
     .filter((n) => !expectedIds.has(n.id) && n.count > 0)
@@ -809,6 +881,29 @@ export function rubroEntryHref(
   return hasVideo ? rubroIntroHref(lang, rubroId) : rubroRegionsHref(lang, rubroId);
 }
 
+export function regionIntroHref(
+  lang: string,
+  parts: { rubro: string; region: string },
+): string {
+  return catalogueHref(lang, parts);
+}
+
+export function regionCategoriesHref(
+  lang: string,
+  parts: { rubro: string; region: string },
+): string {
+  return `${catalogueHref(lang, parts)}?view=categories`;
+}
+
+/** Click región: ventana VIDEO de ingreso si hay; si no, directo a categorías. */
+export function regionEntryHref(
+  lang: string,
+  parts: { rubro: string; region: string },
+  hasVideo: boolean,
+): string {
+  return hasVideo ? regionIntroHref(lang, parts) : regionCategoriesHref(lang, parts);
+}
+
 export function categoryIntroHref(
   lang: string,
   parts: { rubro: string; region: string; categoria: string },
@@ -853,6 +948,62 @@ export function familyEntryHref(
   return hasVideo ? familyIntroHref(lang, parts) : familyCatalogHref(lang, parts);
 }
 
+/**
+ * Rutas de vuelta al catálogo desde una ficha de espécimen
+ * (familia Brassolidae, categoría Butterflies Diurne, etc.).
+ */
+export function resolveSpecimenCatalogueTrail(
+  lang: string,
+  specimen: {
+    rubroId?: string | null;
+    regionCode?: string | null;
+    regionName?: string | null;
+    categoria?: string | null;
+    family?: string | null;
+  },
+): {
+  familyHref: string | null;
+  familyLabel: string | null;
+  categoryHref: string | null;
+  categoryLabel: string | null;
+} | null {
+  const rubroId = (specimen.rubroId ?? 'dried-specimens').trim();
+  if (!findRubroById(rubroId)) return null;
+
+  const regionRaw = (specimen.regionCode ?? specimen.regionName ?? 'neotropical').trim();
+  const region =
+    findRegionById(regionRaw) ??
+    findRegionBySlugOrFolder(regionRaw) ??
+    findRegionById('neotropical');
+  if (!region) return null;
+
+  const catRaw = (specimen.categoria ?? '').trim();
+  const category =
+    (catRaw
+      ? findCategoryById(catRaw) ?? findCategoryBySlugOrLabel(catRaw)
+      : null) ??
+    findCategoryBySlugOrLabel('butterflies-lepidoptera-diurne');
+  if (!category) return null;
+
+  const familyLabel = (specimen.family ?? '').trim();
+  const familyId = familyLabel ? slugifyCatalogue(familyLabel) : '';
+
+  const parts = {
+    rubro: rubroId,
+    region: region.id,
+    categoria: category.id,
+  };
+
+  return {
+    categoryHref: categoryFamiliesHref(lang, parts),
+    categoryLabel: category.label,
+    familyHref: familyId
+      ? familyCatalogHref(lang, { ...parts, familia: familyId })
+      : null,
+    familyLabel: familyLabel || null,
+  };
+}
+
 export function buildBreadcrumbs(
   lang: string,
   t: (key: string, fallback: string) => string,
@@ -870,7 +1021,7 @@ export function buildBreadcrumbs(
     crumbs.push({
       label: parts.rubro.label,
       href: parts.region
-        ? catalogueHref(lang, { rubro: parts.rubro.id })
+        ? rubroRegionsHref(lang, parts.rubro.id)
         : null,
     });
   }
@@ -878,7 +1029,7 @@ export function buildBreadcrumbs(
     crumbs.push({
       label: parts.region.label,
       href: parts.categoria
-        ? catalogueHref(lang, {
+        ? regionCategoriesHref(lang, {
             rubro: parts.rubro.id,
             region: parts.region.id,
           })

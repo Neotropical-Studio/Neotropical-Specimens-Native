@@ -6,6 +6,8 @@ import {
   isSupabaseAdminConfigured,
 } from '@/lib/supabase/client';
 import AdminStructurePanel from '@/components/admin/AdminStructurePanel';
+import AdminModulesProbe from '@/components/admin/AdminModulesProbe';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
@@ -46,6 +48,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
+      <PublishProductionButton variant="panel" />
       {missingServiceRole ? (
         <div className="rounded-xl border border-amber-700/60 bg-amber-950/40 p-4 text-sm text-amber-50">
           <p className="font-semibold text-amber-100">
@@ -59,27 +62,6 @@ export default async function AdminDashboardPage() {
             SERVICE_ROLE={cfg.hasServiceRole ? `OK (${cfg.serviceRoleLen} chars)` : 'FALTA'} · JWT=
             {cfg.serviceRoleLooksLikeJwt ? 'OK' : 'NO (debe empezar eyJ)'}
           </p>
-          <ol className="mt-3 list-decimal space-y-1 pl-5 text-amber-50/95">
-            <li>
-              Vercel → <strong>neotropicalspecimens</strong> /{' '}
-              <strong>neotropicalspecimens-native</strong>
-            </li>
-            <li>
-              Environment Variables → nombre exacto{' '}
-              <code className="text-amber-100">SUPABASE_SERVICE_ROLE_KEY</code>
-            </li>
-            <li>
-              Valor Legacy <code className="text-amber-100">service_role</code> (eyJ…), sin comillas ·
-              Environments incluye <strong>Production</strong>
-            </li>
-            <li>Redeploy Production sin build cache</li>
-          </ol>
-          <p className="mt-3">
-            Mientras tanto cards:{' '}
-            <Link href="/admin/espejo" className="font-medium text-sky-300 underline">
-              /admin/espejo → Node Media
-            </Link>
-          </p>
         </div>
       ) : (
         <div className="rounded-xl border border-emerald-800/50 bg-emerald-950/30 px-4 py-2 text-xs text-emerald-200">
@@ -91,7 +73,7 @@ export default async function AdminDashboardPage() {
         <div>
           <h1 className="text-xl font-semibold text-white">Panel Administrativo</h1>
           <p className="mt-1 text-xs text-neutral-500">
-            Ahora: rubro 1 (especímenes secos) × todas las regiones · luego esqueletos y plantas
+            Probá cada módulo abajo · chips de familias/categorías ya abren el catálogo
           </p>
         </div>
         <Link
@@ -101,6 +83,8 @@ export default async function AdminDashboardPage() {
           Espejo Cloudinary ↔ Supabase →
         </Link>
       </div>
+
+      <AdminModulesProbe />
 
       <AdminStructurePanel />
 

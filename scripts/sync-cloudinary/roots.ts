@@ -4,12 +4,12 @@
 //
 //   RUBROS   ← exactamente 3 hijos
 //     ├─ ESPECIMENS SECOS BIOLOGICOS…          ← PRIORIDAD: × TODAS las REGIONs
+//     │    ├─ REGION Central South America Neotropical  ← PRINCIPAL / 1º storefront
+//     │    │    └─ CAT orden: Butterflies Diurne → Nocturne → Beetles → Insects → Rare/Gynan
+//     │    │         · Butterflies 17 · Moths Neo 14 · Beetles 13 · Insects 11 · Rare 3
+//     │    │         · Insects: 11 taxones ×5 REGIONs (Spider…Others)
 //     │    ├─ REGION Africa (Afrotropical)              (+ 5 categorías)
 //     │    ├─ REGION Australasian Y Oriental            (+ 5 categorías)
-//     │    ├─ REGION Central South America Neotropical  ← foco storefront
-//     │    │    └─ 5 categorías; Insects(arthropoda) ← foco #2 ×5 REGIONs (_card/_video)
-//     │    │         · Beetles ×5: 12/13/13/13/13 · Moths Neo 14 · Butterflies 17
-//     │    │         · Insects: 10 taxones ×5 REGIONs (Odonata=id3; id4 pend.)
 //     │    ├─ REGION Europe (Holarctic)                 (+ 5 categorías; Butterflies 5)
 //     │    └─ REGION North America (Nearctic)           (+ 5 categorías; Butterflies 5)
 //     ├─ ESQUELETOS…  ← después (stub)
@@ -85,13 +85,23 @@ export function nodeVideoFolder(nodePath: string): string {
  * Regiones GEOGRÁFICAS bajo rubro 1 (ESPECIMENS SECOS BIOLOGICOS).
  * Carpetas Cloudinary exactas — no inventar paths.
  * Orden UI confirmado:
- *   1 Africa · 2 Australasian/Oriental · 3 Neotropical · 4 Europe · 5 Nearctic
- * Familias: Africa (5) · Australasian (9) · Neotropical (17) · Europe (5) · Nearctic (5).
+ * Orden storefront / admin (principal primero):
+ *   1 Neotropical · 2 Africa · 3 Australasian/Oriental · 4 Europe · 5 Nearctic
+ * Familias: Neotropical (17) · Africa (5) · Australasian (9) · Europe (5) · Nearctic (5).
  * Cada familia/taxón: `_card` + `_video`. Rubros 2–3 después.
  *
  * Alias histórico: DRIED_SPECIMEN_REGION_FOLDERS (mismo array).
  */
 export const GEOGRAPHIC_REGION_FOLDERS = [
+  {
+    id: 'neotropical',
+    folder: 'REGION Central South America Neotropical',
+    // Historial: doble espacio entre Central y South visto en sync previo.
+    aliases: [
+      'REGION Central South America Neotropical',
+      'REGION Central  South America Neotropical',
+    ] as const,
+  },
   {
     id: 'afrotropical',
     folder: 'REGION Africa (Afrotropical)',
@@ -101,15 +111,6 @@ export const GEOGRAPHIC_REGION_FOLDERS = [
     id: 'australasian-oriental',
     folder: 'REGION Australasian Y Oriental',
     aliases: ['REGION Australasian Y Oriental'] as const,
-  },
-  {
-    id: 'neotropical',
-    folder: 'REGION Central South America Neotropical',
-    // Historial: doble espacio entre Central y South visto en sync previo.
-    aliases: [
-      'REGION Central South America Neotropical',
-      'REGION Central  South America Neotropical',
-    ] as const,
   },
   {
     id: 'holarctic-europe',
@@ -165,25 +166,21 @@ export const LEGACY_NO_CITES_ROOT = `${DEFAULT_ROOT}/SPECIMENES SECOS Y BIOLOGIC
  * Las 5 carpetas-categoría exactas bajo CADA REGION del rubro 1.
  * Mismo patrón en las 5 regiones; familias Butterflies (17) = foco Neotropical.
  */
+/**
+ * Las 5 categorías bajo cada REGION del rubro 1.
+ * Orden storefront / admin (principal primero):
+ *   1 Butterflies Diurne · 2 Butterflies/Moths Nocturne · 3 Beetles · 4 Insects · 5 Rare/Gynan
+ * `segment` = carpeta exacta Cloudinary (no renombrar sin sync).
+ */
 export const DRIED_SPECIMEN_CATEGORY_FOLDERS = [
   {
-    id: 'rare-gynan-aberrations',
-    segment: 'Rare -Gynan-Aberrations',
-    aliases: ["Rare -Gynan-Aberrations", "'Rare -Gynan-Aberrations'"] as const,
-  },
-  {
-    id: 'insects-arthropoda',
-    segment: 'Insects(arthropoda)',
-    aliases: ['Insects(arthropoda)', 'insects(arthropoda)'] as const,
-  },
-  {
-    id: 'beetles-coleoptera-insects',
-    segment: 'Beetles(Coleoptera) Insects',
-    aliases: ['Beetles(Coleoptera) Insects'] as const,
+    id: 'butterflies-lepidoptera-diurne',
+    segment: 'Butterflies(lepidoptera) Diurne',
+    aliases: ['Butterflies(lepidoptera) Diurne'] as const,
   },
   {
     id: 'moths-lepidoptera-nocturne',
-    // Cloudinary exacto: "Nocturne" (no "Nocturnas"). Display ES: ver MOTHS_DISPLAY_LABEL.
+    // Cloudinary exacto: "Moths(Lepidoptera) Nocturne". Display: Butterflies Nocturne.
     segment: 'Moths(Lepidoptera) Nocturne',
     aliases: [
       'Moths(Lepidoptera) Nocturne',
@@ -192,16 +189,25 @@ export const DRIED_SPECIMEN_CATEGORY_FOLDERS = [
     ] as const,
   },
   {
-    id: 'butterflies-lepidoptera-diurne',
-    segment: 'Butterflies(lepidoptera) Diurne',
-    aliases: ['Butterflies(lepidoptera) Diurne'] as const,
+    id: 'beetles-coleoptera-insects',
+    segment: 'Beetles(Coleoptera) Insects',
+    aliases: ['Beetles(Coleoptera) Insects'] as const,
+  },
+  {
+    id: 'insects-arthropoda',
+    segment: 'Insects(arthropoda)',
+    aliases: ['Insects(arthropoda)', 'insects(arthropoda)'] as const,
+  },
+  {
+    id: 'rare-gynan-aberrations',
+    segment: 'Rare -Gynan-Aberrations',
+    aliases: ["Rare -Gynan-Aberrations", "'Rare -Gynan-Aberrations'"] as const,
   },
 ] as const;
 
 /**
- * Categoría 1 (1-based) en DRIED_SPECIMEN_CATEGORY_FOLDERS — Rare -Gynan-Aberrations.
- * Avance usuario: 5ª categoría del rubro. Foco admin: _card + _video × 5 REGIONs.
- * Familias/subcarpetas: placeholder — esperar lista (no inventar).
+ * Categoría 5 (1-based) en DRIED_SPECIMEN_CATEGORY_FOLDERS — Rare / Gynan / Hybrid / Freak.
+ * Categoría + 4 hijos × 5 REGIONs · cada uno `_card` + `_video`.
  */
 export const RARE_GYNAN_CATEGORY =
   DRIED_SPECIMEN_CATEGORY_FOLDERS.find((c) => c.id === 'rare-gynan-aberrations')!;
@@ -209,8 +215,8 @@ export const RARE_GYNAN_CATEGORY =
 /** Carpeta Cloudinary exacta. */
 export const RARE_GYNAN_CATEGORY_SEGMENT = RARE_GYNAN_CATEGORY.segment;
 
-/** Label UI — coincide con carpeta Cloudinary. */
-export const RARE_GYNAN_DISPLAY_LABEL = 'Rare -Gynan-Aberrations';
+/** Label UI — Rare / Gynan / Hybrid / Freak. */
+export const RARE_GYNAN_DISPLAY_LABEL = 'Rare, Gynan, Hybrid, Freak';
 
 /** Rare-Gynan bajo Neotropical — foco primario _card/_video. */
 export const NEOTROPICAL_RARE_GYNAN_ROOT = `${DEFAULT_ROOT}/${RARE_GYNAN_CATEGORY_SEGMENT}`;
@@ -228,17 +234,17 @@ export const RARE_GYNAN_REGION_ROOTS = GEOGRAPHIC_REGION_FOLDERS.map((r) => ({
 
 /**
  * Subcarpetas bajo Rare -Gynan-Aberrations (nombres exactos usuario).
- * No reutilizar segmentos Diurne/Nocturne (categorías hermanas del rubro).
- * Beetles… Arthropoda (confirmado; no “Atropoda”).
- * Cada una: `_card` + `_video`. Path: `…/Rare -Gynan-Aberrations/{child}`.
+ * 4 nodos: Butterflies · Moths · Beetles · Insects — cada uno `_card` + `_video`.
+ * Path: `…/Rare -Gynan-Aberrations/{child}`.
  */
 export const EXPECTED_RARE_SUBFOLDERS = [
-  'Butterflies (Lepidoptera)',
-  'Moths (Lepidoptera)',
-  'Beetles (Coleoptera) Y Arthropoda Insects',
+  'Butterflies(Lepidoptera)',
+  'Moths(Lepidoptera)',
+  'Beetles(Coleoptera)',
+  'Insects(Arthropoda)',
 ] as const;
 
-/** Alias — mismos 3 nodos (compat. families API / UI). */
+/** Alias — mismos nodos (compat. families API / UI). */
 export const EXPECTED_SHARED_RARE_GYNAN_FAMILIES = EXPECTED_RARE_SUBFOLDERS;
 
 export const REGION_RARE_GYNAN_FAMILIES: Partial<
@@ -264,8 +270,8 @@ export function rareGynanFamiliesForRegion(
 }
 
 /**
- * Categoría 2 (1-based) en DRIED_SPECIMEN_CATEGORY_FOLDERS — Insects (Arthropoda).
- * Taxones: 10 compartidos. _card + _video × 5 REGIONs.
+ * Categoría 4 (1-based) en DRIED_SPECIMEN_CATEGORY_FOLDERS — Insects (Arthropoda).
+ * Taxones: 11 compartidos. _card + _video × 5 REGIONs.
  */
 export const INSECTS_CATEGORY =
   DRIED_SPECIMEN_CATEGORY_FOLDERS.find((c) => c.id === 'insects-arthropoda')!;
@@ -291,37 +297,37 @@ export const INSECTS_REGION_ROOTS = GEOGRAPHIC_REGION_FOLDERS.map((r) => ({
 }));
 
 /**
- * Familias/taxones Insects(arthropoda) — set compartido (XML parcial Jul 2026).
- * Orden usuario: 1 Arañas y otros · 2 Homoptera · Odonata · 5–11 Phasmidae…Escorpión.
- * Id XML 4 aún no enviado — no inventar. Cada carpeta: `_card` + `_video`.
- * Aplicado a las 5 REGIONs hasta diffs por región.
+ * Familias/taxones Insects(arthropoda) — set compartido × 5 REGIONs.
+ * Orden = lista usuario. Spelling: Phasmidae (no Fhasmidae).
+ * Cada carpeta: `_card` + `_video`.
  */
 export const EXPECTED_SHARED_INSECTS_FAMILIES = [
-  'Arañas y otros', // 1 · Arachnida y otros arácnidos
-  'Homoptera', // 2 · Insectos del orden Homoptera
-  'Odonata', // libélulas / caballitos del diablo (odonata)
-  // id 4 — pendiente (XML incompleto)
-  'Phasmidae', // 5 · Insectos palo y hoja (Phasmatodea)
-  'Phylliidae', // 6 · Insectos hoja
-  'Mantidae', // 7 · Mántidos / Mantis religiosas
-  'Orthoptera', // 8 · Saltamontes, grillos y afines
-  'Hemiptera', // 9 · Insectos hemípteros
-  'Hymenoptera', // 10 · Abejas, avispas y hormigas
-  'Escorpión', // 11 · Escorpiones y alacranes (Scorpiones)
+  'Spider (Anothers)',
+  'Homoptera(Cicadidae)',
+  'Phasmidae',
+  'Phylliidae',
+  'Mantidae',
+  'Orthoptera',
+  'Hemiptera',
+  'Hymenoptera',
+  'Scorpion',
+  'Odonata',
+  'Others(Families)',
 ] as const;
 
-/** Descripciones XML (display) — no son carpetas. */
+/** Descripciones display — no son carpetas. */
 export const INSECTS_FAMILY_DESCRIPTIONS: Partial<Record<string, string>> = {
-  'Arañas y otros': 'Arachnida y otros arácnidos',
-  Homoptera: 'Insectos del orden Homoptera',
-  Odonata: 'Libélulas y caballitos del diablo (Odonata)',
-  Phasmidae: 'Insectos palo y hoja (Phasmatodea)',
+  'Spider (Anothers)': 'Arañas y otros arácnidos',
+  'Homoptera(Cicadidae)': 'Homoptera · Cicadidae (cigarras)',
+  Phasmidae: 'Insectos palo (Phasmatodea)',
   Phylliidae: 'Insectos hoja',
   Mantidae: 'Mántidos / Mantis religiosas',
   Orthoptera: 'Saltamontes, grillos y afines',
   Hemiptera: 'Insectos hemípteros',
   Hymenoptera: 'Abejas, avispas y hormigas',
-  Escorpión: 'Escorpiones y alacranes (Scorpiones)',
+  Scorpion: 'Escorpiones y alacranes (Scorpiones)',
+  Odonata: 'Libélulas y caballitos del diablo',
+  'Others(Families)': 'Otras familias de Insectos / Arthropoda',
 };
 
 /** Alias por región → shared (override individual cuando llegue XML per-region). */
@@ -557,7 +563,7 @@ export const MOTHS_CATEGORY =
 export const MOTHS_CATEGORY_SEGMENT = MOTHS_CATEGORY.segment;
 
 /** Label UI / usuario — “Nocturnas”; path Cloudinary sigue siendo Nocturne. */
-export const MOTHS_DISPLAY_LABEL = 'Moths (Lepidoptera) Nocturnas';
+export const MOTHS_DISPLAY_LABEL = 'Butterflies Nocturne';
 
 /** Moths bajo Neotropical. */
 export const NEOTROPICAL_MOTHS_ROOT = `${DEFAULT_ROOT}/${MOTHS_CATEGORY_SEGMENT}`;
@@ -620,19 +626,18 @@ export function mothFamiliesForRegion(
 }
 
 /**
- * Índice 1-based en DRIED_SPECIMEN_CATEGORY_FOLDERS (Rare-Gynan = 1).
- * Avance usuario: 5ª categoría del rubro secos.
+ * Índice 1-based en DRIED_SPECIMEN_CATEGORY_FOLDERS (Rare/Gynan = 5º).
+ * Avance usuario: Rare, Gynan, Hybrid, Freak · 4 hijos + _card/_video.
  */
-export const CURRENT_CATEGORY_FOCUS_INDEX_1BASED = 1 as const;
+export const CURRENT_CATEGORY_FOCUS_INDEX_1BASED = 5 as const;
 
 /**
  * Foco admin actual: Rare -Gynan-Aberrations · × 5 REGIONs · _card/_video.
- * 3 subcarpetas (EXPECTED_RARE_SUBFOLDERS) ×5 · categoría + c/u → `_card`/`_video`.
- * Carpeta Cloudinary exacta: `Rare -Gynan-Aberrations`.
+ * 4 hijos (Butterflies / Moths / Beetles / Insects) · categoría + c/u → `_card`/`_video`.
  */
 export const CURRENT_CATEGORY_FOCUS = {
   index1Based: CURRENT_CATEGORY_FOCUS_INDEX_1BASED,
-  /** Avance de trabajo: 5ª categoría nombrada por el usuario. */
+  /** Avance de trabajo: 5ª categoría (Rare/Gynan). */
   userSequence: 5 as const,
   id: RARE_GYNAN_CATEGORY.id,
   segment: RARE_GYNAN_CATEGORY_SEGMENT,
@@ -735,7 +740,7 @@ export const EXPECTED_AUSTRALASIAN_BUTTERFLY_FAMILIES = [
 ] as const;
 
 /**
- * Familias bajo Butterflies(lepidoptera) Diurne — REGION 3 Neotropical.
+ * Familias bajo Butterflies(lepidoptera) Diurne — REGION 1 Neotropical (principal).
  * Nombres Cloudinary exactos (17 carpetas). Orden = lista usuario.
  * Hesperidae / Heliconidae / Ithomiidae = spelling Cloudinary (no ICZN).
  * Nymphalidae 1..6 = lotes distintos (no colapsar; no “Nymphaldiae”).

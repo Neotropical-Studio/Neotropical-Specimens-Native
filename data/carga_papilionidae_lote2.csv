@@ -1,0 +1,92 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+PA-100,Parides anchises drucei (Ecuador),null,Papilionidae,null,Parides,Lepidoptera,Ecuador,null,null,A1,M,5.00,6-7.0 cm
+PA-101,Parides anchises drucei (Ecuador),null,Papilionidae,null,Parides,Lepidoptera,Ecuador,null,null,A1/A1-,M,3.00,6-7.0 cm
+PA-102,Parides anchises koenigi,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,M,6.00,6.0 cm
+PA-103,Parides anchises koenigi,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,P,0.00,6-7.0 cm
+PA-104,Parides anchises koenigi,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,3M,15.00,6.0 cm
+PA-105,Parides anchises nephalion,null,Papilionidae,null,Parides,Lepidoptera,Brazil,null,null,A1,P,18.00,6-7.0 cm
+PA-106,Parides anchises nephalion,null,Papilionidae,null,Parides,Lepidoptera,Brazil,null,null,A1,M,8.00,6.0 cm
+PA-107,Parides anchises nephalion,null,Papilionidae,null,Parides,Lepidoptera,Brazil,null,null,A1/A1-,P,8.00,6-7.0 cm
+PA-108,Parides bunichus chamissionia,null,Papilionidae,null,Parides,Lepidoptera,Brazil,"Sao Bento do Sul, SC, Brazil",null,A1,P,75.00,6-7.0 cm
+PA-109,Parides bunichus chamissionia,null,Papilionidae,null,Parides,Lepidoptera,Brazil,"Sao Bento do Sul, SC, Brazil",null,A1,M,37.50,6-7.0 cm
+PA-110,Parides bunichus ssp?,null,Papilionidae,null,Parides,Lepidoptera,Brazil,"Sao Bento do Sul, SC, Brazil",null,A1,3M,105.00,6-7.0 cm
+PA-111,Parides chabrias,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,P,20.00,4-4.5 cm
+PA-112,Parides chabrias,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,F,8.00,4-5.0 cm
+PA-113,Parides cutorina,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,M,20.00,6-7.0 cm
+PA-114,Parides cutorina,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1/A1-,M,15.00,6.7 cm
+PA-115,Parides erlaces (=erathalion) lacydes/chinchipensis ?,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,M,5.00,6-7.0 cm
+PA-116,Parides erlaces (=erathalion) xanthias,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,P,18.00,6.0 cm
+PA-117,Parides erlaces (=erathalion) xanthias,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,M,5.00,6.0 cm
+PA-118,Parides erlaces (=erathalion) xanthias,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,3M,13.50,6.0 cm
+PA-119,Parides erlaces (=erathalion) xanthias,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1/A1-,F,9.00,6-7.0 cm
+PA-120,Parides erlaces (=erathalion) xanthias,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,F,15.00,6-7.0 cm
+PA-121,Parides eurimedes mylotes (=arcas mylotes),null,Papilionidae,null,Parides,Lepidoptera,Honduras,null,null,A1/A1-,M,2.00,6-7.0 cm
+PA-122,Parides iphadamas calogyna,null,Papilionidae,null,Parides,Lepidoptera,Ecuador,null,null,A1,P,13.50,6-7.0 cm
+PA-123,Parides iphadamas calogyna,null,Papilionidae,null,Parides,Lepidoptera,Ecuador,null,null,A1/A1-,P,9.00,6-7.0 cm
+PA-124,Parides iphadamas calogyna,null,Papilionidae,null,Parides,Lepidoptera,Ecuador,null,null,A1,M,7.00,6-7.0 cm
+PA-125,Parides iphadamas iphadamas,null,Papilionidae,null,Parides,Lepidoptera,Costa Rica,null,null,A1/A1-,P,50.00,7-8.0 cm
+PA-126,Parides lysander brissonius,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,P,15.00,9-10 cm
+PA-127,Parides lysander brissonius,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1/A1-,M,4.50,8.0 cm
+PA-128,Parides neophilus anaximenes,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Tingo Maria, Peru",null,A1,M,12.00,5-6.0 cm
+PA-129,Parides neophilus anaximenes,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Tingo Maria, Peru",null,A1,P,20.00,5-6.0 cm
+PA-130,Parides neophilus ssp?,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,3P,18.00,5-6.0 cm
+PA-131,Parides neophilus ssp?,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,P,7.00,5-6.0 cm
+PA-132,Parides neophilus ssp?,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,F,6.00,5-6.0 cm
+PA-133,Parides phalaceus nieva,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,P,90.00,9.0 cm
+PA-134,Parides phalaceus nieva,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,M,35.00,9.0 cm
+PA-135,Parides pizzaro,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,P,12.00,6.0 cm
+PA-136,Parides pizzaro,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,"A1 (1M, 2F)",TRIO,15.00,6.0 cm
+PA-137,Parides pizzaro,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,F,5.00,6-6.5 cm
+PA-138,Parides pizzaro,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,2P,21.00,6-6.5 cm
+PA-139,Parides sesostris,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,M,4.00,6.5 cm
+PA-140,Parides sesostris,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1/A1-,F,6.00,7-8.0 cm
+PA-141,Parides sesostris,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,5M,17.50,6.5 cm
+PA-142,Parides sesostris (Ecuador),null,Papilionidae,null,Parides,Lepidoptera,Ecuador,null,null,A1,M,3.50,6.5 cm
+PA-143,Parides vertumnus astorius,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Upper huallaga Valley, Peru",null,A1,M,4.50,7.0 cm
+PA-144,Parides vertumnus astorius,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Upper huallaga Valley, Peru",null,A1,P,20.00,7.0 cm
+PA-145,Parides vertumnus astorius,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Upper Huallaga Valley, Peru",null,A1,F,5.00,8.0 cm
+PA-146,Parides vertumnus astorius,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Upper huallaga Valley, Peru",null,A1,3M,12.75,7.0 cm
+PA-147,Parides vertumnus astorius,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Upper huallaga Valley, Peru",null,A1/A1-,M,4.00,7.0 cm
+PA-148,Parides vertumnus autumnus?,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Satipo, Peru",null,A1,P,15.00,7.0 cm
+PA-149,Parides vertumnus bogatanus,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Picuroyaca, Amazonas River, Loreto, Peru.",null,A1,P,15.00,7.0 cm
+PA-150,Parides vertumnus bogatanus,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Picuroyaca, Amazonas River, Loreto, Peru.",null,A1/A1-,F,7.00,7.0 cm
+PA-151,Parides vertumnus bogatanus,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Picuroyaca, Amazonas River, Loreto, Peru.",null,A1,F,12.00,7.0 cm
+PA-152,Parides vertumnus bogatanus (Ecuador),null,Papilionidae,null,Parides,Lepidoptera,Ecuador,null,null,A1,M,3.50,6-7.0 cm
+PA-153,Protesilaus (Eurytides) protesilaus archesilaus,null,Papilionidae,null,Protesilaus (Eurytides),Lepidoptera,Peru,null,null,A1,M,3.25,7.0 cm
+PA-154,Protesilaus (Eurytides) protesilaus archesilaus,null,Papilionidae,null,Protesilaus (Eurytides),Lepidoptera,Peru,null,null,A1,3M,9.00,7.0 cm
+PA-155,Protesilaus (Eurytides) protesilaus archesilaus ??,null,Papilionidae,null,Protesilaus (Eurytides),Lepidoptera,Ecuador,null,null,A1,M,4.00,7.0 cm
+PA-156,Protesilaus (Eurytides) protesilaus nigricornis (Brazil),null,Papilionidae,null,Protesilaus (Eurytides),Lepidoptera,Brazil,null,null,A1,M,6.00,7.0 cm
+PA-157,Pterourus (Papilio) ascolius ascolius,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Colombia,null,null,A1,M,150.00,10.0 cm
+PA-158,Pterourus (Papilio) ascolius rosenbergi,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Ecuador,null,null,A1,M,200.00,9-10.0 cm
+PA-159,Pterourus (Papilio) bachus chrysomelus,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1,M,20.00,10.0 cm
+PA-160,Pterourus (Papilio) bachus chrysomelus,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1,2M,35.00,10.0 cm
+PA-161,Pterourus (Papilio) bachus chrysomelus,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1/A1-,M,10.00,10.0 cm
+PA-162,Pterourus (Papilio) birchalli birchalli,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Ecuador,null,null,A1/A1-,M,30.00,9.0 cm
+PA-163,Pterourus (Papilio) cacicus inca,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Region of Tingo Maria, Peru",null,A1,M,55.00,8.0 cm
+PA-164,Pterourus (Papilio) cacicus mendozaensis,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Dept San Martin, Peru",null,A1,M,60.00,8.0 cm
+PA-165,Pterourus (Papilio) cacicus mendozaensis,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1/A1-,M,40.00,8.0 cm
+PA-166,Pterourus (Papilio) euterpinus,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Dept San Martin, Peru",null,A1,3M,12.00,7.0 cm
+PA-167,Pterourus (Papilio) menatius bitias (=aristeus bitias),null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1,M,5.00,9.0 cm
+PA-168,Pterourus (Papilio) menatius bitias (=aristeus bitias),null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1,3M,14.25,9.0 cm
+PA-169,Pterourus (Papilio) menatius bitias (=aristeus bitias),null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1,F,35.00,10.0 cm
+PA-170,Pterourus (Papilio) menatius bitias (=aristeus bitias),null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1/A1-,F,25.00,10.0 cm
+PA-171,Pterourus (Papilio) menatius bitias (=aristeus bitias),null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1-,F,15.00,10.0 cm
+PA-172,Pterourus (Papilio) menatius coelebs,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1,M,25.00,9.0 cm
+PA-173,Pterourus (Papilio) warscewiczi jelskii,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,M,12.00,8.0 cm
+PA-174,Pterourus (Papilio) warscewiczi jelskii,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1/A1-,M,8.00,8.0 cm
+PA-175,Pterourus (Papilio) warscewiczi mercedes,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Huanaco, Peru",null,A1,M,12.00,8.0 cm
+PA-176,Pterourus (Papilio) warscewiczi mercedes,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Huanaco, Peru",null,A1,3M,30.00,8.0 cm
+PA-177,Pterourus (Papilio) warscewiczi mercedes,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Huanaco, Peru",null,A1/A1-,M,8.00,8.0 cm
+PA-178,Pterourus (Papilio) warscewiczi mercedes,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Huanaco, Peru",null,A1-,M,4.00,8.0 cm
+PA-179,Pterourus (Papilio) zagreus batesi,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Iquitos/Loreto region, Peru",null,A1,M,25.00,8.0 cm
+PA-180,Pterourus (Papilio) zagreus batesi,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Iquitos/Loreto region, Peru",null,A1/A1-++,M,18.50,8.0 cm
+PA-181,Pterourus (Papilio) zagreus batesi,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Iquitos/Loreto region, Peru",null,A1,F,225.00,8-9.0 cm
+PA-182,Pterourus (Papilio) zagreus batesi,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Iquitos Region, Peru",null,A1/A1-,F,175.00,8-9.0 cm
+PA-183,Pterourus (Papilio) zagreus chrysoxanthus,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1,M,14.00,8.0 cm
+PA-184,Pterourus (Papilio) zagreus chrysoxanthus,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1,3M,36.00,8.0 cm
+PA-185,Pterourus (Papilio) zagreus chrysoxanthus,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,"Tingo Maria, Peru",null,A1,F,150.00,10-11.0 cm
+PA-186,Pterourus (Papilio) zagreus chrysoxanthus,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1/A1- O,M,10.00,8-9.0 cm
+PA-187,Pterourus (Papilio) zagreus chrysoxanthus,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Peru,null,null,A1-,M,4.00,8-9.0 cm
+PA-188,Pterourus (Papilio) zagreus ssp shuar??,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Ecuador,"Esmeralda, Ecuador",null,A1,M,22.00,10-11.0 cm
+PA-189,Pterourus (Papilio) zagreus ssp shuar??,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Ecuador,"Esmeralda, Ecuador",null,A1/A1-,M,15.00,10-11.0 cm
+PA-190,Pterourus (Papilio) zagreus ssp shuar??,null,Papilionidae,null,Pterourus (Papilio),Lepidoptera,Ecuador,"Esmeralda, Ecuador",null,A2,M,5.00,10-11.0 cm

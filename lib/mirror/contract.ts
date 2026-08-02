@@ -409,6 +409,8 @@ export function isForbiddenCatalogueWriteTarget(folderOrPublicId: string): boole
   const raw = folderOrPublicId.replace(/^\/+|\/+$/g, '');
   if (!raw) return true;
   if (isAllowedOperationalFolder(raw)) return false;
+  // Cards/videos de nodo (rubro/región/categoría/familia) — escritura allowlist.
+  if (isAllowedNodeMediaUploadFolder(raw)) return false;
   if (raw.includes('_PENDING')) return true;
   if (/^CATALOGUE/i.test(raw)) return true;
   if (/^especimenes-secos(\/|$)/i.test(raw)) return true;
@@ -416,7 +418,7 @@ export function isForbiddenCatalogueWriteTarget(folderOrPublicId: string): boole
   if (/^plantas(\/|$)/i.test(raw)) return true;
   // Escritura a raíz (sin /) = prohibida para catálogo
   if (!raw.includes('/')) return true;
-  // RUBROS fuera de REGION canónica
+  // RUBROS fuera de REGION canónica (salvo node media ya permitido arriba)
   if (/^RUBROS\//i.test(raw) && !isCanonicalCataloguePublicId(raw)) return true;
   return false;
 }
@@ -448,10 +450,47 @@ export type NodeMediaUploadTarget = {
   nodePath: string;
   cardFolder: string;
   videoFolder: string;
+  /** Región geográfica (para filtrar categoría/familia). */
+  regionId?: string;
+  /** Id de categoría (CAT1…CAT5). */
+  categoryId?: string;
+  /** 1-based: CAT1…CAT5. */
+  categoryIndex?: number;
+  /** Nombre de familia / taxón. */
+  familyName?: string;
 };
 
-/** Targets fijos para subir card/video desde el admin (allowlist). */
-export function listNodeMediaUploadTargets(): NodeMediaUploadTarget[] {
+/** Familia editable: label = nombre web; folder = carpeta Cloudinary (estable). */
+export type FamilyOverrideEntry = { label: string; folder: string };
+
+function normalizeFamilyEntries(
+  raw: readonly (string | FamilyOverrideEntry)[],
+): FamilyOverrideEntry[] {
+  return raw.map((e) =>
+    typeof e === 'string'
+      ? { label: e, folder: e }
+      : { label: e.label, folder: (e.folder ?? '').trim() || e.label },
+  );
+}
+
+/** Targets fijos para subir card/video desde el admin (allowlist).
+ * @param familyOverrides clave `${regionId}|${categoryId}` → labels/folders (meta/DB).
+ */
+export function listNodeMediaUploadTargets(
+  familyOverrides?: ReadonlyMap<
+    string,
+    readonly (string | FamilyOverrideEntry)[]
+  >,
+): NodeMediaUploadTarget[] {
+  const fam = (
+    regionId: string,
+    categoryId: string,
+    fallback: readonly string[],
+  ): FamilyOverrideEntry[] =>
+    normalizeFamilyEntries(
+      familyOverrides?.get(`${regionId}|${categoryId}`) ?? fallback,
+    );
+
   const out: NodeMediaUploadTarget[] = [];
 
   for (const r of RUBROS_CHILD_FOLDERS) {
@@ -474,23 +513,29 @@ export function listNodeMediaUploadTargets(): NodeMediaUploadTarget[] {
       nodePath: reg.path,
       cardFolder: nodeCardFolder(reg.path),
       videoFolder: nodeVideoFolder(reg.path),
+      regionId: reg.id,
     });
   }
 
   // Categorías bajo las 5 REGIONs del rubro 1 (mismo patrón).
+  // CAT1…CAT5 = orden de DRIED_SPECIMEN_CATEGORY_FOLDERS.
   for (const reg of DRIED_SPECIMEN_REGION_ROOTS) {
-    for (const c of DRIED_SPECIMEN_CATEGORY_FOLDERS) {
+    DRIED_SPECIMEN_CATEGORY_FOLDERS.forEach((c, idx) => {
       const nodePath = `${reg.path}/${c.segment}`;
       const shortRegion = reg.folder.replace(/^REGION\s+/, '');
+      const catNum = idx + 1;
       out.push({
         id: `categoria:${reg.id}:${c.id}`,
-        label: `${shortRegion} · ${c.segment}`,
+        label: `CAT${catNum} · ${shortRegion} · ${c.segment}`,
         level: 'categoria',
         nodePath,
         cardFolder: nodeCardFolder(nodePath),
         videoFolder: nodeVideoFolder(nodePath),
+        regionId: reg.id,
+        categoryId: c.id,
+        categoryIndex: catNum,
       });
-    }
+    });
   }
 
   // Cada familia/taxón → `_card` + `_video` (mismo patrón en todas las regiones).
@@ -498,70 +543,102 @@ export function listNodeMediaUploadTargets(): NodeMediaUploadTarget[] {
     regionId: string;
     labelPrefix: string;
     butterfliesRoot: string;
-    families: readonly string[];
+    families: readonly FamilyOverrideEntry[];
   }> = [
+    {
+      regionId: 'neotropical',
+      labelPrefix: 'Neotropical',
+      butterfliesRoot: MIRROR_CANONICAL_BUTTERFLIES_PATH,
+      families: fam(
+        'neotropical',
+        'butterflies-lepidoptera-diurne',
+        EXPECTED_NEOTROPICAL_BUTTERFLY_FAMILIES,
+      ),
+    },
     {
       regionId: 'afrotropical',
       labelPrefix: 'Africa',
       butterfliesRoot: AFRICA_BUTTERFLIES_ROOT,
-      families: EXPECTED_AFRICA_BUTTERFLY_FAMILIES,
+      families: fam(
+        'afrotropical',
+        'butterflies-lepidoptera-diurne',
+        EXPECTED_AFRICA_BUTTERFLY_FAMILIES,
+      ),
     },
     {
       regionId: 'australasian-oriental',
       labelPrefix: 'Australasian',
       butterfliesRoot: AUSTRALASIAN_BUTTERFLIES_ROOT,
-      families: EXPECTED_AUSTRALASIAN_BUTTERFLY_FAMILIES,
-    },
-    {
-      regionId: 'neotropical',
-      labelPrefix: 'Neotropical',
-      butterfliesRoot: MIRROR_CANONICAL_BUTTERFLIES_PATH,
-      families: EXPECTED_NEOTROPICAL_BUTTERFLY_FAMILIES,
+      families: fam(
+        'australasian-oriental',
+        'butterflies-lepidoptera-diurne',
+        EXPECTED_AUSTRALASIAN_BUTTERFLY_FAMILIES,
+      ),
     },
     {
       regionId: 'holarctic-europe',
       labelPrefix: 'Europe',
       butterfliesRoot: EUROPE_BUTTERFLIES_ROOT,
-      families: EXPECTED_EUROPE_BUTTERFLY_FAMILIES,
+      families: fam(
+        'holarctic-europe',
+        'butterflies-lepidoptera-diurne',
+        EXPECTED_EUROPE_BUTTERFLY_FAMILIES,
+      ),
     },
     {
       regionId: 'nearctic',
       labelPrefix: 'Nearctic',
       butterfliesRoot: NEARCTIC_BUTTERFLIES_ROOT,
-      families: EXPECTED_NEARCTIC_BUTTERFLY_FAMILIES,
+      families: fam(
+        'nearctic',
+        'butterflies-lepidoptera-diurne',
+        EXPECTED_NEARCTIC_BUTTERFLY_FAMILIES,
+      ),
     },
   ];
 
   for (const batch of familyBatches) {
-    for (const fam of batch.families) {
-      const nodePath = `${batch.butterfliesRoot}/${fam}`;
-      const slug = fam.toLowerCase().replace(/\s+/g, '-');
+    for (const entry of batch.families) {
+      const nodePath = `${batch.butterfliesRoot}/${entry.folder}`;
+      const slug = entry.folder.toLowerCase().replace(/\s+/g, '-');
       out.push({
         id: `familia:${batch.regionId}:${slug}`,
-        label: `${batch.labelPrefix} · ${fam}`,
+        label: `${batch.labelPrefix} · ${entry.label}`,
         level: 'familia',
         nodePath,
         cardFolder: nodeCardFolder(nodePath),
         videoFolder: nodeVideoFolder(nodePath),
+        regionId: batch.regionId,
+        categoryId: 'butterflies-lepidoptera-diurne',
+        categoryIndex: 1,
+        familyName: entry.label,
       });
     }
   }
 
   // Moths(Lepidoptera) Nocturne · Neotropical — 14 familias (_card/_video).
-  for (const fam of EXPECTED_NEOTROPICAL_MOTHS_FAMILIES) {
-    const nodePath = `${NEOTROPICAL_MOTHS_ROOT}/${fam}`;
-    const slug = fam.toLowerCase().replace(/\s+/g, '-');
+  for (const entry of fam(
+    'neotropical',
+    'moths-lepidoptera-nocturne',
+    EXPECTED_NEOTROPICAL_MOTHS_FAMILIES,
+  )) {
+    const nodePath = `${NEOTROPICAL_MOTHS_ROOT}/${entry.folder}`;
+    const slug = entry.folder.toLowerCase().replace(/\s+/g, '-');
     out.push({
       id: `familia:neotropical:moths:${slug}`,
-      label: `Neotropical · Moths · ${fam}`,
+      label: `Neotropical · Moths · ${entry.label}`,
       level: 'familia',
       nodePath,
       cardFolder: nodeCardFolder(nodePath),
       videoFolder: nodeVideoFolder(nodePath),
+      regionId: 'neotropical',
+      categoryId: 'moths-lepidoptera-nocturne',
+      categoryIndex: 2,
+      familyName: entry.label,
     });
   }
 
-  // Insects(arthropoda) · 5 REGIONs × 10 taxones compartidos (_card/_video c/u).
+  // Insects(arthropoda) · 5 REGIONs × 11 taxones compartidos (_card/_video c/u).
   // Categoría Insects ya cubierta arriba (loop DRIED_SPECIMEN_CATEGORY_FOLDERS).
   const insectRegionLabels: Record<string, string> = {
     afrotropical: 'Africa · Insects',
@@ -571,16 +648,24 @@ export function listNodeMediaUploadTargets(): NodeMediaUploadTarget[] {
     nearctic: 'Nearctic · Insects',
   };
   for (const reg of INSECTS_REGION_ROOTS) {
-    for (const fam of EXPECTED_SHARED_INSECTS_FAMILIES) {
-      const nodePath = `${reg.nodePath}/${fam}`;
-      const slug = fam.toLowerCase().replace(/\s+/g, '-');
+    for (const entry of fam(
+      reg.id,
+      'insects-arthropoda',
+      EXPECTED_SHARED_INSECTS_FAMILIES,
+    )) {
+      const nodePath = `${reg.nodePath}/${entry.folder}`;
+      const slug = entry.folder.toLowerCase().replace(/\s+/g, '-');
       out.push({
         id: `familia:${reg.id}:insects:${slug}`,
-        label: `${insectRegionLabels[reg.id] ?? 'Insects'} · ${fam}`,
+        label: `${insectRegionLabels[reg.id] ?? 'Insects'} · ${entry.label}`,
         level: 'familia',
         nodePath,
         cardFolder: nodeCardFolder(nodePath),
         videoFolder: nodeVideoFolder(nodePath),
+        regionId: reg.id,
+        categoryId: 'insects-arthropoda',
+        categoryIndex: 4,
+        familyName: entry.label,
       });
     }
   }
@@ -590,51 +675,75 @@ export function listNodeMediaUploadTargets(): NodeMediaUploadTarget[] {
     regionId: string;
     labelPrefix: string;
     beetlesRoot: string;
-    families: readonly string[];
+    families: readonly FamilyOverrideEntry[];
   }> = [
+    {
+      regionId: 'neotropical',
+      labelPrefix: 'Neotropical · Beetles',
+      beetlesRoot: NEOTROPICAL_BEETLES_ROOT,
+      families: fam(
+        'neotropical',
+        'beetles-coleoptera-insects',
+        EXPECTED_NEOTROPICAL_BEETLES_FAMILIES,
+      ),
+    },
     {
       regionId: 'afrotropical',
       labelPrefix: 'Africa · Beetles',
       beetlesRoot: AFRICA_BEETLES_ROOT,
-      families: EXPECTED_AFRICA_BEETLES_FAMILIES,
+      families: fam(
+        'afrotropical',
+        'beetles-coleoptera-insects',
+        EXPECTED_AFRICA_BEETLES_FAMILIES,
+      ),
     },
     {
       regionId: 'australasian-oriental',
       labelPrefix: 'Australasian · Beetles',
       beetlesRoot: AUSTRALASIAN_BEETLES_ROOT,
-      families: EXPECTED_AUSTRALASIAN_BEETLES_FAMILIES,
-    },
-    {
-      regionId: 'neotropical',
-      labelPrefix: 'Neotropical · Beetles',
-      beetlesRoot: NEOTROPICAL_BEETLES_ROOT,
-      families: EXPECTED_NEOTROPICAL_BEETLES_FAMILIES,
+      families: fam(
+        'australasian-oriental',
+        'beetles-coleoptera-insects',
+        EXPECTED_AUSTRALASIAN_BEETLES_FAMILIES,
+      ),
     },
     {
       regionId: 'holarctic-europe',
       labelPrefix: 'Europe · Beetles',
       beetlesRoot: EUROPE_BEETLES_ROOT,
-      families: EXPECTED_EUROPE_BEETLES_FAMILIES,
+      families: fam(
+        'holarctic-europe',
+        'beetles-coleoptera-insects',
+        EXPECTED_EUROPE_BEETLES_FAMILIES,
+      ),
     },
     {
       regionId: 'nearctic',
       labelPrefix: 'Nearctic · Beetles',
       beetlesRoot: NEARCTIC_BEETLES_ROOT,
-      families: EXPECTED_NEARCTIC_BEETLES_FAMILIES,
+      families: fam(
+        'nearctic',
+        'beetles-coleoptera-insects',
+        EXPECTED_NEARCTIC_BEETLES_FAMILIES,
+      ),
     },
   ];
 
   for (const batch of beetleBatches) {
-    for (const fam of batch.families) {
-      const nodePath = `${batch.beetlesRoot}/${fam}`;
-      const slug = fam.toLowerCase().replace(/\s+/g, '-');
+    for (const entry of batch.families) {
+      const nodePath = `${batch.beetlesRoot}/${entry.folder}`;
+      const slug = entry.folder.toLowerCase().replace(/\s+/g, '-');
       out.push({
         id: `familia:${batch.regionId}:beetles:${slug}`,
-        label: `${batch.labelPrefix} · ${fam}`,
+        label: `${batch.labelPrefix} · ${entry.label}`,
         level: 'familia',
         nodePath,
         cardFolder: nodeCardFolder(nodePath),
         videoFolder: nodeVideoFolder(nodePath),
+        regionId: batch.regionId,
+        categoryId: 'beetles-coleoptera-insects',
+        categoryIndex: 3,
+        familyName: entry.label,
       });
     }
   }
@@ -648,16 +757,20 @@ export function listNodeMediaUploadTargets(): NodeMediaUploadTarget[] {
     nearctic: 'Nearctic · Rare',
   };
   for (const reg of RARE_GYNAN_REGION_ROOTS) {
-    for (const child of EXPECTED_RARE_SUBFOLDERS) {
-      const nodePath = `${reg.nodePath}/${child}`;
-      const slug = child.toLowerCase().replace(/\s+/g, '-');
+    for (const entry of fam(reg.id, 'rare-gynan-aberrations', EXPECTED_RARE_SUBFOLDERS)) {
+      const nodePath = `${reg.nodePath}/${entry.folder}`;
+      const slug = entry.folder.toLowerCase().replace(/\s+/g, '-');
       out.push({
         id: `familia:${reg.id}:rare:${slug}`,
-        label: `${rareRegionLabels[reg.id] ?? 'Rare'} · ${child}`,
+        label: `${rareRegionLabels[reg.id] ?? 'Rare'} · ${entry.label}`,
         level: 'familia',
         nodePath,
         cardFolder: nodeCardFolder(nodePath),
         videoFolder: nodeVideoFolder(nodePath),
+        regionId: reg.id,
+        categoryId: 'rare-gynan-aberrations',
+        categoryIndex: 5,
+        familyName: entry.label,
       });
     }
   }
@@ -672,6 +785,22 @@ export function findNodeMediaUploadTarget(id: string): NodeMediaUploadTarget | n
 /**
  * Upload de card/video de nodo: solo `_card` / `_video` bajo un target allowlist.
  */
+export function isAllowedNodeMediaUploadFolder(folder: string): boolean {
+  const f = folder.replace(/^\/+|\/+$/g, '');
+  if (!f) return false;
+  const last = f.split('/').pop() ?? '';
+  if (!isNodeMediaFolderName(last)) return false;
+  if (f.includes('_PENDING') || /^CATALOGUE/i.test(f) || /^especimenes-secos/i.test(f)) {
+    return false;
+  }
+  return listNodeMediaUploadTargets().some(
+    (t) => t.cardFolder === f || t.videoFolder === f,
+  );
+}
+
+/**
+ * Upload de card/video de nodo: solo `_card` / `_video` bajo un target allowlist.
+ */
 export function assertNodeMediaSlotFolder(folder: string, slot: 'card' | 'video'): void {
   const f = folder.replace(/^\/+|\/+$/g, '');
   const expectedSeg = slot === 'card' ? NODE_MEDIA_SLOT.card : NODE_MEDIA_SLOT.video;
@@ -680,13 +809,7 @@ export function assertNodeMediaSlotFolder(folder: string, slot: 'card' | 'video'
       `Upload bloqueado: la carpeta debe terminar en «/${expectedSeg}». Recibido: «${f}».`,
     );
   }
-  if (f.includes('_PENDING') || /^CATALOGUE/i.test(f) || /^especimenes-secos/i.test(f)) {
-    throw new Error('Upload bloqueado: carpeta prohibida (_PENDING / CATALOGUE / especimenes-secos).');
-  }
-  const allowed = listNodeMediaUploadTargets().some(
-    (t) => (slot === 'card' ? t.cardFolder : t.videoFolder) === f,
-  );
-  if (!allowed) {
+  if (!isAllowedNodeMediaUploadFolder(f)) {
     throw new Error(
       `Upload bloqueado: «${f}» no está en la lista de nodos canónicos (rubro/región/categoría/familia).`,
     );
@@ -699,6 +822,7 @@ export function assertNodeMediaSlotFolder(folder: string, slot: 'card' | 'video'
 export function assertAllowedOperationalFolder(folder: string): void {
   const f = folder.replace(/^\/+|\/+$/g, '');
   if (isAllowedOperationalFolder(f)) return;
+  if (isAllowedNodeMediaUploadFolder(f)) return;
   if (isCanonicalCataloguePublicId(f)) return; // OK si alguien sube doc al árbol correcto
   if (isForbiddenCatalogueWriteTarget(f)) {
     throw new Error(

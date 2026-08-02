@@ -281,7 +281,7 @@ export async function createSpecimenAction(
   if (result.error || !result.id) return { error: result.error ?? 'No se pudo crear' };
 
   revalidatePath('/admin/especimenes');
-  redirect(`/admin/especimenes/${result.id}`);
+  redirect(`/admin/especimenes/${result.id}?grabado=1`);
 }
 
 export async function updateSpecimenAction(
@@ -307,5 +307,5 @@ export async function updateSpecimenAction(
 
   revalidatePath('/admin/especimenes');
   revalidatePath(`/admin/especimenes/${specimenId}`);
-  redirect(`/admin/especimenes/${specimenId}`);
+  redirect(`/admin/especimenes/${specimenId}?grabado=1`);
 }

@@ -1,7 +1,9 @@
 'use client';
 
-import { useActionState, useMemo, useState, useTransition } from 'react';
+import { useActionState, useEffect, useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { CheckCircle2, Save } from 'lucide-react';
 import FormField, { inputClass, buttonPrimaryClass, buttonSecondaryClass } from '@/components/admin/FormField';
 import TaxonAutocomplete, { type TaxonPick } from './TaxonAutocomplete';
 import MediaSlot from '../multimedia/MediaSlot';
@@ -125,6 +127,17 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
     ? updateSpecimenAction.bind(null, specimen!.id)
     : createSpecimenAction;
   const [state, formAction, pending] = useActionState(action, initialState);
+  const router = useRouter();
+  const [justSaved, setJustSaved] = useState(false);
+
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get('grabado') !== '1') return;
+    setJustSaved(true);
+    sp.delete('grabado');
+    const q = sp.toString();
+    router.replace(`${window.location.pathname}${q ? `?${q}` : ''}`, { scroll: false });
+  }, [router]);
 
   const getRegionValue = (region?: Option | null) => region?.region_name ?? region?.name ?? '';
   const defaultRegionCode =
@@ -227,7 +240,23 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
   const err = (name: string) => state.fieldErrors?.[name];
 
   return (
-    <form action={formAction} className="flex max-w-3xl flex-col gap-8">
+    <form action={formAction} className="relative flex max-w-3xl flex-col gap-8 pb-24">
+      {justSaved && (
+        <div className="rounded-md border border-emerald-700 bg-emerald-950/50 p-3 text-sm text-emerald-200">
+          <p className="flex items-center gap-2 font-semibold">
+            <CheckCircle2 size={16} /> GRABADO — especie / subespecie guardada
+          </p>
+          <p className="mt-1 text-xs text-emerald-300/90">
+            {specimen?.species_name || scientificName || 'Ficha'} ·{' '}
+            {especie.value || '—'}
+            {subespecie ? ` · ssp. ${subespecie}` : ''} ·{' '}
+            {new Date().toLocaleString('es-PE', { hour12: false })}
+          </p>
+          <p className="mt-1 text-[11px] text-emerald-400/80">
+            Ya está en la base. Revisá el website (hard refresh) si corresponde al catálogo público.
+          </p>
+        </div>
+      )}
       {state.error && (
         <div className="rounded-md border border-red-800 bg-red-950/60 p-3 text-sm text-red-200">
           {state.error}
@@ -826,9 +855,24 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
         )}
       </fieldset>
 
-      <button type="submit" disabled={pending} className={`${buttonPrimaryClass} w-fit`}>
-        {pending ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Crear espécimen'}
-      </button>
+      <div className="sticky bottom-0 z-20 -mx-1 border-t border-emerald-900/60 bg-neutral-950/95 px-1 py-3 backdrop-blur">
+        <button
+          type="submit"
+          disabled={pending}
+          className={`${buttonPrimaryClass} inline-flex w-full items-center justify-center gap-2 sm:w-fit`}
+        >
+          <Save size={16} />
+          {pending
+            ? 'Grabando…'
+            : isEdit
+              ? 'GRABAR especie / subespecie'
+              : 'GRABAR nueva ficha'}
+        </button>
+        <p className="mt-1.5 text-[10px] text-neutral-500">
+          Guardá taxonomía (orden → familia → especie → subespecie) antes de subir fotos del
+          ejemplar.
+        </p>
+      </div>
     </form>
   );
 }

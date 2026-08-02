@@ -695,71 +695,96 @@ def resolve_taxonomy_row(sb: Client, r: SpecimenRow, species_id: str) -> str:
 
 def resolve_specimen(sb: Client, r: SpecimenRow, taxonomy_id: str, region_id: str) -> str:
     """
-    Deduplicación por `code` (BR-001 etc.) vía metadata JSONB.
-    Si ya existe un espécimen con ese code, retorna su ID sin duplicar.
-    families y specimens están vinculados por IDs (taxonomy_id, region_id),
-    NUNCA por texto — cambiar un nombre de familia no rompe ninguna relación.
+    Inserta en esquema LIVE (columnas planas). Dedup por specimen_code.
+    No usa specimens.metadata (columna ausente en producción actual).
     """
-    metadata: dict = {
-        "code":             r.code,
-        "calidad":          r.calidad_raw,
-        "calidad_db":       r.calidad_db,
-        "out_of_stock":     r.out_of_stock,
-        "sexo":             f"{r.cantidad}{r.sex_code}" if r.cantidad > 1 else r.sex_code,
-        "precio":           r.precio,
-        "nombre_comun":     r.nombre_comun,
-        "compliance_status": r.compliance_status,
-        "source":           "csv_ingesta",
-    }
-    # Localidad: columna localidad_especifica tiene prioridad;
-    # si el campo gps contenía texto (no coordenadas), se usa como fallback.
+    sexo_val = f"{r.cantidad}{r.sex_code}" if r.cantidad > 1 else r.sex_code
     localidad = r.localidad_especifica or r.localidad_gps_text
-    if localidad:
-        metadata["localidad"] = localidad
-    if r.lat is not None:
-        metadata["lat"] = r.lat
-        metadata["lon"] = r.lon
-    # Preservar el nombre original si tenía notas entre paréntesis o fue corregido
-    if r.nombre_cientifico_raw != r.nombre_cientifico:
-        metadata["nombre_cientifico_original"] = r.nombre_cientifico_raw
-    # Forma/híbrido: "f. microfluens", "hybrid f. simplex", "Form #7" → metadata
-    if r.form_note:
-        metadata["form_note"] = r.form_note
-    if r.size_range:
-        metadata["size_range"] = r.size_range
-    if r.phenotype_tag:
-        metadata["phenotype_tag"] = r.phenotype_tag
-    if r.descripcion:
-        metadata["descripcion"] = r.descripcion
+    gps = f"{r.lat} {r.lon}" if r.lat is not None and r.lon is not None else None
+    status = "OUT_OF_STOCK" if r.out_of_stock else "IN_STOCK"
+    stock = 0 if r.out_of_stock else max(1, r.cantidad)
 
-    # ── Si el code ya está en la BD, no duplicar ──────────────────────────
+    # ── Dedup por código (columna plana) ──────────────────────────────────
     if r.code:
         time.sleep(_RL)
-        existing = (
-            sb.table("specimens")
-            .select("id")
-            .eq("metadata->>code", r.code)
-            .limit(1)
-            .execute()
-        )
-        if existing.data:
-            return str(existing.data[0]["id"])
+        try:
+            existing = (
+                sb.table("specimens")
+                .select("id")
+                .eq("specimen_code", r.code)
+                .limit(1)
+                .execute()
+            )
+            if existing.data:
+                return str(existing.data[0]["id"])
+        except Exception:
+            pass
 
-    # ── Insertar nuevo ────────────────────────────────────────────────────
-    row: dict = {
+    core: dict = {
         "species_name": r.nombre_cientifico,
-        "taxonomy_id":  taxonomy_id,
-        "region_id":    region_id,
-        "metadata":     json.dumps(metadata, ensure_ascii=False),
+        "taxonomy_id": taxonomy_id,
+        "region_id": region_id,
+        "rubro": "ESPECIMENES_SECOS",
+        "region": r.region,
+        "categoria": "Butterflies(lepidoptera) Diurne",
+        "familia": r.familia,
+        "subfamilia": r.subfamilia,
+        "genero": r.genero,
+        "especie": r.especie,
+        "subespecie": r.subespecie,
+        "sexo": sexo_val,
+        "calidad": r.calidad_db,
+        "origen": r.region,
+        "localidad": localidad,
+        "gps": gps,
+        "dimensiones": r.size_range,
+        "precio_menor": r.precio,
+        "status": status,
+        "specimen_code": r.code,
+        "stock": stock,
     }
     if r.media_url:
-        row["media_url"] = r.media_url
+        core["media_url"] = r.media_url
 
-    time.sleep(_RL)
-    res = sb.table("specimens").insert(row).select("id").execute()
-    if not res.data:
-        raise RuntimeError(f"insert specimens sin id — code={r.code}")
-    return str(res.data[0]["id"])
+    def _insert(payload: dict) -> str:
+        time.sleep(_RL)
+        res = sb.table("specimens").insert(payload).select("id").execute()
+        if not res.data:
+            raise RuntimeError(f"insert specimens sin id — code={r.code}")
+        return str(res.data[0]["id"])
+
+    try:
+        return _insert(core)
+    except Exception as exc:
+        msg = str(exc)
+        if "does not exist" in msg or "42703" in msg or "PGRST" in msg:
+            # Solo quitar columnas que suelen faltar en live; conservar dimensiones/localidad
+            slim = {
+                k: v
+                for k, v in core.items()
+                if k not in ("specimen_code", "stock", "stock_status")
+            }
+            log.warning(
+                "Insert full falló (%s). Reintento slim. code=%s",
+                msg[:120],
+                r.code,
+            )
+            try:
+                return _insert(slim)
+            except Exception:
+                minimal = {
+                    "species_name": r.nombre_cientifico,
+                    "taxonomy_id": taxonomy_id,
+                    "region_id": region_id,
+                    "familia": r.familia,
+                    "genero": r.genero,
+                    "especie": r.especie,
+                    "precio_menor": r.precio,
+                    "status": status,
+                }
+                return _insert(minimal)
+        raise
+
 
 
 def upsert_media(sb: Client, specimen_id: str, r: SpecimenRow) -> None:

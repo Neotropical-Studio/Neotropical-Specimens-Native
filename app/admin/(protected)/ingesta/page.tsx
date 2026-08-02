@@ -1,12 +1,14 @@
 // Ingesta masiva de activos multimedia.
 // Motor de carga + enlace rápido a la galería.
 import IngestionEngine from './IngestionEngine';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 
 export const metadata = { title: 'Ingesta de Activos · Admin' };
 
 export default function IngestaPage() {
   return (
     <div className="flex flex-col gap-8">
+      <PublishProductionButton variant="panel" />
       <div>
         <h1 className="text-xl font-semibold text-white">Ingesta de Activos</h1>
         <p className="mt-1 text-sm text-neutral-400">

@@ -64,6 +64,7 @@ import {
 import CartUniverseBanner from '@/components/CartUniverseBanner';
 import CartPurchaseGuarantee from '@/components/CartPurchaseGuarantee';
 import CartCurrencySwitcher from '@/components/CartCurrencySwitcher';
+import UniversalShopActions from '@/components/UniversalShopActions';
 import FlatFlag from '@/src/components/FlatFlag';
 import { detectRubro } from '@/lib/specimens/rubros';
 import { useDisplayCurrency } from '@/lib/cart/use-display-currency';
@@ -291,6 +292,34 @@ export default function CartView({ lang, locale, country, strings }: Props) {
     }
   }
 
+  const catalogueBrowseHref = `/${lang}/catalogue/dried-specimens?view=regions`;
+  const backLabel = t('cart.regresar', 'Regresar');
+  const keepShoppingLabel = t('cart.keep_shopping', 'Continuar comprando');
+  const buyLabel = submitting
+    ? t('cart.sending_docs', 'Confirmando…')
+    : t('cart.confirm', 'Comprar');
+
+  function renderCartSummaryNav(side: 'top' | 'bottom') {
+    return (
+      <div
+        className={
+          side === 'top' ? 'border-b border-white/10 pb-3' : 'border-t border-white/10 pt-3'
+        }
+      >
+        <UniversalShopActions
+          backHref={catalogueBrowseHref}
+          backLabel={backLabel}
+          continueHref={catalogueBrowseHref}
+          continueLabel={keepShoppingLabel}
+          buyLabel={buyLabel}
+          buying={submitting}
+          onBuy={() => void confirmAndEmailDocs()}
+          stickyMobile={side === 'bottom'}
+        />
+      </div>
+    );
+  }
+
   const inputClass =
     'mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 font-sans text-sm text-white placeholder:text-slate-600';
 
@@ -303,9 +332,9 @@ export default function CartView({ lang, locale, country, strings }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5 px-4 py-8 md:px-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
+    <div className="mx-auto max-w-7xl space-y-5 px-4 py-8 pb-[calc(7rem+env(safe-area-inset-bottom,0px))] sm:pb-8 md:px-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-emerald-400">
             {t('cart.kicker', 'B2B · B2C · E-commerce')}
           </p>
@@ -316,25 +345,41 @@ export default function CartView({ lang, locale, country, strings }: Props) {
             ) : null}
           </h1>
         </div>
-        <Link
-          href={`/${lang}`}
-          className="inline-flex items-center gap-2 font-mono text-xs text-emerald-300 hover:underline"
-        >
-          <ArrowLeft size={14} />
-          {t('nav.back', '← Escaparate')}
-        </Link>
+        <div className="w-full sm:max-w-xl">
+          <UniversalShopActions
+            backHref={catalogueBrowseHref}
+            backLabel={backLabel}
+            continueHref={catalogueBrowseHref}
+            continueLabel={keepShoppingLabel}
+            buyLabel={buyLabel}
+            buying={submitting}
+            onBuy={() => {
+              if (items.length === 0) return;
+              void confirmAndEmailDocs();
+            }}
+          />
+        </div>
       </div>
 
       {items.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-white/15 bg-black/40 px-6 py-16 text-center">
           <ShoppingBag className="mx-auto mb-4 text-slate-500" size={36} />
           <p className="text-slate-300">{t('cart.empty', 'Tu carrito está vacío.')}</p>
-          <Link
-            href={`/${lang}`}
-            className="mt-6 inline-flex rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-bold text-emerald-950"
-          >
-            {t('cart.browse', 'Explorar catálogo')}
-          </Link>
+          <div className="mx-auto mt-6 grid max-w-lg grid-cols-1 gap-2 sm:grid-cols-2">
+            <Link
+              href={catalogueBrowseHref}
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/20 bg-black/40 px-5 py-2.5 text-sm font-bold uppercase text-white/90 touch-manipulation"
+            >
+              <ArrowLeft size={16} />
+              {backLabel}
+            </Link>
+            <Link
+              href={catalogueBrowseHref}
+              className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-emerald-500/45 bg-emerald-500/15 px-5 py-2.5 text-sm font-bold uppercase text-emerald-200 touch-manipulation"
+            >
+              {keepShoppingLabel}
+            </Link>
+          </div>
         </div>
       ) : quote && route && breakdown ? (
         <>
@@ -759,6 +804,8 @@ export default function CartView({ lang, locale, country, strings }: Props) {
                 {/* —— CUERPO 3: Resumen —— */}
                 {col.id === 'summary' ? (
                   <div className="mt-3 flex flex-1 flex-col gap-3">
+                    {renderCartSummaryNav('top')}
+
                     <CartCurrencySwitcher
                       options={currencyOptions}
                       value={displayCurrency}
@@ -863,16 +910,7 @@ export default function CartView({ lang, locale, country, strings }: Props) {
                     <CartPurchaseGuarantee t={t} />
 
                     <div className="mt-auto flex flex-col gap-2">
-                      <button
-                        type="button"
-                        disabled={submitting}
-                        onClick={() => void confirmAndEmailDocs()}
-                        className="w-full rounded-xl bg-emerald-500 py-3 text-sm font-bold text-emerald-950 disabled:opacity-60"
-                      >
-                        {submitting
-                          ? t('cart.sending_docs', 'Confirmando…')
-                          : t('cart.confirm', 'Confirmar compra')}
-                      </button>
+                      {renderCartSummaryNav('bottom')}
                       <button
                         type="button"
                         onClick={clear}

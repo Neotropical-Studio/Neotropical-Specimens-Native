@@ -120,23 +120,24 @@ export default async function ClassificationVisionPanel() {
           <pre className="overflow-x-auto whitespace-pre-wrap text-[10px] leading-relaxed text-zinc-400">
             {`RUBROS
   ├─ ESPECIMENS SECOS… (+ ${NODE_MEDIA_SLOT.card}/ ${NODE_MEDIA_SLOT.video}/)
-  │    ├─ REGION Africa (Afrotropical)              · Rare FOCO ×3
-  │    ├─ REGION Australasian Y Oriental           · Rare FOCO ×3
-  │    ├─ REGION Central South America Neotropical · Rare FOCO ×3
+  │    ├─ REGION Africa (Afrotropical)              · Rare FOCO ×4
+  │    ├─ REGION Australasian Y Oriental           · Rare FOCO ×4
+  │    ├─ REGION Central South America Neotropical · Rare FOCO ×4
   │    │    ├─ Rare -Gynan-Aberrations ← FOCO (+ ${NODE_MEDIA_SLOT.card}/ ${NODE_MEDIA_SLOT.video}/)
-  │    │    │    ├─ Butterflies (Lepidoptera)
-  │    │    │    ├─ Moths (Lepidoptera)
-  │    │    │    └─ Beetles (Coleoptera) Y Arthropoda Insects
+  │    │    │    ├─ Butterflies(Lepidoptera)
+  │    │    │    ├─ Moths(Lepidoptera)
+  │    │    │    ├─ Beetles(Coleoptera)
+  │    │    │    └─ Insects(Arthropoda)
   │    │    ├─ Insects(arthropoda) (+ ${NODE_MEDIA_SLOT.card}/ ${NODE_MEDIA_SLOT.video}/)
-  │    │    │    └─ Arañas…Escorpión (10 ×5 REGIONs)
+  │    │    │    └─ Spider…Others(Families) (11 ×5 REGIONs)
   │    │    ├─ Beetles(Coleoptera) Insects (+ ${NODE_MEDIA_SLOT.card}/ ${NODE_MEDIA_SLOT.video}/)
   │    │    │    └─ 12 / 13 / 13 / 13 / 13 familias (Africa…Nearctic)
   │    │    ├─ Moths(Lepidoptera) Nocturne (+ ${NODE_MEDIA_SLOT.card}/ ${NODE_MEDIA_SLOT.video}/)
   │    │    │    └─ Arctiidae…Limacodidae (${EXPECTED_NEOTROPICAL_MOTHS_FAMILIES.length})
   │    │    └─ Butterflies(lepidoptera) Diurne (+ ${NODE_MEDIA_SLOT.card}/ ${NODE_MEDIA_SLOT.video}/)
   │    │         └─ Brassolidae…Satyridae (17)
-  │    ├─ REGION Europe (Holarctic)                · Rare FOCO ×3
-  │    └─ REGION North America (Nearctic)          · Rare FOCO ×3
+  │    ├─ REGION Europe (Holarctic)                · Rare FOCO ×4
+  │    └─ REGION North America (Nearctic)          · Rare FOCO ×4
   ├─ ESQUELETOS DE ZOOLOGIA… (+ ${NODE_MEDIA_SLOT.card}/ ${NODE_MEDIA_SLOT.video}/)
   └─ PLANTAS SECAS NO-CITES (+ ${NODE_MEDIA_SLOT.card}/ ${NODE_MEDIA_SLOT.video}/)`}
           </pre>

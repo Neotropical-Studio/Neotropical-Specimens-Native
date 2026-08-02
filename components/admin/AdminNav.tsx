@@ -2,16 +2,17 @@ import Link from 'next/link';
 import { LogOut, LayoutDashboard, Bug, ImagePlay, Megaphone, Truck, FolderInput, Cpu, Layers } from 'lucide-react';
 import type { AdminUser } from '@/lib/auth/admin';
 import { signOutAction } from '@/app/admin/actions';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 
 const NAV = [
-  { href: '/admin',             label: 'Panel',                 icon: LayoutDashboard },
-  { href: '/admin/espejo',      label: 'Espejo C↔S',            icon: Layers },
-  { href: '/admin/consola',     label: 'Consola Maestra',       icon: Cpu },
-  { href: '/admin/especimenes', label: 'Taxonomía y Datos',     icon: Bug },
-  { href: '/admin/multimedia',  label: 'Multimedia y 3D',       icon: ImagePlay },
-  { href: '/admin/ingesta',     label: 'Ingesta de Activos',    icon: FolderInput },
-  { href: '/admin/campanas',    label: 'Campañas',              icon: Megaphone },
-  { href: '/admin/embarques',   label: 'Documentos y Logística', icon: Truck },
+  { href: '/admin',             label: 'Panel',                 icon: LayoutDashboard, status: 'ok' as const },
+  { href: '/admin/espejo',      label: 'Espejo C↔S',            icon: Layers, status: 'ok' as const },
+  { href: '/admin/consola',     label: 'Consola Maestra',       icon: Cpu, status: 'ok' as const },
+  { href: '/admin/especimenes', label: 'Taxonomía y Datos',     icon: Bug, status: 'ok' as const },
+  { href: '/admin/multimedia',  label: 'Multimedia y 3D',       icon: ImagePlay, status: 'ok' as const },
+  { href: '/admin/ingesta',     label: 'Ingesta de Activos',    icon: FolderInput, status: 'ok' as const },
+  { href: '/admin/campanas',    label: 'Campañas',              icon: Megaphone, status: 'stub' as const },
+  { href: '/admin/embarques',   label: 'Documentos y Logística', icon: Truck, status: 'stub' as const },
 ];
 
 export default function AdminNav({ admin }: { admin: AdminUser }) {
@@ -23,19 +24,28 @@ export default function AdminNav({ admin }: { admin: AdminUser }) {
             NEOTROPICAL · Admin
           </Link>
           <nav className="flex flex-wrap gap-1">
-            {NAV.map(({ href, label, icon: Icon }) => (
+            {NAV.map(({ href, label, icon: Icon, status }) => (
               <Link
                 key={href}
                 href={href}
-                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-neutral-300 transition hover:bg-neutral-800 hover:text-white"
+                title={status === 'stub' ? 'Abre · schema incompleto hasta SQL Supabase' : undefined}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition hover:bg-neutral-800 hover:text-white ${
+                  status === 'stub' ? 'text-amber-300/90' : 'text-neutral-300'
+                }`}
               >
                 <Icon size={15} />
                 {label}
+                {status === 'stub' ? (
+                  <span className="rounded bg-amber-950 px-1 text-[9px] uppercase text-amber-400">
+                    stub
+                  </span>
+                ) : null}
               </Link>
             ))}
           </nav>
         </div>
-        <div className="flex items-center gap-3 text-sm text-neutral-400">
+        <div className="flex items-center gap-2 text-sm text-neutral-400 sm:gap-3">
+          {admin.role !== 'viewer' ? <PublishProductionButton variant="nav" /> : null}
           <span className="hidden sm:inline">
             {admin.email} · <span className="text-neutral-500">{admin.role}</span>
           </span>

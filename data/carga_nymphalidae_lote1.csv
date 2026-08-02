@@ -1,0 +1,100 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+NY-001,Adelpha boreas boreas,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Ecuador,null,null,A1,M,4.00,5.0 cm
+NY-002,Adelpha erotia erotia f. erotia,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru/Ecuador,null,null,A1,M,4.00,4.5 cm
+NY-003,Adelpha erotia erotia f. lerna,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru/Ecuador,null,null,A1,M,4.00,4.5 cm
+NY-004,Adelpha erotia f. lerna,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru,null,null,A1,3M,6.00,4.5 cm
+NY-005,Adelpha iphiclus,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru,null,null,A1,M,2.50,4.5 cm
+NY-006,Adelpha iphiclus,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru,null,null,A1,3M,6.00,4.5 cm
+NY-007,Adelpha iphiclus estrecha (Ecuador),null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Ecuador,null,null,A1,M,3.25,4.5 cm
+NY-008,Adelpha lycorias lara,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru,null,null,A1,3M,8.25,5.5-6.0 cm
+NY-009,Adelpha lycorias lara,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru,null,null,A1,M,3.00,5.5-6.0 cm
+NY-010,Adelpha mesentina,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru,null,null,A1,M,2.00,5.0 cm
+NY-011,Adelpha mesentina,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru,null,null,A1,3M,5.25,5.0 cm
+NY-012,Adelpha phylaca f. frusina,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru,null,null,A1,M,3.00,4-4.5 cm
+NY-013,Adelpha phylaca f. phylaca,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Peru,null,null,A1,M,3.00,4-4.5 cm
+NY-014,Adelpha ximena,null,Nymphalidae Actinote-Adelphas -Dyname,null,Adelpha,Lepidoptera,Ecuador,null,null,A1/A1- OUT OF STOCK,M,0.00,5.5 cm
+HE-100,Agraulis vanillae lucina f. catella,null,Heliconidae,null,Agraulis,Lepidoptera,Peru/Ecuador,null,null,A1,M,0.00,7.0 cm
+HE-101,Agraulis vanillae lucina f. catella,null,Heliconidae,null,Agraulis,Lepidoptera,Peru/Ecuador,null,null,A1,3M,0.00,7.0 cm
+NY-015,Agrias amydon athenais,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Ecuador,null,null,A1,M,35.00,6-6.5 cm
+NY-016,Agrias amydon athenais,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Ecuador,null,null,A1,F,145.00,6.5 cm
+NY-017,Agrias amydon zenodorus,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,F,160.00,8.0 cm
+NY-018,Agrias amydon zenodorus,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,"Dept San Martin, Peru",null,A1,M,85.00,7.5 cm
+NY-019,Agrias claudina lugens,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,3F,140.00,8-8.5 cm
+NY-020,Agrias claudina lugens,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,F,50.00,8-8.5 cm
+NY-021,Agrias claudina lugens,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1/A1-,F,35.00,8-8.5 cm
+NY-022,Agrias hewitsonius beata (=beatifica beata),null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,10.00,8-9.0 cm
+NY-023,Agrias hewitsonius beata (=beatifica beata),null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,F,15.00,8-9.0 cm
+NY-024,Agrias hewitsonius beata (=beatifica beata),null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,P,25.00,8.5-9.0 cm
+NY-025,Agrias hewitsonius beata (=beatifica beata),null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,3P,65.00,8.5-9.0 cm
+NY-026,Agrias hewitsonius beata (=beatifica beata),null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,3F,40.00,8-9.0 cm
+NY-027,Agrias hewitsonius stuarti (=beatifica stuarti),null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,85.00,8.0 cm
+NY-028,Agrias hewitsonius stuarti (=beatifica stuarti),null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,3M,230.00,8.0 cm
+NY-029,Agrias hewitsonius stuarti (=beatifica stuarti),null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1-,M,38.00,8.0 cm
+NY-030,Agrias hewitsonius stuarti (=beatifica stuarti)-f. rubra verso,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,100.00,8.0 cm
+NY-031,Agrias pericles peruviana,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,Cusco,null,A1,M,160.00,7.5-8.0 cm
+NY-032,Agrias phalcidon fournierae #2,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Brazil,null,null,A1,M,120.00,6.0 cm
+NY-033,Agrias sardanapulis,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,35.00,8-8.5 cm
+NY-034,Agrias sardanapulis,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,3M,99.00,8-8.5 cm
+NY-035,Asterope degandii allyni (= A. adamsi),null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,"Huanaco Region, Peru",null,A1,M,6.00,5.0 cm
+NY-036,Asterope degandii bartletti,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,"Iquitos & Huanaco Region, Peru",null,A1,3P,30.00,5.0 cm
+NY-037,Asterope degandii bartletti,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,"Iquitos & Huanaco Region, Peru",null,A1,P,12.00,5.0 cm
+NY-038,Asterope degandii bartletti,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,"Iquitos & Huanaco Region, Peru",null,A1,M,7.00,5.0 cm
+NY-039,Asterope degandii bartletti,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,"Iquitos & Huanaco Region, Peru",null,A1,3M,18.00,5.0 cm
+NY-040,Asterope degandii bartletti,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,"Iquitos & Huanaco Region, Peru",null,"M=A1, F=A1/A1-",P,8.00,5.0 cm
+NY-041,Asterope degandii caelestis (Ecuador),null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Ecuador,null,null,A1,M,5.50,5.0 cm
+NY-042,Asterope degandii caelestis (Ecuador),null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Ecuador,null,null,A1,3M,13.50,5.0 cm
+NY-043,Asterope markii davisi,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru/Ecuador,null,null,A1,M,6.00,4.5 cm
+NY-044,Asterope markii davisi,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru/Ecuador,null,null,A1,3M,16.50,4.5 cm
+NY-045,Asterope markii hewitsoni,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,null,null,A1,3M,60.00,5.0 cm
+NY-046,Asterope markii hewitsoni,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,null,null,A1,M,25.00,5.0 cm
+NY-047,Asterope optima f. eminens,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,null,null,A1,M,8.00,6.0 cm
+NY-048,Asterope optima f. eminens,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,P,0.00,6.0 cm
+NY-049,Asterope optima f. eminens,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,null,null,A1,3M,18.00,6.0 cm
+NY-050,Asterope optima philotina,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,null,null,A1,M,5.50,5.0 cm
+NY-051,Asterope optima philotina,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,null,null,A1,3M,15.00,5.0 cm
+NY-052,Asterope whitelyi whitelyi,null,Nymphalidae Agrias-Collicore-Perisamas,null,Asterope,Lepidoptera,Peru,"Tingo Maria Region, Peru",null,A1 OUT OF STOCK,M,0.00,5.0 cm
+NY-053,Baeotus (Megistanis) amazonicus,null,Nymphalidae  Cathonopheles y Diversos species,null,Baeotus,Lepidoptera,Peru/Ecuador,null,null,A1 OUT OF STOCK,M,0.00,8.0 cm
+NY-054,Baeotus (Megistanis) baeotus,null,Nymphalidae  Cathonopheles y Diversos species,null,Baeotus,Lepidoptera,Peru/Ecuador,null,null,A1,M,6.50,8.0 cm
+NY-055,Baeotus (Megistanis) deucalion,null,Nymphalidae  Cathonopheles y Diversos species,null,Baeotus,Lepidoptera,Peru,null,null,A1,M,6.50,8.0 cm
+NY-056,Baeotus (Megistanis) japetus,null,Nymphalidae  Cathonopheles y Diversos species,null,Baeotus,Lepidoptera,Peru,null,null,A1,M,6.50,8.0 cm
+NY-057,Batesia hypochlora f. hypochlora,null,Nymphalidae  Cathonopheles y Diversos species,null,Batesia,Lepidoptera,Peru,null,null,A1,M,0.00,8.0 cm
+NY-058,Biblis hyperia,null,Nymphalidae  Cathonopheles y Diversos species,null,Biblis,Lepidoptera,Peru,null,null,A1,M,0.00,4.0 cm
+NY-059,Callicore (Catagramma) hytaspes,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,M,2.50,4.0 cm
+NY-060,Callicore (Catagramma) hytaspes,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,3M,6.50,4.0 cm
+NY-061,Callicore cynosura -Verso Aberration # 1 (1 ONLY),null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,0.00,4.5 cm
+NY-062,Callicore cynosura -Verso Aberration # 2 (1 ONLY),null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,0.00,4.5 cm
+NY-063,Callicore cynosura -Verso Aberration # 3 (1 ONLY),null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,0.00,4.5 cm
+NY-064,Callicore cynosura -Verso Aberration # 4 (1 ONLY),null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,0.00,4.5 cm
+NY-065,Callicore cynosura -Verso Aberration # 5 (1 ONLY),null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,0.00,4.5 cm
+NY-066,Callicore cynosura -Verso Aberration # 6 (1 ONLY),null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,0.00,4.5 cm
+NY-067,Callicore cynosura cynosura,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru/Ecuador,null,null,A1,M,4.50,4.5 cm
+NY-068,Callicore cynosura cynosura,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru/Ecuador,null,null,A1,3M,12.00,4.5 cm
+NY-069,Callicore discrepans,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,"Dep San Martin, N. Peru",null,A1,M,17.50,3.5-4.0 cm
+NY-070,Callicore eunomia,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,M,3.75,3.5 cm
+NY-071,Callicore eunomia,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,3M,10.50,3.5 cm
+NY-072,Callicore eunomia (Ecuador),null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Ecuador,null,null,A1,M,4.00,3.5 cm
+NY-073,Callicore excelsior pastazza,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,M,6.00,5.0 cm
+NY-074,Callicore excelsior pastazza,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,3M,15.00,5.0 cm
+NY-075,Callicore felderi cajetani,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,M,5.00,4.0 cm
+NY-076,Callicore felderi cajetani,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,3M,10.50,4.0 cm
+NY-077,Callicore hesperis,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,M,4.50,3.5 cm
+NY-078,Callicore hesperis,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,3M,12.00,3.5 cm
+NY-079,Callicore lyca aegina,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru/Ecuador,null,null,A1,M,5.50,4.0 cm
+NY-080,Callicore lyca aegina,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru/Ecuador,null,null,A1,3M,15.00,4.0 cm
+NY-081,Callicore pygas cyllene,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru/Ecuador,null,null,A1,M,4.25,3.5 cm
+NY-082,Callicore pygas cyllene,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru/Ecuador,null,null,A1,3M,9.75,3.5 cm
+NY-083,Callicore texa maimuna,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,null,null,A1,M,0.00,5.0 cm
+NY-084,Callicore tolima,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,"Dept San Martin, Peru",null,A1,M,10.00,3.5 cm
+NY-085,Callicore tolima,null,Nymphalidae Agrias-Collicore-Perisamas,null,Callicore,Lepidoptera,Peru,"Dept San Martin, N. Peru",null,A1,3M,25.00,3.5 cm
+NY-086,Callidula pyramus,null,Nymphalidae  Cathonopheles y Diversos species,null,Callidula,Lepidoptera,Peru,null,null,A1,M,0.00,3.0 cm
+NY-087,Catonephele salambria,null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru,null,null,A1,M,5.00,7.0 cm
+NY-088,Catonephele acontius,null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru,null,null,A1,F,3.50,5.0 cm
+NY-089,Catonephele acontius,null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru,null,null,A1,3F,9.00,5.0 cm
+NY-090,Catonephele acontius,null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru/Ecuador,null,null,A1,P,4.50,5.0 cm
+NY-091,Catonephele acontius,null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru/Ecuador,null,null,A1,M,2.50,5.0 cm
+NY-092,Catonephele chromis chromis,null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru,null,null,A1,M,4.00,5.0 cm
+NY-093,Catonephele numilia (Peru),null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru,null,null,A1,3M,12.00,6.0 cm
+NY-094,Catonephele numilia (Peru),null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru,null,null,A1,F,10.00,6.0 cm
+NY-095,Catonephele numilia (Peru),null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru,null,null,A1,M,4.50,6.0 cm
+NY-096,Catonephele numilia (Peru),null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru,null,null,A1,P,12.00,6.0 cm
+NY-097,Catonephele numilia (Peru),null,Nymphalidae  Cathonopheles y Diversos species,null,Catonephele,Lepidoptera,Peru,null,null,A1,3P,30.00,6.0 cm

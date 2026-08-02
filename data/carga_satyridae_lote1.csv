@@ -1,0 +1,48 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+ST-001,Cithaerais pireta ssp?,null,Satyridae,null,Cithaerais,Lepidoptera,Peru,"Tingo Maria, Peru",null,A1,M,6.00,5.0 cm
+ST-002,Cithaerais aurorina,null,Satyridae,null,Cithaerais,Lepidoptera,Peru,null,null,A1,M,7.50,5.0 cm
+ST-003,Cithaerais merolina,null,Satyridae,null,Cithaerais,Lepidoptera,Peru,null,null,A1,P,15.00,4.5 cm
+ST-004,Cithaerais merolina,null,Satyridae,null,Cithaerais,Lepidoptera,Peru,null,null,A1,M,9.75,4.5 cm
+ST-005,Cithaerais merolina,null,Satyridae,null,Cithaerais,Lepidoptera,Peru,null,null,A1,3M,28.50,4.5 cm
+ST-006,Cithaerais merolina,null,Satyridae,null,Cithaerais,Lepidoptera,Peru,null,null,A1,F,8.00,4.5 cm
+ST-007,Cithaerais merolina,null,Satyridae,null,Cithaerais,Lepidoptera,Peru,null,null,A1,3F,8.00,4.5 cm
+ST-008,Cithaerais pyropina,null,Satyridae,null,Cithaerais,Lepidoptera,Peru,null,null,A1,M,8.50,5.0 cm
+ST-009,Cithaerais pyropina,null,Satyridae,null,Cithaerais,Lepidoptera,Peru,null,null,A1,3M,22.50,5.0 cm
+ST-010,Corades enyo,null,Satyridae,null,Corades,Lepidoptera,Peru,null,null,A1,M,0.00,6.0 cm
+ST-011,Corades enyo,null,Satyridae,null,Corades,Lepidoptera,Peru,null,null,A1/A1- O,M,10.00,6.0 cm
+ST-012,Corades iduna,null,Satyridae,null,Corades,Lepidoptera,Peru,null,null,A1,M,10.00,6.0 cm
+ST-013,Corades iduna,null,Satyridae,null,Corades,Lepidoptera,Peru,null,null,A1,3M,10.00,6.0 cm
+ST-014,Corades medeba,null,Satyridae,null,Corades,Lepidoptera,Peru,null,null,A1/A1-,M,7.00,6.0 cm
+ST-015,Dolcedo polita (Peru),null,Satyridae,null,Dolcedo,Lepidoptera,Peru,"Iquitos, Peru",null,A1,M or F,30.00,5.0 cm
+ST-016,Elymnias cumaea borenmanni,null,Satyridae,null,Elymnias,Lepidoptera,Indonesia,"Pelang Is, Indonesia",null,A1,P,8.00,7.0 cm
+ST-017,Haetera macleannania,null,Satyridae,null,Haetera,Lepidoptera,Peru,null,null,A1/A1-,M,8.00,6-7.0 cm
+ST-018,Haetera macleannania,null,Satyridae,null,Haetera,Lepidoptera,Peru,null,null,A1,3M,8.00,6-7.0 cm
+ST-019,Haetera piera,null,Satyridae,null,Haetera,Lepidoptera,Peru,null,null,A1,M or F,5.00,6.0 cm
+ST-020,Haetera piera,null,Satyridae,null,Haetera,Lepidoptera,Peru,null,null,A1,3 pcs,13.50,6.0 cm
+ST-021,Haetera piera,null,Satyridae,null,Haetera,Lepidoptera,Peru,null,null,A1,P,9.00,6.0 cm
+ST-022,Haetera piera,null,Satyridae,null,Haetera,Lepidoptera,Peru,null,null,A1,3P,24.00,6.0 cm
+ST-023,Oressinoma typhia,null,Satyridae,null,Oressinoma,Lepidoptera,Peru,null,null,A1,M,3.50,4.0 cm
+ST-024,Oxeoschistus iphigenia,null,Satyridae,null,Oxeoschistus,Lepidoptera,Peru,"Cusco, Peru",null,A1,M,9.00,5.0 cm
+ST-025,Pierella albofasciata,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,M,5.00,6.0 cm
+ST-026,Pierella albofasciata,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1/A1-,M,5.00,6.0 cm
+ST-027,Pierella amalia,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1 O,M,10.00,6.0 cm
+ST-028,Pierella helvetia,null,Satyridae,null,Pierella,Lepidoptera,Costa Rica,null,null,A1,M,10.00,6.0 cm
+ST-029,Pierella helvina pacifica,null,Satyridae,null,Pierella,Lepidoptera,Ecuador,null,null,A1,M,10.00,6.0 cm
+ST-030,Pierella helvina pacifica,null,Satyridae,null,Pierella,Lepidoptera,Ecuador,null,null,A1,P,10.00,6.0 cm
+ST-031,Pierella hortona hortona f. ocellata,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,M or F,8.00,5.5-6.0 cm
+ST-032,Pierella hyceta,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,3 pcs,13.50,7.0 cm
+ST-033,Pierella hyceta,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,M or F,5.00,7.0 cm
+ST-034,Pierella lamia chalybaea,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,P,10.00,6.0 cm
+ST-035,Pierella lamia chalybaea,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,M,4.50,6.0 cm
+ST-036,Pierella lena,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,M,7.00,6-7.0 cm
+ST-037,Pierella lena,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,3M,7.00,6.7 cm
+ST-038,Pierella lena,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,P,7.00,6-7.0 cm
+ST-039,Pierella lena,null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,3P,7.00,6-7.0 cm
+ST-040,Pierella lucia (=P. astyoche lucia),null,Satyridae,null,Pierella,Lepidoptera,Peru,null,null,A1,P,8.00,6.0 cm
+ST-041,Pierella lucia (=P. astyoche lucia),null,Satyridae,null,Pierella,Lepidoptera,Peru/Ecuador,null,null,A1,3 pcs,9.00,6.0 cm
+ST-042,Pierella lucia (=P. astyoche lucia),null,Satyridae,null,Pierella,Lepidoptera,Peru/Ecuador,null,null,A1,M or F,3.50,6.0 cm
+ST-043,Pierella luna lesbia,null,Satyridae,null,Pierella,Lepidoptera,Ecuador,null,null,A1,3 pcs,21.00,5-6.0 cm
+ST-044,Pierella luna lesbia,null,Satyridae,null,Pierella,Lepidoptera,Ecuador,null,null,A1,M or F,8.00,5-6.0 cm
+ST-045,Pierella ocreata,null,Satyridae,null,Pierella,Lepidoptera,Ecuador,null,null,A1,M,4.00,7.0 cm
+ST-046,Taygetis albinotata,null,Satyridae,null,Taygetis,Lepidoptera,Ecuador,null,null,A1,M,10.00,6.5 cm
+ST-047,Taygetis xenana (1 SPECIMEN AVAILABLE),null,Satyridae,null,Taygetis,Lepidoptera,Peru,"Iquitos, Peru",null,A1,M,8.00,6.0 cm

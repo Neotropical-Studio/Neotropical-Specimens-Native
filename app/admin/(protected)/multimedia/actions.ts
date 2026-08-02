@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth/admin';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
+import { isNodeMediaPublicId } from '@/lib/mirror/contract';
 import { cloudinary } from '@/lib/services/cloudinary-upload';
 
 /** Borra asset en Cloudinary y fila(s) en specimen_media (live). */
@@ -12,6 +13,14 @@ export async function deleteMediaAssetAction(
   resourceType: 'image' | 'video' | 'raw',
 ): Promise<void> {
   await requireAdmin();
+
+  // Nunca tocar CARD/VIDEO de nodo (rubro/región/categoría/familia) desde multimedia.
+  if (isNodeMediaPublicId(cloudinaryId)) {
+    throw new Error(
+      'PROHIBIDO: este asset es CARD/VIDEO de catálogo (_card/_video). No se borra desde Multimedia.',
+    );
+  }
+
   const db = getSupabaseAdmin();
 
   await db.from('specimen_media').delete().eq('specimen_id', specimenId).eq('public_id', cloudinaryId);

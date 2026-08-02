@@ -89,7 +89,26 @@ export function videoMp4(publicId: string): string {
   const id = asString(publicId);
   if (id.length === 0) return '';
   if (isExternalUrl(id)) return id;
-  return `${PROXY}/video/upload/f_auto,q_auto/${id}.mp4`;
+  // MP4 liviano: q_auto + tope 1280 (renders Blender / intros).
+  return `${PROXY}/video/upload/f_mp4,q_auto:good,w_1280,c_limit/${id}.mp4`;
+}
+
+/**
+ * Imagen de catálogo optimizada (WebP/AVIF vía f_auto) + peso acotado.
+ * Dinámica: el CDN elige formato según el navegador.
+ */
+export function catalogCardImageUrl(
+  publicId: string,
+  opts: { width?: number; chameleonHex?: string } = {},
+): string {
+  const w = opts.width ?? 720;
+  const extra = [`w_${w}`, 'c_fill', 'g_auto', 'q_auto:good'];
+  // Tinte camaleónico suave (regenerativo por taxón/rubro).
+  if (opts.chameleonHex && /^#?[0-9a-f]{6}$/i.test(opts.chameleonHex)) {
+    const hex = opts.chameleonHex.replace(/^#/, '');
+    extra.push(`e_colorize:12`, `co_rgb:${hex}`);
+  }
+  return imageUrl(publicId, extra);
 }
 
 export function modelUrl(publicId: string): string {

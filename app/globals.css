@@ -13,6 +13,18 @@ html,
 body {
   background: var(--color-surface);
   color: var(--color-text-dynamic);
+  /* iPhone / iPad notch · Android gesture bar · tablets */
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Targets táctiles universales (móvil · tablet · iPad · laptop · PC) */
+@layer utilities {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
 }
 
 /* ===========================================================================

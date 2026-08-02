@@ -1,0 +1,107 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+NY-192,Diaethria (Catacore) kolyma f. pasithea,null,Nymphalidae Agrias-Collicore-Perisamas,null,Diaethria (Catacore),Lepidoptera,Peru,null,null,A1,M,0.00,3.5 cm
+NY-193,Doxocopa cyane,null,Nymphalidae Doxocopa-Preponas,null,Doxocopa,Lepidoptera,Peru,null,null,A1,M,0.00,4-4.5 cm
+NY-194,Doxocopa cyane,null,Nymphalidae Doxocopa-Preponas,null,Doxocopa,Lepidoptera,Peru,null,null,A1,3M,0.00,4-4.5 cm
+NY-195,Doxocopa lavinia,null,Nymphalidae Doxocopa-Preponas,null,Doxocopa,Lepidoptera,Peru,null,null,A1,M,0.00,5.0 cm
+NY-196,Eunica bechina,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Eunica,Lepidoptera,Peru,null,null,A1,M,0.00,5.5 cm
+NY-197,Eunica carias ninetta,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Eunica,Lepidoptera,Peru,null,null,A1,M,0.00,5.0 cm
+NY-198,Hamadryas epinome,null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Peru,null,null,A1,3M,10.50,6.0 cm
+NY-199,Hamadryas februa farentina (Mexico),null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Mexico,null,null,A1,M or F,3.75,6.0 cm
+NY-200,Hamadryas feronia,null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Peru,null,null,A1,3M,9.75,5-5.5 cm
+NY-201,Hamadryas feronia,null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Peru,null,null,A1,M,3.50,5-5.5 cm
+NY-202,Hamadryas fornax,null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Peru/Brazil,null,null,A1,M,4.50,7.0 cm
+NY-203,Hamadryas fornax (Belize),null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Belize,null,null,A1,M,7.50,5-6.0 cm
+NY-204,Hamadryas glauconome,null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,El Salvador,null,null,A1,P,7.00,6.0 cm
+NY-205,Hamadryas iphthime iphthime (Peru),null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Peru,null,null,A1,M,3.50,4.5-5.5 cm
+NY-206,Hamadryas iphthime iphthime (Peru),null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Peru,null,null,A1,3M,9.00,4.5-5.5 cm
+NY-207,Hamadryas laodamia laodamia,null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Peru,null,null,A1,M,5.00,6.0 cm
+NY-208,Hamadryas laodamia laodamia,null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Peru,null,null,A1,3M,12.00,6.0 cm
+NY-209,Hamadryas laodamia saurites,null,Nymphalidae Hamandryas- Euptychia -Eresia,null,Hamadryas,Lepidoptera,Ecuador,null,null,A1,P,11.00,4.5-5.5 cm
+NY-210,Historis odius,null,Nymphalidae  Cathonopheles y Diversos species,null,Historis,Lepidoptera,Peru/Ecuador,null,null,A1,M,3.50,9.0-10.0 cm
+NY-211,Historis odius,null,Nymphalidae  Cathonopheles y Diversos species,null,Historis,Lepidoptera,Peru/Ecuador,null,null,A1,3M,9.00,9.0-10.0 cm
+NY-212,HYBRID #1 Agrias beatifica beata X Prepona chromus,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,70.00,7-7.5 cm
+NY-213,HYBRID #10 Agrias claudina lugens X Prepona omphale,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,70.00,8.0 cm
+NY-214,HYBRID #2 Agrias beatifica beata X Prepona chromus,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,85.00,7-7.5 cm
+NY-215,HYBRID #3 Agrias claudina lugens X Agrias beatifica beata,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,85.00,7.0 cm
+NY-216,HYBRID #4 Agrias claudina lugens X Agrias beatifica beata,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,85.00,7.0 cm
+NY-217,HYBRID #5 Agrias claudina lugens X Agrias beatifica beata,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,85.00,7.0 cm
+NY-218,HYBRID #6 Agrias claudina lugens X Agrias beatifica beata,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,85.00,7.0 cm
+NY-219,HYBRID #7 Agrias claudina lugens X Agrias beatifica beata,null,Nymphalidae Agrias-Collicore-Perisamas,null,Agrias,Lepidoptera,Peru,null,null,A1,M,85.00,7.0 cm
+NY-220,Hypna (Anaea) clymenestra negra (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Hypna (Anaea),Lepidoptera,Peru,null,null,A1,M,2.25,7.0-8.0 cm
+NY-221,Hypna (Anaea) clymenestra negra (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Hypna (Anaea),Lepidoptera,Peru,null,null,A1,3M,6.00,7.0-8.0 cm
+NY-222,Junonia l(Precis) lavinia lavinia,null,Nymphalidae  Cathonopheles y Diversos species,null,Junonia,Lepidoptera,Peru,N. Peru,null,A1,M or F,4.00,5.0 cm
+NY-223,Marpesia berania,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1/A1-,M,1.50,5.0 cm
+NY-224,Marpesia berania,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1,3M,3.00,5.0 cm
+NY-225,Marpesia coresia,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1,M,4.75,6.0 cm
+NY-226,Marpesia coresia,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1,3M,13.50,6.0 cm
+NY-227,Marpesia crethon,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1,3M,9.00,5-5.5 cm
+NY-228,Marpesia crethon,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1,M,3.50,5-5.5 cm
+NY-229,Marpesia hermione,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Ecuador,null,null,A1,3M,9.00,6.0 cm
+NY-230,Marpesia hermione,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Ecuador,null,null,A1,M,3.50,6.0 cm
+NY-231,Marpesia livius,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Ecuador,null,null,A1/A1-,M,3.00,5.0 cm
+NY-232,Marpesia marcella/corinna ?,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1,M,5.00,5.0 cm
+NY-233,Marpesia marcella/corinna ?,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1,3M,14.25,5.0 cm
+NY-234,Marpesia petreus,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1,M,4.50,7.5 cm
+NY-235,Marpesia petreus,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Marpesia,Lepidoptera,Peru,null,null,A1,3M,12.00,7.5 cm
+NY-236,Memphis (Anaea) acaudata (Peru) (1 only),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,10.00,5.0 cm
+NY-237,Memphis (Anaea) acidalia memphis (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,5.00,6.0 cm
+NY-238,Memphis (Anaea) alberta,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,7.00,6-6.5 cm
+NY-239,Memphis (Anaea) alberta,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,3M,6.00,6-6.5 cm
+NY-240,Memphis (Anaea) arachne psammis (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,F,15.00,5.0 cm
+NY-241,Memphis (Anaea) arginussa (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,3M,12.00,5.0 cm
+NY-242,Memphis (Anaea) arginussa (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,F,12.00,6.0 cm
+NY-243,Memphis (Anaea) arginussa (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,4.50,5.5 cm
+NY-244,Memphis (Anaea) arginussa onophis (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,4.50,6.0 cm
+NY-245,Memphis (Anaea) arginussa onophis (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,3M,9.50,6.0 cm
+NY-246,Memphis (Anaea) cerelia (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,7.50,6.0 cm
+NY-247,Memphis (Anaea) cleomnestra (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,4.00,6.0 cm
+NY-248,Memphis (Anaea) cleomnestra (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1/A1-,M,2.50,6.0 cm
+NY-249,Memphis (Anaea) cleomnestra (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,3M,10.50,6.0 cm
+NY-250,Memphis (Anaea) falcata,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,25.00,6-6.5 cm
+NY-251,Memphis (Anaea) florita,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,5.00,5.0 cm
+NY-252,Memphis (Anaea) glauce felderi (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,4.00,5-5.5 cm
+NY-253,Memphis (Anaea) glauce felderi (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,3M,10.50,5-5.5 cm
+NY-254,Memphis (Anaea) glauce felderi (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,0.00,5.5 cm
+NY-255,Memphis (Anaea) glauce felderi (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,3M,0.00,5-5.5 cm
+NY-256,Memphis (Anaea) glaucone glaucone,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,4.00,5.0 cm
+NY-257,Memphis (Anaea) glaucone glaucone,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,3M,0.00,5.0 cm
+NY-258,Memphis (Anaea) juliani (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,3M,18.00,5.5-6.0 cm
+NY-259,Memphis (Anaea) juliani (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,7.00,5.5-6.0 cm
+NY-260,Memphis (Anaea) juliani (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1/A1-,F,5.00,5.5-6.0 cm
+NY-261,Memphis (Anaea) lemnos (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,4.00,5.0 cm
+NY-262,Memphis (Anaea) lemnos (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,3M,10.50,5.0 cm
+NY-263,Memphis (Anaea) lineata (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,4.50,6.0 cm
+NY-264,Memphis (Anaea) lineata (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,3M,12.00,6.0 cm
+NY-265,Memphis (Anaea) lyceus,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,4.00,6.0 cm
+NY-266,Memphis (Anaea) lyceus,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1/A1-,M,2.50,6.0 cm
+NY-267,Memphis (Anaea) lyceus (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,4.00,6.0 cm
+NY-268,Memphis (Anaea) lyceus (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1/A1-,M,2.50,6.0 cm
+NY-269,Memphis (Anaea) mora montana,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,5.00,5-5.5 cm
+NY-270,Memphis (Anaea) moruus leonila (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,4.00,6-6.5 cm
+NY-271,Memphis (Anaea) moruus leonila (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,3M,10.50,6-6.5 cm
+NY-272,Memphis (Anaea) moruus morpheus,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,F,15.00,6.0 cm
+NY-273,Memphis (Anaea) nenia threnadion (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1/A1-,M,2.25,6.0 cm
+NY-274,Memphis (Anaea) nenia threnadion (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,3M,9.00,6.0 cm
+NY-275,Memphis (Anaea) nenia threnadion (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,3.50,6.0 cm
+NY-276,Memphis (Anaea) offa,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1/A1-,M,6.00,5.5 cm
+NY-277,Memphis (Anaea) offa gudrun (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,4.00,6-6.5 cm
+NY-278,Memphis (Anaea) offa gudrun (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,3M,10.50,6-6.5 cm
+NY-279,Memphis (Anaea) philumena philumena (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,3.00,6.0 cm
+NY-280,Memphis (Anaea) philumena philumena (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,3M,0.00,6.0 cm
+NY-281,Memphis (Anaea) philumena philumena (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1/A1-,M,2.00,6.5 cm
+NY-282,Memphis (Anaea) pithyusa pithyusa (Mexico),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Mexico,null,null,A1-,P,0.00,4.5 cm
+NY-283,Memphis (Anaea) pithyusa pithyusa (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,0.00,4.5 cm
+NY-284,Memphis (Anaea) polycarmes (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,3.50,5.5-6.0 cm
+NY-285,Memphis (Anaea) polycarmes (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,3M,9.00,5.5-6.0 cm
+NY-286,Memphis (Anaea) polyxo,null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,5.00,7.0 cm
+NY-287,Memphis (Anaea) praxias (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,0.00,5.0 cm
+NY-288,Memphis (Anaea) xenocles xenocles (Ecuador),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Ecuador,null,null,A1,M,3.50,5.0 cm
+NY-289,Memphis (Anaea) xenocles xenocles (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,M,4.25,5.0 cm
+NY-290,Memphis (Anaea) xenocles xenocles (Peru),null,Nymphalidae  Anaeas-Eunicas-Marpesias,null,Memphis (Anaea),Lepidoptera,Peru,null,null,A1,3M,12.00,5.0 cm
+NY-291,Metamorpha (Victorina) elissa elissa (Ecuador),null,Nymphalidae  Cathonopheles y Diversos species,null,Metamorpha (Victorina),Lepidoptera,Ecuador,null,null,A1,M,4.00,5-6.0 cm
+NY-292,Myscelia ethusa (Belize),null,Nymphalidae  Cathonopheles y Diversos species,null,Myscelia,Lepidoptera,Belize,null,null,A1 OUT OF STOCK,P,0.00,5.0 cm
+NY-293,Myscelia ethusa (Belize),null,Nymphalidae  Cathonopheles y Diversos species,null,Myscelia,Lepidoptera,Belize,null,null,A1/A1-,M,0.00,5.0 cm
+NY-294,Myscelias cyaniris cyaniris,null,Nymphalidae  Cathonopheles y Diversos species,null,Myscelias,Lepidoptera,Costa Rica,null,null,A1,P,0.00,5.0 cm
+NY-295,Myscelias cyaniris cyaniris,null,Nymphalidae  Cathonopheles y Diversos species,null,Myscelias,Lepidoptera,Costa Rica,null,null,A1,3P,0.00,5.0 cm
+NY-296,Napocles jucunda,null,Nymphalidae  Cathonopheles y Diversos species,null,Napocles,Lepidoptera,Peru,null,null,A1,M,9.50,7.0 cm
+NY-297,Napocles jucunda,null,Nymphalidae  Cathonopheles y Diversos species,null,Napocles,Lepidoptera,Peru,null,null,A1,3M,27.00,7.0 cm

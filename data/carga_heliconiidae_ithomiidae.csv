@@ -1,0 +1,13 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+HE-001,Heliconius melpomene amaryllis,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,4.50,6.5 cm
+HE-002,Heliconius melpomene amaryllis,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,3M,12.00,6.5 cm
+HE-003,Heliconius erato lativitta,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,4.00,6.0 cm
+HE-004,Heliconius erato lativitta,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1/A1-,M,3.00,6.0 cm
+HE-005,Heliconius sara thamar,null,Heliconidae,null,null,Lepidoptera,Costa Rica,null,null,A1,M or F,6.00,5.5 cm
+HE-006,Heliconius sara thamar,null,Heliconidae,null,null,Lepidoptera,Costa Rica,null,null,A1,3 pcs,16.50,5.5 cm
+HE-007,Agraulis vanillae lucina,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,3.50,6.0 cm
+HE-008,Dryas iulia alcionea,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,M,5.00,8.5 cm
+HE-009,Dryas iulia alcionea,null,Heliconidae,null,null,Lepidoptera,Peru,null,null,A1,F,5.50,8.5 cm
+IT-001,Oleria baizana,null,Ithomiidae,null,null,Lepidoptera,Ecuador,null,null,A1,M,7.00,5.0 cm
+IT-002,Pteronymia alcidameia,null,Ithomiidae,null,null,Lepidoptera,Peru,null,null,A1,M,6.50,5.0 cm
+IT-003,Hypoleria lavinia,null,Ithomiidae,null,null,Lepidoptera,Costa Rica,null,null,A1,M or F,6.00,4.5 cm

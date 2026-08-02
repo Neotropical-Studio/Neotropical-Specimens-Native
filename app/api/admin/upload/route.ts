@@ -13,7 +13,14 @@ import {
   resolveCanonicalSpecimenFolder,
 } from '@/lib/mirror/contract';
 import { type SpecimenKind } from '@/lib/cloudinary/paths';
-import { uploadImage, uploadVideo, uploadModel3d } from '@/lib/services/cloudinary-upload';
+import {
+  uploadImage,
+  uploadVideo,
+  uploadModel3d,
+  assertNotNodeMediaSlotPath,
+  isAutoStudioEnabled,
+} from '@/lib/services/cloudinary-upload';
+import { publishProduction } from '@/lib/admin/publish-production';
 
 export const runtime = 'nodejs';
 
@@ -155,21 +162,47 @@ export async function POST(req: NextRequest) {
     }
     folder = resolved.folder;
     pathPolicy = 'specimen';
+    try {
+      assertNotNodeMediaSlotPath(folder);
+    } catch (e) {
+      return NextResponse.json(
+        { error: e instanceof Error ? e.message : String(e) },
+        { status: 400 },
+      );
+    }
   }
+
+  const autoStudio = isAutoStudioEnabled() && pathPolicy === 'specimen';
 
   let result: { public_id: string; secure_url?: string };
   try {
     if (documentFolder && mediaType !== 'photo_webp' && mediaType !== 'video_mp4') {
-      // Permisos / docs: tratar como imagen/raw operativo
-      result = await uploadImage(buffer, { folder, pathPolicy });
+      // Permisos / docs: liviano, sin cutout (no son especímenes).
+      result = await uploadImage(buffer, { folder, pathPolicy, industrial: true });
     } else if (mediaType === 'photo_webp' || (documentFolder && !mediaType)) {
-      result = await uploadImage(buffer, { folder, pathPolicy });
+      // Espécimen: cutout + sharpen + optimize solo; docs: solo industrial.
+      result = await uploadImage(buffer, {
+        folder,
+        pathPolicy,
+        industrial: true,
+        autoStudio: autoStudio && mediaType === 'photo_webp',
+      });
     } else if (mediaType === 'video_mp4') {
-      result = await uploadVideo(buffer, { folder, pathPolicy });
+      // Video Blender / intro: comprime solo (HLS + MP4 1280).
+      result = await uploadVideo(buffer, {
+        folder,
+        pathPolicy,
+        industrial: true,
+        autoStudio,
+      });
     } else if (mediaType === 'model_3d_glb') {
-      result = await uploadModel3d(buffer, { folder, pathPolicy });
+      result = await uploadModel3d(buffer, {
+        folder,
+        pathPolicy,
+        autoStudio,
+      });
     } else if (documentFolder) {
-      result = await uploadImage(buffer, { folder, pathPolicy });
+      result = await uploadImage(buffer, { folder, pathPolicy, industrial: true });
     } else {
       return NextResponse.json({ error: 'mediaType inválido' }, { status: 400 });
     }
@@ -178,7 +211,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (documentFolder) {
-    return NextResponse.json({ cloudinaryId: result.public_id });
+    const production = await publishProduction({
+      mode: 'cache',
+      reason: `upload:document:${documentFolder}`,
+    });
+    return NextResponse.json({ cloudinaryId: result.public_id, production });
   }
 
   const publicId = result.public_id;
@@ -280,9 +317,15 @@ export async function POST(req: NextRequest) {
     // opcional
   }
 
+  const production = await publishProduction({
+    mode: 'cache',
+    reason: `upload:specimen:${specimenId}:${view ?? mediaType}`,
+  });
+
   return NextResponse.json({
     asset: { type: mediaType, cloudinary_id: publicId, view: view ?? null },
     publicId,
     folder,
+    production,
   });
 }

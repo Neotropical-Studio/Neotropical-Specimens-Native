@@ -1,0 +1,101 @@
+code,nombre_cientifico,nombre_comun,familia,subfamilia,genero,orden,region,localidad_especifica,gps,calidad,sexo,precio,size_range
+PA-001,Battus belus varus,null,Papilionidae,null,Battus,Lepidoptera,Peru,null,null,A1,3M,9.00,8.0 cm
+PA-002,Battus belus varus,null,Papilionidae,null,Battus,Lepidoptera,Peru,null,null,A1,M,8.00,8.0 cm
+PA-003,Battus chalceus ingenuus (Ecuador),null,Papilionidae,null,Battus,Lepidoptera,Ecuador,null,null,A1,M,4.00,8.0 cm
+PA-004,Battus chalceus ingenuus (Ecuador),null,Papilionidae,null,Battus,Lepidoptera,Ecuador,null,null,A1/A1-,M,2.50,8.0 cm
+PA-005,Battus chalceus ingenuus (Ecuador),null,Papilionidae,null,Battus,Lepidoptera,Ecuador,null,null,A1,3M,10.50,8.0 cm
+PA-006,Battus crassus,null,Papilionidae,null,Battus,Lepidoptera,Peru,null,null,A1,M,4.00,8-9.0 cm
+PA-007,Battus crassus,null,Papilionidae,null,Battus,Lepidoptera,Peru,null,null,A1,3M,10.50,8-9.0 cm
+PA-008,Battus crassus,null,Papilionidae,null,Battus,Lepidoptera,Peru,"Iquitos Region, Peru",null,A1/A1-++,F,80.00,8-9.0 cm
+PA-009,Battus crassus,null,Papilionidae,null,Battus,Lepidoptera,Peru,"Iquitos Region, Peru",null,A1-,F,40.00,8-9.0 cm
+PA-010,Battus crassus,null,Papilionidae,null,Battus,Lepidoptera,Peru,"Iquitos region, Peru",null,A1,F,90.00,9-10.0 cm
+PA-011,Battus crassus (Brazil),null,Papilionidae,null,Battus,Lepidoptera,Brazil,null,null,A1/A1-,F,70.00,8-9.0 cm
+PA-012,Battus ingenuus (C.R.),null,Papilionidae,null,Battus,Lepidoptera,Costa Rica,null,null,A1/A1-,P,45.00,8.0 cm
+PA-013,Battus ingenuus (C.R.),null,Papilionidae,null,Battus,Lepidoptera,Costa Rica,null,null,"M=A1-, F=A1/A1-",P,30.00,8.0 cm
+PA-014,Battus madyes chlorodamas,null,Papilionidae,null,Battus,Lepidoptera,Peru,null,null,A1,M,4.75,7.0 cm
+PA-015,Battus madyes chlorodamas,null,Papilionidae,null,Battus,Lepidoptera,Peru,null,null,A1,3M,13.50,7.0 cm
+PA-016,Battus madyes plinius,null,Papilionidae,null,Battus,Lepidoptera,Peru,N. Peru,null,A1,M,7.00,7.0 cm
+PA-017,Battus madyes plinius,null,Papilionidae,null,Battus,Lepidoptera,Peru,N. Peru,null,A1,3M,7.00,7.0 cm
+PA-018,Battus polydamas,null,Papilionidae,null,Battus,Lepidoptera,Peru,null,null,A1,M,5.00,6-7.0 cm
+PA-019,Battus polydamas,null,Papilionidae,null,Battus,Lepidoptera,Peru,null,null,A1,3M,5.00,6-7.0 cm
+PA-020,Battus streckerianus,null,Papilionidae,null,Battus,Lepidoptera,Peru,N. Peru,null,A1,P,25.00,8.0 cm
+PA-021,Battus streckerianus,null,Papilionidae,null,Battus,Lepidoptera,Peru,N. Peru,null,A1,3F,60.00,8.0 cm
+PA-022,Battus streckerianus,null,Papilionidae,null,Battus,Lepidoptera,Peru,N. Peru,null,A1,F,15.00,8.0 cm
+PA-023,Battus streckerianus,null,Papilionidae,null,Battus,Lepidoptera,Peru,N. Peru,null,A1,M,10.00,8.0 cm
+PA-024,Battus streckerianus,null,Papilionidae,null,Battus,Lepidoptera,Peru,N. Peru,null,A1,3M,27.00,8.0 cm
+PA-025,Eurytides (Protographium) ascius,null,Papilionidae,null,Eurytides (Protographium),Lepidoptera,Argentina/Brazil,null,null,A1,M,5.50,6.0 cm
+PA-026,Eurytides (Protographium) ascius,null,Papilionidae,null,Eurytides (Protographium),Lepidoptera,Argentina/Brazil,null,null,A1,3M,12.00,6.0 cm
+PA-027,Eurytides calliste (=New ssp E. dioxippus flotti),null,Papilionidae,null,Eurytides,Lepidoptera,Costa Rica,"Costa Rica, Orotina, Atlantic Slope.",null,A1- OUT OF STOCK,M,0.00,7.5 cm
+PA-028,Eurytides dolicaon deileion,null,Papilionidae,null,Eurytides,Lepidoptera,Peru/Ecuador,null,null,A1,M,4.75,7.0 cm
+PA-029,Eurytides dolicaon deileion,null,Papilionidae,null,Eurytides,Lepidoptera,Peru/Ecuador,null,null,A1,3M,13.50,7.0 cm
+PA-030,Eurytides leucaspis,null,Papilionidae,null,Eurytides,Lepidoptera,Peru,null,null,A1,M,5.00,6-7.0 cm
+PA-031,Eurytides leucaspis,null,Papilionidae,null,Eurytides,Lepidoptera,Peru,null,null,A1,3M,13.50,6-7.0 cm
+PA-032,Eurytides serville,null,Papilionidae,null,Eurytides,Lepidoptera,Peru,null,null,A1,M,1.95,7.0 cm
+PA-033,Eurytides serville,null,Papilionidae,null,Eurytides,Lepidoptera,Peru,null,null,A1,3M,4.75,7.0 cm
+PA-034,Heraclides (Papilio) anchisiades,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1,M,4.75,7-9.0 cm
+PA-035,Heraclides (Papilio) anchisiades,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1,3M,13.50,7-9.0 cm
+PA-036,Heraclides (Papilio) anchisiades,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1,F,8.00,7-9.0 cm
+PA-037,Heraclides (Papilio) anchisiades,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1/A1-,F,5.00,7-9.0 cm
+PA-038,Heraclides (Papilio) anchisiades,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1,3F,24.00,7-9.0 cm
+PA-039,Heraclides (Papilio) anchisiades,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1,P,11.00,7-9.0 cm
+PA-040,Heraclides (Papilio) anchisiades idaeus,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Costa Rica,null,null,A1,F,8.00,7.5 cm
+PA-041,Heraclides (Papilio) anchisiades ssp? (Ecuador),null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Ecuador,null,null,"A1; M=A1, F=A1/A1-",P,10.00,null
+PA-042,Heraclides (Papilio) anchisiades ssp? (Ecuador),null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Ecuador,null,null,A1,P,15.00,8-9.0 cm
+PA-043,Heraclides (Papilio) anchisiades ssp? (Ecuador) Black FW FEMALE,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Ecuador,null,null,A1,P,17.50,8-9.0 cm
+PA-044,Heraclides (Papilio) chiansiades chiansiades,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru/Bolivia,null,null,A1 OUT OF STOCK,M,0.00,8-9.0 cm
+PA-045,Heraclides (Papilio) chiansiades chiansiades,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1/A1- OUT OF STOCK,M,0.00,8-9.0 cm
+PA-046,Heraclides (Papilio) chiansiades chiansiades,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru/Bolivia,null,null,A1/A1- OUT OF STOCK,3M,0.00,8-9.0 cm
+PA-047,Heraclides (Papilio) hectorides,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Brazil,null,null,A1-,M,6.00,6-7.0 cm
+PA-048,Heraclides (Papilio) hectorides,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Brazil,null,null,A1,M,12.00,6-7.0 cm
+PA-049,Heraclides (Papilio) torquatus torquatus,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1,M,4.50,7-8.0 cm
+PA-050,Heraclides (Papilio) torquatus torquatus,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1,3M,12.00,7-8.0 cm
+PA-051,Heraclides (Papilio) torquatus torquatus (Peru) f. caudius,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1,F,120.00,7-8.0 cm
+PA-052,Heraclides (Papilio) torquatus torquatus (Peru) f. caudius,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1/A1-,F,70.00,7-8.0 cm
+PA-053,Heraclides (Papilio) torquatus torquatus (Peru) f. caudius,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1-,F,45.00,7-8.0 cm
+PA-054,Heraclides (Papilio) torquatus torquatus (Peru) f. flavidor,null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1/A1-++,F,95.00,8.0 cm
+PA-055,Heraclides (Papilio) torquatus torquatus (Yellow & whitw FW patches),null,Papilionidae,null,Heraclides (Papilio),Lepidoptera,Peru,null,null,A1/A1-,F,25.00,8.0 cm
+PA-056,Mimoides (Eurytides) ariarathes gayi,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru,null,null,A1,M,4.00,4-5.0 cm
+PA-057,Mimoides (Eurytides) ariarathes gayi,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru,null,null,A1,3M,10.50,4-5.0 cm
+PA-058,Mimoides (Eurytides) ariarathes illuminatus,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Ecuador,null,null,A1/A1-,M,10.00,7.0 cm
+PA-059,Mimoides (Eurytides) euryleon anatmus,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Ecuador,null,null,A1-,M,10.00,6-7.0 cm
+PA-060,Mimoides (Eurytides) pausianus cleombrotus,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru/Ecuador,null,null,A1,M,10.00,6.5 cm
+PA-061,Mimoides (Eurytides) pausianus cleombrotus,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru/Ecuador,null,null,A1,3M,8.00,6.5 cm
+PA-062,Mimoides (Eurytides) protodamas,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Brazil,null,null,A1/A1- to A1-,M,3.00,6-7.0 cm
+PA-063,Mimoides (Eurytides) xeniades (= harmodius),null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru,null,null,A1,M,3.50,5.0 cm
+PA-064,Mimoides (Eurytides) xeniades (= harmodius),null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru,null,null,A1,3M,7.50,5-6.0 cm
+PA-065,Mimoides (Eurytides) xeniades (= harmodius),null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru,null,null,A1,F,75.00,7.0 cm
+PA-066,Mimoides (Eurytides) xeniades (= harmodius),null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru,null,null,A1,2F,140.00,7-8 cm
+PA-067,Mimoides (Eurytides) xynias trapeza,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Ecuador,null,null,A1/A1-,M,2.00,8.0 cm
+PA-068,Mimoides (Eurytides) xynias trapeza,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Ecuador,null,null,A1,M,4.00,8.0 cm
+PA-069,Mimoides (Eurytides) xynias trapeza,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Ecuador,null,null,A1,3M,10.50,8.0 cm
+PA-070,Mimoides (Eurytides) xynias xynias,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru,null,null,A1,M,10.00,5.5 cm
+PA-071,Mimoides (Eurytides) xynias xynias,null,Papilionidae,null,Mimoides (Eurytides),Lepidoptera,Peru,null,null,A1/A1-,M,8.00,5.5 cm
+MO-074,Morpho cypris cypris,null,Morphidae,null,Morpho,Lepidoptera,Colombia,null,null,A1-,3M,120.00,10-11.0 cm
+PA-072,Neographium (Eurytides) agesilaus ssp,null,Papilionidae,null,Neographium (Eurytides),Lepidoptera,Peru,null,null,A1,M,3.00,5.5 cm
+PA-073,Neographium (Eurytides) agesilaus ssp,null,Papilionidae,null,Neographium (Eurytides),Lepidoptera,Peru,null,null,A1,3M,7.50,5.5 cm
+PA-074,Neographium (Eurytides) dioxippus diores,null,Papilionidae,null,Neographium (Eurytides),Lepidoptera,Peru,null,null,A1,M,4.50,6-7.0 cm
+PA-075,Neographium (Eurytides) dioxippus diores,null,Papilionidae,null,Neographium (Eurytides),Lepidoptera,Peru,null,null,A1,3M,11.25,6-7.0 cm
+PA-076,Neographium (Eurytides) dioxippus ssp?,null,Papilionidae,null,Neographium (Eurytides),Lepidoptera,Ecuador,null,null,A1,M,6.00,7-8.0 cm
+PA-077,Neographium (Eurytides) thyastes thyastinus,null,Papilionidae,null,Neographium (Eurytides),Lepidoptera,Peru,null,null,A1,M,6.50,8.0 cm
+PA-078,Neographium (Eurytides) thyastes thyastinus,null,Papilionidae,null,Neographium (Eurytides),Lepidoptera,Peru,null,null,A1,3M,18.00,8.0 cm
+PA-079,Neographium (Eurytides) thyastes thyastinus,null,Papilionidae,null,Neographium (Eurytides),Lepidoptera,Peru,null,null,A1,F,50.00,8.0 cm
+PA-080,Papilio (Heraclides) androgeus,null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Peru,null,null,A1,M,6.50,12.0 cm
+PA-081,Papilio (Heraclides) androgeus,null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Peru,null,null,A1,3M,18.00,12.0 cm
+PA-082,Papilio (Heraclides) androgeus (2 In Stock),null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Peru,null,null,A1,F,65.00,12.0 cm
+PA-083,Papilio (Heraclides) isodorus tingo,null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Peru,null,null,A1,M,3.50,6.5 cm
+PA-084,Papilio (Heraclides) isodorus tingo,null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Peru,null,null,A1,3M,9.00,6.5 cm
+PA-085,Papilio (Heraclides) isodorus tingo,null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Peru,null,null,A1,F,45.00,7.0 cm
+PA-086,Papilio (Heraclides) paeon escomeli (=perugrino),null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Peru,null,null,A1 OUT OF STOCK,M,0.00,8.0 cm
+PA-087,Papilio (Heraclides) thoas brasiliensis,null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Argentina/Brazil,null,null,A1,M,4.00,9-10.0 cm
+PA-088,Papilio (Heraclides) thoas cinyras,null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Peru,null,null,A1,M,4.50,12.0 cm
+PA-089,Papilio (Heraclides) thoas cinyras,null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Peru,null,null,A1,3M,12.00,12.0 cm
+PA-090,Papilio (Heraclides) thoas neacles,null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Costa Rica,null,null,A1,M,4.50,9-10 cm
+PA-091,Papilio (Heraclides) thoas neacles (Ecuador),null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Ecuador,null,null,A1,M,4.50,10.0 cm
+PA-092,Papilio (Heraclides) thoas neacles (Ecuador),null,Papilionidae,null,Papilio (Heraclides),Lepidoptera,Ecuador,null,null,A1,3M,12.00,10.0 cm
+PA-093,Papilio xanthopleura,null,Papilionidae,null,Papilio,Lepidoptera,Peru/Brazil,null,null,A1/A1-,M,40.00,11.0 cm
+PA-094,Parides aeneas bolivar,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,P,17.50,7.0 cm
+PA-095,Parides aeneas bolivar,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,M,12.00,7.0 cm
+PA-096,Parides aeneas bolivar,null,Papilionidae,null,Parides,Lepidoptera,Peru,null,null,A1,2M,20.00,7.0 cm
+PA-097,Parides aeneas bolivar (Ecuador),null,Papilionidae,null,Parides,Lepidoptera,Ecuador,null,null,A1,M,16.00,7.0 cm
+PA-098,Parides aeneas huallaga,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Huallaga Valley, Peru",null,A1/A1-,F,15.00,8-9.0 cm
+PA-099,Parides aeneas huallaga,null,Papilionidae,null,Parides,Lepidoptera,Peru,"Huallaga Valley, Peru",null,A1,F,20.00,8-9.0 cm
