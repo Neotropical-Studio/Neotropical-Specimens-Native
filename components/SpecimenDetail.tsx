@@ -562,8 +562,8 @@ export default function SpecimenDetail({
 
       <main className="mx-auto max-w-7xl space-y-12 px-6 py-10">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-          {/* Panel izquierdo: visor de imágenes */}
-          <div className="space-y-6 lg:col-span-7">
+          {/* Panel izquierdo: foto → dorsal/ventral → catálogo dinámico */}
+          <div className="flex flex-col gap-6 lg:col-span-7">
             <div className="relative flex min-h-[380px] items-center justify-center overflow-visible bg-transparent md:min-h-[480px]">
               {/* Badge superior de oferta: Morpho siempre -15% */}
               {(discountPercent != null || isMorpho) && (
@@ -698,12 +698,14 @@ export default function SpecimenDetail({
               </div>
             )}
 
-            {/* Catálogo dinámico: debajo de dorsal / ventral (visor), no del carrito */}
-            <section className="rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-5">
+            {/* SIEMPRE debajo de Dorsal/Ventral — columna izquierda, NUNCA junto al carrito */}
+            <section
+              id="catalogo-dinamico"
+              className="scroll-mt-28 rounded-2xl border border-emerald-500/40 bg-black/40 p-4 shadow-[0_0_24px_rgba(16,185,129,0.12)] sm:p-5"
+            >
               <div className="mb-4">
                 <span
-                  className="block text-[10px] font-bold uppercase tracking-[0.22em]"
-                  style={{ color: accent }}
+                  className="block text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-300"
                 >
                   {t('product.dynamic_catalog_title', 'Catálogo dinámico e inteligente')}
                 </span>
@@ -715,7 +717,7 @@ export default function SpecimenDetail({
                 </h2>
               </div>
               {recommendations.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-2 gap-3">
                   {recommendations.slice(0, 4).map((item) => {
                     const itemAccent = resolveTaxonPalette({
                       order: item.order,
