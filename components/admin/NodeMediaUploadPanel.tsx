@@ -936,8 +936,9 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
           ) : null}
 
           <p className="mt-2 rounded border border-neutral-800 bg-neutral-950/60 px-2 py-1.5 text-[10px] text-neutral-400">
-            Al grabar se aplican tags: neo_node_card|video · neo_brand_neotropical_specimens ·
-            neo_catalogue · neo_optimized. El catálogo los usa para mostrar CARD/VIDEO.
+            Industrial: Cloudinary (archivo) + registry Supabase <code className="text-neutral-300">node_media</code>{' '}
+            (índice). Tags neo_node_* de respaldo. Eliminar borra archivo + fila → el catálogo deja de
+            mostrar. Sin ghosts ni hardcode de nodos.
           </p>
 
           {error && (

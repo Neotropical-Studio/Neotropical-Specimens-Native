@@ -24,6 +24,10 @@ import {
   uploadVideo,
 } from '@/lib/services/cloudinary-upload';
 import { invalidateNodeMediaInventory } from '@/lib/services/node-media-inventory';
+import {
+  deleteNodeMediaSlot,
+  upsertNodeMedia,
+} from '@/lib/services/node-media-registry';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
@@ -116,16 +120,23 @@ export async function DELETE(req: NextRequest) {
 
   try {
     const { deleted } = await clearNodeMediaFolder(folder);
-    invalidateNodeMediaInventory();
-    return NextResponse.json({
-      ok: true,
-      deleted,
+    // Registry DB + cache: fuente de verdad del storefront (industrial).
+    const registryDeleted = await deleteNodeMediaSlot({
       targetId: target.id,
       slot,
       folder,
-      message: deleted
-        ? `Eliminado(s) ${deleted}. Podés subir otro CARD/VIDEO.`
-        : 'Slot vacío.',
+    });
+    invalidateNodeMediaInventory(folder);
+    return NextResponse.json({
+      ok: true,
+      deleted,
+      registryDeleted,
+      targetId: target.id,
+      slot,
+      folder,
+      message: deleted || registryDeleted
+        ? `Eliminado Cloudinary=${deleted}, registry=${registryDeleted}. Podés subir otro CARD/VIDEO.`
+        : 'Slot vacío (Cloudinary + registry).',
     });
   } catch (e) {
     return NextResponse.json(
@@ -217,7 +228,17 @@ export async function POST(req: NextRequest) {
     };
 
     if (kind === 'video') {
-      const res = await uploadVideo(buf, { ...overwrite, industrial: true });
+      const res = await uploadVideo(buf, { ...overwrite, industrial: true, autoStudio: true });
+      await upsertNodeMedia({
+        target_id: target.id,
+        slot,
+        public_id: res.public_id,
+        resource_type: 'video',
+        folder,
+        node_path: target.nodePath,
+        level: target.level,
+        secure_url: res.secure_url,
+      });
       invalidateNodeMediaInventory();
       return NextResponse.json({
         ok: true,
@@ -230,11 +251,23 @@ export async function POST(req: NextRequest) {
         secureUrl: res.secure_url,
         tags,
         optimized: true,
+        autoStudio: true,
+        registry: true,
       });
     }
 
     if (kind === 'model3d') {
-      const res = await uploadModel3d(buf, overwrite);
+      const res = await uploadModel3d(buf, { ...overwrite, autoStudio: true });
+      await upsertNodeMedia({
+        target_id: target.id,
+        slot: 'card',
+        public_id: res.public_id,
+        resource_type: 'raw',
+        folder,
+        node_path: target.nodePath,
+        level: target.level,
+        secure_url: res.secure_url,
+      });
       invalidateNodeMediaInventory();
       return NextResponse.json({
         ok: true,
@@ -247,10 +280,23 @@ export async function POST(req: NextRequest) {
         secureUrl: res.secure_url,
         tags,
         optimized: true,
+        autoStudio: true,
+        registry: true,
       });
     }
 
+    // CARD: optimize + sharpen, SIN cutout (la escena/fondo del nodo se conserva).
     const res = await uploadImage(buf, { ...overwrite, industrial: true });
+    await upsertNodeMedia({
+      target_id: target.id,
+      slot,
+      public_id: res.public_id,
+      resource_type: 'image',
+      folder,
+      node_path: target.nodePath,
+      level: target.level,
+      secure_url: res.secure_url,
+    });
     invalidateNodeMediaInventory();
     return NextResponse.json({
       ok: true,
@@ -263,6 +309,8 @@ export async function POST(req: NextRequest) {
       secureUrl: res.secure_url,
       tags,
       optimized: true,
+      autoStudio: false,
+      registry: true,
     });
   } catch (e) {
     return NextResponse.json(

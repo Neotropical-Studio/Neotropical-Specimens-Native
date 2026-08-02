@@ -37,11 +37,24 @@ interface UploadOptions {
    * Fotos grandes → limit 2048 + eco; video → 1280p / ~800kbps.
    */
   industrial?: boolean;
+  /**
+   * Estudio automático (sin vigilancia):
+   * foto → cutout IA + sharpen + optimize + eager web
+   * (usar en especímenes; NO en CARD de catálogo con escena).
+   */
+  autoStudio?: boolean;
 }
 
 /** Master liviano + eager web (catálogo / ficha). */
 const IMAGE_TRANSFORM = [
-  { fetch_format: 'auto', quality: 'auto:good', width: 2048, crop: 'limit', flags: 'strip_profile' },
+  {
+    fetch_format: 'auto',
+    quality: 'auto:good',
+    width: 2048,
+    crop: 'limit',
+    flags: 'strip_profile',
+    effect: 'sharpen:80',
+  },
 ];
 const IMAGE_EAGER_OPTIMIZED = [
   { fetch_format: 'webp', quality: 'auto:eco', width: 720, crop: 'limit' },
@@ -50,16 +63,31 @@ const IMAGE_EAGER_OPTIMIZED = [
 ];
 /** Escala industrial: más agresivo (producto / lote). */
 const IMAGE_TRANSFORM_INDUSTRIAL = [
-  { fetch_format: 'auto', quality: 'auto:eco', width: 2048, crop: 'limit', flags: 'strip_profile' },
+  {
+    fetch_format: 'auto',
+    quality: 'auto:eco',
+    width: 2048,
+    crop: 'limit',
+    flags: 'strip_profile',
+    effect: 'sharpen:80',
+  },
 ];
 const IMAGE_EAGER_INDUSTRIAL = [
   { fetch_format: 'webp', quality: 'auto:eco', width: 480, crop: 'limit' },
   { fetch_format: 'webp', quality: 'auto:eco', width: 960, crop: 'limit' },
   { fetch_format: 'webp', quality: 'auto:good', width: 1440, crop: 'limit' },
 ];
-const BG_REMOVAL_TRANSFORM = [
+/** Cutout quirúrgico + nítido + liviano (PNG/WebP con alfa vía f_auto). */
+const AUTO_STUDIO_IMAGE_TRANSFORM = [
   { effect: 'background_removal' },
-  { fetch_format: 'auto', quality: 'auto:best' },
+  {
+    effect: 'sharpen:100',
+    fetch_format: 'auto',
+    quality: 'auto:good',
+    width: 2048,
+    crop: 'limit',
+    flags: 'strip_profile',
+  },
 ];
 const VIDEO_EAGER = [
   { streaming_profile: 'hd_hls', format: 'm3u8' },
@@ -82,20 +110,45 @@ const VIDEO_TRANSFORM_INDUSTRIAL = [
   },
 ];
 
+function mergeTags(
+  existing: string[] | undefined,
+  extra: string[],
+): string[] {
+  return [...new Set([...(existing ?? []), ...extra])];
+}
+
+/**
+ * true salvo que env diga lo contrario.
+ * AUTO_STUDIO=0 / false → desactiva cutout automático en uploads de espécimen.
+ */
+export function isAutoStudioEnabled(): boolean {
+  const v = (process.env.AUTO_STUDIO ?? process.env.NEXT_PUBLIC_AUTO_STUDIO ?? '1')
+    .trim()
+    .toLowerCase();
+  return !(v === '0' || v === 'false' || v === 'off' || v === 'no');
+}
+
 export async function uploadImage(
   file: string | Buffer,
   opts: UploadOptions = {},
 ): Promise<UploadApiResponse> {
-  const { removeBg, industrial, ...rest } = opts;
-  if (removeBg) {
+  const { removeBg, industrial, autoStudio, ...rest } = opts;
+  const studio = Boolean(autoStudio);
+  const doBg = Boolean(removeBg || studio);
+
+  if (doBg) {
     return upload(file, 'image', {
       ...rest,
-      transformation: BG_REMOVAL_TRANSFORM,
+      tags: mergeTags(rest.tags, ['neo_auto_studio', 'neo_optimized', 'neo_bg_removed']),
+      transformation: AUTO_STUDIO_IMAGE_TRANSFORM,
       background_removal: 'cloudinary_ai',
+      eager: industrial || studio ? IMAGE_EAGER_INDUSTRIAL : IMAGE_EAGER_OPTIMIZED,
+      eager_async: true,
     });
   }
   return upload(file, 'image', {
     ...rest,
+    tags: mergeTags(rest.tags, industrial || studio ? ['neo_optimized'] : []),
     transformation: industrial ? IMAGE_TRANSFORM_INDUSTRIAL : IMAGE_TRANSFORM,
     eager: industrial ? IMAGE_EAGER_INDUSTRIAL : IMAGE_EAGER_OPTIMIZED,
     eager_async: true,
@@ -106,13 +159,15 @@ export async function uploadVideo(
   file: string | Buffer,
   opts: UploadOptions = {},
 ): Promise<UploadApiResponse> {
-  const { industrial, ...rest } = opts;
+  const { industrial, autoStudio, ...rest } = opts;
+  const heavy = Boolean(industrial || autoStudio);
   return upload(file, 'video', {
     ...rest,
+    tags: mergeTags(rest.tags, ['neo_auto_studio', 'neo_optimized', 'neo_blender_ready']),
     eager: VIDEO_EAGER,
     eager_async: true,
     streaming_profile: 'hd_hls',
-    transformation: industrial
+    transformation: heavy
       ? VIDEO_TRANSFORM_INDUSTRIAL
       : [{ quality: 'auto:eco', width: 1280, crop: 'limit', bit_rate: '1000k' }],
   });
@@ -122,7 +177,18 @@ export async function uploadModel3d(
   file: string | Buffer,
   opts: UploadOptions = {},
 ): Promise<UploadApiResponse> {
-  return upload(file, 'raw', { ...opts });
+  const { autoStudio, industrial, removeBg: _rb, ...rest } = opts;
+  void _rb;
+  void industrial;
+  return upload(file, 'raw', {
+    ...rest,
+    tags: mergeTags(rest.tags, [
+      'neo_auto_studio',
+      'neo_optimized',
+      'neo_model3d',
+      ...(autoStudio ? ['neo_blender_glb'] : []),
+    ]),
+  });
 }
 
 /**

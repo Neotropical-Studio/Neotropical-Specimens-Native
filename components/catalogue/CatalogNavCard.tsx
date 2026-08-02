@@ -2,6 +2,7 @@
 
 // Card de navegación del catálogo (rubro / categoría / familia).
 // Familias: cover en card; el video de entrada se reproduce en FamilyIntroGate.
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { catalogCardImageUrl } from '@/lib/cloudinary/url';
@@ -28,6 +29,8 @@ export default function CatalogNavCard({
     node.coverPublicId
       ? catalogCardImageUrl(node.coverPublicId, { width: 720, chameleonHex })
       : null;
+  const [coverFailed, setCoverFailed] = useState(false);
+  const showCover = Boolean(cover) && !coverFailed;
   const hasVideo = showCardVideo && Boolean(node.videoPublicId?.trim());
 
   return (
@@ -36,7 +39,7 @@ export default function CatalogNavCard({
       className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/50 transition hover:border-emerald-500/35 hover:bg-neutral-900/80"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-neutral-950">
-        {cover ? (
+        {showCover && cover ? (
           <Image
             src={cover}
             alt=""
@@ -44,6 +47,7 @@ export default function CatalogNavCard({
             sizes="(max-width:768px) 100vw, 33vw"
             unoptimized
             className="object-cover transition duration-500 group-hover:scale-[1.03]"
+            onError={() => setCoverFailed(true)}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-white/30">

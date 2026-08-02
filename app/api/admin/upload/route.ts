@@ -13,7 +13,13 @@ import {
   resolveCanonicalSpecimenFolder,
 } from '@/lib/mirror/contract';
 import { type SpecimenKind } from '@/lib/cloudinary/paths';
-import { uploadImage, uploadVideo, uploadModel3d, assertNotNodeMediaSlotPath } from '@/lib/services/cloudinary-upload';
+import {
+  uploadImage,
+  uploadVideo,
+  uploadModel3d,
+  assertNotNodeMediaSlotPath,
+  isAutoStudioEnabled,
+} from '@/lib/services/cloudinary-upload';
 
 export const runtime = 'nodejs';
 
@@ -165,17 +171,35 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const autoStudio = isAutoStudioEnabled() && pathPolicy === 'specimen';
+
   let result: { public_id: string; secure_url?: string };
   try {
     if (documentFolder && mediaType !== 'photo_webp' && mediaType !== 'video_mp4') {
-      // Permisos / docs: tratar como imagen/raw operativo
+      // Permisos / docs: liviano, sin cutout (no son especímenes).
       result = await uploadImage(buffer, { folder, pathPolicy, industrial: true });
     } else if (mediaType === 'photo_webp' || (documentFolder && !mediaType)) {
-      result = await uploadImage(buffer, { folder, pathPolicy, industrial: true });
+      // Espécimen: cutout + sharpen + optimize solo; docs: solo industrial.
+      result = await uploadImage(buffer, {
+        folder,
+        pathPolicy,
+        industrial: true,
+        autoStudio: autoStudio && mediaType === 'photo_webp',
+      });
     } else if (mediaType === 'video_mp4') {
-      result = await uploadVideo(buffer, { folder, pathPolicy, industrial: true });
+      // Video Blender / intro: comprime solo (HLS + MP4 1280).
+      result = await uploadVideo(buffer, {
+        folder,
+        pathPolicy,
+        industrial: true,
+        autoStudio,
+      });
     } else if (mediaType === 'model_3d_glb') {
-      result = await uploadModel3d(buffer, { folder, pathPolicy });
+      result = await uploadModel3d(buffer, {
+        folder,
+        pathPolicy,
+        autoStudio,
+      });
     } else if (documentFolder) {
       result = await uploadImage(buffer, { folder, pathPolicy, industrial: true });
     } else {

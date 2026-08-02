@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Link from 'next/link';
-import SpecimenCard from '@/components/SpecimenCard';
 import CatalogBackLink from '@/components/catalogue/CatalogBackLink';
+import CatalogSpeciesPager from '@/components/catalogue/CatalogSpeciesPager';
 import FamilyIntroGate from '@/components/catalogue/FamilyIntroGate';
 import { getI18n } from '@/lib/i18n/index';
 import {
@@ -20,6 +20,7 @@ import {
 } from '@/lib/specimens/catalogueNav';
 import { loadCatalogueSpecimens } from '@/lib/specimens/loadCatalogue';
 import type { InventoryRubroId } from '@/lib/specimens/rubros';
+import { catalogueSpeciesPerPage } from '@/lib/specimens/cataloguePagination';
 
 export const revalidate = 0;
 
@@ -195,6 +196,7 @@ export default async function CatalogueFamiliaPage({
             <p className="mt-2 text-sm text-white/55">
               {list.length}{' '}
               {i18n.t('catalogue.specimens', 'especímenes')} ·{' '}
+              {catalogueSpeciesPerPage()} {i18n.t('catalogue.per_page', 'por página')} ·{' '}
               {i18n.t('catalogue.family_scope', 'solo esta familia')}
             </p>
           </header>
@@ -213,20 +215,15 @@ export default async function CatalogueFamiliaPage({
               )}
             </p>
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {list.map((s) => (
-                <SpecimenCard
-                  key={s.id}
-                  s={s}
-                  strings={i18n.strings}
-                  lang={i18n.locale}
-                  returnFamilyHref={catalogHref}
-                  returnFamilyLabel={familyNode.label}
-                  returnCategoryHref={familiesHref}
-                  returnCategoryLabel={category.label}
-                />
-              ))}
-            </div>
+            <CatalogSpeciesPager
+              specimens={list}
+              strings={i18n.strings}
+              lang={i18n.locale}
+              returnFamilyHref={catalogHref}
+              returnFamilyLabel={familyNode.label}
+              returnCategoryHref={familiesHref}
+              returnCategoryLabel={category.label}
+            />
           )}
 
           <div className="mt-10 flex flex-wrap gap-2 border-t border-white/10 pt-6">
