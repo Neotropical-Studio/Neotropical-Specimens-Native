@@ -51,6 +51,9 @@ export interface SpecimenView {
   order: string | null;
   family: string | null;
   genus: string | null;
+  /** Epíteto específico (columna especie). */
+  speciesEpithet: string | null;
+  subspecies: string | null;
   regionName: string | null;
   regionCode: string | null;
   country: string | null;
@@ -359,6 +362,8 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
     null;
   const genus =
     native?.genus ?? str(row.taxonomy?.genus_name) ?? str(row.genero) ?? str(row.metadata?.genus) ?? null;
+  const speciesEpithet = str(row.especie) ?? str(row.metadata?.especie) ?? null;
+  const subspecies = str(row.subespecie) ?? str(row.metadata?.subespecie) ?? null;
   const rubro = detectRubro({
     mediaHint: primaryImage ?? str(row.rubro),
     order,
@@ -394,6 +399,8 @@ export function toSpecimenView(row: SpecimenRow): SpecimenView {
     order,
     family,
     genus,
+    speciesEpithet,
+    subspecies,
     regionName:
       native?.regionName ??
       str(regionObj?.region_name) ??

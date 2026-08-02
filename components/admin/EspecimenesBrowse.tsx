@@ -30,10 +30,7 @@ import {
 import { DRIED_SPECIMEN_REGION_FOLDERS } from '@/scripts/sync-cloudinary/roots';
 import type { SpecimenView } from '@/lib/specimens/view';
 
-export interface AdminSpecimenRow extends SpecimenView {
-  speciesEpithet?: string | null;
-  subspecies?: string | null;
-}
+export type AdminSpecimenRow = SpecimenView;
 
 /** Familia del catálogo (Cloudinary/DB), no solo de fichas existentes. */
 export type CatalogueFamilyOption = {
