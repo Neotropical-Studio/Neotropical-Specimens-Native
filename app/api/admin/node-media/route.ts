@@ -156,6 +156,109 @@ export async function POST(req: NextRequest) {
   const admin = await getCurrentAdmin();
   if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
+  const contentType = req.headers.get('content-type') ?? '';
+
+  // Publicar media YA subido a la web (sin elegir archivo nuevo).
+  if (contentType.includes('application/json')) {
+    let body: Record<string, unknown> = {};
+    try {
+      body = (await req.json()) as Record<string, unknown>;
+    } catch {
+      return NextResponse.json({ error: 'JSON inválido' }, { status: 400 });
+    }
+    if (String(body.action ?? '') !== 'publish-existing') {
+      return NextResponse.json(
+        { error: 'action inválida (usa publish-existing)' },
+        { status: 400 },
+      );
+    }
+    const targetId = String(body.targetId ?? '').trim();
+    const slot = parseSlot(String(body.slot ?? ''));
+    if (!targetId || !slot) {
+      return NextResponse.json({ error: 'Faltan targetId y slot' }, { status: 400 });
+    }
+
+    const resolved = await resolveFolder(targetId, slot);
+    if ('error' in resolved && !('folder' in resolved)) {
+      return NextResponse.json({ error: resolved.error }, { status: 400 });
+    }
+    const { target, folder } = resolved as {
+      target: NodeMediaUploadTarget;
+      folder: string;
+    };
+
+    try {
+      const items = await listFolderResources(folder, 'all');
+      const primary =
+        items.find((i) => i.publicId.endsWith('/cover') || i.publicId.endsWith('/intro')) ??
+        items[0] ??
+        null;
+      if (!primary) {
+        return NextResponse.json(
+          {
+            error:
+              'No hay foto/video subido en este nodo. Primero elegí un archivo con Galería/Cámara y GRABÁ.',
+          },
+          { status: 404 },
+        );
+      }
+
+      const resourceType =
+        primary.resourceType === 'video'
+          ? 'video'
+          : primary.resourceType === 'raw'
+            ? 'raw'
+            : 'image';
+
+      try {
+        await upsertNodeMedia({
+          target_id: target.id,
+          slot,
+          public_id: primary.publicId,
+          resource_type: resourceType,
+          folder,
+          node_path: target.nodePath,
+          level: target.level,
+          secure_url: primary.secureUrl,
+          version: primary.version,
+        });
+      } catch (regErr) {
+        // Tabla node_media puede faltar: igual revalidamos tienda con versión Cloudinary.
+        console.warn(
+          '[node-media] publish-existing registry upsert skipped',
+          regErr instanceof Error ? regErr.message : regErr,
+        );
+      }
+
+      invalidateNodeMediaInventory();
+      const production = await publishProduction({
+        mode: 'cache',
+        reason: `node-media:publish-existing:${target.id}:${slot}`,
+      });
+
+      return NextResponse.json({
+        ok: true,
+        published: true,
+        slot,
+        targetId: target.id,
+        folder,
+        publicId: primary.publicId,
+        secureUrl: primary.secureUrl,
+        version: primary.version,
+        production,
+        message:
+          slot === 'video'
+            ? 'Video publicado en la web (caché de producción actualizada).'
+            : 'Foto publicada en la web (caché de producción actualizada).',
+      });
+    } catch (e) {
+      return NextResponse.json(
+        { error: e instanceof Error ? e.message : String(e) },
+        { status: 500 },
+      );
+    }
+  }
+
   const formData = await req.formData();
   const file = formData.get('file');
   const targetId = String(formData.get('targetId') ?? '');

@@ -6,7 +6,8 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
-  RefreshCw,
+  FolderOpen,
+  Globe,
   Save,
   Trash2,
 } from 'lucide-react';
@@ -413,16 +414,70 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
       await grabarFile(pendingFile);
       return;
     }
-    // Foto/video ya subido: abrir selector para reemplazar (no dejar el botón apagado).
-    openUpdatePicker(slot);
+    // Sin archivo nuevo: publicar en la web lo que ya está en Cloudinary.
+    await publishExistingToWeb(slot);
   }
 
-  /** Abrir selector → subir/reemplazar CARD o VIDEO de una. */
+  /** Publicar CARD/VIDEO ya subido → tienda (NO abre galería). */
+  async function publishExistingToWeb(which: Slot) {
+    if (busy || stage === 'catalogo') return;
+    const target = selected ?? filtered[0] ?? null;
+    if (!target) {
+      setError('No hay nodo seleccionado para publicar.');
+      return;
+    }
+    setSlot(which);
+    setBusy(true);
+    setError(null);
+    setOk(null);
+    try {
+      const res = await fetch('/api/admin/node-media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'publish-existing',
+          targetId: target.id,
+          slot: which,
+        }),
+      });
+      const json = (await res.json()) as {
+        error?: string;
+        message?: string;
+        publicId?: string;
+        secureUrl?: string;
+        production?: { ok?: boolean };
+      };
+      if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
+      const at = new Date().toLocaleString('es-PE', { hour12: false });
+      if (json.secureUrl && json.publicId) {
+        const next: MediaItem = {
+          publicId: json.publicId,
+          secureUrl: json.secureUrl,
+          resourceType: which === 'video' ? 'video' : 'image',
+        };
+        setCurrent(next);
+        setSlotStatus((prev) => ({ ...prev, [which]: next }));
+      } else {
+        await refreshCurrent(target.id, which);
+      }
+      setOk(
+        `${json.message ?? 'Publicado en la web'} · ${at}` +
+          (json.production?.ok === false ? ' · prod: revisar' : ''),
+      );
+      setUploads((n) => n + 1);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** Abrir galería → elegir OTRA foto/video y reemplazar. */
   function openUpdatePicker(which: Slot) {
     if (busy || stage === 'catalogo') return;
     const target = selected ?? filtered[0] ?? null;
     if (!target) {
-      setError('No hay nodo seleccionado para actualizar.');
+      setError('No hay nodo seleccionado.');
       return;
     }
     if (selected?.id !== target.id) setTargetId(target.id);
@@ -430,7 +485,6 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
     setError(null);
     setOk(null);
     clearPending();
-    // next tick: el input no debe estar disabled al abrir el diálogo
     window.setTimeout(() => {
       if (which === 'video') updateVideoInputRef.current?.click();
       else updateCardInputRef.current?.click();
@@ -877,26 +931,39 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                       <p className="mb-2 text-[11px] text-neutral-600">Sin archivo</p>
                     )}
                     <div className="flex flex-col gap-1.5">
+                      {item ? (
+                        <button
+                          type="button"
+                          disabled={busy || (!selected && filtered.length === 0)}
+                          onClick={() => void publishExistingToWeb(s)}
+                          className={`inline-flex min-h-[48px] w-full items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 text-sm font-bold touch-manipulation disabled:cursor-not-allowed disabled:opacity-35 ${
+                            s === 'video'
+                              ? 'border-violet-500 bg-violet-700 text-white hover:bg-violet-600'
+                              : 'border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500'
+                          }`}
+                        >
+                          <Globe size={15} />
+                          {busy && slot === s
+                            ? 'Actualizando…'
+                            : s === 'video'
+                              ? 'Actualizar video subido'
+                              : 'Actualizar foto subida'}
+                        </button>
+                      ) : null}
                       <button
                         type="button"
                         disabled={busy || (!selected && filtered.length === 0)}
                         onClick={() => openUpdatePicker(s)}
-                        className={`inline-flex min-h-[48px] w-full items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 text-sm font-bold touch-manipulation disabled:cursor-not-allowed disabled:opacity-35 ${
-                          s === 'video'
-                            ? 'border-violet-500 bg-violet-700 text-white hover:bg-violet-600'
-                            : 'border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500'
-                        }`}
+                        className="inline-flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-xl border border-sky-700 bg-sky-950 px-2 py-2 text-xs font-semibold text-sky-100 touch-manipulation hover:bg-sky-900 disabled:cursor-not-allowed disabled:opacity-35"
                       >
-                        <RefreshCw size={15} />
-                        {busy && slot === s
-                          ? 'Actualizando…'
-                          : item
-                            ? s === 'video'
-                              ? 'Actualizar video subido'
-                              : 'Actualizar foto subida'
-                            : s === 'video'
-                              ? 'Subir VIDEO'
-                              : 'Subir CARD'}
+                        <FolderOpen size={14} />
+                        {item
+                          ? s === 'video'
+                            ? 'Abrir galería (otra video)'
+                            : 'Abrir galería (otra foto)'
+                          : s === 'video'
+                            ? 'Abrir galería · VIDEO'
+                            : 'Abrir galería · CARD'}
                       </button>
                       <button
                         type="button"
@@ -950,11 +1017,11 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
             <div className="flex w-full flex-wrap gap-2">
               <button
                 type="button"
-                disabled={busy || (!selected && filtered.length === 0)}
+                disabled={busy || (!selected && filtered.length === 0) || (!pendingFile && !current)}
                 onClick={() => void handleGrabar()}
                 className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-600 bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white touch-manipulation hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-[44px] sm:flex-none"
               >
-                <Save size={16} />
+                {pendingFile ? <Save size={16} /> : <Globe size={16} />}
                 {busy
                   ? pendingFile
                     ? 'Grabando…'
@@ -963,15 +1030,21 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                     ? isVideo
                       ? 'GRABAR VIDEO'
                       : 'GRABAR CARD'
-                    : current
-                      ? isVideo
-                        ? 'Actualizar video subido'
-                        : 'Actualizar foto subida'
-                      : isVideo
-                        ? 'Subir VIDEO'
-                        : 'Subir CARD'}
+                    : isVideo
+                      ? 'Actualizar video subido'
+                      : 'Actualizar foto subida'}
               </button>
-              {pendingFile ? (
+              {!pendingFile ? (
+                <button
+                  type="button"
+                  disabled={busy || (!selected && filtered.length === 0)}
+                  onClick={() => openUpdatePicker(slot)}
+                  className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border border-sky-700 bg-sky-950 px-3 py-2.5 text-sm font-semibold text-sky-100 touch-manipulation hover:bg-sky-900 disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-[44px] sm:flex-none"
+                >
+                  <FolderOpen size={16} />
+                  Abrir galería
+                </button>
+              ) : (
                 <button
                   type="button"
                   disabled={busy}
@@ -980,7 +1053,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                 >
                   Cancelar
                 </button>
-              ) : null}
+              )}
               <button
                 type="button"
                 disabled={busy || !selected || !!pendingFile}
@@ -997,9 +1070,10 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
               </button>
             </div>
             <p className="text-[11px] text-neutral-500">
-              Con foto/video ya en el nodo, tocá{' '}
-              <strong className="text-emerald-300">Actualizar foto subida</strong> (o Actualizar
-              CARD / VIDEO arriba) para elegir otro archivo y reemplazarlo de una.
+              <strong className="text-emerald-300">Actualizar foto/video subido</strong> = publicar
+              en la web lo que ya está en Cloudinary (no abre galería).{' '}
+              <strong className="text-sky-300">Abrir galería</strong> = buscar otra foto/video para
+              reemplazar.
             </p>
           </div>
 
