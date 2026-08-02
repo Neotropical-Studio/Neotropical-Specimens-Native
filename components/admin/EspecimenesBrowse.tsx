@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FolderInput, Plus, Trash2 } from 'lucide-react';
@@ -491,11 +491,21 @@ export default function EspecimenesBrowse({
         }
       }
     }
-    return out;
+    return out.sort((a, b) =>
+      a.familyLabel.localeCompare(b.familyLabel, 'es', {
+        sensitivity: 'base',
+        numeric: true,
+      }),
+    );
   }, [tree]);
 
   const totalPages = Math.max(1, Math.ceil(flatFamilies.length / pageSize));
   const safePage = Math.min(page, totalPages);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
   const pageFamilies = useMemo(() => {
     const start = (safePage - 1) * pageSize;
     return flatFamilies.slice(start, start + pageSize);
@@ -746,7 +756,11 @@ export default function EspecimenesBrowse({
           {null}
         </AdminTable>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div
+          id="admin-especies-familias"
+          key={`esp-page-${safePage}-${pageSize}`}
+          className="flex flex-col gap-3"
+        >
           {pageFamilies.map((fam) => (
             <div
               key={fam.key}
@@ -892,6 +906,7 @@ export default function EspecimenesBrowse({
               setPage(1);
             }}
             label="fichas familia"
+            scrollTargetId="admin-especies-familias"
           />
         </div>
       )}

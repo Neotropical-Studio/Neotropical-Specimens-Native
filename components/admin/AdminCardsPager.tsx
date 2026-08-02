@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { buildCataloguePageList } from '@/lib/specimens/cataloguePagination';
 
@@ -12,6 +13,8 @@ type Props = {
   onPageSize?: (n: number) => void;
   pageSizeOptions?: number[];
   label?: string;
+  /** Ancla para scroll al cambiar de página (id del contenedor de fichas). */
+  scrollTargetId?: string;
 };
 
 export default function AdminCardsPager({
@@ -23,15 +26,36 @@ export default function AdminCardsPager({
   onPageSize,
   pageSizeOptions = [2, 4, 6, 8],
   label = 'fichas',
+  scrollTargetId,
 }: Props) {
+  const prevPage = useRef(page);
+
+  useEffect(() => {
+    if (prevPage.current === page) return;
+    prevPage.current = page;
+    if (typeof window === 'undefined') return;
+    const el = scrollTargetId
+      ? document.getElementById(scrollTargetId)
+      : null;
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [page, scrollTargetId]);
+
   if (totalItems === 0) return null;
   const safePage = Math.min(Math.max(1, page), totalPages);
   const nums = buildCataloguePageList(safePage, totalPages);
 
+  function go(n: number) {
+    const next = Math.min(totalPages, Math.max(1, n));
+    if (next === safePage) return;
+    onPage(next);
+  }
+
   return (
     <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-neutral-800 pt-3">
       <p className="text-[11px] text-neutral-500">
-        {totalItems} {label} · {pageSize}/pág · pág. {safePage}/{totalPages}
+        {totalItems} {label} · A–Z · {pageSize}/pág · pág. {safePage}/{totalPages}
       </p>
       <div className="flex flex-wrap items-center gap-1.5">
         {onPageSize ? (
@@ -52,7 +76,7 @@ export default function AdminCardsPager({
         ) : null}
         <button
           type="button"
-          onClick={() => onPage(safePage - 1)}
+          onClick={() => go(safePage - 1)}
           disabled={safePage <= 1}
           className="inline-flex h-7 w-7 items-center justify-center rounded border border-neutral-700 text-neutral-300 hover:border-emerald-500/50 disabled:opacity-30"
           aria-label="Anterior"
@@ -68,8 +92,9 @@ export default function AdminCardsPager({
             <button
               key={n}
               type="button"
-              onClick={() => onPage(n)}
-              className={`inline-flex h-7 min-w-7 items-center justify-center rounded border px-1.5 text-[11px] ${
+              onClick={() => go(n)}
+              aria-current={n === safePage ? 'page' : undefined}
+              className={`inline-flex h-7 min-w-7 items-center justify-center rounded border px-1.5 text-[11px] transition ${
                 n === safePage
                   ? 'border-emerald-500 bg-emerald-950/60 text-emerald-200'
                   : 'border-neutral-700 text-neutral-400 hover:border-neutral-500'
@@ -81,7 +106,7 @@ export default function AdminCardsPager({
         )}
         <button
           type="button"
-          onClick={() => onPage(safePage + 1)}
+          onClick={() => go(safePage + 1)}
           disabled={safePage >= totalPages}
           className="inline-flex h-7 w-7 items-center justify-center rounded border border-neutral-700 text-neutral-300 hover:border-emerald-500/50 disabled:opacity-30"
           aria-label="Siguiente"
