@@ -100,12 +100,23 @@ export default function CatalogueFamilyEditor({
 
   const filteredFamilies = useMemo(() => {
     const q = familyQ.trim().toLowerCase();
-    if (!q) return families;
-    return families.filter((f) => f.label.toLowerCase().includes(q));
+    const list = q
+      ? families.filter((f) => f.label.toLowerCase().includes(q))
+      : [...families];
+    // Instaladas A–Z (abecedario), no por sort_order de alta.
+    return list.sort((a, b) =>
+      a.label.localeCompare(b.label, 'es', { sensitivity: 'base', numeric: true }),
+    );
   }, [families, familyQ]);
 
   const totalPages = Math.max(1, Math.ceil(filteredFamilies.length / pageSize));
   const safePage = Math.min(page, totalPages);
+
+  // Si el filtro reduce páginas, ajustar automáticamente.
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
   const pageRows = useMemo(() => {
     const start = (safePage - 1) * pageSize;
     return filteredFamilies.slice(start, start + pageSize);
@@ -415,9 +426,14 @@ export default function CatalogueFamilyEditor({
         </p>
       ) : null}
 
-      <ul className="mt-4 divide-y divide-neutral-800 rounded-lg border border-neutral-800">
-        {pageRows.map((f) => {
+      <ul
+        id="admin-familias-list"
+        key={`fam-page-${safePage}-${pageSize}`}
+        className="mt-4 divide-y divide-neutral-800 rounded-lg border border-neutral-800"
+      >
+        {pageRows.map((f, i) => {
           const fullIndex = families.findIndex((x) => x.id === f.id);
+          const alphaIndex = (safePage - 1) * pageSize + i;
           return (
             <li
               key={f.id}
@@ -427,7 +443,7 @@ export default function CatalogueFamilyEditor({
             >
               <div className="flex flex-wrap items-center gap-2">
                 <span className="w-6 shrink-0 text-center text-[10px] text-neutral-500">
-                  {fullIndex + 1}
+                  {alphaIndex + 1}
                 </span>
                 {editingId === f.id ? (
                   <input
@@ -613,6 +629,7 @@ export default function CatalogueFamilyEditor({
           setPage(1);
         }}
         label="familias"
+        scrollTargetId="admin-familias-list"
       />
 
       <div className="mt-3 flex flex-wrap gap-2">
