@@ -13,6 +13,7 @@ import {
   Trash2,
   Undo2,
 } from 'lucide-react';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 
 type FamilyRow = {
   id: string;
@@ -253,6 +254,13 @@ export default function CatalogueFamilyEditor({
         >
           Taxonomía por espécimen →
         </Link>
+      </div>
+
+      <div className="mt-3">
+        <PublishProductionButton
+          variant="field"
+          reason={`catalogue-families:${regionId}:${categoryId}`}
+        />
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">

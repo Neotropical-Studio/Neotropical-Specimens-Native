@@ -13,6 +13,7 @@ import type { NodeMediaUploadTarget } from '@/lib/mirror/contract';
 import { CATALOGUE_CATEGORIES, familyCatalogHref, slugifyCatalogue } from '@/lib/specimens/catalogueNav';
 import { NEO_FAMILIES_CHANGED } from '@/lib/specimens/catalogue-families-events';
 import UniversalMediaCapture from '@/components/admin/UniversalMediaCapture';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 
 type Props = {
   targets: NodeMediaUploadTarget[];
@@ -487,6 +488,11 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         })}
       </div>
 
+      <PublishProductionButton
+        variant="field"
+        reason={`node-media:${stage}:${slot}`}
+      />
+
       {stage === 'catalogo' ? (
         <div className="rounded-lg border border-emerald-900/60 bg-emerald-950/20 p-4">
           <h2 className="text-sm font-semibold text-emerald-200">
@@ -524,6 +530,12 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
             >
               Discover / Apply espejo
             </a>
+          </div>
+          <div className="mt-4">
+            <PublishProductionButton
+              variant="field"
+              reason="node-media:catalogo"
+            />
           </div>
         </div>
       ) : (
@@ -899,9 +911,15 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                 {isVideo ? 'Eliminar VIDEO' : 'Eliminar CARD'}
               </button>
             </div>
+            <PublishProductionButton
+              variant="field"
+              reason={`node-media:grabar:${stage}:${slot}:${selected?.id ?? 'none'}`}
+            />
             <p className="text-[11px] text-neutral-500">
               Dinámico · regenerativo · sin hardcode de dispositivo · elegí o escaneá → GRABAR · el
-              catálogo se actualiza solo.
+              catálogo se actualiza solo. Si no ves el cambio en la tienda, usá{' '}
+              <strong className="text-emerald-300">Actualizar producción</strong> o{' '}
+              <strong className="text-violet-300">Redeploy completo</strong>.
             </p>
           </div>
 
@@ -966,6 +984,12 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
               <p className="mt-2 text-[11px] text-emerald-400/80">
                 Ya está grabado. Entrá al website (hard refresh) para ver el cambio en ese nodo.
               </p>
+              <div className="mt-3">
+                <PublishProductionButton
+                  variant="field"
+                  reason={`node-media:after-ok:${lastSaved?.publicId ?? 'ok'}`}
+                />
+              </div>
             </div>
           )}
 

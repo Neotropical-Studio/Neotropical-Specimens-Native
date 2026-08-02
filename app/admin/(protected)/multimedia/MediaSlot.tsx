@@ -8,6 +8,7 @@ import UniversalMediaCapture, {
 } from '@/components/admin/UniversalMediaCapture';
 import { acceptForKind } from '@/lib/media/universal-capture';
 import { deleteMediaAssetAction } from './actions';
+import PublishProductionButton from '@/components/admin/PublishProductionButton';
 
 type MediaType = 'photo_webp' | 'video_mp4' | 'model_3d_glb';
 
@@ -222,6 +223,11 @@ export default function MediaSlot({
                 : 'Eliminar 3D'}
         </button>
       </div>
+
+      <PublishProductionButton
+        variant="field"
+        reason={`media-slot:${specimenId}:${view ?? mediaType}`}
+      />
     </div>
   );
 }

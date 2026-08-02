@@ -45,14 +45,17 @@ export async function publishProductionToVercel(
 }
 
 type Props = {
-  /** compact = solo iconos en la barra nav */
-  variant?: 'nav' | 'panel';
+  /** nav = barra · panel = bloque · field = junto a GRABAR/campos */
+  variant?: 'nav' | 'panel' | 'field';
   className?: string;
+  /** Motivo enviado a la API (trazas). */
+  reason?: string;
 };
 
 export default function PublishProductionButton({
   variant = 'nav',
   className = '',
+  reason,
 }: Props) {
   const [busy, setBusy] = useState<PublishMode | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -74,34 +77,89 @@ export default function PublishProductionButton({
     };
   }, []);
 
-  const run = useCallback(async (mode: PublishMode) => {
-    setBusy(mode);
-    setMsg(null);
-    try {
-      const result = await publishProductionToVercel(
-        mode,
-        mode === 'redeploy' ? 'admin-nav-redeploy' : 'admin-nav-cache',
-      );
-      if (mode === 'cache') {
-        setMsg(
-          result.ok
-            ? 'Producción actualizada (caché)'
-            : result.error ?? 'Error al actualizar',
-        );
-      } else if (result.ok) {
-        setMsg('Redeploy Vercel lanzado');
-      } else if (result.redeploy?.skipped) {
-        setMsg('Falta VERCEL_DEPLOY_HOOK_URL en Vercel');
-      } else {
-        setMsg(result.error ?? 'Error en redeploy');
+  const run = useCallback(
+    async (mode: PublishMode) => {
+      setBusy(mode);
+      setMsg(null);
+      const why =
+        reason ??
+        (mode === 'redeploy' ? 'admin-ui-redeploy' : 'admin-ui-cache');
+      try {
+        const result = await publishProductionToVercel(mode, why);
+        if (mode === 'cache') {
+          setMsg(
+            result.ok
+              ? 'Producción actualizada (caché)'
+              : result.error ?? 'Error al actualizar',
+          );
+        } else if (result.ok) {
+          setMsg('Redeploy Vercel lanzado');
+        } else if (result.redeploy?.skipped) {
+          setMsg('Falta VERCEL_DEPLOY_HOOK_URL en Vercel');
+        } else {
+          setMsg(result.error ?? 'Error en redeploy');
+        }
+      } catch (e) {
+        setMsg(e instanceof Error ? e.message : String(e));
+      } finally {
+        setBusy(null);
+        window.setTimeout(() => setMsg(null), 6000);
       }
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(null);
-      window.setTimeout(() => setMsg(null), 6000);
-    }
-  }, []);
+    },
+    [reason],
+  );
+
+  const msgClass =
+    msg &&
+    (msg.toLowerCase().includes('falta') || msg.toLowerCase().includes('error')
+      ? 'text-amber-400'
+      : 'text-emerald-400');
+
+  if (variant === 'field') {
+    return (
+      <div
+        className={`rounded-xl border border-emerald-800/70 bg-emerald-950/40 p-3 ${className}`}
+      >
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-emerald-300">
+          Actualización completa → Vercel
+        </p>
+        <div className="flex w-full flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void run('cache')}
+            className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl border border-emerald-600 bg-emerald-700 px-3 py-2 text-xs font-semibold text-white touch-manipulation hover:bg-emerald-600 disabled:opacity-50 sm:flex-none"
+          >
+            {busy === 'cache' ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <CloudUpload size={14} />
+            )}
+            Actualizar producción
+          </button>
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void run('redeploy')}
+            title={
+              hookOk
+                ? 'Rebuild completo Production'
+                : 'Configura VERCEL_DEPLOY_HOOK_URL'
+            }
+            className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl border border-violet-700 bg-violet-950/60 px-3 py-2 text-xs font-semibold text-violet-100 touch-manipulation hover:bg-violet-900/70 disabled:opacity-50 sm:flex-none"
+          >
+            {busy === 'redeploy' ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <Rocket size={14} />
+            )}
+            Redeploy completo
+          </button>
+        </div>
+        {msg ? <p className={`mt-2 text-[11px] ${msgClass}`}>{msg}</p> : null}
+      </div>
+    );
+  }
 
   if (variant === 'panel') {
     return (
@@ -109,8 +167,8 @@ export default function PublishProductionButton({
         className={`rounded-lg border border-emerald-900/60 bg-emerald-950/30 p-3 ${className}`}
       >
         <p className="mb-2 text-xs text-emerald-200/90">
-          Tras subir fotos, videos o cambios: actualiza la tienda en Vercel sin
-          pedir redeploy al chat.
+          Tras subir fotos, videos o cambios: actualización completa a Vercel
+          sin pedir redeploy al chat.
         </p>
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -142,20 +200,9 @@ export default function PublishProductionButton({
             ) : (
               <Rocket size={14} />
             )}
-            Redeploy Vercel
+            Redeploy completo
           </button>
-          {msg ? (
-            <span
-              className={`text-xs ${
-                msg.toLowerCase().includes('falta') ||
-                msg.toLowerCase().includes('error')
-                  ? 'text-amber-400'
-                  : 'text-emerald-400'
-              }`}
-            >
-              {msg}
-            </span>
-          ) : null}
+          {msg ? <span className={`text-xs ${msgClass}`}>{msg}</span> : null}
         </div>
       </div>
     );
@@ -199,14 +246,7 @@ export default function PublishProductionButton({
         </button>
       </div>
       {msg ? (
-        <span
-          className={`max-w-[14rem] text-right text-[10px] leading-tight ${
-            msg.toLowerCase().includes('falta') ||
-            msg.toLowerCase().includes('error')
-              ? 'text-amber-400'
-              : 'text-emerald-400'
-          }`}
-        >
+        <span className={`max-w-[14rem] text-right text-[10px] leading-tight ${msgClass}`}>
           {msg}
         </span>
       ) : null}
