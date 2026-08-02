@@ -853,7 +853,23 @@ export function buildFamilyNodes(
   return [...expectedNodes, ...extras];
 }
 
-/** Especímenes de una familia (nivel 5 — grid de productos). */
+/** Comparación A→Z por nombre científico (catálogo de familia). */
+export function compareSpecimensAlphabetical(
+  a: SpecimenView,
+  b: SpecimenView,
+): number {
+  const byName = a.scientificName.localeCompare(b.scientificName, undefined, {
+    sensitivity: 'base',
+    numeric: true,
+  });
+  if (byName !== 0) return byName;
+  return a.code.localeCompare(b.code, undefined, {
+    sensitivity: 'base',
+    numeric: true,
+  });
+}
+
+/** Especímenes de una familia (nivel 5 — grid de productos), orden alfabético. */
 export function filterSpecimensByFamily(
   specimens: SpecimenView[],
   rubroId: InventoryRubroId,
@@ -865,26 +881,28 @@ export function filterSpecimensByFamily(
   if (!target) return [];
   const regionMeta = findRegionById(regionId) ?? findRegionBySlugOrFolder(regionId);
 
-  return specimens.filter((s) => {
-    if (s.primaryImage && isNodeMediaPublicId(s.primaryImage)) return false;
-    const rid =
-      canonicalizeRubroId(s.rubroId) ??
-      detectRubro({
-        mediaHint: s.primaryImage,
-        order: s.order,
-        family: s.family,
-        genus: s.genus,
-        scientificName: s.scientificName,
-      }).id;
-    if (rid !== rubroId) return false;
-    const region = resolveRegion(s);
-    if (region?.id !== (regionMeta?.id ?? regionId)) return false;
-    const cat = resolveCategoria(s);
-    if (cat?.id !== categoryId) return false;
-    const familiaLabel = resolveFamiliaLabel(s);
-    if (!familiaLabel) return false;
-    return slugifyCatalogue(familiaLabel) === target;
-  });
+  return specimens
+    .filter((s) => {
+      if (s.primaryImage && isNodeMediaPublicId(s.primaryImage)) return false;
+      const rid =
+        canonicalizeRubroId(s.rubroId) ??
+        detectRubro({
+          mediaHint: s.primaryImage,
+          order: s.order,
+          family: s.family,
+          genus: s.genus,
+          scientificName: s.scientificName,
+        }).id;
+      if (rid !== rubroId) return false;
+      const region = resolveRegion(s);
+      if (region?.id !== (regionMeta?.id ?? regionId)) return false;
+      const cat = resolveCategoria(s);
+      if (cat?.id !== categoryId) return false;
+      const familiaLabel = resolveFamiliaLabel(s);
+      if (!familiaLabel) return false;
+      return slugifyCatalogue(familiaLabel) === target;
+    })
+    .sort(compareSpecimensAlphabetical);
 }
 
 export function catalogueHref(
