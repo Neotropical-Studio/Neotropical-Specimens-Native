@@ -14,20 +14,21 @@ import { unstable_cache, revalidateTag } from 'next/cache';
 import {
   bootstrapRegistryFromCloudinaryTags,
   fetchTaggedNodeMediaPublicIds,
-  listRegistryPublicIds,
+  listRegistryInventory,
+  type NodeMediaInventoryEntry,
 } from '@/lib/services/node-media-registry';
 import { isSupabaseAdminConfigured } from '@/lib/supabase/client';
 
 const CACHE_TAG = 'neo-node-media';
-const CACHE_SECONDS = 120;
+const CACHE_SECONDS = 30;
 
 /** Último inventario bueno (sobrevive timeouts en la misma instancia). */
-let lastGoodInventory: string[] = [];
+let lastGoodInventory: NodeMediaInventoryEntry[] = [];
 
-async function loadInventoryUncached(): Promise<string[]> {
+async function loadInventoryUncached(): Promise<NodeMediaInventoryEntry[]> {
   try {
     // 1) Registry DB (industrial, O(slots), regenerativo).
-    const fromDb = await listRegistryPublicIds();
+    const fromDb = await listRegistryInventory();
 
     if (fromDb && fromDb.length > 0) {
       lastGoodInventory = fromDb;
@@ -38,8 +39,13 @@ async function loadInventoryUncached(): Promise<string[]> {
     if (fromDb && fromDb.length === 0 && isSupabaseAdminConfigured()) {
       const seeded = await bootstrapRegistryFromCloudinaryTags();
       if (seeded.length > 0) {
-        lastGoodInventory = seeded;
-        return seeded;
+        const entries = seeded.map((publicId) => ({
+          publicId,
+          version: null as number | null,
+          secureUrl: null as string | null,
+        }));
+        lastGoodInventory = entries;
+        return entries;
       }
     }
 
@@ -47,8 +53,13 @@ async function loadInventoryUncached(): Promise<string[]> {
     if (!fromDb || fromDb.length === 0) {
       const tagged = await fetchTaggedNodeMediaPublicIds();
       if (tagged.length > 0) {
-        lastGoodInventory = tagged;
-        return tagged;
+        const entries = tagged.map((publicId) => ({
+          publicId,
+          version: null as number | null,
+          secureUrl: null as string | null,
+        }));
+        lastGoodInventory = entries;
+        return entries;
       }
     }
 
@@ -59,8 +70,8 @@ async function loadInventoryUncached(): Promise<string[]> {
   }
 }
 
-export async function listNodeMediaInventoryPublicIds(): Promise<string[]> {
-  const cached = unstable_cache(loadInventoryUncached, ['neo-node-media-inventory-v4'], {
+export async function listNodeMediaInventoryEntries(): Promise<NodeMediaInventoryEntry[]> {
+  const cached = unstable_cache(loadInventoryUncached, ['neo-node-media-inventory-v5'], {
     revalidate: CACHE_SECONDS,
     tags: [CACHE_TAG],
   });
@@ -75,6 +86,11 @@ export async function listNodeMediaInventoryPublicIds(): Promise<string[]> {
   }
 }
 
+export async function listNodeMediaInventoryPublicIds(): Promise<string[]> {
+  const entries = await listNodeMediaInventoryEntries();
+  return entries.map((e) => e.publicId);
+}
+
 /**
  * Invalidar tras POST/DELETE.
  * `removedPrefix` = carpeta _card|_video: limpia last-good de esta instancia al instante.
@@ -84,8 +100,14 @@ export function invalidateNodeMediaInventory(removedPrefix?: string): void {
     const base = removedPrefix.replace(/\/+$/, '');
     const p = `${base}/`;
     lastGoodInventory = lastGoodInventory.filter(
-      (id) => !id.startsWith(p) && id !== base && !id.startsWith(`${base}/`),
+      (e) =>
+        !e.publicId.startsWith(p) &&
+        e.publicId !== base &&
+        !e.publicId.startsWith(`${base}/`),
     );
+  } else {
+    // Upload/replace: vaciar last-good para no servir IDs stale en esta instancia.
+    lastGoodInventory = [];
   }
   try {
     revalidateTag(CACHE_TAG);
@@ -95,3 +117,4 @@ export function invalidateNodeMediaInventory(removedPrefix?: string): void {
 }
 
 export { CACHE_TAG as NODE_MEDIA_CACHE_TAG };
+export type { NodeMediaInventoryEntry };

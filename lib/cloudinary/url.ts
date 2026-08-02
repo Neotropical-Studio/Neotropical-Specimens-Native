@@ -44,20 +44,41 @@ export function resolveCloudinaryPublicId(input: string): string {
   return idParts.join('/').replace(/\.(png|jpe?g|webp|gif|avif)$/i, '');
 }
 
-export function imageUrl(publicId: string, extra: string[] = []): string {
-  // CDN directo (misma estrategia que brand/permits). El proxy /api/media
-  // sigue disponible para video/raw; para imágenes el CDN público es fiable.
-  return cloudinaryImageUrl(publicId, extra);
+/** Versión Cloudinary (`v1739…`) desde secure_url — para bustear CDN tras overwrite. */
+export function parseCloudinaryVersion(
+  secureUrl: string | null | undefined,
+): number | null {
+  const raw = asString(secureUrl).trim();
+  if (!raw) return null;
+  const m = raw.match(/\/upload\/(?:[^/]+\/)*v(\d+)\//i);
+  if (!m?.[1]) return null;
+  const n = Number(m[1]);
+  return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-export function cloudinaryImageUrl(publicId: string, extra: string[] = []): string {
+export function imageUrl(
+  publicId: string,
+  extra: string[] = [],
+  version?: number | null,
+): string {
+  // CDN directo (misma estrategia que brand/permits). El proxy /api/media
+  // sigue disponible para video/raw; para imágenes el CDN público es fiable.
+  return cloudinaryImageUrl(publicId, extra, version);
+}
+
+export function cloudinaryImageUrl(
+  publicId: string,
+  extra: string[] = [],
+  version?: number | null,
+): string {
   const id = asString(publicId);
   if (id.length === 0) return '';
   if (isExternalUrl(id)) {
     if (!/res\.cloudinary\.com/i.test(id)) return id;
     const resolved = resolveCloudinaryPublicId(id);
     if (resolved.length === 0 || isExternalUrl(resolved)) return id;
-    return cloudinaryImageUrl(resolved, extra);
+    const ver = version ?? parseCloudinaryVersion(id);
+    return cloudinaryImageUrl(resolved, extra, ver);
   }
   const extras = asStringArray(extra);
   // Si el caller pide formato explícito (p. ej. f_png para alfa), no forzar f_auto.
@@ -68,7 +89,11 @@ export function cloudinaryImageUrl(publicId: string, extra: string[] = []): stri
     ...(hasQuality ? [] : ['q_auto']),
     ...extras,
   ];
-  return `https://res.cloudinary.com/${cloudinaryCloudName()}/image/upload/${parts.join(',')}/${id}`;
+  const verSeg =
+    typeof version === 'number' && Number.isFinite(version) && version > 0
+      ? `v${Math.floor(version)}/`
+      : '';
+  return `https://res.cloudinary.com/${cloudinaryCloudName()}/image/upload/${parts.join(',')}/${verSeg}${id}`;
 }
 
 export function videoHls(publicId: string): string {
@@ -99,7 +124,7 @@ export function videoMp4(publicId: string): string {
  */
 export function catalogCardImageUrl(
   publicId: string,
-  opts: { width?: number; chameleonHex?: string } = {},
+  opts: { width?: number; chameleonHex?: string; version?: number | null } = {},
 ): string {
   const w = opts.width ?? 720;
   const extra = [`w_${w}`, 'c_fill', 'g_auto', 'q_auto:good'];
@@ -108,7 +133,7 @@ export function catalogCardImageUrl(
     const hex = opts.chameleonHex.replace(/^#/, '');
     extra.push(`e_colorize:12`, `co_rgb:${hex}`);
   }
-  return imageUrl(publicId, extra);
+  return imageUrl(publicId, extra, opts.version);
 }
 
 export function modelUrl(publicId: string): string {

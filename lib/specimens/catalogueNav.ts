@@ -48,6 +48,8 @@ import type { SpecimenView } from './view';
 export interface CatalogueNodeMedia {
   /** Cloudinary public_id o URL de cover/imagen. */
   coverPublicId: string | null;
+  /** Versión CDN para bustear cache tras overwrite de cover. */
+  coverVersion?: number | null;
   /** Cloudinary public_id o URL de video de entrada corto (opcional). */
   videoPublicId: string | null;
 }
@@ -310,18 +312,42 @@ function collectInventoryPublicIds(specimens: SpecimenView[]): string[] {
   return out;
 }
 
+function collectInventoryVersions(
+  specimens: SpecimenView[],
+): Map<string, number> {
+  const map = new Map<string, number>();
+  for (const s of specimens) {
+    const v = s.mediaVersion;
+    if (typeof v !== 'number' || !Number.isFinite(v) || v <= 0) continue;
+    if (s.primaryImage) map.set(s.primaryImage, Math.floor(v));
+    if (s.video) map.set(s.video, Math.floor(v));
+    for (const img of s.images ?? []) {
+      if (img.publicId) map.set(img.publicId, Math.floor(v));
+    }
+  }
+  return map;
+}
+
 /** Media de entrada del nodo: primero `_card`/`_video` de ESE path; luego override; luego fallback. */
 function resolveEntryMedia(
   nodePath: string,
   inventoryIds: string[],
   fallback: CatalogueNodeMedia,
   override?: Partial<CatalogueNodeMedia> | null,
+  versions?: Map<string, number>,
 ): CatalogueNodeMedia {
   const fromSlots = pickNodeSlotMedia(nodePath, inventoryIds);
+  const coverPublicId = fromSlots.coverPublicId ?? fallback.coverPublicId;
+  const videoPublicId = fromSlots.videoPublicId ?? fallback.videoPublicId;
+  const coverVersion =
+    (coverPublicId && versions?.get(coverPublicId)) ||
+    fallback.coverVersion ||
+    null;
   return applyOverride(
     {
-      coverPublicId: fromSlots.coverPublicId ?? fallback.coverPublicId,
-      videoPublicId: fromSlots.videoPublicId ?? fallback.videoPublicId,
+      coverPublicId,
+      coverVersion,
+      videoPublicId,
     },
     override,
   );
@@ -486,6 +512,7 @@ function mergeMedia(
 ): CatalogueNodeMedia {
   return {
     coverPublicId: current.coverPublicId ?? cover ?? null,
+    coverVersion: current.coverVersion ?? null,
     videoPublicId: current.videoPublicId ?? video ?? null,
   };
 }
@@ -497,6 +524,7 @@ function applyOverride(
   if (!override) return base;
   return {
     coverPublicId: override.coverPublicId ?? base.coverPublicId,
+    coverVersion: override.coverVersion ?? base.coverVersion ?? null,
     videoPublicId: override.videoPublicId ?? base.videoPublicId,
   };
 }
@@ -507,6 +535,7 @@ function applyOverride(
  *  Nunca fallback a fotos de especímenes fuera de ese path. */
 export function buildRubroNodes(specimens: SpecimenView[]): CatalogueNavNode[] {
   const inventoryIds = collectInventoryPublicIds(specimens);
+  const versions = collectInventoryVersions(specimens);
   const counts = new Map<InventoryRubroId, number>();
   for (const rubro of STOREFRONT_RUBROS) counts.set(rubro.id, 0);
 
@@ -533,6 +562,7 @@ export function buildRubroNodes(specimens: SpecimenView[]): CatalogueNavNode[] {
       inventoryIds,
       { coverPublicId: null, videoPublicId: null },
       RUBRO_ENTRY_MEDIA[r.id],
+      versions,
     ),
   }));
 }
@@ -547,6 +577,7 @@ export function buildRegionNodes(
   rubroId: InventoryRubroId,
 ): CatalogueNavNode[] {
   const inventoryIds = collectInventoryPublicIds(specimens);
+  const versions = collectInventoryVersions(specimens);
   const known =
     rubroId === 'dried-specimens' ? [...DRIED_SPECIMEN_REGION_FOLDERS] : [];
 
@@ -562,7 +593,8 @@ export function buildRegionNodes(
         inventoryIds,
         { coverPublicId: null, videoPublicId: null },
         REGION_ENTRY_MEDIA[region.id],
-      ),
+      versions,
+    ),
     });
   }
 
@@ -595,7 +627,9 @@ export function buildRegionNodes(
     const merged = mergeMedia(existing, s.primaryImage, s.video);
     buckets.set(region.id, {
       ...existing,
-      ...resolveEntryMedia(path, inventoryIds, merged, REGION_ENTRY_MEDIA[region.id]),
+      ...resolveEntryMedia(path, inventoryIds, merged, REGION_ENTRY_MEDIA[region.id],
+      versions,
+    ),
     });
   }
 
@@ -617,6 +651,7 @@ export function buildCategoryNodes(
   regionId: string,
 ): CatalogueNavNode[] {
   const inventoryIds = collectInventoryPublicIds(specimens);
+  const versions = collectInventoryVersions(specimens);
   const regionMeta = findRegionById(regionId) ?? findRegionBySlugOrFolder(regionId);
   const regionFolder = regionMeta?.folder ?? REGION_FOLDER;
   const resolvedRegionId = regionMeta?.id ?? regionId;
@@ -655,7 +690,8 @@ export function buildCategoryNodes(
         inventoryIds,
         { coverPublicId: null, videoPublicId: null },
         CATEGORY_ENTRY_MEDIA[known.id],
-      ),
+      versions,
+    ),
     });
   }
 
@@ -684,7 +720,8 @@ export function buildCategoryNodes(
           videoPublicId: existing.videoPublicId,
         },
         CATEGORY_ENTRY_MEDIA[cat.id as CatalogueCategoryId],
-      ),
+      versions,
+    ),
     });
   }
 
@@ -711,6 +748,7 @@ export function buildFamilyNodes(
   familyLabelsOverride?: readonly (string | { label: string; folder: string })[] | null,
 ): CatalogueNavNode[] {
   const inventoryIds = collectInventoryPublicIds(specimens);
+  const versions = collectInventoryVersions(specimens);
   const catMeta = findCategoryById(categoryId);
   const regionMeta = findRegionById(regionId) ?? findRegionBySlugOrFolder(regionId);
   const regionFolder = regionMeta?.folder ?? REGION_FOLDER;
@@ -770,7 +808,8 @@ export function buildFamilyNodes(
         inventoryIds,
         { coverPublicId: null, videoPublicId: null },
         FAMILY_ENTRY_MEDIA[id],
-      ),
+      versions,
+    ),
     });
   }
 
@@ -799,7 +838,8 @@ export function buildFamilyNodes(
           videoPublicId: existing.videoPublicId,
         },
         FAMILY_ENTRY_MEDIA[id],
-      ),
+      versions,
+    ),
     });
   }
 

@@ -15,6 +15,7 @@ import { createClient } from '@supabase/supabase-js';
 import { v2 as cloudinary } from 'cloudinary';
 import { NEO_NODE_INVENTORY_TAGS } from '@/lib/media/node-tags';
 import { listNodeMediaUploadTargets } from '@/lib/mirror/contract';
+import { parseCloudinaryVersion } from '@/lib/cloudinary/url';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -34,7 +35,40 @@ export type NodeMediaRow = {
   node_path: string;
   level?: string | null;
   secure_url?: string | null;
+  /** Versión Cloudinary tras overwrite — bustea CDN en storefront. */
+  version?: number | null;
 };
+
+export type NodeMediaInventoryEntry = {
+  publicId: string;
+  version: number | null;
+  secureUrl: string | null;
+};
+
+function versionFromRow(row: {
+  secure_url?: string | null;
+  metadata?: unknown;
+  updated_at?: string | null;
+}): number | null {
+  const meta =
+    row.metadata && typeof row.metadata === 'object'
+      ? (row.metadata as Record<string, unknown>)
+      : null;
+  const fromMeta = meta?.version;
+  if (typeof fromMeta === 'number' && Number.isFinite(fromMeta) && fromMeta > 0) {
+    return Math.floor(fromMeta);
+  }
+  if (typeof fromMeta === 'string' && /^\d+$/.test(fromMeta)) {
+    return Number(fromMeta);
+  }
+  const fromUrl = parseCloudinaryVersion(row.secure_url ?? null);
+  if (fromUrl) return fromUrl;
+  if (row.updated_at) {
+    const t = Date.parse(row.updated_at);
+    if (Number.isFinite(t) && t > 0) return Math.floor(t / 1000);
+  }
+  return null;
+}
 
 function anonClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
@@ -51,30 +85,46 @@ function cloudConfigured(): boolean {
   );
 }
 
-/** Lectura storefront: solo public_ids reales en DB. */
-export async function listRegistryPublicIds(): Promise<string[] | null> {
+/** Lectura storefront: public_ids reales + versión CDN. */
+export async function listRegistryInventory(): Promise<NodeMediaInventoryEntry[] | null> {
   const db = isSupabaseAdminConfigured()
     ? getSupabaseAdmin()
     : anonClient();
   if (!db) return null;
 
   try {
-    const { data, error } = await db.from('node_media').select('public_id');
+    const { data, error } = await db
+      .from('node_media')
+      .select('public_id, secure_url, metadata, updated_at');
     if (error) {
-      // Tabla aún no migrada → caller hace bootstrap Cloudinary.
       if (/relation .*node_media.* does not exist|Could not find the table/i.test(error.message)) {
         return null;
       }
       console.error('[node-media-registry] list failed', error.message);
       return null;
     }
-    return (data ?? [])
-      .map((r) => (typeof r.public_id === 'string' ? r.public_id : ''))
-      .filter(Boolean);
+    const out: NodeMediaInventoryEntry[] = [];
+    for (const r of data ?? []) {
+      const publicId = typeof r.public_id === 'string' ? r.public_id : '';
+      if (!publicId) continue;
+      out.push({
+        publicId,
+        version: versionFromRow(r),
+        secureUrl: typeof r.secure_url === 'string' ? r.secure_url : null,
+      });
+    }
+    return out;
   } catch (err) {
     console.error('[node-media-registry] list threw', err);
     return null;
   }
+}
+
+/** Lectura storefront: solo public_ids reales en DB. */
+export async function listRegistryPublicIds(): Promise<string[] | null> {
+  const entries = await listRegistryInventory();
+  if (!entries) return null;
+  return entries.map((e) => e.publicId);
 }
 
 export async function upsertNodeMedia(row: NodeMediaRow): Promise<void> {
@@ -83,6 +133,10 @@ export async function upsertNodeMedia(row: NodeMediaRow): Promise<void> {
     return;
   }
   const db = getSupabaseAdmin();
+  const version =
+    typeof row.version === 'number' && Number.isFinite(row.version) && row.version > 0
+      ? Math.floor(row.version)
+      : parseCloudinaryVersion(row.secure_url ?? null);
   const { error } = await db.from('node_media').upsert(
     {
       target_id: row.target_id,
@@ -93,6 +147,7 @@ export async function upsertNodeMedia(row: NodeMediaRow): Promise<void> {
       node_path: row.node_path.replace(/\/+$/, ''),
       level: row.level ?? null,
       secure_url: row.secure_url ?? null,
+      metadata: version ? { version } : {},
       sync_status: 'MIRRORED',
       last_synced_at: new Date().toISOString(),
     },
