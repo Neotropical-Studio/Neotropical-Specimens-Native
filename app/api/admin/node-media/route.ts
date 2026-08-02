@@ -244,6 +244,7 @@ export async function POST(req: NextRequest) {
         node_path: target.nodePath,
         level: target.level,
         secure_url: res.secure_url,
+        version: typeof res.version === 'number' ? res.version : null,
       });
       invalidateNodeMediaInventory();
       const production = await publishProduction({
@@ -278,6 +279,7 @@ export async function POST(req: NextRequest) {
         node_path: target.nodePath,
         level: target.level,
         secure_url: res.secure_url,
+        version: typeof res.version === 'number' ? res.version : null,
       });
       invalidateNodeMediaInventory();
       const production = await publishProduction({
@@ -312,6 +314,7 @@ export async function POST(req: NextRequest) {
       node_path: target.nodePath,
       level: target.level,
       secure_url: res.secure_url,
+      version: typeof res.version === 'number' ? res.version : null,
     });
     invalidateNodeMediaInventory();
     const production = await publishProduction({

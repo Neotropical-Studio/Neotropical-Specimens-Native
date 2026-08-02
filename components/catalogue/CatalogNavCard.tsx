@@ -27,7 +27,11 @@ export default function CatalogNavCard({
 }: Props) {
   const cover =
     node.coverPublicId
-      ? catalogCardImageUrl(node.coverPublicId, { width: 720, chameleonHex })
+      ? catalogCardImageUrl(node.coverPublicId, {
+          width: 720,
+          chameleonHex,
+          version: node.coverVersion,
+        })
       : null;
   const [coverFailed, setCoverFailed] = useState(false);
   const showCover = Boolean(cover) && !coverFailed;

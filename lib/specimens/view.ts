@@ -67,6 +67,8 @@ export interface SpecimenView {
   secondaryImage: string | null;  // WebP ventral (para hover)
   model3d: string | null;         // public_id del .glb
   video: string | null;           // public_id del video
+  /** Versión CDN Cloudinary (node media overwrite) — opcional. */
+  mediaVersion?: number | null;
   /** Rubro del inventario (1 de 4) detectado desde Cloudinary path / taxonomía. */
   rubroId: InventoryRubroId | null;
   rubroLabel: string | null;
