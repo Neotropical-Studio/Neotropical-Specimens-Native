@@ -697,6 +697,122 @@ export default function SpecimenDetail({
                 })}
               </div>
             )}
+
+            {/* Catálogo dinámico: debajo de dorsal / ventral (visor), no del carrito */}
+            <section className="rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-5">
+              <div className="mb-4">
+                <span
+                  className="block text-[10px] font-bold uppercase tracking-[0.22em]"
+                  style={{ color: accent }}
+                >
+                  {t('product.dynamic_catalog_title', 'Catálogo dinámico e inteligente')}
+                </span>
+                <h2 className="mt-1 text-base font-extrabold leading-snug text-white sm:text-lg">
+                  {t(
+                    'product.dynamic_catalog_subtitle',
+                    'Seleccione un espécimen para adaptar el visor, colores y galería en tiempo real',
+                  )}
+                </h2>
+              </div>
+              {recommendations.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+                  {recommendations.slice(0, 4).map((item) => {
+                    const itemAccent = resolveTaxonPalette({
+                      order: item.order,
+                      family: item.family,
+                      subfamily: item.subfamily,
+                      override: item.themeOverride,
+                    }).accent;
+                    const itemPrice =
+                      item.price != null
+                        ? formatFrom(item.price, (item.currency || quoteCurrency).toUpperCase())
+                        : null;
+                    const itemIsMorpho = isMorphoGodartyDidiusTingomarensis({
+                      id: item.id,
+                      scientificName: item.scientificName,
+                    });
+                    const thumbSrc = itemIsMorpho
+                      ? MORPHO_CARD_URL
+                      : item.primaryImage || item.secondaryImage
+                        ? imageUrl(item.primaryImage ?? item.secondaryImage ?? '', [
+                            'w_480',
+                            'ar_4:3',
+                            'c_fill',
+                          ])
+                        : null;
+                    return (
+                      <Link
+                        key={item.id}
+                        href={`/${lang}/product/${item.id}`}
+                        className="group rounded-xl border border-white/10 bg-black/40 p-2 transition hover:border-white/20"
+                      >
+                        <div className="relative mb-2 aspect-[4/3] w-full overflow-hidden rounded-lg bg-neutral-900">
+                          {thumbSrc ? (
+                            <Image
+                              src={thumbSrc}
+                              alt={item.scientificName}
+                              fill
+                              sizes="(max-width: 1024px) 45vw, 25vw"
+                              className={
+                                itemIsMorpho
+                                  ? 'object-contain p-1.5 transition-transform duration-500 group-hover:scale-105'
+                                  : 'object-cover transition-transform duration-500 group-hover:scale-105'
+                              }
+                              unoptimized
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center bg-black text-[9px] uppercase tracking-widest text-neutral-600">
+                              {t('media.no_image', 'Sin imagen')}
+                            </div>
+                          )}
+                          {(item.family ?? item.order) && (
+                            <span
+                              className="absolute left-1.5 top-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase"
+                              style={{ background: hexA(itemAccent, 0.85), color: '#050807' }}
+                            >
+                              {item.family ?? item.order}
+                            </span>
+                          )}
+                        </div>
+                        <p className="truncate text-xs font-semibold italic text-white">
+                          {item.scientificName}
+                        </p>
+                        <p className="mt-0.5 truncate text-[10px] text-slate-400">
+                          {[item.commonName, item.country].filter(Boolean).join(' · ')}
+                        </p>
+                        <div className="mt-1 flex items-center justify-between gap-1">
+                          {itemPrice ? (
+                            <span className="text-xs font-bold" style={{ color: itemAccent }}>
+                              {itemPrice}
+                            </span>
+                          ) : (
+                            <span />
+                          )}
+                          <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400 transition-colors group-hover:text-white">
+                            {t('product.activate_viewer', 'Activar Visor')} →
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-white/10 bg-black/40 px-4 py-6 text-center">
+                  <p className="text-xs font-semibold text-white">
+                    {t(
+                      'product.dynamic_catalog_empty_title',
+                      'Catálogo listo para recepción de inventario',
+                    )}
+                  </p>
+                  <p className="mt-1.5 text-[10px] text-slate-400">
+                    {t(
+                      'product.dynamic_catalog_empty_subtitle',
+                      'Cuando se sincronicen más especímenes de los 3 rubros, aparecerán aquí automáticamente.',
+                    )}
+                  </p>
+                </div>
+              )}
+            </section>
           </div>
 
           {/* Panel derecho: información taxonómica y compra */}
@@ -811,122 +927,6 @@ export default function SpecimenDetail({
                 />
               </dl>
             </div>
-
-            {/* Catálogo dinámico: debajo del detalle del producto, ANTES del carrito */}
-            <section className="rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-5">
-              <div className="mb-4">
-                <span
-                  className="block text-[10px] font-bold uppercase tracking-[0.22em]"
-                  style={{ color: accent }}
-                >
-                  {t('product.dynamic_catalog_title', 'Catálogo dinámico e inteligente')}
-                </span>
-                <h2 className="mt-1 text-base font-extrabold leading-snug text-white sm:text-lg">
-                  {t(
-                    'product.dynamic_catalog_subtitle',
-                    'Seleccione un espécimen para adaptar el visor, colores y galería en tiempo real',
-                  )}
-                </h2>
-              </div>
-              {recommendations.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3">
-                  {recommendations.slice(0, 4).map((item) => {
-                    const itemAccent = resolveTaxonPalette({
-                      order: item.order,
-                      family: item.family,
-                      subfamily: item.subfamily,
-                      override: item.themeOverride,
-                    }).accent;
-                    const itemPrice =
-                      item.price != null
-                        ? formatFrom(item.price, (item.currency || quoteCurrency).toUpperCase())
-                        : null;
-                    const itemIsMorpho = isMorphoGodartyDidiusTingomarensis({
-                      id: item.id,
-                      scientificName: item.scientificName,
-                    });
-                    const thumbSrc = itemIsMorpho
-                      ? MORPHO_CARD_URL
-                      : item.primaryImage || item.secondaryImage
-                        ? imageUrl(item.primaryImage ?? item.secondaryImage ?? '', [
-                            'w_480',
-                            'ar_4:3',
-                            'c_fill',
-                          ])
-                        : null;
-                    return (
-                      <Link
-                        key={item.id}
-                        href={`/${lang}/product/${item.id}`}
-                        className="group rounded-xl border border-white/10 bg-black/40 p-2 transition hover:border-white/20"
-                      >
-                        <div className="relative mb-2 aspect-[4/3] w-full overflow-hidden rounded-lg bg-neutral-900">
-                          {thumbSrc ? (
-                            <Image
-                              src={thumbSrc}
-                              alt={item.scientificName}
-                              fill
-                              sizes="(max-width: 1024px) 40vw, 15vw"
-                              className={
-                                itemIsMorpho
-                                  ? 'object-contain p-1.5 transition-transform duration-500 group-hover:scale-105'
-                                  : 'object-cover transition-transform duration-500 group-hover:scale-105'
-                              }
-                              unoptimized
-                            />
-                          ) : (
-                            <div className="flex h-full items-center justify-center bg-black text-[9px] uppercase tracking-widest text-neutral-600">
-                              {t('media.no_image', 'Sin imagen')}
-                            </div>
-                          )}
-                          {(item.family ?? item.order) && (
-                            <span
-                              className="absolute left-1.5 top-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase"
-                              style={{ background: hexA(itemAccent, 0.85), color: '#050807' }}
-                            >
-                              {item.family ?? item.order}
-                            </span>
-                          )}
-                        </div>
-                        <p className="truncate text-xs font-semibold italic text-white">
-                          {item.scientificName}
-                        </p>
-                        <p className="mt-0.5 truncate text-[10px] text-slate-400">
-                          {[item.commonName, item.country].filter(Boolean).join(' · ')}
-                        </p>
-                        <div className="mt-1 flex items-center justify-between gap-1">
-                          {itemPrice ? (
-                            <span className="text-xs font-bold" style={{ color: itemAccent }}>
-                              {itemPrice}
-                            </span>
-                          ) : (
-                            <span />
-                          )}
-                          <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400 transition-colors group-hover:text-white">
-                            {t('product.activate_viewer', 'Activar Visor')} →
-                          </span>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="rounded-xl border border-dashed border-white/10 bg-black/40 px-4 py-6 text-center">
-                  <p className="text-xs font-semibold text-white">
-                    {t(
-                      'product.dynamic_catalog_empty_title',
-                      'Catálogo listo para recepción de inventario',
-                    )}
-                  </p>
-                  <p className="mt-1.5 text-[10px] text-slate-400">
-                    {t(
-                      'product.dynamic_catalog_empty_subtitle',
-                      'Cuando se sincronicen más especímenes de los 3 rubros, aparecerán aquí automáticamente.',
-                    )}
-                  </p>
-                </div>
-              )}
-            </section>
 
             {/* Bloque de compra */}
             <div className="space-y-4 rounded-2xl border border-white/10 bg-black/50 p-6 shadow-2xl">
