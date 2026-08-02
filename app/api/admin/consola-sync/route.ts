@@ -88,7 +88,9 @@ export async function GET() {
     .order('especie', { ascending: true })
     .limit(2000);
 
-  let data = fullSelect.data;
+  type SoftRow = Record<string, unknown>;
+
+  let data: SoftRow[] | null = (fullSelect.data as SoftRow[] | null) ?? null;
   let error = fullSelect.error;
 
   if (error) {
@@ -111,7 +113,7 @@ export async function GET() {
       )
       .order('created_at', { ascending: false })
       .limit(2000);
-    data = soft.data;
+    data = (soft.data as SoftRow[] | null) ?? null;
     error = soft.error;
   }
 
@@ -120,7 +122,7 @@ export async function GET() {
   }
 
   const rows: ConsolaRow[] = (data ?? []).map((s) => {
-    const tax = (s as { taxonomy?: TaxEmbed }).taxonomy as TaxEmbed;
+    const tax = s.taxonomy as TaxEmbed;
     const statusRaw = String(s.status ?? '').toUpperCase();
     const status: ConsolaRow['status'] =
       statusRaw.includes('OUT') || statusRaw === 'AGOTADO' || statusRaw === '0'
@@ -136,14 +138,12 @@ export async function GET() {
 
     const genus = str(tax?.genus_name) ?? str(s.genero);
     const speciesEpithet = str(s.especie);
-    const subspecies = str((s as { subespecie?: string }).subespecie);
+    const subspecies = str(s.subespecie);
     const family = str(tax?.family_name) ?? str(s.familia);
     const composed = [genus, speciesEpithet, subspecies].filter(Boolean).join(' ');
     const name =
       str(tax?.species_name) ?? str(s.species_name) ?? (composed || '—');
-    const code =
-      str((s as { specimen_code?: string }).specimen_code) ??
-      fullId.slice(0, 8).toUpperCase();
+    const code = str(s.specimen_code) ?? fullId.slice(0, 8).toUpperCase();
 
     return {
       id: code.slice(0, 12).toUpperCase(),
@@ -155,7 +155,7 @@ export async function GET() {
       rubro: str(s.rubro),
       category: str(s.categoria),
       family,
-      subfamily: str((s as { subfamilia?: string }).subfamilia),
+      subfamily: str(s.subfamilia),
       genus,
       species: speciesEpithet ?? name,
       subspecies,
