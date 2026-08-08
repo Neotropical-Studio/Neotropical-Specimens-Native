@@ -16,17 +16,23 @@ import ModelViewer from './ModelViewer';
 interface Props {
   s: SpecimenView;
   strings: Record<string, string>;
-  lang: string;   // idioma de ruta, propagado desde el servidor (sin cookies:
-                  // leerlas en cliente desincronizaba el href en la hidratación)
+  lang: string;   // idioma de ruta, propagado desde el servidor
 }
 
 export default function SpecimenCard({ s, strings, lang }: Props) {
   const [hover, setHover] = useState(false);
   const [viewer, setViewer] = useState<null | '3d' | 'video'>(null);
-  const detailHref = `/${lang}/product/${s.id}`;
 
   // Helper i18n cliente: lee del mapa serializable resuelto en servidor.
   const t = (key: string, fallback: string) => strings[key] ?? fallback;
+
+  // CONTROL ANTI-404:
+  // Si el ID es 'node-media' o no existe un ID válido de espécimen, 
+  // redirige a la vista general del catálogo en lugar de a un producto inexistente.
+  const isValidProduct = s?.id && s.id !== 'node-media';
+  const detailHref = isValidProduct
+    ? `/${lang}/product/${s.id}`
+    : `/${lang}/catalogue`;
 
   const frameless = isMorphoGodartyDidiusTingomarensis({
     id: s.id,
@@ -61,7 +67,7 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
       >
         <Link
           href={detailHref}
-          aria-label={s.scientificName}
+          aria-label={s.scientificName || t('media.unknown', 'Ver detalle')}
           className="absolute inset-0 z-10"
         />
         {/* Media — Morpho sin marco; el resto conserva la tarjeta */}
@@ -75,7 +81,7 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
           {shown ? (
             <Image
               src={shown}
-              alt={s.scientificName}
+              alt={s.scientificName || 'Biological specimen'}
               fill
               sizes="(max-width: 768px) 50vw, 25vw"
               className="bg-transparent object-contain object-center transition-transform duration-500 group-hover:scale-105"
@@ -101,8 +107,7 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
             )}
           </div>
 
-          {/* Acciones media (3D / video) — z-20: por encima del <Link> overlay
-              de toda la tarjeta (z-10), si no sus clics navegarían al detalle. */}
+          {/* Acciones media (3D / video) */}
           <div className="absolute right-3 top-3 z-20 flex flex-col gap-1.5">
             {s.model3d && (
               <button
@@ -133,7 +138,7 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
           </div>
 
           {/* Swatches de color */}
-          {s.colors.length > 0 && (
+          {s.colors && s.colors.length > 0 && (
             <div className="absolute bottom-3 left-3 flex gap-1">
               {s.colors.slice(0, 4).map((c, i) => (
                 <span
@@ -150,7 +155,7 @@ export default function SpecimenCard({ s, strings, lang }: Props) {
         {/* Info */}
         <div className="flex flex-1 flex-col gap-2 p-4">
           <div className="text-[11px] font-mono uppercase tracking-wider text-neutral-500">
-            {s.family ?? t('taxon.unknown', 'taxón')} · {s.code}
+            {s.family ?? t('taxon.unknown', 'taxón')} {s.code ? `· ${s.code}` : ''}
           </div>
           <h3 className="text-base font-bold italic leading-tight text-white transition-colors group-hover:text-emerald-300">
             {s.scientificName}
