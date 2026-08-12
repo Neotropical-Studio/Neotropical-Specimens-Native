@@ -79,7 +79,15 @@ export default function IndustrialMasterSystemV3() {
         pageSizeDefault?: number;
       } = {};
       try {
-        json = text ? (JSON.parse(text) as typeof json) : {};
+        if (!res.ok) {
+        const cleanText = text.replace(/<[^>]*>?/gm, '').trim();
+        throw new Error(`Error (${res.status}): ${cleanText.slice(0, 150) || 'Error interno del servidor'}`);
+      }
+      try {
+        json = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error('El servidor devolvió una respuesta no válida (HTML/Texto plano en lugar de JSON).');
+      }
       } catch {
         throw new Error(
           text?.slice(0, 180) ||
