@@ -28,7 +28,7 @@ export default function CatalogNavCard({
   const cover =
     node.coverPublicId
       ? catalogCardImageUrl(node.coverPublicId, {
-          width: 720,
+          width: 480,
           chameleonHex,
           version: node.coverVersion,
         })

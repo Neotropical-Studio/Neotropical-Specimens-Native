@@ -33,62 +33,84 @@ export function useLiveSpecimens(initial: SpecimenView[]): {
     let active = true;
     let cleanup = () => {};
 
-    try {
-      const supabase = getSupabaseBrowser();
+    // Fuera del critical path: no competir con el primer paint de la portada.
+    const bootDelayMs = 4_000;
+    const boot = window.setTimeout(() => {
+      try {
+        const supabase = getSupabaseBrowser();
 
-      const refresh = async () => {
-        const { rows } = await loadCatalogRows(supabase);
-        if (!active) return;
-        setSpecimens(rows.map(toSpecimenView));
-      };
-
-      let subscribed = false;
-      let poll: ReturnType<typeof setInterval> | null = null;
-      const startPolling = () => {
-        if (poll || !active) return;
-        poll = setInterval(refresh, POLL_MS);
-        setMode('poll');
-      };
-      const stopPolling = () => {
-        if (poll) clearInterval(poll);
-        poll = null;
-      };
-
-      const channel = supabase
-        .channel('specimens-live-showcase')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'specimens' }, () => {
-          void refresh();
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'specimen_media' }, () => {
-          void refresh();
-        })
-        .subscribe((status) => {
+        const refresh = async () => {
+          const { rows } = await loadCatalogRows(supabase);
           if (!active) return;
-          if (status === 'SUBSCRIBED') {
-            subscribed = true;
-            stopPolling();
-            setMode('ws');
-          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-            subscribed = false;
-            startPolling();
-          }
-        });
+          // Conservar filas sintéticas node-media (covers de categoría).
+          setSpecimens((prev) => {
+            const nodeMedia = prev.filter((s) => s.id.startsWith('node-media:'));
+            const live = rows.map(toSpecimenView);
+            return [...live, ...nodeMedia];
+          });
+        };
 
-      const grace = setTimeout(() => {
-        if (active && !subscribed) startPolling();
-      }, WS_GRACE_MS);
+        let subscribed = false;
+        let poll: ReturnType<typeof setInterval> | null = null;
+        const startPolling = () => {
+          if (poll || !active) return;
+          poll = setInterval(refresh, POLL_MS);
+          setMode('poll');
+        };
+        const stopPolling = () => {
+          if (poll) clearInterval(poll);
+          poll = null;
+        };
 
-      cleanup = () => {
-        clearTimeout(grace);
-        stopPolling();
-        supabase.removeChannel(channel);
-      };
-    } catch {
-      setMode('off');
-    }
+        const channel = supabase
+          .channel('specimens-live-showcase')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'specimens' },
+            () => {
+              void refresh();
+            },
+          )
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'specimen_media' },
+            () => {
+              void refresh();
+            },
+          )
+          .subscribe((status) => {
+            if (!active) return;
+            if (status === 'SUBSCRIBED') {
+              subscribed = true;
+              stopPolling();
+              setMode('ws');
+            } else if (
+              status === 'CHANNEL_ERROR' ||
+              status === 'TIMED_OUT' ||
+              status === 'CLOSED'
+            ) {
+              subscribed = false;
+              startPolling();
+            }
+          });
+
+        const grace = setTimeout(() => {
+          if (active && !subscribed) startPolling();
+        }, WS_GRACE_MS);
+
+        cleanup = () => {
+          clearTimeout(grace);
+          stopPolling();
+          supabase.removeChannel(channel);
+        };
+      } catch {
+        setMode('off');
+      }
+    }, bootDelayMs);
 
     return () => {
       active = false;
+      clearTimeout(boot);
       cleanup();
     };
   }, []);

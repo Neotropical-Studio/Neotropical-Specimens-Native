@@ -60,7 +60,8 @@ function resolveHeroSrc(active: SpecimenView): string {
   const publicId = resolveCloudinaryPublicId(raw);
   if (!publicId) return raw;
 
-  return cloudinaryImageUrl(publicId, ['f_png', 'q_auto:best', 'w_900', 'c_fit']) || raw;
+  // f_auto/q_auto: menos bytes en el LCP del hero (PNG solo si hace falta alfa).
+  return cloudinaryImageUrl(publicId, ['f_auto', 'q_auto', 'w_720', 'c_fit']) || raw;
 }
 
 function productHref(lang: string, active: SpecimenView): string {

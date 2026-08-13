@@ -5,16 +5,21 @@ import CampaignBanner from '@/components/CampaignBanner';
 import Header from '@/components/Header';
 import LiveShowcase from '@/components/LiveShowcase';
 import { getI18n } from '@/lib/i18n/index';
-import { loadCatalogueSpecimens } from '@/lib/specimens/loadCatalogue';
+import { loadHomeShowcaseSpecimens } from '@/lib/specimens/loadHomeShowcase';
 
-export const revalidate = 0; // siempre fresco (dinámico)
+// Regenerativo con cache corto en loadHomeShowcase (45s) — no CDN HTML estático.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const i18n = await getI18n(lang);
 
-  const { specimens, error } = await loadCatalogueSpecimens();
-  const country = (await headers()).get('x-geo-country');
+  const [i18n, { specimens, error }, hdrs] = await Promise.all([
+    getI18n(lang),
+    loadHomeShowcaseSpecimens(),
+    headers(),
+  ]);
+  const country = hdrs.get('x-geo-country');
 
   return (
     <>
