@@ -116,10 +116,16 @@ async function resolveSpecimenTaxonomyFolder(
 }
 
 export async function POST(req: NextRequest) {
+  try {
   const admin = await getCurrentAdmin();
-  if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  if (!admin) return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
 
-  const formData = await req.formData();
+  let formData: FormData;
+  try {
+    formData = await req.formData();
+  } catch {
+    return NextResponse.json({ ok: false, error: 'FormData inválido' }, { status: 400 });
+  }
   const file = formData.get('file');
   const specimenId = String(formData.get('specimenId') ?? '');
   const kind = String(formData.get('kind') ?? '') as SpecimenKind;
@@ -130,10 +136,10 @@ export async function POST(req: NextRequest) {
     : undefined;
 
   if (!(file instanceof File)) {
-    return NextResponse.json({ error: 'Falta el archivo' }, { status: 400 });
+    return NextResponse.json({ ok: false, error: 'Falta el archivo' }, { status: 400 });
   }
   if (!MEDIA_TYPES.has(mediaType) && !documentFolder) {
-    return NextResponse.json({ error: 'mediaType inválido' }, { status: 400 });
+    return NextResponse.json({ ok: false, error: 'mediaType inválido' }, { status: 400 });
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -153,12 +159,12 @@ export async function POST(req: NextRequest) {
     pathPolicy = 'operational';
   } else {
     if (!specimenId) {
-      return NextResponse.json({ error: 'Falta specimenId' }, { status: 400 });
+      return NextResponse.json({ ok: false, error: 'Falta specimenId' }, { status: 400 });
     }
     void kind;
     const resolved = await resolveSpecimenTaxonomyFolder(specimenId);
     if ('error' in resolved) {
-      return NextResponse.json({ error: resolved.error }, { status: 400 });
+      return NextResponse.json({ ok: false, error: resolved.error }, { status: 400 });
     }
     folder = resolved.folder;
     pathPolicy = 'specimen';
@@ -204,10 +210,10 @@ export async function POST(req: NextRequest) {
     } else if (documentFolder) {
       result = await uploadImage(buffer, { folder, pathPolicy, industrial: true });
     } else {
-      return NextResponse.json({ error: 'mediaType inválido' }, { status: 400 });
+      return NextResponse.json({ ok: false, error: 'mediaType inválido' }, { status: 400 });
     }
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 502 });
+    return NextResponse.json({ ok: false, error: (err as Error).message }, { status: 502 });
   }
 
   if (documentFolder) {
@@ -215,7 +221,7 @@ export async function POST(req: NextRequest) {
       mode: 'cache',
       reason: `upload:document:${documentFolder}`,
     });
-    return NextResponse.json({ cloudinaryId: result.public_id, production });
+    return NextResponse.json({ ok: true, cloudinaryId: result.public_id, production });
   }
 
   const publicId = result.public_id;
@@ -279,7 +285,7 @@ export async function POST(req: NextRequest) {
     } else dbErr = error;
   }
 
-  if (dbErr) return NextResponse.json({ error: dbErr.message }, { status: 500 });
+  if (dbErr) return NextResponse.json({ ok: false, error: dbErr.message }, { status: 500 });
 
   if (assetType === 'image') {
     const forceCover = view === 'cover' || view === 'principal';
@@ -323,9 +329,16 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({
+    ok: true,
     asset: { type: mediaType, cloudinary_id: publicId, view: view ?? null },
     publicId,
     folder,
     production,
   });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
 }

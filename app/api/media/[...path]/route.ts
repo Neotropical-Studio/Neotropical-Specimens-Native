@@ -63,11 +63,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> },
 ) {
-  const { path } = await params;
-  const search = request.nextUrl.search;
-  const targetUrl = buildTarget(path, search);
-
   try {
+    const { path } = await params;
+    const search = request.nextUrl.search;
+    const targetUrl = buildTarget(path, search);
+
     const range = request.headers.get('range');
     const upstream = await fetch(targetUrl, {
       headers: range ? { range } : undefined,
@@ -76,7 +76,10 @@ export async function GET(
     });
 
     if (!upstream.ok && upstream.status !== 206) {
-      return new NextResponse('Media Resource Not Found', { status: upstream.status });
+      return NextResponse.json(
+        { ok: false, error: 'Media Resource Not Found' },
+        { status: upstream.status },
+      );
     }
 
     const headers = new Headers();
@@ -87,16 +90,33 @@ export async function GET(
     headers.set('Cache-Control', 'public, max-age=31536000, immutable');
     headers.set('X-Content-Type-Options', 'nosniff');
 
+    // Éxito: bytes del media (no HTML). Errores siempre JSON arriba.
     return new NextResponse(upstream.body, {
       status: upstream.status,
       headers,
     });
-  } catch {
-    return new NextResponse('Internal Proxy Error', { status: 500 });
+  } catch (e) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: e instanceof Error ? e.message : 'Internal Proxy Error',
+      },
+      { status: 500 },
+    );
   }
 }
 
 export async function HEAD(request: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
-  const res = await GET(request, ctx);
-  return new NextResponse(null, { status: res.status, headers: res.headers });
+  try {
+    const res = await GET(request, ctx);
+    return new NextResponse(null, { status: res.status, headers: res.headers });
+  } catch (e) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: e instanceof Error ? e.message : 'Internal Proxy Error',
+      },
+      { status: 500 },
+    );
+  }
 }

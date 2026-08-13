@@ -39,8 +39,9 @@ function alpha(a: string, b: string) {
 }
 
 export async function GET() {
+  try {
   const admin = await getCurrentAdmin();
-  if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  if (!admin) return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
 
   let db;
   try {
@@ -48,6 +49,7 @@ export async function GET() {
   } catch (e) {
     return NextResponse.json(
       {
+        ok: false,
         error:
           e instanceof Error
             ? e.message
@@ -118,7 +120,7 @@ export async function GET() {
   }
 
   if (error) {
-    return NextResponse.json({ error: error.message, rows: [] }, { status: 500 });
+    return NextResponse.json({ ok: false, error: error.message, rows: [] }, { status: 500 });
   }
 
   const rows: ConsolaRow[] = (data ?? []).map((s) => {
@@ -180,4 +182,14 @@ export async function GET() {
     pageSizeDefault: 10,
     syncedAt: new Date().toISOString(),
   });
+  } catch (e) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: e instanceof Error ? e.message : String(e),
+        rows: [],
+      },
+      { status: 500 },
+    );
+  }
 }

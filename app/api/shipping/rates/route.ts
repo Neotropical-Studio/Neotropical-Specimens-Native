@@ -108,13 +108,20 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json({
-    ok: true,
-    carriers: listNativeCarriers(),
-    standard: listNativeCarriers().filter((c) => c.tier === 'standard'),
-    special: listNativeCarriers().filter((c) => c.tier === 'special'),
-    note:
-      'Nosotros enviamos con Serpost, Exportafacil y EMS Internacional. FedEx y DHL son opción del cliente (casos especiales).',
-    providers: listCourierProviders(),
-  });
+  try {
+    return NextResponse.json({
+      ok: true,
+      carriers: listNativeCarriers(),
+      standard: listNativeCarriers().filter((c) => c.tier === 'standard'),
+      special: listNativeCarriers().filter((c) => c.tier === 'special'),
+      note:
+        'Nosotros enviamos con Serpost, Exportafacil y EMS Internacional. FedEx y DHL son opción del cliente (casos especiales).',
+      providers: listCourierProviders(),
+    });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
 }

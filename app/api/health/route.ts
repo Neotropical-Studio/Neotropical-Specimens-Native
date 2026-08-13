@@ -45,32 +45,42 @@ async function probe(name: string, url: string | null): Promise<Probe> {
 }
 
 export async function GET() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || null;
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || null;
 
-  const probes = await Promise.all([probe('supabase', supabaseUrl ? `${supabaseUrl}/rest/v1/` : null)]);
+    const probes = await Promise.all([
+      probe('supabase', supabaseUrl ? `${supabaseUrl}/rest/v1/` : null),
+    ]);
 
-  // El render sólo depende del proceso Next: si responde, el nodo sirve.
-  const degraded = probes.some((p) => p.state === 'down' || p.state === 'slow');
+    // El render sólo depende del proceso Next: si responde, el nodo sirve.
+    const degraded = probes.some((p) => p.state === 'down' || p.state === 'slow');
 
-  return NextResponse.json(
-    {
-      status: 'ok',
-      degraded,
-      region: REGION,
-      renders: true,
-      probes,
-      ts: new Date().toISOString(),
-    },
-    {
-      status: 200,
-      headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
-        // Permite al borde enrutar por estado sin abrir el cuerpo JSON.
-        'x-edge-region': REGION,
-        'x-edge-degraded': degraded ? '1' : '0',
+    return NextResponse.json(
+      {
+        ok: true,
+        status: 'ok',
+        degraded,
+        region: REGION,
+        renders: true,
+        probes,
+        ts: new Date().toISOString(),
       },
-    },
-  );
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+          // Permite al borde enrutar por estado sin abrir el cuerpo JSON.
+          'x-edge-region': REGION,
+          'x-edge-degraded': degraded ? '1' : '0',
+        },
+      },
+    );
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
 }
 
 // Sonda de liveness mínima para los health checks que sólo miran el código.

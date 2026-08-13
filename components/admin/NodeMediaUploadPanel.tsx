@@ -87,10 +87,11 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
     try {
       const res = await fetch('/api/admin/node-media');
       const json = (await res.json()) as {
+        ok?: boolean;
         targets?: NodeMediaUploadTarget[];
         error?: string;
       };
-      if (res.ok && json.targets?.length) {
+      if (json.ok === true && json.targets?.length) {
         setTargets(json.targets);
       }
     } catch {
@@ -150,10 +151,11 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
       `/api/admin/node-media?targetId=${encodeURIComponent(tid)}&slot=${s}`,
     );
     const json = (await res.json()) as {
+      ok?: boolean;
       error?: string;
       primary?: MediaItem | null;
     };
-    if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
+    if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
     return json.primary ?? null;
   }
 
@@ -363,13 +365,14 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
     try {
       const res = await fetch('/api/admin/node-media', { method: 'POST', body: fd });
       const json = (await res.json()) as {
+        ok?: boolean;
         error?: string;
         publicId?: string;
         folder?: string;
         secureUrl?: string;
         production?: { ok?: boolean };
       };
-      if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
+      if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
       const folder =
         json.folder ??
         (activeSlot === 'card' ? target.cardFolder : target.videoFolder);
@@ -441,13 +444,14 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         }),
       });
       const json = (await res.json()) as {
+        ok?: boolean;
         error?: string;
         message?: string;
         publicId?: string;
         secureUrl?: string;
         production?: { ok?: boolean };
       };
-      if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
+      if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
       const at = new Date().toLocaleString('es-PE', { hour12: false });
       if (json.secureUrl && json.publicId) {
         const next: MediaItem = {
@@ -524,8 +528,13 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         slot: which,
       });
       const res = await fetch(`/api/admin/node-media?${qs}`, { method: 'DELETE' });
-      const json = (await res.json()) as { error?: string; message?: string; deleted?: number };
-      if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
+      const json = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        message?: string;
+        deleted?: number;
+      };
+      if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
       setSlotStatus((prev) => ({ ...prev, [which]: null }));
       if (slot === which) setCurrent(null);
       setOk(json.message ?? `${label} eliminado (${json.deleted ?? 0}).`);

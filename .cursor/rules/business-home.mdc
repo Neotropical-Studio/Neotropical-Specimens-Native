@@ -1,0 +1,33 @@
+---
+description: Business Home — House Insects of Peru stack, identity, and infra constraints
+alwaysApply: true
+---
+
+# Business Home · Neotropical Specimens Native
+
+## Identity
+
+- Store / brand (tienda): **Neotropical Specimens Native**
+- Legal company: **House Insects of Peru E.I.R.L.**
+- Never mention, equate, or confuse this business with "Andean Wings".
+- In UI/copy: use the store name for the shopfront; use the company name for legal, invoices, permits, and corporate context.
+
+## Hosting & deployment (strict)
+
+- Platform: **Vercel only**
+- Framework: **Next.js** (App Router, Node.js runtime)
+- CMS: **Sanity.io**
+- Database: **Supabase**
+- Media: **Cloudinary**
+- Version control: **GitHub**
+
+## Forbidden infrastructure
+
+- Never suggest or use **Oracle Cloud / OCI** (SDKs, Compute, Object Storage).
+- Never switch to **AWS / GCP / Azure** unless the user explicitly requests it.
+
+## Coding standards
+
+- Clean, modern Next.js TypeScript suitable for Vercel.
+- Environment variables structured for Vercel, Supabase, Cloudinary, and Sanity.
+- API routes: always `NextResponse.json(...)`; catch errors and return `{ ok: false, error: string }` — never uncaught HTML error pages from `/api/*`.

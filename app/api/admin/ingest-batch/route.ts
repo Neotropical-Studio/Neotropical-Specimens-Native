@@ -31,22 +31,28 @@ const VIEW_ORDER: Record<string, number> = {
 };
 
 export async function POST(req: NextRequest) {
+  try {
   const admin = await getCurrentAdmin();
-  if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  if (!admin) return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
 
-  const formData = await req.formData();
+  let formData: FormData;
+  try {
+    formData = await req.formData();
+  } catch {
+    return NextResponse.json({ ok: false, error: 'FormData inválido' }, { status: 400 });
+  }
   const file = formData.get('file');
   const specimenCode = String(formData.get('specimenCode') ?? '').trim().toUpperCase();
   const view         = String(formData.get('view')         ?? 'dorsal').toLowerCase();
   const removeBg     = formData.get('removeBg') === 'true';
 
-  if (!(file instanceof File))   return NextResponse.json({ error: 'Falta el archivo' }, { status: 400 });
-  if (!specimenCode)              return NextResponse.json({ error: 'Falta specimenCode' }, { status: 400 });
+  if (!(file instanceof File))   return NextResponse.json({ ok: false, error: 'Falta el archivo' }, { status: 400 });
+  if (!specimenCode)              return NextResponse.json({ ok: false, error: 'Falta specimenCode' }, { status: 400 });
 
   // ── Detectar tipo por extensión ────────────────────────────────────────────
   const ext    = file.name.split('.').pop()?.toLowerCase() ?? '';
   const assetType = EXT_TYPE[ext];
-  if (!assetType) return NextResponse.json({ error: `Extensión no soportada: .${ext}` }, { status: 400 });
+  if (!assetType) return NextResponse.json({ ok: false, error: `Extensión no soportada: .${ext}` }, { status: 400 });
 
   const db = getSupabaseAdmin();
 
@@ -157,7 +163,7 @@ export async function POST(req: NextRequest) {
       });
     }
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 502 });
+    return NextResponse.json({ ok: false, error: (err as Error).message }, { status: 502 });
   }
 
   const publicId = result.public_id as string;
@@ -181,7 +187,7 @@ export async function POST(req: NextRequest) {
     ? (await db.from('specimen_media').update(mediaPayload).eq('id', existing.data.id)).error
     : (await db.from('specimen_media').insert(mediaPayload)).error;
 
-  if (dbErr) return NextResponse.json({ error: dbErr.message }, { status: 500 });
+  if (dbErr) return NextResponse.json({ ok: false, error: dbErr.message }, { status: 500 });
 
   // Ancla cover en specimens si es dorsal/primera vista
   if (view === 'dorsal' || !view) {
@@ -205,4 +211,11 @@ export async function POST(req: NextRequest) {
     secureUrl: result.secure_url,
     production,
   });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
+
 }

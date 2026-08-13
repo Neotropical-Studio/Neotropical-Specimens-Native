@@ -62,6 +62,7 @@ function newOrderId(): string {
  * - Agrupa permisos + shipping en el breakdown
  */
 export async function POST(req: Request) {
+  try {
   let json: unknown;
   try {
     json = await req.json();
@@ -248,4 +249,10 @@ export async function POST(req: Request) {
           : 'XTransfer: voucher o plazo 3–4 días → courier + permisos.',
     },
   });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
 }

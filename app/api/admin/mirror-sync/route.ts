@@ -11,18 +11,20 @@ export const maxDuration = 300;
 export const revalidate = 0;
 
 export async function POST(req: Request) {
-  const admin = await getCurrentAdmin();
-  if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-
-  let mode: 'discover' | 'apply' = 'apply';
   try {
-    const body = (await req.json()) as { mode?: string };
-    if (body.mode === 'discover') mode = 'discover';
-  } catch {
-    // body vacío → apply
-  }
+    const admin = await getCurrentAdmin();
+    if (!admin) {
+      return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+    }
 
-  try {
+    let mode: 'discover' | 'apply' = 'apply';
+    try {
+      const body = (await req.json()) as { mode?: string };
+      if (body.mode === 'discover') mode = 'discover';
+    } catch {
+      // body vacío → apply
+    }
+
     const db = getSupabaseAdmin();
     const result = await runBidirectionalMirror(db, {
       mode,
@@ -34,17 +36,19 @@ export async function POST(req: Request) {
     const msg = e instanceof Error ? e.message : String(e);
     const missingKey = msg.includes('SUPABASE_SERVICE_ROLE_KEY');
     return NextResponse.json(
-      { error: msg },
+      { ok: false, error: msg },
       { status: missingKey ? 503 : 500 },
     );
   }
 }
 
 export async function GET() {
-  const admin = await getCurrentAdmin();
-  if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-
   try {
+    const admin = await getCurrentAdmin();
+    if (!admin) {
+      return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+    }
+
     const db = getSupabaseAdmin();
     const result = await runBidirectionalMirror(db, {
       mode: 'discover',
@@ -56,7 +60,7 @@ export async function GET() {
     const msg = e instanceof Error ? e.message : String(e);
     const missingKey = msg.includes('SUPABASE_SERVICE_ROLE_KEY');
     return NextResponse.json(
-      { error: msg },
+      { ok: false, error: msg },
       { status: missingKey ? 503 : 500 },
     );
   }

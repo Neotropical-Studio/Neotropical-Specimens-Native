@@ -36,31 +36,43 @@ function str(v: unknown): string | null {
 }
 
 export async function GET() {
-  const admin = await getCurrentAdmin();
-  if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  try {
+    const admin = await getCurrentAdmin();
+    if (!admin) {
+      return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+    }
 
-  const db = getSupabaseAdmin();
+    const db = getSupabaseAdmin();
 
-  const { data: mediaRows, error: mediaError } = await db
-    .from('specimen_media')
-    .select('id, specimen_id, public_id, media_type, display_order, media_url, view')
-    .order('display_order', { ascending: true })
-    .limit(4000);
-
-  if (mediaError) {
-    // `view` puede no existir en schemas viejos
-    const fallback = await db
+    const { data: mediaRows, error: mediaError } = await db
       .from('specimen_media')
-      .select('id, specimen_id, public_id, media_type, display_order, media_url')
+      .select('id, specimen_id, public_id, media_type, display_order, media_url, view')
       .order('display_order', { ascending: true })
       .limit(4000);
-    if (fallback.error) {
-      return NextResponse.json({ error: fallback.error.message }, { status: 500 });
-    }
-    return enrichAndRespond(fallback.data ?? [], db);
-  }
 
-  return enrichAndRespond(mediaRows ?? [], db);
+    if (mediaError) {
+      // `view` puede no existir en schemas viejos
+      const fallback = await db
+        .from('specimen_media')
+        .select('id, specimen_id, public_id, media_type, display_order, media_url')
+        .order('display_order', { ascending: true })
+        .limit(4000);
+      if (fallback.error) {
+        return NextResponse.json(
+          { ok: false, error: fallback.error.message },
+          { status: 500 },
+        );
+      }
+      return enrichAndRespond(fallback.data ?? [], db);
+    }
+
+    return enrichAndRespond(mediaRows ?? [], db);
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
 }
 
 async function enrichAndRespond(
@@ -75,6 +87,7 @@ async function enrichAndRespond(
   }>,
   db: ReturnType<typeof getSupabaseAdmin>,
 ) {
+  try {
   const specimenIds = [...new Set(media.map((m) => m.specimen_id).filter(Boolean))] as string[];
   const bySpecimen = new Map<string, SpecimenLite>();
 
@@ -118,7 +131,7 @@ async function enrichAndRespond(
         )
         .in('id', specimenIds);
       if (soft.error) {
-        return NextResponse.json({ error: soft.error.message }, { status: 500 });
+        return NextResponse.json({ ok: false, error: soft.error.message }, { status: 500 });
       }
       for (const row of (soft.data ?? []) as SpecimenLite[]) {
         bySpecimen.set(row.id, row);
@@ -168,5 +181,11 @@ async function enrichAndRespond(
     };
   });
 
-  return NextResponse.json({ items, autoStudio: true, pageSizeDefault: 10 });
+  return NextResponse.json({ ok: true, items, autoStudio: true, pageSizeDefault: 10 });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
 }

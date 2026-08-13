@@ -24,7 +24,7 @@ const CATEGORY_IDS = new Set<string>(
 const REGION_IDS = new Set<string>(DRIED_SPECIMEN_REGION_FOLDERS.map((r) => r.id));
 
 function bad(msg: string, status = 400) {
-  return NextResponse.json({ error: msg }, { status });
+  return NextResponse.json({ ok: false, error: msg }, { status });
 }
 
 async function okJson(
@@ -43,28 +43,29 @@ function isEditable(families: Array<{ id: string }>): boolean {
 }
 
 export async function GET(req: NextRequest) {
-  const admin = await getCurrentAdmin();
-  if (!admin) return bad('unauthorized', 401);
-
-  const { searchParams } = new URL(req.url);
-  const regionId = searchParams.get('regionId')?.trim() ?? '';
-  const categoryId = searchParams.get('categoryId')?.trim() ?? '';
-  if (!regionId || !categoryId) {
-    return NextResponse.json({
-      regions: DRIED_SPECIMEN_REGION_FOLDERS.map((r) => ({
-        id: r.id,
-        label: r.folder,
-      })),
-      categories: CATALOGUE_CATEGORIES.filter((c) => c.rubroId === 'dried-specimens').map(
-        (c) => ({ id: c.id, label: c.label }),
-      ),
-    });
-  }
-  if (!REGION_IDS.has(regionId) || !CATEGORY_IDS.has(categoryId)) {
-    return bad('regionId o categoryId inválido');
-  }
-
   try {
+    const admin = await getCurrentAdmin();
+    if (!admin) return bad('unauthorized', 401);
+
+    const { searchParams } = new URL(req.url);
+    const regionId = searchParams.get('regionId')?.trim() ?? '';
+    const categoryId = searchParams.get('categoryId')?.trim() ?? '';
+    if (!regionId || !categoryId) {
+      return NextResponse.json({
+        ok: true,
+        regions: DRIED_SPECIMEN_REGION_FOLDERS.map((r) => ({
+          id: r.id,
+          label: r.folder,
+        })),
+        categories: CATALOGUE_CATEGORIES.filter((c) => c.rubroId === 'dried-specimens').map(
+          (c) => ({ id: c.id, label: c.label }),
+        ),
+      });
+    }
+    if (!REGION_IDS.has(regionId) || !CATEGORY_IDS.has(categoryId)) {
+      return bad('regionId o categoryId inválido');
+    }
+
     const families = await listCatalogueFamiliesAdmin(regionId, categoryId);
     return NextResponse.json({
       ok: true,
@@ -78,22 +79,22 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const admin = await getCurrentAdmin();
-  if (!admin) return bad('unauthorized', 401);
-  if (admin.role === 'viewer') return bad('forbidden', 403);
-
-  let body: Record<string, unknown>;
   try {
-    body = (await req.json()) as Record<string, unknown>;
-  } catch {
-    return bad('JSON inválido');
-  }
+    const admin = await getCurrentAdmin();
+    if (!admin) return bad('unauthorized', 401);
+    if (admin.role === 'viewer') return bad('forbidden', 403);
 
-  const action = String(body.action ?? '').trim();
-  const regionId = String(body.regionId ?? '').trim();
-  const categoryId = String(body.categoryId ?? '').trim();
+    let body: Record<string, unknown>;
+    try {
+      body = (await req.json()) as Record<string, unknown>;
+    } catch {
+      return bad('JSON inválido');
+    }
 
-  try {
+    const action = String(body.action ?? '').trim();
+    const regionId = String(body.regionId ?? '').trim();
+    const categoryId = String(body.categoryId ?? '').trim();
+
     if (action === 'bootstrap_all') {
       const result = await bootstrapAllCatalogueFamilies();
       return okJson({ ok: true, ...result }, 'catalogue-families:bootstrap_all');
@@ -193,7 +194,6 @@ export async function POST(req: NextRequest) {
       if (!REGION_IDS.has(targetRegionId) || !CATEGORY_IDS.has(targetCategoryId)) {
         return bad('destino regionId/categoryId inválido');
       }
-      // Lista de origen (panel actual) para refrescar tras sacar la ficha.
       if (!REGION_IDS.has(regionId) || !CATEGORY_IDS.has(categoryId)) {
         return bad('regionId o categoryId de origen inválido');
       }

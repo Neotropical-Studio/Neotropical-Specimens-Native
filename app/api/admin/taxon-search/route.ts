@@ -12,15 +12,29 @@ const PARENT_FIELD: Record<string, string> = {
 };
 
 export async function GET(req: NextRequest) {
-  const admin = await getCurrentAdmin();
-  if (!admin) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  try {
+    const admin = await getCurrentAdmin();
+    if (!admin) {
+      return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+    }
 
-  const { searchParams } = req.nextUrl;
-  const rank = searchParams.get('rank') ?? '';
-  const q = (searchParams.get('q') ?? '').trim();
-  const parentId = searchParams.get('parentId') ?? '';
+    const { searchParams } = req.nextUrl;
+    const rank = searchParams.get('rank') ?? '';
+    const q = (searchParams.get('q') ?? '').trim();
+    const parentId = searchParams.get('parentId') ?? '';
 
-  if (!q) return NextResponse.json({ results: [] });
+    // Placeholder: rank/parentId reserved for future taxon index wiring.
+    void PARENT_FIELD;
+    void rank;
+    void parentId;
 
-  return NextResponse.json({ results: [] });
+    if (!q) return NextResponse.json({ ok: true, results: [] });
+
+    return NextResponse.json({ ok: true, results: [] });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : String(e) },
+      { status: 500 },
+    );
+  }
 }
