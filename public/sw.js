@@ -1,25 +1,29 @@
 /* =============================================================================
  * Entomology Global Edge Engine — Service Worker
- * StaleWhileRevalidate + offline first + Background Sync.
- * Guard de latencia para entornos extremos (búnker / submarino / satélite).
+ * Offline first para storefront. Admin + APIs: siempre red, nunca HTML cacheado.
  * ============================================================================= */
 
-const CACHE = 'entmo-edge-2026.2';
+const CACHE = 'entmo-edge-2026.3-json-safe';
 const OFFLINE_URL = '/offline';
 const SYNC_TAG = 'entmo-edge-sync';
 
-// Sólo URLs que responden 200 directo. '/' NO se precachea: ahora redirige (307)
-// al idioma de ruta y Cache.addAll rechaza respuestas redirigidas, lo que
-// abortaría la instalación del SW. Las portadas /[lang] entran en caché solas
-// con StaleWhileRevalidate en la primera visita.
+// Sólo URLs que responden 200 directo. '/' NO se precachea: redirige (307).
 const PRECACHE = [OFFLINE_URL];
 
-// No cachear en el SW el streaming/proxy de media (Range/HLS) ni las APIs mutables.
-const BYPASS = [/^\/api\/media\//, /^\/api\/webhooks\//];
+// Nunca interceptar: APIs (JSON), admin (panel), proxy media (Range/HLS).
+const BYPASS = [
+  /^\/api\//,
+  /^\/admin(?:\/|$)/,
+  /^\/studio(?:\/|$)/,
+  /^\/_next\/webpack-hmr/,
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()),
+    caches
+      .open(CACHE)
+      .then((cache) => cache.addAll(PRECACHE))
+      .then(() => self.skipWaiting()),
   );
 });
 
@@ -40,36 +44,48 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   if (BYPASS.some((re) => re.test(url.pathname))) return;
 
-  // Navegaciones HTML: network-first para no servir un Application error /
-  // HTML roto cacheado tras un deploy fallido. Assets: stale-while-revalidate.
+  // Navegaciones HTML: network-first (evita Application error cacheado).
+  // Assets: stale-while-revalidate real (sirve cache y actualiza en background).
   const isNavigate = request.mode === 'navigate';
 
   event.respondWith(
     caches.open(CACHE).then(async (cache) => {
       const cached = await cache.match(request);
-      const network = fetch(request)
+
+      const networkPromise = fetch(request)
         .then((res) => {
           if (res && res.status === 200 && res.type === 'basic') {
-            cache.put(request, res.clone());
+            const ct = res.headers.get('content-type') || '';
+            // Nunca cachear JSON/HTML de error; solo assets estáticos.
+            if (!ct.includes('application/json') && !ct.includes('text/html')) {
+              cache.put(request, res.clone());
+            }
           }
           return res;
         })
         .catch(() => null);
 
       if (isNavigate) {
-        const fresh = (await network) || cached;
+        const fresh = (await networkPromise) || cached;
         if (fresh) return fresh;
         return cache.match(OFFLINE_URL);
       }
 
-      const fresh = cached || (await network);
+      // Stale-while-revalidate: devolver cache si hay, pero no bloquear update.
+      if (cached) {
+        void networkPromise;
+        return cached;
+      }
+      const fresh = await networkPromise;
       if (fresh) return fresh;
-      return new Response('', { status: 504, statusText: 'Offline' });
+      return new Response(JSON.stringify({ ok: false, error: 'offline' }), {
+        status: 504,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }),
   );
 });
 
-// automatic_background_sync: reintenta la cola diferida al recuperar red.
 self.addEventListener('sync', (event) => {
   if (event.tag === SYNC_TAG) {
     event.waitUntil(flushQueue());
@@ -85,7 +101,7 @@ async function flushQueue() {
         await fetch(req);
         await cache.delete(req);
       } catch {
-        /* se reintenta en el próximo evento sync */
+        /* retry next sync */
       }
     }),
   );

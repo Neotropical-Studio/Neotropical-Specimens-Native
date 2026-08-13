@@ -121,7 +121,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
   async function refreshTargets() {
     setRefreshingTargets(true);
     try {
-      const res = await fetch('/api/admin/node-media');
+      const res = await fetch('/api/admin/node-media', { cache: 'no-store' });
       const json = await readApiJson(res);
       if (json.ok === true && json.targets?.length) {
         setTargets(json.targets);
@@ -181,6 +181,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
   async function fetchSlotPrimary(tid: string, s: Slot): Promise<MediaItem | null> {
     const res = await fetch(
       `/api/admin/node-media?targetId=${encodeURIComponent(tid)}&slot=${s}`,
+      { cache: 'no-store' },
     );
     const json = await readApiJson(res);
     if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
@@ -391,7 +392,11 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
     fd.append('replace', '1');
 
     try {
-      const res = await fetch('/api/admin/node-media', { method: 'POST', body: fd });
+      const res = await fetch('/api/admin/node-media', {
+        method: 'POST',
+        body: fd,
+        cache: 'no-store',
+      });
       const json = await readApiJson(res);
       if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
       const folder =
@@ -463,6 +468,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
           targetId: target.id,
           slot: which,
         }),
+        cache: 'no-store',
       });
       const json = await readApiJson(res);
       if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
@@ -541,7 +547,10 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         targetId: selected.id,
         slot: which,
       });
-      const res = await fetch(`/api/admin/node-media?${qs}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/node-media?${qs}`, {
+        method: 'DELETE',
+        cache: 'no-store',
+      });
       const json = await readApiJson(res);
       if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
       setSlotStatus((prev) => ({ ...prev, [which]: null }));
