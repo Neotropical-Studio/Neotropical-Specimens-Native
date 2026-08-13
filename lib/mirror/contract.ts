@@ -202,13 +202,32 @@ export function isNodeMediaPublicId(publicId: string): boolean {
  * Extrae cover/video de un inventario de public_ids para un path de nodo.
  * Solo mira `nodePath/_card|card/*` y `nodePath/_video|video/*`.
  */
+/** Typos históricos en carpetas Cloudinary ↔ carpeta ICZN canónica. */
+const NODE_PATH_FOLDER_ALIASES: Record<string, readonly string[]> = {
+  Hepialidae: ['Hepalidae', 'Hepalididae', 'Hepialididae'],
+};
+
+function nodePathLookupBases(nodePath: string): string[] {
+  const base = nodePath.replace(/\/+$/, '');
+  const parts = base.split('/');
+  const leaf = parts[parts.length - 1] ?? '';
+  const aliases = NODE_PATH_FOLDER_ALIASES[leaf];
+  if (!aliases?.length) return [base];
+  const parent = parts.slice(0, -1).join('/');
+  return [base, ...aliases.map((a) => (parent ? `${parent}/${a}` : a))];
+}
+
 export function pickNodeSlotMedia(
   nodePath: string,
   publicIds: readonly string[],
 ): { coverPublicId: string | null; videoPublicId: string | null } {
-  const base = nodePath.replace(/\/+$/, '');
-  const cardPrefixes = NODE_MEDIA_SLOT_ALIASES.card.map((s) => `${base}/${s}/`);
-  const videoPrefixes = NODE_MEDIA_SLOT_ALIASES.video.map((s) => `${base}/${s}/`);
+  const bases = nodePathLookupBases(nodePath);
+  const cardPrefixes = bases.flatMap((base) =>
+    NODE_MEDIA_SLOT_ALIASES.card.map((s) => `${base}/${s}/`),
+  );
+  const videoPrefixes = bases.flatMap((base) =>
+    NODE_MEDIA_SLOT_ALIASES.video.map((s) => `${base}/${s}/`),
+  );
 
   let coverPublicId: string | null = null;
   let videoPublicId: string | null = null;

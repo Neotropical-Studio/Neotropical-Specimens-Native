@@ -35,11 +35,11 @@ async function loadInventoryUncached(): Promise<NodeMediaInventoryEntry[]> {
       return fromDb;
     }
 
-    // 2) Tabla vacía o aún no migrada → bootstrap desde tags Cloudinary (una vez).
+    // 2) Tabla vacía → bootstrap desde tags Cloudinary (una vez).
+    //    Si fromDb === null (tabla stub / no migrada), no intentar upsert: ir a tags.
     if (fromDb && fromDb.length === 0 && isSupabaseAdminConfigured()) {
       const seeded = await bootstrapRegistryFromCloudinaryTags();
       if (seeded.length > 0) {
-        // Releer DB (con metadata/versión si se guardó); si falla, tags con versión.
         const again = await listRegistryInventory();
         if (again && again.length > 0) {
           lastGoodInventory = again;

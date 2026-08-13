@@ -97,7 +97,12 @@ export async function listRegistryInventory(): Promise<NodeMediaInventoryEntry[]
       .from('node_media')
       .select('public_id, secure_url, metadata, updated_at');
     if (error) {
-      if (/relation .*node_media.* does not exist|Could not find the table/i.test(error.message)) {
+      // Tabla ausente O stub incompleto (sin public_id) → tratar como no migrada.
+      if (
+        /relation .*node_media.* does not exist|Could not find the table|column .* does not exist|Could not find the .* column/i.test(
+          error.message,
+        )
+      ) {
         return null;
       }
       console.error('[node-media-registry] list failed', error.message);
@@ -154,6 +159,19 @@ export async function upsertNodeMedia(row: NodeMediaRow): Promise<void> {
     { onConflict: 'target_id,slot' },
   );
   if (error) {
+    // Stub sin columnas (folder/public_id) o tabla ausente: no tumbar el upload.
+    // Cloudinary + tags neo_node_* siguen sirviendo el storefront.
+    if (
+      /column .* does not exist|Could not find the .*column|schema cache|relation .* does not exist|Could not find the table/i.test(
+        error.message,
+      )
+    ) {
+      console.warn(
+        '[node-media-registry] upsert skipped (schema incompleto). Aplicá migration 0013_fix_node_media_registry.sql',
+        error.message,
+      );
+      return;
+    }
     console.error('[node-media-registry] upsert failed', error.message);
     throw new Error(`Registry node_media: ${error.message}`);
   }

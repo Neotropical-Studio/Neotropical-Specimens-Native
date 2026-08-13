@@ -90,6 +90,11 @@ function redirectLang(req: NextRequest, country: string | null): string {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // APIs: nunca HTML ni redirects de login/i18n. Auth JSON vive en cada route.
+  if (pathname === '/api' || pathname.startsWith('/api/')) {
+    return NextResponse.next();
+  }
+
   // /admin/* nunca pasa por geo/i18n: es un panel interno, no parte del
   // storefront multilenguaje. La página de login queda fuera del chequeo de
   // sesión (si no, nadie podría llegar a ella para autenticarse).
@@ -166,6 +171,6 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Evita assets estáticos y el proxy de media (streaming) para no romper Range.
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/media).*)'],
+  // Evita assets estáticos y TODAS las APIs (siempre JSON; sin redirects HTML).
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/).*)'],
 };

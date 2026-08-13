@@ -43,6 +43,19 @@ function errMessage(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
 }
 
+/** Registry puede fallar si la tabla está stub; Cloudinary + tags siguen válidos. */
+async function safeUpsertNodeMedia(
+  row: Parameters<typeof upsertNodeMedia>[0],
+): Promise<boolean> {
+  try {
+    await upsertNodeMedia(row);
+    return true;
+  } catch (regErr) {
+    console.warn('[node-media] registry upsert skipped', errMessage(regErr));
+    return false;
+  }
+}
+
 function parseSlot(raw: string): Slot | null {
   const s = raw.toLowerCase();
   if (s === 'video') return 'video';
@@ -322,7 +335,7 @@ export async function POST(req: NextRequest) {
 
     if (kind === 'video') {
       const res = await uploadVideo(buf, { ...overwrite, industrial: true, autoStudio: true });
-      await upsertNodeMedia({
+      const registry = await safeUpsertNodeMedia({
         target_id: target.id,
         slot,
         public_id: res.public_id,
@@ -350,14 +363,14 @@ export async function POST(req: NextRequest) {
         tags,
         optimized: true,
         autoStudio: true,
-        registry: true,
+        registry,
         production,
       });
     }
 
     if (kind === 'model3d') {
       const res = await uploadModel3d(buf, { ...overwrite, autoStudio: true });
-      await upsertNodeMedia({
+      const registry = await safeUpsertNodeMedia({
         target_id: target.id,
         slot: 'card',
         public_id: res.public_id,
@@ -385,13 +398,13 @@ export async function POST(req: NextRequest) {
         tags,
         optimized: true,
         autoStudio: true,
-        registry: true,
+        registry,
         production,
       });
     }
 
     const res = await uploadImage(buf, { ...overwrite, industrial: true });
-    await upsertNodeMedia({
+    const registry = await safeUpsertNodeMedia({
       target_id: target.id,
       slot,
       public_id: res.public_id,
@@ -419,7 +432,7 @@ export async function POST(req: NextRequest) {
       tags,
       optimized: true,
       autoStudio: false,
-      registry: true,
+      registry,
       production,
     });
   } catch (e) {

@@ -50,6 +50,42 @@ function catLabel(index1Based: number): string {
   return cat ? `CAT${index1Based} · ${cat.label}` : `CAT${index1Based}`;
 }
 
+type ApiJson = {
+  ok?: boolean;
+  error?: string;
+  message?: string;
+  targets?: NodeMediaUploadTarget[];
+  primary?: MediaItem | null;
+  publicId?: string;
+  folder?: string;
+  secureUrl?: string;
+  deleted?: number;
+  production?: { ok?: boolean };
+};
+
+/** Nunca parsear HTML/texto plano como JSON (evita JSON.parse unexpected character). */
+async function readApiJson(res: Response): Promise<ApiJson> {
+  const raw = await res.text();
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return { ok: false, error: `Respuesta vacía (HTTP ${res.status})` };
+  }
+  if (trimmed.startsWith('<') || trimmed.toLowerCase().startsWith('<!doctype')) {
+    return {
+      ok: false,
+      error: `La API devolvió HTML en vez de JSON (HTTP ${res.status}). Revisá middleware/deploy.`,
+    };
+  }
+  try {
+    return JSON.parse(trimmed) as ApiJson;
+  } catch {
+    return {
+      ok: false,
+      error: `JSON inválido (HTTP ${res.status}): ${trimmed.slice(0, 120)}`,
+    };
+  }
+}
+
 export default function NodeMediaUploadPanel({ targets: initialTargets }: Props) {
   const [targets, setTargets] = useState(initialTargets);
   const [stage, setStage] = useState<Stage>('rubro');
@@ -86,11 +122,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
     setRefreshingTargets(true);
     try {
       const res = await fetch('/api/admin/node-media');
-      const json = (await res.json()) as {
-        ok?: boolean;
-        targets?: NodeMediaUploadTarget[];
-        error?: string;
-      };
+      const json = await readApiJson(res);
       if (json.ok === true && json.targets?.length) {
         setTargets(json.targets);
       }
@@ -150,11 +182,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
     const res = await fetch(
       `/api/admin/node-media?targetId=${encodeURIComponent(tid)}&slot=${s}`,
     );
-    const json = (await res.json()) as {
-      ok?: boolean;
-      error?: string;
-      primary?: MediaItem | null;
-    };
+    const json = await readApiJson(res);
     if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
     return json.primary ?? null;
   }
@@ -364,14 +392,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
 
     try {
       const res = await fetch('/api/admin/node-media', { method: 'POST', body: fd });
-      const json = (await res.json()) as {
-        ok?: boolean;
-        error?: string;
-        publicId?: string;
-        folder?: string;
-        secureUrl?: string;
-        production?: { ok?: boolean };
-      };
+      const json = await readApiJson(res);
       if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
       const folder =
         json.folder ??
@@ -443,14 +464,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
           slot: which,
         }),
       });
-      const json = (await res.json()) as {
-        ok?: boolean;
-        error?: string;
-        message?: string;
-        publicId?: string;
-        secureUrl?: string;
-        production?: { ok?: boolean };
-      };
+      const json = await readApiJson(res);
       if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
       const at = new Date().toLocaleString('es-PE', { hour12: false });
       if (json.secureUrl && json.publicId) {
@@ -528,12 +542,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
         slot: which,
       });
       const res = await fetch(`/api/admin/node-media?${qs}`, { method: 'DELETE' });
-      const json = (await res.json()) as {
-        ok?: boolean;
-        error?: string;
-        message?: string;
-        deleted?: number;
-      };
+      const json = await readApiJson(res);
       if (json.ok !== true) throw new Error(json.error ?? `HTTP ${res.status}`);
       setSlotStatus((prev) => ({ ...prev, [which]: null }));
       if (slot === which) setCurrent(null);
