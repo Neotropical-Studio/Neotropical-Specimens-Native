@@ -2,7 +2,9 @@
 
 ## Cursor Cloud specific instructions
 
-### Scope: lista de especímenes en el catálogo
+### Scope: lista de especímenes en el catálogo (solo dinámico / regenerativo)
+
+**No** generar ni cachear el catálogo como HTML estático. Fuente de verdad = Supabase + Cloudinary en vivo (`revalidate = 0` / `force-dynamic`). El service worker (`public/sw.js`) ya fuerza navegación HTML solo por red (sin precache de páginas).
 
 Para **crear / ordenar / renombrar / activar** la lista de familias (navegación del catálogo de especímenes secos):
 
@@ -14,7 +16,7 @@ Para **crear / ordenar / renombrar / activar** la lista de familias (navegación
 
 Fichas de especie (CRUD inventario): misma página, ancla `#fichas-especies`, o `/admin/especimenes/[id]`.
 
-Storefront del catálogo: `/[lang]/catalogue/...` (datos vivos Supabase + media Cloudinary).
+Storefront del catálogo: `/[lang]/catalogue/...` + API `/api/catalog/specimens` (`Cache-Control: no-store`).
 
 ### Servicios mínimos
 
