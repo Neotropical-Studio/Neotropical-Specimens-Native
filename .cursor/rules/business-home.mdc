@@ -31,3 +31,4 @@ alwaysApply: true
 - Clean, modern Next.js TypeScript suitable for Vercel.
 - Environment variables structured for Vercel, Supabase, Cloudinary, and Sanity.
 - API routes: always `NextResponse.json(...)`; catch errors and return `{ ok: false, error: string }` — never uncaught HTML error pages from `/api/*`.
+- Storefront + admin are **dynamic / regenerative** (`revalidate = 0` / live Cloudinary+Supabase). Do not cache HTML pages in the service worker; never treat static HTML as source of truth for catalogue cards or node media.

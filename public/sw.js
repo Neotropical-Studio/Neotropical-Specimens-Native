@@ -1,16 +1,13 @@
 /* =============================================================================
- * Entomology Global Edge Engine — Service Worker
- * Offline first para storefront. Admin + APIs: siempre red, nunca HTML cacheado.
+ * Neotropical Specimens Native — Service Worker
+ * Páginas = dinámicas / regenerativas (nunca HTML cacheado).
+ * APIs = siempre red + JSON. Solo se cachean assets estáticos.
  * ============================================================================= */
 
-const CACHE = 'entmo-edge-2026.3-json-safe';
-const OFFLINE_URL = '/offline';
+const CACHE = 'neo-edge-2026.4-dynamic';
 const SYNC_TAG = 'entmo-edge-sync';
 
-// Sólo URLs que responden 200 directo. '/' NO se precachea: redirige (307).
-const PRECACHE = [OFFLINE_URL];
-
-// Nunca interceptar: APIs (JSON), admin (panel), proxy media (Range/HLS).
+// Nunca interceptar: APIs JSON, admin, studio, HMR.
 const BYPASS = [
   /^\/api\//,
   /^\/admin(?:\/|$)/,
@@ -19,22 +16,31 @@ const BYPASS = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE)
-      .then((cache) => cache.addAll(PRECACHE))
-      .then(() => self.skipWaiting()),
-  );
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
+
+function isStaticAsset(pathname, contentType) {
+  if (pathname.startsWith('/_next/static/')) return true;
+  if (/\.(?:js|css|woff2?|ttf|otf|png|jpe?g|gif|webp|avif|svg|ico|map)$/i.test(pathname)) {
+    return true;
+  }
+  if (!contentType) return false;
+  return (
+    contentType.includes('javascript') ||
+    contentType.includes('text/css') ||
+    contentType.includes('font/') ||
+    contentType.includes('image/')
+  );
+}
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -44,20 +50,40 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   if (BYPASS.some((re) => re.test(url.pathname))) return;
 
-  // Navegaciones HTML: network-first (evita Application error cacheado).
-  // Assets: stale-while-revalidate real (sirve cache y actualiza en background).
-  const isNavigate = request.mode === 'navigate';
+  // Navegación HTML: SOLO red. Cero cache de páginas (catálogo regenerativo).
+  if (request.mode === 'navigate' || request.destination === 'document') {
+    event.respondWith(
+      fetch(request).catch(
+        () =>
+          new Response(
+            JSON.stringify({
+              ok: false,
+              error: 'offline',
+              message: 'Catálogo dinámico: sin red no hay HTML cacheado.',
+            }),
+            {
+              status: 503,
+              headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            },
+          ),
+      ),
+    );
+    return;
+  }
 
+  // Assets estáticos: stale-while-revalidate. Nunca JSON/HTML.
   event.respondWith(
     caches.open(CACHE).then(async (cache) => {
       const cached = await cache.match(request);
-
       const networkPromise = fetch(request)
         .then((res) => {
           if (res && res.status === 200 && res.type === 'basic') {
             const ct = res.headers.get('content-type') || '';
-            // Nunca cachear JSON/HTML de error; solo assets estáticos.
-            if (!ct.includes('application/json') && !ct.includes('text/html')) {
+            if (
+              !ct.includes('text/html') &&
+              !ct.includes('application/json') &&
+              isStaticAsset(url.pathname, ct)
+            ) {
               cache.put(request, res.clone());
             }
           }
@@ -65,13 +91,6 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => null);
 
-      if (isNavigate) {
-        const fresh = (await networkPromise) || cached;
-        if (fresh) return fresh;
-        return cache.match(OFFLINE_URL);
-      }
-
-      // Stale-while-revalidate: devolver cache si hay, pero no bloquear update.
       if (cached) {
         void networkPromise;
         return cached;
@@ -80,7 +99,7 @@ self.addEventListener('fetch', (event) => {
       if (fresh) return fresh;
       return new Response(JSON.stringify({ ok: false, error: 'offline' }), {
         status: 504,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
       });
     }),
   );
