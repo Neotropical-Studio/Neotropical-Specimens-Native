@@ -72,13 +72,23 @@ function acceptLanguages(accept: string | null): string[] {
     .map((l) => l.tag);
 }
 
-// Idioma destino de la redirección: cookie → geo (país) → Accept-Language →
-// default. Puede devolver un idioma NO habilitado; el layout de /[lang] lo
-// normaliza contra el set de Sanity (aquí no se puede consultar el CMS barato).
-function redirectLang(req: NextRequest, country: string | null): string {
+// Idioma destino de la redirección.
+// - Portada canónica `/` → mismo destino que `/en` (DEFAULT_LOCALE), salvo que
+//   el usuario ya eligió idioma (cookie NEXT_LOCALE de una visita a /es, /zh…).
+// - Rutas internas sin lang: cookie → geo → Accept-Language → default.
+// Puede devolver un idioma NO habilitado; el layout de /[lang] lo normaliza.
+function redirectLang(
+  req: NextRequest,
+  country: string | null,
+  opts?: { canonicalHome?: boolean },
+): string {
   const cookie = req.cookies.get('NEXT_LOCALE')?.value ?? null;
+  if (cookie && BCP47.test(cookie)) return cookie;
+
+  // https://neotropicalspecimens.com ≡ https://neotropicalspecimens.com/en
+  if (opts?.canonicalHome) return DEFAULT_LANG;
+
   return (
-    (cookie && BCP47.test(cookie) && cookie) ||
     langForCountry(country) ||
     acceptLanguages(req.headers.get('accept-language'))[0] ||
     DEFAULT_LANG
@@ -133,7 +143,9 @@ export async function middleware(req: NextRequest) {
   const hasLocaleSeg = !isReserved && BCP47.test(firstSeg);
 
   if (!isFile && !isReserved && !hasLocaleSeg) {
-    const lang = redirectLang(req, engineOn ? country : null);
+    const lang = redirectLang(req, engineOn ? country : null, {
+      canonicalHome: pathname === '/',
+    });
     const url = req.nextUrl.clone();
     url.pathname = `/${lang}${pathname === '/' ? '' : pathname}`;
     const redirect = NextResponse.redirect(url, 307);
