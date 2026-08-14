@@ -9184,3 +9184,17 @@ httpx.ConnectError: [Errno 8] nodename nor servname provided, or not known
 2026-08-01 14:56:55  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=PA-188
 2026-08-01 14:56:56  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=PA-189
 2026-08-01 14:56:57  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=PA-190
+2026-08-13 16:24:44  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-031
+2026-08-13 16:24:46  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-032
+2026-08-13 16:24:48  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-033
+2026-08-13 16:24:50  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-034
+2026-08-13 16:24:52  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-035
+2026-08-13 16:24:54  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-036
+2026-08-13 16:24:55  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-037
+2026-08-13 16:24:57  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-038
+2026-08-13 16:24:59  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-039
+2026-08-13 16:25:01  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-040
+2026-08-13 16:25:03  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-041
+2026-08-13 16:25:06  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-042
+2026-08-13 16:25:07  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-043
+2026-08-13 16:32:19  WARNING   Insert full falló ({'message': "Could not find the 'specimen_code' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': ). Reintento slim. code=BR-044

@@ -997,3 +997,17 @@
 2026-08-01 14:56:55  OK  L90  [PA-188]  specimen_id=f4898794-d012-4c8f-a481-004eebeb45b0  taxon=Pterourus zagreus
 2026-08-01 14:56:56  OK  L91  [PA-189]  specimen_id=785afd94-7b20-4e58-8dfb-abefab9c04e8  taxon=Pterourus zagreus
 2026-08-01 14:56:57  OK  L92  [PA-190]  specimen_id=9b121b37-ac76-4575-b0ab-099fcd0dcd00  taxon=Pterourus zagreus
+2026-08-13 16:24:44  OK  L2  [BR-031]  specimen_id=04d922f4-1e63-4e58-88ea-4009ae7b301e  taxon=Brassolis sophorae
+2026-08-13 16:24:46  OK  L3  [BR-032]  specimen_id=f33fa164-3ccd-4ee9-af43-54b5d3f2fcc2  taxon=Caligo illioneus praxiodus
+2026-08-13 16:24:48  OK  L4  [BR-033]  specimen_id=606ce806-1bac-467d-bfa6-54622d1857d8  taxon=Caligo memnon
+2026-08-13 16:24:50  OK  L5  [BR-034]  specimen_id=2342e4e2-56f7-43aa-b94c-b522e139d97f  taxon=Caligo oberthuri phokylides
+2026-08-13 16:24:52  OK  L6  [BR-035]  specimen_id=b1e9b2ab-d662-4e5c-9e6b-e533d64467dd  taxon=Caligo oileus umbratilis
+2026-08-13 16:24:54  OK  L7  [BR-036]  specimen_id=f698568c-a94f-4160-8555-4823aad3275c  taxon=Caligo prometheus atlas
+2026-08-13 16:24:56  OK  L8  [BR-037]  specimen_id=b7ddcde3-ae35-4cd4-b53e-7645954b12a7  taxon=Caligo prometheus prometheus
+2026-08-13 16:24:58  OK  L9  [BR-038]  specimen_id=517bf6b9-fd7a-4ebd-893a-a98848f1f840  taxon=Caligo superbus superbus
+2026-08-13 16:25:00  OK  L10  [BR-039]  specimen_id=859a35e6-7d26-4f8c-b3ac-5b34ba51a80e  taxon=Caligo telamonius memnon
+2026-08-13 16:25:02  OK  L11  [BR-040]  specimen_id=06521d45-61a5-4ebf-89e8-d9bf6d0e3245  taxon=Caligo suzanna zuzana
+2026-08-13 16:25:04  OK  L12  [BR-041]  specimen_id=fca9a780-2981-4263-b72f-98f43238cc0d  taxon=Eryphanis lycomedon
+2026-08-13 16:25:06  OK  L13  [BR-042]  specimen_id=b7b6c471-c0a3-4ae7-a4f8-88bdfe7347dc  taxon=Narope sp.
+2026-08-13 16:25:07  OK  L14  [BR-043]  specimen_id=0fde3569-f301-4e6b-9021-4ba880af01ed  taxon=Narope cyllabarus
+2026-08-13 16:32:19  OK  L2  [BR-044]  specimen_id=473d40af-f2fe-477f-84bb-b4d21411469c  taxon=Caligo atreus
