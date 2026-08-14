@@ -269,7 +269,7 @@ export default function SpecimenCard({
                     className="h-full w-full"
                   />
                 ) : viewer === 'video' && s.video ? (
-                  <video
+                  <video preload="none"
                     src={videoMp4(s.video)}
                     poster={s.primaryImage ? imageUrl(s.primaryImage, ['w_1200']) : undefined}
                     controls
