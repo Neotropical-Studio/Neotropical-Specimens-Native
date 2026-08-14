@@ -1011,3 +1011,123 @@
 2026-08-13 16:25:06  OK  L13  [BR-042]  specimen_id=b7b6c471-c0a3-4ae7-a4f8-88bdfe7347dc  taxon=Narope sp.
 2026-08-13 16:25:07  OK  L14  [BR-043]  specimen_id=0fde3569-f301-4e6b-9021-4ba880af01ed  taxon=Narope cyllabarus
 2026-08-13 16:32:19  OK  L2  [BR-044]  specimen_id=473d40af-f2fe-477f-84bb-b4d21411469c  taxon=Caligo atreus
+2026-08-14 09:53:08  OK  L2  [HE-001]  specimen_id=c4485f94-ccc7-4612-9368-f2e35f57ad2c  taxon=Heliconius melpomene amaryllis
+2026-08-14 09:53:10  OK  L3  [HE-002]  specimen_id=ffdae5eb-6b4a-4246-9a81-947aaca40724  taxon=Heliconius melpomene amaryllis
+2026-08-14 09:53:12  OK  L4  [HE-003]  specimen_id=c8c3aa69-4876-4ef8-b110-636495a953c4  taxon=Heliconius erato lativitta
+2026-08-14 09:53:13  OK  L5  [HE-004]  specimen_id=62a54c4c-ceb5-4cdc-acea-af798c797996  taxon=Heliconius erato lativitta
+2026-08-14 09:53:16  OK  L6  [HE-005]  specimen_id=83c6b08e-d644-4e69-aa28-fcfb6bf1ad27  taxon=Heliconius sara thamar
+2026-08-14 09:53:17  OK  L7  [HE-006]  specimen_id=fcb22a16-ef20-4a34-b8d6-a5d78d81e517  taxon=Heliconius sara thamar
+2026-08-14 09:53:20  OK  L8  [HE-007]  specimen_id=71e963ef-962c-4f7a-a144-ab9f878774f0  taxon=Agraulis vanillae lucina
+2026-08-14 09:53:22  OK  L9  [HE-008]  specimen_id=7bb6c363-9e5e-4082-9644-7ebf277db36c  taxon=Dryas iulia alcionea
+2026-08-14 09:53:23  OK  L10  [HE-009]  specimen_id=995c699a-b79d-42e7-bca2-c2f8fb7a394d  taxon=Dryas iulia alcionea
+2026-08-14 09:53:26  OK  L11  [IT-001]  specimen_id=6c1b3d27-a26e-4367-a429-e43f66497062  taxon=Oleria baizana
+2026-08-14 09:53:28  OK  L12  [IT-002]  specimen_id=f3c71cc5-0a05-4585-9670-6004b5e956c9  taxon=Pteronymia alcidameia
+2026-08-14 09:53:30  OK  L13  [IT-003]  specimen_id=dd571bde-9199-4887-bc30-83b02b2cbfa2  taxon=Hypoleria lavinia
+2026-08-14 10:25:41  OK  L2  [BR-001]  specimen_id=865dfe1d-cb40-4565-89c0-6b35642a6fa8  taxon=Brassolis sophorae
+2026-08-14 10:25:43  OK  L3  [BR-002]  specimen_id=0874f7b5-6787-464f-9460-7adc33ec7876  taxon=Caligo atreus
+2026-08-14 10:25:45  OK  L4  [BR-003]  specimen_id=5679c8b9-3496-4283-9258-64ed880c53bd  taxon=Caligo eurilochus livius
+2026-08-14 10:25:47  OK  L5  [BR-004]  specimen_id=817efd31-cfde-4931-afbb-07fe4f0c8ede  taxon=Caligo idomeneus
+2026-08-14 10:25:48  OK  L6  [BR-005]  specimen_id=516d551b-2dab-4bcb-af3d-8a21b786e4d7  taxon=Caligo ilioneus
+2026-08-14 10:25:50  OK  L7  [BR-006]  specimen_id=d6482c2c-2a77-4fae-8432-0ef28a613dfd  taxon=Caligo ilioneus oberon
+2026-08-14 10:25:52  OK  L8  [BR-007]  specimen_id=08be763e-11b4-41ce-8a2d-24a5b363eae8  taxon=Caligo ilioneus praxiodus
+2026-08-14 10:25:53  OK  L9  [BR-008]  specimen_id=2f96ea18-1ea1-4ed2-bb50-f8a8448089c3  taxon=Caligo memnon
+2026-08-14 10:25:55  OK  L10  [BR-009]  specimen_id=398b3a39-ed8d-4bec-b809-84a54c081b2a  taxon=Caligo oberthuri phokylides
+2026-08-14 10:25:57  OK  L11  [BR-010]  specimen_id=1cf904bb-a3e7-4f7f-9b9b-037e664c8711  taxon=Caligo oileus umbratilis
+2026-08-14 10:25:59  OK  L12  [BR-011]  specimen_id=1a1daeb3-0b25-4d97-a96f-485bbdae5323  taxon=Caligo placidianus
+2026-08-14 10:26:01  OK  L13  [BR-012]  specimen_id=b00371eb-5918-490c-91bc-0658dd9d3c21  taxon=Caligo prometheus atlas
+2026-08-14 10:26:02  OK  L14  [BR-013]  specimen_id=89118b3f-538a-4e8a-99f0-2e137acf011c  taxon=Caligo prometheus prometheus
+2026-08-14 10:26:04  OK  L15  [BR-014]  specimen_id=1a1f43e5-2727-4f84-b62c-bbea43e3a343  taxon=Caligo superbus superbus
+2026-08-14 10:26:06  OK  L16  [BR-015]  specimen_id=213c803f-5cc5-4688-a800-c9970e5bfe1c  taxon=Caligo suzanna zuzana
+2026-08-14 10:26:08  OK  L17  [BR-016]  specimen_id=b2440d05-e2ab-4fdf-b585-37b622acc115  taxon=Caligo teucer semicarahuela
+2026-08-14 10:26:10  OK  L18  [BR-017]  specimen_id=d9f84641-79bf-4f6e-8b29-f22ae51a8980  taxon=Catoblepia berecynthia
+2026-08-14 10:26:12  OK  L19  [BR-018]  specimen_id=62b7e602-33dd-4112-bc43-0f1af33435b5  taxon=Dynastor darius darius
+2026-08-14 10:26:14  OK  L20  [BR-019]  specimen_id=3b9d98b1-67e2-4d6c-b2cd-c41d3e210a71  taxon=Dynastor macrosirus
+2026-08-14 10:26:16  OK  L21  [BR-020]  specimen_id=8d6296aa-ebef-4b5a-8d77-bed32ad15011  taxon=Eryphanes lycomedon
+2026-08-14 10:26:18  OK  L22  [BR-021]  specimen_id=1ff335fd-b157-4511-904d-5e8b8826b9c8  taxon=Narope cyllabarus
+2026-08-14 10:26:20  OK  L23  [BR-022]  specimen_id=6666ed1f-4a98-4742-a080-dc385dabff47  taxon=Narope sp.
+2026-08-14 10:26:22  OK  L24  [BR-023]  specimen_id=8a89c910-70cd-41a5-8979-17dc86c2c012  taxon=Opoptera aessipe
+2026-08-14 10:26:23  OK  L25  [BR-024]  specimen_id=733e79c4-c16a-4e27-bfe1-0ea96e0f6f42  taxon=Opoptera aorsa
+2026-08-14 10:26:25  OK  L26  [BR-025]  specimen_id=dd419fc4-8fd0-4e6c-947c-88d656f4cc32  taxon=Opsiphanes invirae agasthenes
+2026-08-14 10:26:27  OK  L27  [BR-026]  specimen_id=22e9191a-0aca-4cdd-aeef-35864269e79a  taxon=Opsiphanes quiteria quirinalis
+2026-08-14 10:26:29  OK  L28  [BR-027]  specimen_id=4871d039-fec5-4273-a234-86f2bb806309  taxon=Opsiphanes sallei
+2026-08-14 10:27:58  OK  L2  [BR-001]  specimen_id=f524e0bc-bd26-41fe-be29-13efd5518e72  taxon=Brassolis sophorae
+2026-08-14 10:28:00  OK  L3  [BR-002]  specimen_id=1d93a86b-18a2-4e75-a945-42d953b925c5  taxon=Caligo atreus
+2026-08-14 10:28:01  OK  L4  [BR-003]  specimen_id=0bd275fd-1bad-42e7-8c7e-500bd98fcff2  taxon=Caligo eurilochus livius
+2026-08-14 10:28:03  OK  L5  [BR-004]  specimen_id=e061e59b-6e11-446f-910f-a00415ed657b  taxon=Caligo idomeneus
+2026-08-14 10:28:05  OK  L6  [BR-005]  specimen_id=cd388cbc-26b3-4541-aa76-65732b6d77b0  taxon=Caligo ilioneus
+2026-08-14 10:28:06  OK  L7  [BR-006]  specimen_id=23017b4e-8db3-4e28-bdf6-748f1fd66967  taxon=Caligo ilioneus oberon
+2026-08-14 10:28:08  OK  L8  [BR-007]  specimen_id=ba503162-33fc-42c0-82bd-3302d049d080  taxon=Caligo ilioneus praxiodus
+2026-08-14 10:28:10  OK  L9  [BR-008]  specimen_id=3456b4c8-015b-4871-9fa1-26fabafa5799  taxon=Caligo memnon
+2026-08-14 10:28:11  OK  L10  [BR-009]  specimen_id=561e4a56-5566-4e75-9445-ad16a534fa42  taxon=Caligo oberthuri phokylides
+2026-08-14 10:28:13  OK  L11  [BR-010]  specimen_id=593dd7c1-b98f-459d-8469-7cef1c0a80ec  taxon=Caligo oileus umbratilis
+2026-08-14 10:28:15  OK  L12  [BR-011]  specimen_id=3dc11bd6-15c7-477a-b0cc-f2643d7889f5  taxon=Caligo placidianus
+2026-08-14 10:28:17  OK  L13  [BR-012]  specimen_id=1193f522-5856-40c0-84c3-b2b4c65bc336  taxon=Caligo prometheus atlas
+2026-08-14 10:28:19  OK  L14  [BR-013]  specimen_id=267e0ddb-9f9d-4e2f-a23c-1c8e23fbec70  taxon=Caligo prometheus prometheus
+2026-08-14 10:28:21  OK  L15  [BR-014]  specimen_id=675e31aa-3a93-4b82-b87d-f3804d4efee8  taxon=Caligo superbus superbus
+2026-08-14 10:28:23  OK  L16  [BR-015]  specimen_id=2521141a-3f0f-47be-bbf4-1950fc970e07  taxon=Caligo suzanna zuzana
+2026-08-14 10:28:25  OK  L17  [BR-016]  specimen_id=3034f69a-1d03-4371-a064-c9547aa3f485  taxon=Caligo teucer semicarahuela
+2026-08-14 10:28:26  OK  L18  [BR-017]  specimen_id=ba1d5393-0bb4-4fd0-a85f-6f3f93e759aa  taxon=Catoblepia berecynthia
+2026-08-14 10:28:29  OK  L19  [BR-018]  specimen_id=35eff41b-c539-4e7f-8c43-530df74e0462  taxon=Dynastor darius darius
+2026-08-14 10:28:30  OK  L20  [BR-019]  specimen_id=431f3cae-ea3c-4af3-8e22-35701d01a333  taxon=Dynastor macrosirus
+2026-08-14 10:28:32  OK  L21  [BR-020]  specimen_id=a0223600-9fc1-4aad-ad9a-299b1caa63b1  taxon=Eryphanes lycomedon
+2026-08-14 10:28:34  OK  L22  [BR-021]  specimen_id=2fe809fe-335f-43f6-a670-8a010ff51383  taxon=Narope cyllabarus
+2026-08-14 10:28:36  OK  L23  [BR-022]  specimen_id=d18bdc6a-af9c-42c6-b6cf-36869c6a5257  taxon=Narope sp.
+2026-08-14 10:28:38  OK  L24  [BR-023]  specimen_id=c714b882-8e0b-4aab-a0d8-71c8c78e651b  taxon=Opoptera aessipe
+2026-08-14 10:28:39  OK  L25  [BR-024]  specimen_id=aa0a81a7-9bd8-4314-a671-d8624d39d81a  taxon=Opoptera aorsa
+2026-08-14 10:28:42  OK  L26  [BR-025]  specimen_id=76556c08-79cc-4a43-a93b-8d21d20b7b77  taxon=Opsiphanes invirae agasthenes
+2026-08-14 10:28:43  OK  L27  [BR-026]  specimen_id=b3d9f6f9-7f35-4949-83ff-a3e437909dc1  taxon=Opsiphanes quiteria quirinalis
+2026-08-14 10:28:45  OK  L28  [BR-027]  specimen_id=6094c5fc-26df-4ac7-ba4d-2a14cf91208d  taxon=Opsiphanes sallei
+2026-08-14 10:39:22  OK  L2  [BR-001]  specimen_id=d86d1ba5-dfdb-41e5-ba54-3b57706c4043  taxon=Brassolis sophorae
+2026-08-14 10:39:24  OK  L3  [BR-002]  specimen_id=2fae9424-50c3-42bf-959f-5579d5e4adab  taxon=Caligo atreus
+2026-08-14 10:39:26  OK  L4  [BR-003]  specimen_id=d646000e-1a14-422a-a42e-6e6f006f9ce4  taxon=Caligo eurilochus livius
+2026-08-14 10:39:28  OK  L5  [BR-004]  specimen_id=fb2932cc-2422-4525-b57d-91ab2793a483  taxon=Caligo idomeneus
+2026-08-14 10:39:29  OK  L6  [BR-005]  specimen_id=3922565b-1946-4773-ac3b-4afd433a52f6  taxon=Caligo ilioneus
+2026-08-14 10:39:31  OK  L7  [BR-006]  specimen_id=4d7de05f-01d8-487e-8c3b-fbc75025c74c  taxon=Caligo ilioneus oberon
+2026-08-14 10:39:33  OK  L8  [BR-007]  specimen_id=983ce49c-6d01-40bd-a880-7ab3499f2ecb  taxon=Caligo ilioneus praxiodus
+2026-08-14 10:39:34  OK  L9  [BR-008]  specimen_id=c04c63ce-7f5f-4e99-9d2d-7cf29290ef09  taxon=Caligo memnon
+2026-08-14 10:39:36  OK  L10  [BR-009]  specimen_id=e65f5309-6fff-4a0b-adc6-042eea6ddead  taxon=Caligo oberthuri phokylides
+2026-08-14 10:39:38  OK  L11  [BR-010]  specimen_id=f8f7a730-a8e2-459d-addd-c5a39f8add8a  taxon=Caligo oileus umbratilis
+2026-08-14 10:39:40  OK  L12  [BR-011]  specimen_id=8516d9bf-69b0-476f-97b0-877c776d32b8  taxon=Caligo placidianus
+2026-08-14 10:39:42  OK  L13  [BR-012]  specimen_id=94e2726b-c91d-4a6c-a9bd-76b524043540  taxon=Caligo prometheus atlas
+2026-08-14 10:39:44  OK  L14  [BR-013]  specimen_id=0fc02774-e7f3-4fd1-995a-c0896cee4caf  taxon=Caligo prometheus prometheus
+2026-08-14 10:39:46  OK  L15  [BR-014]  specimen_id=6663ed47-0e31-4c3a-9f46-9e48233e71da  taxon=Caligo superbus superbus
+2026-08-14 10:39:48  OK  L16  [BR-015]  specimen_id=dd1c66de-a7da-4fff-9ea4-0e4d21aa8b48  taxon=Caligo suzanna zuzana
+2026-08-14 10:39:50  OK  L17  [BR-016]  specimen_id=9fefe62c-3710-4316-a60f-f0b3edbbdb0f  taxon=Caligo teucer semicarahuela
+2026-08-14 10:39:52  OK  L18  [BR-017]  specimen_id=38241d57-8df8-4550-ae38-67fbc190f090  taxon=Catoblepia berecynthia
+2026-08-14 10:39:54  OK  L19  [BR-018]  specimen_id=51645abe-9638-4c4e-90c3-bc09a566745f  taxon=Dynastor darius darius
+2026-08-14 10:39:56  OK  L20  [BR-019]  specimen_id=b6edff6c-e97a-4519-ab55-b053a506838d  taxon=Dynastor macrosirus
+2026-08-14 10:39:58  OK  L21  [BR-020]  specimen_id=55dcbcb8-da91-45d2-a524-b58df61344a1  taxon=Eryphanes lycomedon
+2026-08-14 10:40:00  OK  L22  [BR-021]  specimen_id=c482553a-af8a-4b0d-b6fc-c6002d4cdd7c  taxon=Narope cyllabarus
+2026-08-14 10:40:01  OK  L23  [BR-022]  specimen_id=81ffba6e-5d2b-4975-b8bb-152b35f35495  taxon=Narope sp.
+2026-08-14 10:40:03  OK  L24  [BR-023]  specimen_id=d9a74e4a-f29e-46d6-bfe5-84d99498d028  taxon=Opoptera aessipe
+2026-08-14 10:40:05  OK  L25  [BR-024]  specimen_id=a7bde3c8-2954-4d22-8733-729032547084  taxon=Opoptera aorsa
+2026-08-14 10:40:07  OK  L26  [BR-025]  specimen_id=755b2a9a-2dc4-4e65-94f1-d9d0fa3e6f12  taxon=Opsiphanes invirae agasthenes
+2026-08-14 10:40:09  OK  L27  [BR-026]  specimen_id=98a8f9d4-5ae2-4217-a520-883f1bd83d84  taxon=Opsiphanes quiteria quirinalis
+2026-08-14 10:40:11  OK  L28  [BR-027]  specimen_id=b7b0e7eb-16d9-4c89-9e2a-f67275b50ac2  taxon=Opsiphanes sallei
+2026-08-14 10:40:29  OK  L2  [BR-001]  specimen_id=183a40a4-241d-4084-9dfe-69b912f18c47  taxon=Brassolis sophorae
+2026-08-14 10:40:31  OK  L3  [BR-002]  specimen_id=4485a69b-f42a-4925-87fc-f3934e51cc57  taxon=Caligo atreus
+2026-08-14 10:40:33  OK  L4  [BR-003]  specimen_id=fc537e9e-3ec6-4933-a5c3-885e637f3fa3  taxon=Caligo eurilochus livius
+2026-08-14 10:40:34  OK  L5  [BR-004]  specimen_id=93372e21-eda8-47c3-a97f-8265bacb4d41  taxon=Caligo idomeneus
+2026-08-14 10:40:36  OK  L6  [BR-005]  specimen_id=70736314-f07b-4e4b-b495-87c2a3de907e  taxon=Caligo ilioneus
+2026-08-14 10:40:38  OK  L7  [BR-006]  specimen_id=e724c2a8-089a-48d0-9e14-25f6352b85e0  taxon=Caligo ilioneus oberon
+2026-08-14 10:40:39  OK  L8  [BR-007]  specimen_id=32046a49-c27e-4eb8-a2f7-58a4c1240de2  taxon=Caligo ilioneus praxiodus
+2026-08-14 10:40:41  OK  L9  [BR-008]  specimen_id=330c8630-1e07-42e6-976b-f9da0c0d7c83  taxon=Caligo memnon
+2026-08-14 10:40:43  OK  L10  [BR-009]  specimen_id=9842a1c6-12c5-4031-ae6f-4cb6d02ac99f  taxon=Caligo oberthuri phokylides
+2026-08-14 10:40:45  OK  L11  [BR-010]  specimen_id=6aefa266-10bc-4037-8b7d-983381fe0f57  taxon=Caligo oileus umbratilis
+2026-08-14 10:40:47  OK  L12  [BR-011]  specimen_id=58e6f613-8774-4369-bf80-761418505883  taxon=Caligo placidianus
+2026-08-14 10:40:48  OK  L13  [BR-012]  specimen_id=5b651346-cc5c-46e0-97e8-f718187828ed  taxon=Caligo prometheus atlas
+2026-08-14 10:40:50  OK  L14  [BR-013]  specimen_id=ffd89193-77f3-4d7c-82e3-53bebf8538d5  taxon=Caligo prometheus prometheus
+2026-08-14 10:40:52  OK  L15  [BR-014]  specimen_id=ae3aa633-045a-4579-8883-a564daf40059  taxon=Caligo superbus superbus
+2026-08-14 10:40:54  OK  L16  [BR-015]  specimen_id=bee529d4-d7ad-41f7-9389-41ae85eee88c  taxon=Caligo suzanna zuzana
+2026-08-14 10:40:56  OK  L17  [BR-016]  specimen_id=62714465-d441-483e-9120-537a22cef798  taxon=Caligo teucer semicarahuela
+2026-08-14 10:40:58  OK  L18  [BR-017]  specimen_id=98280b5e-d1bb-4f50-9ade-9f516be6a1b0  taxon=Catoblepia berecynthia
+2026-08-14 10:41:00  OK  L19  [BR-018]  specimen_id=1afacb34-37ec-49a6-94ae-9e5cc7587279  taxon=Dynastor darius darius
+2026-08-14 10:41:02  OK  L20  [BR-019]  specimen_id=df2a4bd0-177e-4c63-9b81-293635b9982e  taxon=Dynastor macrosirus
+2026-08-14 10:41:04  OK  L21  [BR-020]  specimen_id=dd55e15e-dcdc-4570-8121-96caf8a0d503  taxon=Eryphanes lycomedon
+2026-08-14 10:41:06  OK  L22  [BR-021]  specimen_id=3ce8d8ca-50ec-4fcb-a327-4fff9066c76f  taxon=Narope cyllabarus
+2026-08-14 10:41:07  OK  L23  [BR-022]  specimen_id=761bd8b3-4d4a-406d-a9ad-10c58c04fd12  taxon=Narope sp.
+2026-08-14 10:41:09  OK  L24  [BR-023]  specimen_id=e02e5d62-3879-4b93-ae77-5ec825e2b33c  taxon=Opoptera aessipe
+2026-08-14 10:41:11  OK  L25  [BR-024]  specimen_id=5a8d75e8-ea61-48b4-8dfd-26c0498b112d  taxon=Opoptera aorsa
+2026-08-14 10:41:13  OK  L26  [BR-025]  specimen_id=d5238f7f-bfeb-4c6e-95a5-1af5104b89ff  taxon=Opsiphanes invirae agasthenes
+2026-08-14 10:41:15  OK  L27  [BR-026]  specimen_id=f5bd1b1f-04bb-4947-bea1-3372286b755a  taxon=Opsiphanes quiteria quirinalis
+2026-08-14 10:41:17  OK  L28  [BR-027]  specimen_id=d15f671c-e925-4418-86e5-cb7849dfe3d3  taxon=Opsiphanes sallei
