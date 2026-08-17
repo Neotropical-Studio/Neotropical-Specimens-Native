@@ -1131,3 +1131,23 @@
 2026-08-14 10:41:13  OK  L26  [BR-025]  specimen_id=d5238f7f-bfeb-4c6e-95a5-1af5104b89ff  taxon=Opsiphanes invirae agasthenes
 2026-08-14 10:41:15  OK  L27  [BR-026]  specimen_id=f5bd1b1f-04bb-4947-bea1-3372286b755a  taxon=Opsiphanes quiteria quirinalis
 2026-08-14 10:41:17  OK  L28  [BR-027]  specimen_id=d15f671c-e925-4418-86e5-cb7849dfe3d3  taxon=Opsiphanes sallei
+2026-08-14 12:05:57  OK  L2  [LY-001]  specimen_id=10981b60-d44e-45cb-baeb-1fc895a5794f  taxon=Arawacus seperata
+2026-08-14 12:05:59  OK  L3  [LY-002]  specimen_id=f97e155d-1961-428e-b847-babb3cee1d8f  taxon=Arawacus seperata
+2026-08-14 12:06:01  OK  L4  [LY-003]  specimen_id=8102b8eb-bd28-4c7e-a331-3d6c479b6028  taxon=Arcas imperialis
+2026-08-14 12:06:02  OK  L5  [LY-004]  specimen_id=05da97c1-6dd4-4cd6-877b-1967c1b13948  taxon=Arcas tuneta
+2026-08-14 12:06:04  OK  L6  [LY-005]  specimen_id=309055b9-f8ef-48d9-82ff-5b50fd56ba65  taxon=Arcas tuneta
+2026-08-14 12:06:06  OK  L7  [LY-006]  specimen_id=f1a38323-e792-44f0-a560-0d46d34f09e1  taxon=Eumaeus toxana
+2026-08-14 12:06:08  OK  L8  [LY-007]  specimen_id=236c5502-39a1-4020-964c-6d31203768e1  taxon=Eumaeus toxea
+2026-08-14 12:06:09  OK  L9  [LY-008]  specimen_id=58a6b122-f432-454c-8209-9d421cfdbe02  taxon=Eumaeus toxea
+2026-08-14 12:06:10  OK  L10  [LY-009]  specimen_id=8ce5ed1b-5c2f-42b9-a4ea-1ad454cdab16  taxon=Eumaeus toxea
+2026-08-14 12:06:12  OK  L11  [LY-010]  specimen_id=eaa6e20d-f920-4bc8-98ae-35e6c996f5be  taxon=Thecla platyptera
+2026-08-14 12:08:54  OK  L2  [LY-001]  specimen_id=f9753b17-652b-481d-a73d-23d337ea4956  taxon=Arawacus seperata
+2026-08-14 12:08:55  OK  L3  [LY-002]  specimen_id=aa0b94c5-486e-494c-aa05-d2d6409cbb62  taxon=Arawacus seperata
+2026-08-14 12:08:57  OK  L4  [LY-003]  specimen_id=61910ea5-e937-445b-87d9-1e443e3ce67c  taxon=Arcas imperialis
+2026-08-14 12:08:59  OK  L5  [LY-004]  specimen_id=a20e3ff0-0c45-4378-8119-cff865ad563a  taxon=Arcas tuneta
+2026-08-14 12:09:00  OK  L6  [LY-005]  specimen_id=397f7665-8cbc-4af5-98a8-9587168d17e6  taxon=Arcas tuneta
+2026-08-14 12:09:02  OK  L7  [LY-006]  specimen_id=04c512f3-ff05-4dde-83a0-b27c5aa64c30  taxon=Eumaeus toxana
+2026-08-14 12:09:04  OK  L8  [LY-007]  specimen_id=1d6a614e-04f2-4ef7-aab2-415cb4e98fba  taxon=Eumaeus toxea
+2026-08-14 12:09:05  OK  L9  [LY-008]  specimen_id=27aba382-1623-4f59-a398-b96a258d0957  taxon=Eumaeus toxea
+2026-08-14 12:09:07  OK  L10  [LY-009]  specimen_id=da61a323-e9e3-4b3c-8902-92ca2bf2b785  taxon=Eumaeus toxea
+2026-08-14 12:09:09  OK  L11  [LY-010]  specimen_id=53831724-6c59-42a8-895b-291c45fe2b6a  taxon=Thecla platyptera

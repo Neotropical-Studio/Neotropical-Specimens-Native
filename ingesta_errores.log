@@ -9324,3 +9324,30 @@ httpx.ConnectError: [Errno 8] nodename nor servname provided, or not known
 2026-08-14 10:41:13  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=BR-025
 2026-08-14 10:41:15  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=BR-026
 2026-08-14 10:41:16  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=BR-027
+2026-08-14 12:02:28  ERROR     Archivo no encontrado: ruta/a/tu/archivo.csv
+2026-08-14 12:02:36  ERROR     Archivo no encontrado: ruta/a/tu/archivo.csv
+2026-08-14 12:03:22  ERROR     Archivo no encontrado: nombre_de_tu_archivo.csv
+2026-08-14 12:03:39  ERROR     Archivo no encontrado: data/lycaenidae.csv
+2026-08-14 12:04:28  ERROR     Archivo no encontrado: procesados_finales/nombre_exacto_del_archivo.csv
+2026-08-14 12:05:57  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-001
+2026-08-14 12:05:58  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-002
+2026-08-14 12:06:00  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-003
+2026-08-14 12:06:02  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-004
+2026-08-14 12:06:03  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-005
+2026-08-14 12:06:05  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-006
+2026-08-14 12:06:07  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-007
+2026-08-14 12:06:09  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-008
+2026-08-14 12:06:10  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-009
+2026-08-14 12:06:12  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-010
+2026-08-14 12:07:42  ERROR     Archivo no encontrado: data/nombre_del_otro_archivo.csv
+2026-08-14 12:08:54  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-001
+2026-08-14 12:08:55  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-002
+2026-08-14 12:08:57  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-003
+2026-08-14 12:08:58  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-004
+2026-08-14 12:09:00  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-005
+2026-08-14 12:09:02  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-006
+2026-08-14 12:09:04  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-007
+2026-08-14 12:09:05  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-008
+2026-08-14 12:09:06  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-009
+2026-08-14 12:09:08  WARNING   Insert full falló ({'message': "Could not find the 'stock' column of 'specimens' in the schema cache", 'code': 'PGRST204', 'hint': None, 'd). Reintento slim. code=LY-010
+2026-08-14 12:09:14  ERROR     Archivo no encontrado: data/carga_lycaenidae_lote2.csv
