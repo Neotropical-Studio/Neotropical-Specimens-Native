@@ -1,1 +1,1 @@
-export default function FamilyIntroGate() { return null; }
+export default function FamilyIntroGate(props: any) { return null; }
