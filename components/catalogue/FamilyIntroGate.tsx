@@ -113,7 +113,6 @@ export default function FamilyIntroGate({
           autoPlay
           muted
           playsInline
-          preload="auto"
           poster={poster}
           aria-label={`Video de entrada: ${familyLabel}`}
           onEnded={goNext}
