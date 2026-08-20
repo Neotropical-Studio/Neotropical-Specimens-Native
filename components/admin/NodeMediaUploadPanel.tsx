@@ -940,7 +940,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
                     </p>
                     {item ? (
                       s === 'video' ? (
-                        <video
+                        <video preload="none"
                           src={item.secureUrl}
                           className="mb-2 h-20 w-full rounded border border-neutral-700 object-cover"
                           controls
@@ -1111,7 +1111,7 @@ export default function NodeMediaUploadPanel({ targets: initialTargets }: Props)
               </p>
               <div className="mt-2 flex flex-wrap items-start gap-3">
                 {isVideo ? (
-                  <video
+                  <video preload="none"
                     src={pendingPreviewUrl}
                     className="h-24 w-40 rounded border border-amber-900 object-cover"
                     controls

@@ -106,7 +106,7 @@ export default function FamilyIntroGate({
         {poster && failed ? (
           <Image src={poster} alt="" fill unoptimized className="object-cover" sizes="100vw" />
         ) : null}
-        <video
+        <video preload="none"
           ref={videoRef}
           key={`${familyId}:${videoPublicId}`}
           className="h-full w-full object-cover"

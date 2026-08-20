@@ -1,0 +1,1 @@
+# lista_pendiente.txt — una ruta absoluta por línea

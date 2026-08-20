@@ -40,7 +40,7 @@ export default function CatalogEntryVideo({
 
   return (
     <div className={`${frame} ${className}`.trim()}>
-      <video
+      <video preload="none"
         className="h-full w-full object-cover"
         autoPlay
         muted

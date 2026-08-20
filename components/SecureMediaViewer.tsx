@@ -37,7 +37,7 @@ export default function SecureMediaViewer({ mediaUrl = '', specimenName = '', ty
       )}
 
       {mediaUrl && type === 'video' && (
-        <video 
+        <video preload="none" 
           src={mediaUrl} 
           className="w-full h-full object-cover pointer-events-none"
           controls={false}
