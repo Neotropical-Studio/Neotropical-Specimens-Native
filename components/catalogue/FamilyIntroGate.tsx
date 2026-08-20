@@ -1,3 +1,4 @@
+'use client';
 export default function FamilyIntroGate(props: any) { return null; }
 
 'use client';
