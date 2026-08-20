@@ -1,6 +1,6 @@
-<<<<<<< HEAD
+
 export default function FamilyIntroGate(props: any) { return null; }
-=======
+
 'use client';
 
 // Puerta de entrada por familia: reproduce el video corto de ESA familia y,
@@ -138,4 +138,5 @@ export default function FamilyIntroGate({
     </div>
   );
 }
->>>>>>> cursor/catalogue-specimens-list-setup-b520
+
+cursor/catalogue-specimens-list-setup-b520
