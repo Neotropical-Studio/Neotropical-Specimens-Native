@@ -85,7 +85,7 @@ function redirectLang(
   const cookie = req.cookies.get('NEXT_LOCALE')?.value ?? null;
   if (cookie && BCP47.test(cookie)) return cookie;
 
-  // https://neotropicalspecimens.com ≡ https://neotropicalspecimens.com/en
+  // https://neotropicalspecimens.com ≡ https://neotropicalspecimens.com/es
   if (opts?.canonicalHome) return DEFAULT_LANG;
 
   return (
