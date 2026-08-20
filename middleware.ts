@@ -8,7 +8,7 @@ import { countryFromIp, isGeoIpConfigured } from '@/lib/geo/ip';
 // BCP-47 sintáctico (no valida contra el set habilitado de Sanity: eso lo hace
 // el layout de /[lang] con resolveLang). Mantiene el middleware barato.
 const BCP47 = /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/;
-const DEFAULT_LANG = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? 'en';
+const DEFAULT_LANG = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? 'es';
 
 // Primeros segmentos que NUNCA llevan idioma: APIs, la página de reserva que
 // precachea el service worker (URL única), el Studio embebido, el panel
