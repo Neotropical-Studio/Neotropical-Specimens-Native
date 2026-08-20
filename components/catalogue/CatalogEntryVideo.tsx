@@ -46,7 +46,7 @@ export default function CatalogEntryVideo({
         muted
         loop={loop}
         playsInline
-        preload="metadata"
+       
         poster={poster || undefined}
         aria-label={title ? `Video: ${title}` : 'Video de entrada'}
         onEnded={onEnded}
