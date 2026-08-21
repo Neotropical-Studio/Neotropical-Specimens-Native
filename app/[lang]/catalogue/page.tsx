@@ -28,7 +28,7 @@ export default async function CatalogueHubPage({
         {error ? (
           <div className="mx-auto max-w-7xl px-4 pt-4">
             <p className="rounded-xl border border-red-800 bg-red-950/60 p-3 text-sm text-red-200">
-              {i18n.t('system.inventory_error', 'No se pudo cargar el inventario')}: {error}
+            {/* Banner desactivado */}
             </p>
           </div>
         ) : null}

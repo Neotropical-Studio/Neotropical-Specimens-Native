@@ -32,7 +32,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         {error && (
           <div className="mx-auto mb-6 max-w-7xl px-4">
             <div className="rounded-xl border border-red-800 bg-red-950/60 p-4 text-sm text-red-200">
-              {i18n.t('system.inventory_error', 'No se pudo cargar el inventario en vivo')}: {error}
+            {/* Banner desactivado */}
             </div>
           </div>
         )}
