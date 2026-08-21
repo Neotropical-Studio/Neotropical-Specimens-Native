@@ -1,7 +1,11 @@
 import os
 import psycopg2
+from dotenv import load_dotenv
 
-DATABASE_URL = "postgresql://neondb_owner:npg_WTHdDfXO0ES4@ep-damp-hat-afgjqwk2.us-west-2.aws.neon.tech/neondb?sslmode=require"
+# Carga el archivo .env.local de tu proyecto
+load_dotenv(".env.local")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def conectar_bd():
     print(f"🔍 Intentando conectar...")
