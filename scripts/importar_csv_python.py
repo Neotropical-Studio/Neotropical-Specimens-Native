@@ -4,7 +4,7 @@ import pandas as pd
 import psycopg2
 
 # Conexión directa con la contraseña nueva y URL limpia
-DATABASE_URL = "postgresql://neondb_owner:npg_CJ2Uy4KWNxPj@ep-damp-hat-afgjqwk2.us-west-2.aws.neon.tech/neondb?sslmode=require"
+DATABASE_URL = "postgresql://neondb_owner:TU_NUEVA_CONTRASENA@ep-damp-hat-afgjqwk2.us-west-2.aws.neon.tech/neondb?sslmode=require"
 def importar_datos():
     print("⏳ Conectando a la base de datos de Neon...")
     try:
