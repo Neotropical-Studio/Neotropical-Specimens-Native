@@ -194,7 +194,7 @@ export default async function CatalogueFamiliaPage({
               {familyNode.label}
             </h1>
             <p className="mt-2 text-sm text-white/55">
-              {list.length}{' '}
+              {(list || []).length}{' '}
               {i18n.t('catalogue.specimens', 'especímenes')} ·{' '}
               {catalogueSpeciesPerPage()} {i18n.t('catalogue.per_page', 'por página')} ·{' '}
               {i18n.t('catalogue.family_scope', 'solo esta familia')}
@@ -207,7 +207,7 @@ export default async function CatalogueFamiliaPage({
             </p>
           ) : null}
 
-          {list.length === 0 ? (
+          {(list || []).length === 0 ? (
             <p className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-sm text-white/50">
               {i18n.t(
                 'catalogue.empty_species',
