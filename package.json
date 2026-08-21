@@ -25,7 +25,6 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9",
     "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.110.8",
     "cloudinary": "^2.5.1",
     "clsx": "^2.1.1",
     "flag-icons": "^7.5.0",

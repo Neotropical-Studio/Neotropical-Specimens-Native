@@ -20,9 +20,6 @@ importers:
       '@supabase/ssr':
         specifier: ^0.5.2
         version: 0.5.2(@supabase/supabase-js@2.110.8)
-      '@supabase/supabase-js':
-        specifier: ^2.110.8
-        version: 2.110.8
       cloudinary:
         specifier: ^2.5.1
         version: 2.10.0
