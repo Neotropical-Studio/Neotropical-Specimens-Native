@@ -1,7 +1,6 @@
 import os
 import psycopg2
 
-
 Conexión directa a Neon con tu nueva contraseña
 DATABASE_URL = "postgresql://neondb_owner:npg_1Nfl8OEPbCoJ@ep-damp-hat-afgjqwk2.us-west-2.aws.neon.tech/neondb?sslmode=require"
 
