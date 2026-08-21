@@ -175,7 +175,7 @@ export default async function CatalogueFamiliaPage({
             aria-label="Breadcrumb"
             className="mb-6 flex flex-wrap items-center gap-2 text-xs text-white/45"
           >
-            {crumbs.map((crumb, i) => (
+            {(crumbs || []).map((crumb, i) => (
               <span key={`${crumb.label}-${i}`} className="flex items-center gap-2">
                 {i > 0 ? <span className="text-white/20">/</span> : null}
                 {crumb.href ? (
