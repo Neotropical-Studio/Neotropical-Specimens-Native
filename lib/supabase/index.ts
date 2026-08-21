@@ -1,23 +1,25 @@
-const createMock = () => ({
-  from: () => {
-    const builder: any = {
-      select: () => builder,
-      eq: () => builder,
-      order: () => builder,
-      limit: () => builder,
-      single: async () => ({ data: null, error: null }),
-      then: (resolve: any) => resolve({ data: [], error: null })
-    };
-    return builder;
-  },
-  auth: {
-    getUser: async () => ({ data: { user: null }, error: null }),
-    getSession: async () => ({ data: { session: null }, error: null }),
-    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } })
-  }
-});
+const createMockProxy = (): any => {
+  const fn = () => {};
+  return new Proxy(fn, {
+    get(target, prop) {
+      if (prop === 'then') {
+        return (resolve: Function) => resolve({ data: [], error: null, count: 0 });
+      }
+      if (prop === 'catch') {
+        return (resolve: Function) => {};
+      }
+      if (prop === 'single' || prop === 'maybeSingle') {
+        return () => Promise.resolve({ data: null, error: null });
+      }
+      return (...args: any[]) => createMockProxy();
+    },
+    apply() {
+      return createMockProxy();
+    }
+  });
+};
 
-const mockInstance = createMock();
+const mockInstance = createMockProxy();
 
 export function isSupabaseAdminConfigured() { return true; }
 export function isSupabaseConfigured() { return true; }
