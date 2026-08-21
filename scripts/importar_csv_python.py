@@ -1,6 +1,6 @@
 import psycopg2
 
-DATABASE_URL = "postgresql://neondb_owner:npg_WTHdDfXO0ES4@ep-damp-hat-afgjqwk2.us-west-2.aws.neon.tech/neondb?sslmode=require"
+DATABASE_URL = postgresql://neondb_owner:npg_WTHdDfXO0ES4@ep-damp-hat-afgjqwk2.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 def conectar_bd():
     print("🔍 Intentando conectar directamente...")
