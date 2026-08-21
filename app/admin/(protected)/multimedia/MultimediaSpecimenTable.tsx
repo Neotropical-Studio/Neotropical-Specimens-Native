@@ -14,7 +14,7 @@ function alpha(a: string, b: string) {
 }
 
 function uniqueSorted(values: Array<string | null | undefined>): string[] {
-  return [...new Set(values.filter((v): v is string => Boolean(v?.trim())))].sort(alpha);
+  return [...new Set((values || []).filter((v): v is string => Boolean(v?.trim())))].sort(alpha);
 }
 
 type Props = {
@@ -52,11 +52,11 @@ export default function MultimediaSpecimenTable({ specimens }: Props) {
     [enriched],
   );
   const categories = useMemo(() => {
-    const scoped = rubro ? enriched.filter((e) => e.rubro === rubro) : enriched;
+    const scoped = rubro ? (enriched || []).filter((e) => e.rubro === rubro) : enriched;
     return uniqueSorted(scoped.map((e) => e.category));
   }, [enriched, rubro]);
   const families = useMemo(() => {
-    const scoped = enriched.filter((e) => {
+    const scoped = (enriched || []).filter((e) => {
       if (rubro && e.rubro !== rubro) return false;
       if (category && e.category !== category) return false;
       return true;
@@ -64,7 +64,7 @@ export default function MultimediaSpecimenTable({ specimens }: Props) {
     return uniqueSorted(scoped.map((e) => e.family));
   }, [enriched, rubro, category]);
   const genera = useMemo(() => {
-    const scoped = enriched.filter((e) => {
+    const scoped = (enriched || []).filter((e) => {
       if (rubro && e.rubro !== rubro) return false;
       if (category && e.category !== category) return false;
       if (family && e.family !== family) return false;
@@ -73,7 +73,7 @@ export default function MultimediaSpecimenTable({ specimens }: Props) {
     return uniqueSorted(scoped.map((e) => e.genus));
   }, [enriched, rubro, category, family]);
   const speciesOpts = useMemo(() => {
-    const scoped = enriched.filter((e) => {
+    const scoped = (enriched || []).filter((e) => {
       if (rubro && e.rubro !== rubro) return false;
       if (category && e.category !== category) return false;
       if (family && e.family !== family) return false;
@@ -83,7 +83,7 @@ export default function MultimediaSpecimenTable({ specimens }: Props) {
     return uniqueSorted(scoped.map((e) => e.speciesEpithet));
   }, [enriched, rubro, category, family, genus]);
   const subspeciesOpts = useMemo(() => {
-    const scoped = enriched.filter((e) => {
+    const scoped = (enriched || []).filter((e) => {
       if (rubro && e.rubro !== rubro) return false;
       if (category && e.category !== category) return false;
       if (family && e.family !== family) return false;

@@ -44,7 +44,7 @@ function alpha(a: string, b: string) {
 }
 
 function uniqueSorted(values: Array<string | null | undefined>): string[] {
-  return [...new Set(values.filter((v): v is string => Boolean(v?.trim())))].sort(alpha);
+  return [...new Set((values || []).filter((v): v is string => Boolean(v?.trim())))].sort(alpha);
 }
 
 const selectClass =
@@ -114,11 +114,11 @@ export default function IndustrialMasterSystemV3() {
 
   const rubros = useMemo(() => uniqueSorted(data.map((d) => d.rubro)), [data]);
   const categories = useMemo(() => {
-    const scoped = rubro ? data.filter((d) => d.rubro === rubro) : data;
+    const scoped = rubro ? (data || []).filter((d) => d.rubro === rubro) : data;
     return uniqueSorted(scoped.map((d) => d.category));
   }, [data, rubro]);
   const families = useMemo(() => {
-    const scoped = data.filter((d) => {
+    const scoped = (data || []).filter((d) => {
       if (rubro && d.rubro !== rubro) return false;
       if (category && d.category !== category) return false;
       return true;
@@ -126,7 +126,7 @@ export default function IndustrialMasterSystemV3() {
     return uniqueSorted(scoped.map((d) => d.family));
   }, [data, rubro, category]);
   const subfamilies = useMemo(() => {
-    const scoped = data.filter((d) => {
+    const scoped = (data || []).filter((d) => {
       if (rubro && d.rubro !== rubro) return false;
       if (category && d.category !== category) return false;
       if (family && d.family !== family) return false;
@@ -135,7 +135,7 @@ export default function IndustrialMasterSystemV3() {
     return uniqueSorted(scoped.map((d) => d.subfamily));
   }, [data, rubro, category, family]);
   const genera = useMemo(() => {
-    const scoped = data.filter((d) => {
+    const scoped = (data || []).filter((d) => {
       if (rubro && d.rubro !== rubro) return false;
       if (category && d.category !== category) return false;
       if (family && d.family !== family) return false;
@@ -145,7 +145,7 @@ export default function IndustrialMasterSystemV3() {
     return uniqueSorted(scoped.map((d) => d.genus));
   }, [data, rubro, category, family, subfamily]);
   const speciesOpts = useMemo(() => {
-    const scoped = data.filter((d) => {
+    const scoped = (data || []).filter((d) => {
       if (rubro && d.rubro !== rubro) return false;
       if (category && d.category !== category) return false;
       if (family && d.family !== family) return false;
@@ -156,7 +156,7 @@ export default function IndustrialMasterSystemV3() {
     return uniqueSorted(scoped.map((d) => d.species ?? d.name));
   }, [data, rubro, category, family, subfamily, genus]);
   const subspeciesOpts = useMemo(() => {
-    const scoped = data.filter((d) => {
+    const scoped = (data || []).filter((d) => {
       if (rubro && d.rubro !== rubro) return false;
       if (category && d.category !== category) return false;
       if (family && d.family !== family) return false;

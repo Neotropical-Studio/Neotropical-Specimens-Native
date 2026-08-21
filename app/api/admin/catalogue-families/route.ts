@@ -19,7 +19,7 @@ export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 const CATEGORY_IDS = new Set<string>(
-  CATALOGUE_CATEGORIES.filter((c) => c.rubroId === 'dried-specimens').map((c) => c.id),
+  (CATALOGUE_CATEGORIES || []).filter((c) => c.rubroId === 'dried-specimens').map((c) => c.id),
 );
 const REGION_IDS = new Set<string>(DRIED_SPECIMEN_REGION_FOLDERS.map((r) => r.id));
 
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
           id: r.id,
           label: r.folder,
         })),
-        categories: CATALOGUE_CATEGORIES.filter((c) => c.rubroId === 'dried-specimens').map(
+        categories: (CATALOGUE_CATEGORIES || []).filter((c) => c.rubroId === 'dried-specimens').map(
           (c) => ({ id: c.id, label: c.label }),
         ),
       });

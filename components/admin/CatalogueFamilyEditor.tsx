@@ -101,7 +101,7 @@ export default function CatalogueFamilyEditor({
   const filteredFamilies = useMemo(() => {
     const q = familyQ.trim().toLowerCase();
     const list = q
-      ? families.filter((f) => f.label.toLowerCase().includes(q))
+      ? (families || []).filter((f) => f.label.toLowerCase().includes(q))
       : [...families];
     // Instaladas A–Z (abecedario), no por sort_order de alta.
     return list.sort((a, b) =>
@@ -145,7 +145,7 @@ export default function CatalogueFamilyEditor({
       const actionLabel = String(body.action ?? 'save');
       setOkMsg(
         `GRABADO · ${actionLabel} · ${at}${
-          json.families ? ` · ${json.families.filter((f) => f.active).length} activas` : ''
+          json.families ? ` · ${json.(families || []).filter((f) => f.active).length} activas` : ''
         }`,
       );
       const { notifyCatalogueFamiliesChanged } = await import(
@@ -274,7 +274,7 @@ export default function CatalogueFamilyEditor({
     });
   }
 
-  const activeCount = families.filter((f) => f.active).length;
+  const activeCount = (families || []).filter((f) => f.active).length;
   const ready =
     families.length === 0 || families.every((f) => !isEphemeral(f.id));
 

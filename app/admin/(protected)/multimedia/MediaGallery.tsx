@@ -62,7 +62,7 @@ function alpha(a: string, b: string) {
 }
 
 function uniqueSorted(values: Array<string | null | undefined>): string[] {
-  return [...new Set(values.filter((v): v is string => Boolean(v?.trim())))].sort(alpha);
+  return [...new Set((values || []).filter((v): v is string => Boolean(v?.trim())))].sort(alpha);
 }
 
 function SelectFilter({
@@ -303,13 +303,13 @@ export default function MediaGallery({ items: initialItems }: { items: GalleryIt
 
   const categories = useMemo(() => {
     const scoped = rubro
-      ? items.filter((i) => (i.kind ?? i.category) === rubro)
+      ? (items || []).filter((i) => (i.kind ?? i.category) === rubro)
       : items;
     return uniqueSorted(scoped.map((i) => i.category));
   }, [items, rubro]);
 
   const families = useMemo(() => {
-    const scoped = items.filter((i) => {
+    const scoped = (items || []).filter((i) => {
       if (rubro && (i.kind ?? i.category) !== rubro) return false;
       if (category && i.category !== category) return false;
       return true;
@@ -318,7 +318,7 @@ export default function MediaGallery({ items: initialItems }: { items: GalleryIt
   }, [items, rubro, category]);
 
   const genera = useMemo(() => {
-    const scoped = items.filter((i) => {
+    const scoped = (items || []).filter((i) => {
       if (rubro && (i.kind ?? i.category) !== rubro) return false;
       if (category && i.category !== category) return false;
       if (family && i.family !== family) return false;
@@ -328,7 +328,7 @@ export default function MediaGallery({ items: initialItems }: { items: GalleryIt
   }, [items, rubro, category, family]);
 
   const speciesList = useMemo(() => {
-    const scoped = items.filter((i) => {
+    const scoped = (items || []).filter((i) => {
       if (rubro && (i.kind ?? i.category) !== rubro) return false;
       if (category && i.category !== category) return false;
       if (family && i.family !== family) return false;
@@ -339,7 +339,7 @@ export default function MediaGallery({ items: initialItems }: { items: GalleryIt
   }, [items, rubro, category, family, genus]);
 
   const subspeciesList = useMemo(() => {
-    const scoped = items.filter((i) => {
+    const scoped = (items || []).filter((i) => {
       if (rubro && (i.kind ?? i.category) !== rubro) return false;
       if (category && i.category !== category) return false;
       if (family && i.family !== family) return false;
@@ -455,7 +455,7 @@ export default function MediaGallery({ items: initialItems }: { items: GalleryIt
 
   const pageItems = useMemo(
     () =>
-      filtered.filter((i) =>
+      (filtered || []).filter((i) =>
         pageSpeciesKeys.has(i.species ?? i.code ?? i.specimenId ?? i.id),
       ),
     [filtered, pageSpeciesKeys],
@@ -624,7 +624,7 @@ export default function MediaGallery({ items: initialItems }: { items: GalleryIt
               <MediaThumb
                 key={item.id}
                 item={item}
-                onDeleted={(id) => setItems((prev) => prev.filter((x) => x.id !== id))}
+                onDeleted={(id) => setItems((prev) => (prev || []).filter((x) => x.id !== id))}
               />
             ))}
           </div>

@@ -238,7 +238,7 @@ export function dropOrphanNumberedFamilyBases<T extends string | { label: string
   entries: readonly T[],
 ): T[] {
   const labels = entries.map((e) => (typeof e === 'string' ? e : e.label));
-  return entries.filter((e) => {
+  return (entries || []).filter((e) => {
     const label = typeof e === 'string' ? e : e.label;
     return !isOrphanBaseOfNumberedFamilySeries(label, labels);
   });
@@ -644,7 +644,7 @@ export function buildRegionNodes(
     });
   }
 
-  const inRubro = specimens.filter((s) => {
+  const inRubro = (specimens || []).filter((s) => {
     if (s.primaryImage && isNodeMediaPublicId(s.primaryImage)) return false;
     const id =
       canonicalizeRubroId(s.rubroId) ??
@@ -704,7 +704,7 @@ export function buildCategoryNodes(
   // Rubro 1: mismas 5 categorías en Africa / Australasian / Neo / Europe / Nearctic.
   const forceCanonicalFive = rubroId === 'dried-specimens' && Boolean(regionMeta);
 
-  const inScope = specimens.filter((s) => {
+  const inScope = (specimens || []).filter((s) => {
     if (s.primaryImage && isNodeMediaPublicId(s.primaryImage)) return false;
     const id =
       canonicalizeRubroId(s.rubroId) ??
@@ -722,7 +722,7 @@ export function buildCategoryNodes(
 
   const buckets = new Map<string, CatalogueNavNode>();
   const knownForScope = forceCanonicalFive
-    ? CATALOGUE_CATEGORIES.filter((c) => c.rubroId === rubroId)
+    ? (CATALOGUE_CATEGORIES || []).filter((c) => c.rubroId === rubroId)
     : [];
 
   for (const known of knownForScope) {
@@ -824,7 +824,7 @@ export function buildFamilyNodes(
   // Neotropical Diurne: no mostrar «Nymphalidae» suelto si ya hay 1…6.
   const expectedEntries = dropOrphanNumberedFamilyBases(rawExpected);
 
-  const inScope = specimens.filter((s) => {
+  const inScope = (specimens || []).filter((s) => {
     if (s.primaryImage && isNodeMediaPublicId(s.primaryImage)) return false;
     const rid =
       canonicalizeRubroId(s.rubroId) ??

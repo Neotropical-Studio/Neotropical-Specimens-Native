@@ -186,7 +186,7 @@ export default function EspecimenesBrowse({
   }, [enriched, rubroId]);
 
   const categoryOptions = useMemo(() => {
-    const scoped = enriched.filter((e) => {
+    const scoped = (enriched || []).filter((e) => {
       if (rubroId && e.rubroId !== rubroId) return false;
       if (regionId && e.regionId !== regionId) return false;
       return true;
@@ -202,7 +202,7 @@ export default function EspecimenesBrowse({
   }, [enriched, rubroId, regionId]);
 
   const orderOptions = useMemo(() => {
-    const scoped = enriched.filter((e) => {
+    const scoped = (enriched || []).filter((e) => {
       if (rubroId && e.rubroId !== rubroId) return false;
       if (regionId && e.regionId !== regionId) return false;
       if (categoryId && e.categoryId !== categoryId) return false;
@@ -248,7 +248,7 @@ export default function EspecimenesBrowse({
 
   const filtered = useMemo(() => {
     const q = speciesQ.trim().toLowerCase();
-    return enriched.filter((e) => {
+    return (enriched || []).filter((e) => {
       if (rubroId && e.rubroId !== rubroId) return false;
       if (regionId && e.regionId !== regionId) return false;
       if (categoryId && e.categoryId !== categoryId) return false;
