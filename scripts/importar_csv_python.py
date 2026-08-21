@@ -4,17 +4,32 @@ import csv
 import psycopg2
 
 DATABASE_URL = "postgresql://neondb_owner:npg_WTHdDfXO0ES4@ep-damp-hat-afgjqwk2.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require"
-
-# Cambiado a "especies"
 NOMBRE_TABLA = "especies"
 
 def asegurar_columna_existe(cursor, columna):
-    """Agrega columnas a la tabla de forma dinámica si el CSV trae campos nuevos."""
     try:
         sql = f'ALTER TABLE "{NOMBRE_TABLA}" ADD COLUMN IF NOT EXISTS "{columna}" TEXT;'
         cursor.execute(sql)
     except Exception:
         pass
+
+def registro_existe(cursor, fila, columnas_clave):
+    """Comprueba si un registro idéntico ya existe usando las columnas principales."""
+    condiciones = []
+    valores = []
+    
+    for col in columnas_clave:
+        val = fila.get(col)
+        if val:
+            condiciones.append(f'"{col}" = %s')
+            valores.append(val)
+            
+    if not condiciones:
+        return False
+        
+    sql = f'SELECT 1 FROM "{NOMBRE_TABLA}" WHERE {" AND ".join(condiciones)} LIMIT 1;'
+    cursor.execute(sql, valores)
+    return cursor.fetchone() is not None
 
 def importar_todos_los_csv():
     archivos_csv = glob.glob("**/*.csv", recursive=True)
@@ -25,7 +40,6 @@ def importar_todos_los_csv():
         cursor = conexion.cursor()
         print("✅ Conexión exitosa a Neon.\n")
 
-        # 1. Crear tabla 'especies' si no existe
         cursor.execute(f'''
             CREATE TABLE IF NOT EXISTS "{NOMBRE_TABLA}" (
                 id SERIAL PRIMARY KEY
@@ -33,7 +47,6 @@ def importar_todos_los_csv():
         ''')
         conexion.commit()
 
-        # 2. Procesar cada archivo CSV
         for ruta in archivos_csv:
             if any(x in ruta for x in ["node_modules", ".next", ".venv"]):
                 continue
@@ -45,29 +58,36 @@ def importar_todos_los_csv():
                     columnas = lector.fieldnames
 
                     if not columnas:
-                        print("   ⚠️ Archivo sin cabeceras. Saltando...\n")
                         continue
 
                     columnas_limpias = [col.strip() for col in columnas if col]
 
-                    # Garantizar que todas las columnas existan en la tabla 'especies'
                     for col in columnas_limpias:
                         asegurar_columna_existe(cursor, col)
                     conexion.commit()
 
-                    # Preparar la inserción
                     columnas_sql = ", ".join([f'"{col}"' for col in columnas_limpias])
                     valores_sql = ", ".join(["%s"] * len(columnas_limpias))
                     sql = f'INSERT INTO "{NOMBRE_TABLA}" ({columnas_sql}) VALUES ({valores_sql});'
 
-                    filas = 0
+                    filas_nuevas = 0
+                    duplicados_omitidos = 0
+
+                    # Elegimos campos clave para detectar si ya existe
+                    campos_clave = [c for c in ["species_name", "familia", "genero", "code"] if c in columnas_limpias]
+                    if not campos_clave:
+                        campos_clave = columnas_limpias[:2]
+
                     for fila in lector:
-                        valores = [fila.get(col) for col in columnas_limpias]
-                        cursor.execute(sql, valores)
-                        filas += 1
+                        if registro_existe(cursor, fila, campos_clave):
+                            duplicados_omitidos += 1
+                        else:
+                            valores = [fila.get(col) for col in columnas_limpias]
+                            cursor.execute(sql, valores)
+                            filas_nuevas += 1
 
                     conexion.commit()
-                    print(f"   ✅ Se importaron {filas} registros en '{NOMBRE_TABLA}'.\n")
+                    print(f"   ✅ Nuevos: {filas_nuevas} | ⚠️ Omitidos por duplicados: {duplicados_omitidos}\n")
 
             except Exception as e:
                 conexion.rollback()
@@ -75,7 +95,7 @@ def importar_todos_los_csv():
 
         cursor.close()
         conexion.close()
-        print("🎉 ¡Todos los CSV han sido procesados e importados con éxito!")
+        print("🎉 ¡Proceso completado sin duplicar datos!")
 
     except Exception as error:
         print(f"❌ Error de conexión: {error}")
