@@ -6,7 +6,7 @@ import psycopg2
 DATABASE_URL = "postgresql://neondb_owner:npg_WTHdDfXO0ES4@ep-damp-hat-afgjqwk2.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require"
 
 # Si tu tabla en Neon tiene otro nombre (ejemplo: "especies"), cámbialo aquí
-NOMBRE_TABLA = "specimens" 
+NOMBRE_TABLA = "species" 
 
 def importar_todos_los_csv():
     archivos_csv = glob.glob("**/*.csv", recursive=True)
