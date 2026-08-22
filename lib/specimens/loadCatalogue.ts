@@ -2,20 +2,18 @@ import { sql } from '@/lib/db';
 
 export async function loadCatalogueSpecimens() {
   try {
-    // Consultamos la metadata de PostgreSQL para listar todas las tablas existentes
-    const tables = await sql`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public';
-    `;
+    // Consultamos tus tablas reales 'especies' y 'specimens'
+    let speciesData: any[] = [];
     
-    console.log('-------------------------------------------');
-    console.log('📌 TABLAS ENCONTRADAS EN TU NEON DB:', tables.map((t: any) => t.table_name));
-    console.log('-------------------------------------------');
+    try {
+      speciesData = await sql`SELECT * FROM especies;`;
+    } catch {
+      speciesData = await sql`SELECT * FROM specimens;`;
+    }
 
-    return { specimens: [], error: null };
+    return { specimens: speciesData || [], error: null };
   } catch (err: any) {
-    console.error('Error al inspeccionar la DB:', err.message);
+    console.error('Error al cargar especies:', err.message);
     return { specimens: [], error: null };
   }
 }
