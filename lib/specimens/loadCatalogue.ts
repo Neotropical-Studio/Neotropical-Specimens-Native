@@ -2,30 +2,20 @@ import { sql } from '@/lib/db';
 
 export async function loadCatalogueSpecimens() {
   try {
-    // Intentamos consultar la tabla en español 'especies' o 'especimenes', y si no existe 'species'
-    let data: any[] = [];
+    // Consultamos la metadata de PostgreSQL para listar todas las tablas existentes
+    const tables = await sql`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public';
+    `;
+    
+    console.log('-------------------------------------------');
+    console.log('📌 TABLAS ENCONTRADAS EN TU NEON DB:', tables.map((t: any) => t.table_name));
+    console.log('-------------------------------------------');
 
-    try {
-      data = await sql`SELECT * FROM especies;`;
-    } catch {
-      try {
-        data = await sql`SELECT * FROM especimenes;`;
-      } catch {
-        try {
-          data = await sql`SELECT * FROM species;`;
-        } catch {
-          try {
-            data = await sql`SELECT * FROM specimens;`;
-          } catch (e) {
-            console.warn('⚠️ No se encontró la tabla de especies. Revisa los nombres en Neon.');
-          }
-        }
-      }
-    }
-
-    return { specimens: data || [], error: null };
+    return { specimens: [], error: null };
   } catch (err: any) {
-    console.error('Error al cargar catálogo:', err.message);
+    console.error('Error al inspeccionar la DB:', err.message);
     return { specimens: [], error: null };
   }
 }
