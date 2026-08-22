@@ -11,12 +11,16 @@ interface Category {
 }
 
 interface Props {
-  categories: Category[];
+  categories?: Category[];
   lang: string;
 }
 
-export default function HomeCategoryWindows({ categories, lang }: Props) {
+export default function HomeCategoryWindows({ categories = [], lang }: Props) {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+
+  if (!categories || categories.length === 0) {
+    return null;
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
@@ -31,11 +35,10 @@ export default function HomeCategoryWindows({ categories, lang }: Props) {
           >
             <Image
               src={imageUrl}
-              alt={cat.name}
+              alt={cat.name || 'Categoría'}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
               onError={(e) => {
-                // Fallback visual limpio si no existe foto en Cloudinary
                 e.currentTarget.style.display = 'none';
               }}
             />
@@ -44,7 +47,7 @@ export default function HomeCategoryWindows({ categories, lang }: Props) {
                 {cat.name}
               </h3>
               <p className="text-sm text-neutral-400 font-mono mt-1">
-                {cat.itemCount} ítems
+                {cat.itemCount ?? 0} ítems
               </p>
             </div>
           </Link>
