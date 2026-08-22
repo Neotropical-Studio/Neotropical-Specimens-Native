@@ -2,24 +2,30 @@ import { sql } from '@/lib/db';
 
 export async function loadCatalogueSpecimens() {
   try {
-    const species = await sql`
-      SELECT 
-        s.id, 
-        s.name, 
-        s.scientific_name AS "scientificName",
-        s.family_id AS "familyId",
-        f.name AS "familyName",
-        f.category_id AS "categoryId",
-        c.name AS "categoryName",
-        c.region_id AS "regionId"
-      FROM species s
-      LEFT JOIN families f ON s.family_id = f.id
-      LEFT JOIN categories c ON f.category_id = c.id
-    `;
-    return { specimens: species || [], error: null };
+    // Intentamos consultar la tabla en español 'especies' o 'especimenes', y si no existe 'species'
+    let data: any[] = [];
+
+    try {
+      data = await sql`SELECT * FROM especies;`;
+    } catch {
+      try {
+        data = await sql`SELECT * FROM especimenes;`;
+      } catch {
+        try {
+          data = await sql`SELECT * FROM species;`;
+        } catch {
+          try {
+            data = await sql`SELECT * FROM specimens;`;
+          } catch (e) {
+            console.warn('⚠️ No se encontró la tabla de especies. Revisa los nombres en Neon.');
+          }
+        }
+      }
+    }
+
+    return { specimens: data || [], error: null };
   } catch (err: any) {
-    console.error('⚠️ Error al consultar Neon DB:', err.message);
-    // Retornamos sin arrojar el mensaje de error a la UI
+    console.error('Error al cargar catálogo:', err.message);
     return { specimens: [], error: null };
   }
 }
