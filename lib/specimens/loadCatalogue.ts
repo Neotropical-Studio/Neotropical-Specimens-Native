@@ -33,10 +33,9 @@ export async function loadCatalogueSpecimens() {
         ) as family_id,
         COALESCE((to_jsonb(e)->>'Especie')::text, (to_jsonb(e)->>'especie')::text, (to_jsonb(e)->>'species_name')::text, 'Especie N/A') as species_name,
         COALESCE((to_jsonb(e)->>'Nombre científico')::text, (to_jsonb(e)->>'nombre_cientifico')::text, (to_jsonb(e)->>'scientific_name')::text, '') as scientific_name,
-        COALESCE((to_jsonb(e)->>'Especie')::text, (to_jsonb(e)->>'especie')::text, (to_jsonb(e)->>'speciesName')::text, 'Especie N/A') as "speciesName",
-        COALESCE((to_jsonb(e)->>'Nombre científico')::text, (to_jsonb(e)->>'nombre_cientifico')::text, (to_jsonb(e)->>'scientificName')::text, '') as "scientificName",
         COALESCE((to_jsonb(e)->>'Nombre Común')::text, (to_jsonb(e)->>'nombre_comun')::text, '') as common_name,
         COALESCE((to_jsonb(e)->>'Familia')::text, (to_jsonb(e)->>'familia')::text, 'Sin Familia') as family,
+        COALESCE((to_jsonb(e)->>'País')::text, (to_jsonb(e)->>'Pais')::text, (to_jsonb(e)->>'country')::text, 'Perú') as country,
         COALESCE(
           (to_jsonb(e)->>'Carpeta REGION Cloudinary')::text, 
           (to_jsonb(e)->>'Segmento Cloudinary')::text, 
@@ -56,12 +55,13 @@ export async function loadCatalogueSpecimens() {
 
     const specimens = rawData.map((item: any) => ({
       ...item,
-      scientificName: item.scientificName || item.scientific_name || '',
-      speciesName: item.speciesName || item.species_name || 'Especie N/A',
-      scientific_name: item.scientific_name || item.scientificName || '',
-      species_name: item.species_name || item.speciesName || 'Especie N/A',
-      coverPublicId: item.cover_public_id || item.coverPublicId || null,
-      videoPublicId: item.video_public_id || item.videoPublicId || null,
+      scientificName: item.scientific_name || '',
+      speciesName: item.species_name || 'Especie N/A',
+      family: item.family || 'Sin Familia',
+      region: item.region_id || 'neotropical',
+      country: item.country || 'Perú',
+      coverPublicId: item.cover_public_id || null,
+      videoPublicId: item.video_public_id || null,
     }));
 
     return { specimens, error: null };
