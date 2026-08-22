@@ -8,6 +8,7 @@ import {
 } from '@/lib/specimens/catalogueNav';
 import { loadCatalogueSpecimens } from '@/lib/specimens/loadCatalogue';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function CatalogueHubPage({
@@ -17,26 +18,18 @@ export default async function CatalogueHubPage({
 }) {
   const { lang } = await params;
   const i18n = await getI18n(lang);
-  const { specimens, error } = await loadCatalogueSpecimens();
-  // Exactamente 3 cards = hijos Cloudinary RUBROS/ (dried-specimens, zoology-skeletons, dry-plants-no-cites).
+  const { specimens } = await loadCatalogueSpecimens();
   const nodes = buildRubroNodes(specimens);
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-text-dynamic)]">
       <Header strings={i18n.strings} lang={i18n.locale} />
       <main className="pt-[104px]">
-        {error ? (
-          <div className="mx-auto max-w-7xl px-4 pt-4">
-            <p className="rounded-xl border border-red-800 bg-red-950/60 p-3 text-sm text-red-200">
-            {/* Banner desactivado */}
-            </p>
-          </div>
-        ) : null}
         <CatalogBrowseShell
           title={i18n.t('catalogue.rubros_title', 'Catálogo por rubro')}
           subtitle={i18n.t(
             'catalogue.rubros_subtitle',
-            'Elige un rubro: primero categorías, luego catálogos (familias) y especies.',
+            'Elige un rubro: primero categorías, luego catálogos (familias) y especies.'
           )}
           breadcrumbs={buildBreadcrumbs(i18n.locale, i18n.t, {})}
           nodes={nodes}
@@ -44,15 +37,9 @@ export default async function CatalogueHubPage({
             rubroEntryHref(
               i18n.locale,
               n.id,
-              Boolean(n.videoPublicId?.trim()),
+              Boolean(n.videoPublicId?.trim())
             )
           }
-          showCardVideo
-          childLabel={i18n.t('catalogue.specimens', 'especímenes')}
-          emptyMessage={i18n.t(
-            'catalogue.empty_rubros',
-            'Aún no hay rubros con inventario sincronizado.',
-          )}
         />
       </main>
     </div>
