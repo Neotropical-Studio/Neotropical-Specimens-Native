@@ -5,7 +5,7 @@ export async function loadCatalogueSpecimens() {
     const rawData = await sql`
       SELECT 
         e.id,
-        COALESCE((to_jsonb(e)->>'code')::text, e.id::text) as code,
+        COALESCE((to_jsonb(e)->>'code')::text, e.id::text, '') as code,
         COALESCE((to_jsonb(e)->>'rubro_id')::text, 'dried-specimens') as rubro_id,
         COALESCE((to_jsonb(e)->>'region_id')::text, 'neotropical') as region_id,
         LOWER(
@@ -31,8 +31,10 @@ export async function loadCatalogueSpecimens() {
             ),
           ' ', '-')
         ) as family_id,
-        COALESCE((to_jsonb(e)->>'Especie')::text, (to_jsonb(e)->>'especie')::text, 'Especie') as species_name,
-        COALESCE((to_jsonb(e)->>'Nombre científico')::text, (to_jsonb(e)->>'nombre_cientifico')::text, '') as scientific_name,
+        COALESCE((to_jsonb(e)->>'Especie')::text, (to_jsonb(e)->>'especie')::text, (to_jsonb(e)->>'species_name')::text, 'Especie N/A') as species_name,
+        COALESCE((to_jsonb(e)->>'Nombre científico')::text, (to_jsonb(e)->>'nombre_cientifico')::text, (to_jsonb(e)->>'scientific_name')::text, '') as scientific_name,
+        COALESCE((to_jsonb(e)->>'Especie')::text, (to_jsonb(e)->>'especie')::text, (to_jsonb(e)->>'speciesName')::text, 'Especie N/A') as "speciesName",
+        COALESCE((to_jsonb(e)->>'Nombre científico')::text, (to_jsonb(e)->>'nombre_cientifico')::text, (to_jsonb(e)->>'scientificName')::text, '') as "scientificName",
         COALESCE((to_jsonb(e)->>'Nombre Común')::text, (to_jsonb(e)->>'nombre_comun')::text, '') as common_name,
         COALESCE((to_jsonb(e)->>'Familia')::text, (to_jsonb(e)->>'familia')::text, 'Sin Familia') as family,
         COALESCE((to_jsonb(e)->>'Carpeta REGION Cloudinary')::text, (to_jsonb(e)->>'Segmento Cloudinary')::text, '') as cover_public_id,
@@ -41,7 +43,16 @@ export async function loadCatalogueSpecimens() {
       FROM especies e;
     `;
 
-    return { specimens: rawData, error: null };
+    // Mapeo defensivo para garantizar que ninguna propiedad sea undefined en JS
+    const specimens = rawData.map((item: any) => ({
+      ...item,
+      scientificName: item.scientificName || item.scientific_name || '',
+      speciesName: item.speciesName || item.species_name || 'Especie N/A',
+      scientific_name: item.scientific_name || item.scientificName || '',
+      species_name: item.species_name || item.speciesName || 'Especie N/A',
+    }));
+
+    return { specimens, error: null };
   } catch (error: any) {
     console.error('Error al cargar catálogo:', error);
     return { specimens: [], error: error?.message || 'Error al conectar con la base de datos' };
