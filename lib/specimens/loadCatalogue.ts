@@ -5,18 +5,39 @@ export async function loadCatalogueSpecimens() {
     const rawData = await sql`
       SELECT 
         e.id,
-        COALESCE(e.id::text, '') as code,
-        COALESCE(NULLIF(TRIM(e.rubro_id), ''), 'dried-specimens') as rubro_id,
-        COALESCE(NULLIF(TRIM(e.region_id), ''), 'neotropical') as region_id,
-        COALESCE(NULLIF(TRIM(e.category_id), ''), 'butterflies-lepidoptera-diurne') as category_id,
-        COALESCE(NULLIF(TRIM(e.familia_id), ''), 'sin-familia') as family_id,
-        COALESCE(NULLIF(TRIM(e."Especie"), ''), NULLIF(TRIM(e.especie), ''), 'Especie no identificada') as species_name,
-        COALESCE(NULLIF(TRIM(e."Nombre científico"), ''), NULLIF(TRIM(e.nombre_cientifico), ''), '') as scientific_name,
-        COALESCE(NULLIF(TRIM(e."Nombre Común"), ''), NULLIF(TRIM(e.nombre_comun), ''), '') as common_name,
-        COALESCE(NULLIF(TRIM(e."Familia"), ''), NULLIF(TRIM(e.familia), ''), 'Sin Familia') as family,
-        COALESCE(NULLIF(TRIM(e."Carpeta REGION Cloudinary"), ''), NULLIF(TRIM(e."Segmento Cloudinary"), ''), '') as cover_public_id,
-        COALESCE(NULLIF(TRIM(e."Carpeta REGION Cloudinary"), ''), NULLIF(TRIM(e."Segmento Cloudinary"), ''), '') as video_public_id,
-        COALESCE(e."Precio regular", e.precio, 0) as price
+        COALESCE((to_jsonb(e)->>'code')::text, e.id::text) as code,
+        COALESCE((to_jsonb(e)->>'rubro_id')::text, 'dried-specimens') as rubro_id,
+        COALESCE((to_jsonb(e)->>'region_id')::text, 'neotropical') as region_id,
+        LOWER(
+          REPLACE(
+            REPLACE(
+              COALESCE(
+                (to_jsonb(e)->>'category_id')::text,
+                (to_jsonb(e)->>'Categoría (por zona)')::text,
+                (to_jsonb(e)->>'Rubro')::text,
+                'butterflies-lepidoptera-diurne'
+              ),
+            ' ', '-'),
+          '(', '')
+        ) as category_id,
+        LOWER(
+          REPLACE(
+            COALESCE(
+              (to_jsonb(e)->>'familia_id')::text,
+              (to_jsonb(e)->>'Familia')::text,
+              (to_jsonb(e)->>'familia')::text,
+              (to_jsonb(e)->>'family')::text,
+              'sin-familia'
+            ),
+          ' ', '-')
+        ) as family_id,
+        COALESCE((to_jsonb(e)->>'Especie')::text, (to_jsonb(e)->>'especie')::text, 'Especie') as species_name,
+        COALESCE((to_jsonb(e)->>'Nombre científico')::text, (to_jsonb(e)->>'nombre_cientifico')::text, '') as scientific_name,
+        COALESCE((to_jsonb(e)->>'Nombre Común')::text, (to_jsonb(e)->>'nombre_comun')::text, '') as common_name,
+        COALESCE((to_jsonb(e)->>'Familia')::text, (to_jsonb(e)->>'familia')::text, 'Sin Familia') as family,
+        COALESCE((to_jsonb(e)->>'Carpeta REGION Cloudinary')::text, (to_jsonb(e)->>'Segmento Cloudinary')::text, '') as cover_public_id,
+        COALESCE((to_jsonb(e)->>'Carpeta REGION Cloudinary')::text, (to_jsonb(e)->>'Segmento Cloudinary')::text, '') as video_public_id,
+        0 as price
       FROM especies e;
     `;
 
