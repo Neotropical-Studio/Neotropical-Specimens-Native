@@ -37,19 +37,31 @@ export async function loadCatalogueSpecimens() {
         COALESCE((to_jsonb(e)->>'Nombre científico')::text, (to_jsonb(e)->>'nombre_cientifico')::text, (to_jsonb(e)->>'scientificName')::text, '') as "scientificName",
         COALESCE((to_jsonb(e)->>'Nombre Común')::text, (to_jsonb(e)->>'nombre_comun')::text, '') as common_name,
         COALESCE((to_jsonb(e)->>'Familia')::text, (to_jsonb(e)->>'familia')::text, 'Sin Familia') as family,
-        COALESCE((to_jsonb(e)->>'Carpeta REGION Cloudinary')::text, (to_jsonb(e)->>'Segmento Cloudinary')::text, '') as cover_public_id,
-        COALESCE((to_jsonb(e)->>'Carpeta REGION Cloudinary')::text, (to_jsonb(e)->>'Segmento Cloudinary')::text, '') as video_public_id,
+        COALESCE(
+          (to_jsonb(e)->>'Carpeta REGION Cloudinary')::text, 
+          (to_jsonb(e)->>'Segmento Cloudinary')::text, 
+          (to_jsonb(e)->>'media_url')::text, 
+          (to_jsonb(e)->>'cover_public_id')::text, 
+          ''
+        ) as cover_public_id,
+        COALESCE(
+          (to_jsonb(e)->>'Carpeta REGION Cloudinary')::text, 
+          (to_jsonb(e)->>'Segmento Cloudinary')::text, 
+          (to_jsonb(e)->>'video_public_id')::text, 
+          ''
+        ) as video_public_id,
         0 as price
       FROM especies e;
     `;
 
-    // Mapeo defensivo para garantizar que ninguna propiedad sea undefined en JS
     const specimens = rawData.map((item: any) => ({
       ...item,
       scientificName: item.scientificName || item.scientific_name || '',
       speciesName: item.speciesName || item.species_name || 'Especie N/A',
       scientific_name: item.scientific_name || item.scientificName || '',
       species_name: item.species_name || item.speciesName || 'Especie N/A',
+      coverPublicId: item.cover_public_id || item.coverPublicId || null,
+      videoPublicId: item.video_public_id || item.videoPublicId || null,
     }));
 
     return { specimens, error: null };
