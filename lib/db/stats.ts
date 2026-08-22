@@ -18,6 +18,7 @@ export async function getHomeStats() {
       countries: countries[0]?.total || 0,
     };
   } catch (error) {
+    console.error('Error al cargar estadísticas:', error);
     return { specimens: 0, families: 0, regions: 0, countries: 0 };
   }
 }
