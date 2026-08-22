@@ -2,18 +2,21 @@ import { sql } from '@/lib/db';
 
 export async function loadCatalogueSpecimens() {
   try {
-    // Consultamos tus tablas reales 'especies' y 'specimens'
-    let speciesData: any[] = [];
-    
-    try {
-      speciesData = await sql`SELECT * FROM especies;`;
-    } catch {
-      speciesData = await sql`SELECT * FROM specimens;`;
-    }
+    const rawData = await sql`
+      SELECT 
+        s.id,
+        s.name,
+        s.scientific_name AS "scientificName",
+        LOWER(TRIM(s.family_id)) AS "familyId",
+        LOWER(TRIM(s.category_id)) AS "categoryId",
+        COALESCE(s.rubro_id, 'dried-specimens') AS "rubroId",
+        COALESCE(s.region_id, 'neotropical') AS "regionId"
+      FROM especies s
+    `;
 
-    return { specimens: speciesData || [], error: null };
+    return { specimens: rawData || [], error: null };
   } catch (err: any) {
-    console.error('Error al cargar especies:', err.message);
+    console.error('⚠️ Error cargando catálogo completo:', err.message);
     return { specimens: [], error: null };
   }
 }
