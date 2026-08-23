@@ -10,11 +10,11 @@ import { getI18n } from '@/lib/i18n/index';
 import { loadCatalogRows } from '@/lib/specimens/catalog';
 import {
   buildMorphoGodartyDetailView,
-  getSpecimenById,
   sealMorphoDetailView,
   toSpecimenDetail,
   type SpecimenDetailView,
 } from '@/lib/specimens/detail';
+import { getSpecimenById } from '@/lib/specimens/detailServer';
 import { pickRelatedSpecimens } from '@/lib/specimens/related';
 import { resolveTaxonPalette } from '@/lib/theme/taxon';
 import { resolveRegulatory } from '@/lib/geo/regulations';

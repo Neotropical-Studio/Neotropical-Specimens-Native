@@ -1,9 +1,7 @@
 // GET /api/catalog/specimens/[id] — ficha dinámica (Morpho con fallback nativo).
 import { NextResponse } from 'next/server';
-import {
-  buildMorphoGodartyDetailView,
-  getSpecimenById,
-} from '@/lib/specimens/detail';
+import { buildMorphoGodartyDetailView } from '@/lib/specimens/detail';
+import { getSpecimenById } from '@/lib/specimens/detailServer';
 import {
   isMorphoGodartyDidiusTingomarensis,
   MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID,

@@ -4,12 +4,10 @@
 // tomas (dorsal/ventral/lateral/macro), precio mayorista y contenido localizado.
 // Todo proviene de JSONB — sin literales de negocio en el código.
 // ============================================================================
-import { createClient } from '@supabase/supabase-js';
 import {
   MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_ID,
   MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_VENTRAL_ID,
 } from '@/lib/cloudinary/specimens';
-import { loadCatalogRowById } from './catalog';
 import {
   isMorphoGodartyDidiusTingomarensis,
   MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID,
@@ -245,24 +243,3 @@ export function sealMorphoDetailView(view: SpecimenDetailView): SpecimenDetailVi
   };
 }
 
-// Carga un espécimen por id. Si es Morpho y Supabase falla/demora/vacío,
-// entrega de inmediato la ficha nativa completa (sin huecos en la UI).
-export async function getSpecimenById(id: string, lang: string): Promise<SpecimenDetailView | null> {
-  const morphoFallback =
-    id === MORPHO_GODARTY_DIDIUS_TINGOMARIENSIS_SPECIMEN_ID
-      ? buildMorphoGodartyDetailView()
-      : null;
-
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  if (!url || !key) return morphoFallback;
-
-  try {
-    const supabase = createClient(url, key);
-    const { row } = await loadCatalogRowById(supabase, id);
-    if (!row) return morphoFallback;
-    return toSpecimenDetail(row, lang);
-  } catch {
-    return morphoFallback;
-  }
-}

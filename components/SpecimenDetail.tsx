@@ -15,10 +15,8 @@ import { ChevronDown, ShoppingBag } from 'lucide-react';
 import 'flag-icons/css/flag-icons.css';
 import { getSupabaseBrowser } from '@/lib/supabase/client';
 import { extractDominantPaletteFromImage } from '@/lib/specimens/visual';
-import { loadCatalogPool, loadCatalogRowById } from '@/lib/specimens/catalog';
 import {
   sealMorphoDetailView,
-  toSpecimenDetail,
   type SpecimenDetailView,
 } from '@/lib/specimens/detail';
 import { type Regulatory } from '@/lib/geo/regulations';
@@ -69,7 +67,6 @@ type MediaKey = '3d' | 'dorsal' | 'ventral' | 'lateral' | 'macro';
 // (specimen.views[...] viene de multimedia cargada, nunca inventada aquí).
 // Tamaño del pool que se trae para armar el catálogo dinámico y cuántas
 // tarjetas se muestran finalmente (mezcla misma-familia / otras-categorías).
-const RECOMMENDATION_POOL_SIZE = 60;
 
 const VIEW_LABELS: Record<Exclude<MediaKey, '3d'>, { key: string; fallback: string }> = {
   dorsal: { key: 'media.dorsal', fallback: 'Vista 1: Dorsal' },
@@ -207,28 +204,7 @@ export default function SpecimenDetail({
         /* fallback abajo */
       }
 
-      // 2) Supabase directo en cliente.
-      try {
-        const supabase = getSupabaseBrowser();
-        const poolRows = await loadCatalogPool(supabase, RECOMMENDATION_POOL_SIZE);
-        const pool = poolRows.map((row) => {
-          const detail = toSpecimenDetail(row, lang);
-          return isMorphoGodartyDidiusTingomarensis({
-            id: detail.id,
-            scientificName: detail.scientificName,
-          })
-            ? sealMorphoDetailView(detail)
-            : detail;
-        });
-        if (pool.length > 0) {
-          applyPool(pool);
-          return;
-        }
-      } catch {
-        /* conserva SSR */
-      }
-
-      // 3) Último recurso: mantener lo del servidor o el propio espécimen.
+      // Último recurso: mantener SSR o el propio espécimen.
       if (alive && relatedCatalog.length === 0) {
         applyPool([specimen]);
       }
@@ -268,8 +244,13 @@ export default function SpecimenDetail({
     try {
       const supabase = getSupabaseBrowser();
       const refresh = async () => {
-        const { row } = await loadCatalogRowById(supabase, initial.id);
-        if (alive && row) setSpecimen(sealMorphoDetailView(toSpecimenDetail(row, lang)));
+        const response = await fetch(
+          `/api/catalog/specimens/${encodeURIComponent(initial.id)}?lang=${encodeURIComponent(lang)}`,
+          { cache: 'no-store' },
+        );
+        if (!response.ok) return;
+        const data = (await response.json()) as { specimen?: SpecimenDetailView | null };
+        if (alive && data.specimen) setSpecimen(data.specimen);
       };
       const channel = supabase
         .channel(`specimen-${initial.id}`)
