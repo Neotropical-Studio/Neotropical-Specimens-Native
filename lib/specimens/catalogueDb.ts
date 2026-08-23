@@ -1,9 +1,16 @@
 import { sql } from '@/lib/db';
 import type { MediaRow, SpecimenRow } from './view';
+import fallbackRows from '@/data/catalogue-fallback.json';
 
 let initialization: Promise<void> | null = null;
 
 type RawRow = Record<string, unknown>;
+
+export interface CatalogueFilters {
+  region?: string;
+  category?: string;
+  family?: string;
+}
 
 const aliases = {
   id: ['id', 'uuid', 'codigo_id'],
@@ -123,10 +130,12 @@ async function ensureReady(): Promise<void> {
     initialization = (async () => {
       try {
         await sql`SELECT 1 FROM especimenes LIMIT 1`;
+        console.log('[Neon] tabla detectada: especimenes');
         return;
       } catch {
         try {
           await sql`SELECT 1 FROM especies LIMIT 1`;
+          console.log('[Neon] tabla detectada: especies');
           return;
         } catch {
           await ensureUniversalTable();
@@ -142,41 +151,61 @@ async function ensureReady(): Promise<void> {
   await initialization;
 }
 
-async function readPhysicalTable(table: 'especimenes' | 'especies'): Promise<RawRow[]> {
-  const rows = table === 'especimenes'
-    ? await sql`SELECT to_jsonb(source) AS row FROM especimenes AS source`
-    : await sql`SELECT to_jsonb(source) AS row FROM especies AS source`;
+async function readPhysicalTable(table: 'especies_clean' | 'especies' | 'especimenes'): Promise<RawRow[]> {
+  console.log(`[Neon] consulta catálogo: SELECT to_jsonb(source) AS row FROM ${table}`);
+  const rows = table === 'especies_clean'
+    ? await sql`SELECT to_jsonb(source) AS row FROM especies_clean AS source`
+    : table === 'especies'
+      ? await sql`SELECT to_jsonb(source) AS row FROM especies AS source`
+      : await sql`SELECT to_jsonb(source) AS row FROM especimenes AS source`;
   return rows.map((item) => item.row as RawRow);
 }
 
-export async function loadUniversalCatalogueRows(): Promise<{ rows: SpecimenRow[]; source: string; error: string | null }> {
+function matchesFilter(valueToMatch: string | null | undefined, filter: string | undefined): boolean {
+  if (!filter?.trim()) return true;
+  return (valueToMatch ?? '').trim().toLowerCase().includes(filter.trim().toLowerCase());
+}
+
+export async function loadUniversalCatalogueRows(filters: CatalogueFilters = {}): Promise<{ rows: SpecimenRow[]; source: string; error: string | null }> {
   try {
     await ensureReady();
-    let source: 'especimenes' | 'especies' = 'especimenes';
-    let rawRows: RawRow[];
-    try {
-      rawRows = await readPhysicalTable('especimenes');
+    let source: 'especies_clean' | 'especies' | 'especimenes' = 'especies_clean';
+    let rawRows: RawRow[] = [];
+    for (const candidate of ['especies_clean', 'especies', 'especimenes'] as const) {
       try {
-        await ensureUniversalTable();
-      } catch (schemaError) {
-        console.error('[Neon] no se pudieron verificar columnas de especimenes:', schemaError);
-      }
-    } catch (primaryError) {
-      console.error('[Neon] no se pudo leer especimenes:', primaryError);
-      source = 'especies';
-      try {
-        rawRows = await readPhysicalTable('especies');
-      } catch (fallbackError) {
-        console.error('[Neon] no se pudo leer especies:', fallbackError);
-        await ensureUniversalTable();
-        rawRows = await readPhysicalTable('especimenes');
-        source = 'especimenes';
+        rawRows = await readPhysicalTable(candidate);
+        source = candidate;
+        console.log(`[Neon] tabla detectada: ${candidate} (${rawRows.length} filas)`);
+        if (rawRows.length > 0) break;
+      } catch (tableError) {
+        console.error(`[Neon] no se pudo leer ${candidate}:`, tableError);
       }
     }
-    const rows = rawRows.map(normalizeCatalogueRow);
+    if (rawRows.length === 0 && source === 'especimenes') {
+      await ensureUniversalTable();
+      rawRows = await readPhysicalTable('especimenes');
+    }
+    let rows = rawRows.map(normalizeCatalogueRow);
+    rows = rows.filter((row) =>
+      matchesFilter(row.region as string | null, filters.region) &&
+      matchesFilter(row.categoria, filters.category) &&
+      matchesFilter(row.familia, filters.family),
+    );
     console.log(`[Neon] ${rows.length} especímenes cargados desde ${source}`);
-    if (rows.length === 0) console.error(`[Neon] ${source} no contiene especímenes`);
-    return { rows, source, error: rows.length ? null : 'Catálogo vacío' };
+    if (rows.length === 0) {
+      console.error(`[Neon] ${source} no contiene especímenes para los filtros solicitados`);
+      const fallback = (fallbackRows as RawRow[]).map(normalizeCatalogueRow).filter((row) =>
+        matchesFilter(row.region as string | null, filters.region) &&
+        matchesFilter(row.categoria, filters.category) &&
+        matchesFilter(row.familia, filters.family),
+      );
+      if (fallback.length > 0) {
+        console.log(`[Neon] usando ${fallback.length} espécimen(es) estático(s) de respaldo`);
+        return { rows: fallback, source: 'static-fallback', error: null };
+      }
+      return { rows: [], source, error: 'Catálogo vacío' };
+    }
+    return { rows, source, error: null };
   } catch (error) {
     console.error('[Neon] error cargando catálogo universal:', error);
     return { rows: [], source: 'none', error: error instanceof Error ? error.message : 'Error en Neon DB' };

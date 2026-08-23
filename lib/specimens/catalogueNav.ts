@@ -722,7 +722,7 @@ export function buildCategoryNodes(
 
   const buckets = new Map<string, CatalogueNavNode>();
   const knownForScope = forceCanonicalFive
-    ? (CATALOGUE_CATEGORIES || []).filter((c) => c.rubroId === rubroId)
+    ? CATALOGUE_CATEGORIES.filter((c) => c.rubroId === rubroId)
     : [];
 
   for (const known of knownForScope) {
