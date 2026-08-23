@@ -145,7 +145,7 @@ export default function CatalogueFamilyEditor({
       const actionLabel = String(body.action ?? 'save');
       setOkMsg(
         `GRABADO · ${actionLabel} · ${at}${
-          json.families ? ` · ${json.(families || []).filter((f) => f.active).length} activas` : ''
+          json.families ? ` · ${json.families.filter((f) => f.active).length} activas` : ''
         }`,
       );
       const { notifyCatalogueFamiliesChanged } = await import(
