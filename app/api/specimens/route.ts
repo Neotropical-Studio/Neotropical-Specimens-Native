@@ -9,8 +9,13 @@ const pool = new Pool({
 export async function GET() {
   try {
     const res = await pool.query('SELECT * FROM especies;');
+    if (res.rows.length === 0) {
+      console.error('La consulta de especímenes no devolvió datos.');
+      return NextResponse.json([]);
+    }
     return NextResponse.json(res.rows);
-  } catch {
+  } catch (error) {
+    console.error('Error al consultar especímenes:', error);
     return NextResponse.json([]);
   }
 }

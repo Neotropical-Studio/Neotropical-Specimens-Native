@@ -21,9 +21,15 @@ export async function loadCatalogueSpecimens() {
       FROM especies_clean;
     `;
 
+    if (specimens.length === 0) {
+      console.error('El catálogo no contiene especímenes.');
+      return { specimens: [], error: 'Catálogo vacío' };
+    }
+
     return { specimens, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error al cargar catálogo:', error);
-    return { specimens: [], error: error?.message || 'Error en DB' };
+    const message = error instanceof Error ? error.message : 'Error en DB';
+    return { specimens: [], error: message };
   }
 }

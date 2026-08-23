@@ -140,31 +140,43 @@ export async function fetchSpecimenMedia(
   const ids = [...new Set(specimenIds.filter(Boolean))];
   if (ids.length === 0) return byId;
 
-  const full = await supabase
-    .from('specimen_media')
-    .select('id, specimen_id, media_type, media_url, public_id, display_order, view, label')
-    .in('specimen_id', ids)
-    .order('display_order', { ascending: true });
-
-  let rows: MediaRow[] = [];
-  if (!full.error && full.data) {
-    rows = full.data as MediaRow[];
-  } else {
-    // Fallback si view/label aún no existen en live
-    const core = await supabase
+  try {
+    const full = await supabase
       .from('specimen_media')
-      .select('id, specimen_id, media_type, media_url, public_id, display_order')
+      .select('id, specimen_id, media_type, media_url, public_id, display_order, view, label')
       .in('specimen_id', ids)
       .order('display_order', { ascending: true });
-    if (core.error || !core.data) return byId;
-    rows = core.data as MediaRow[];
-  }
 
-  for (const row of rows) {
-    if (!row.specimen_id) continue;
-    const list = byId.get(row.specimen_id) ?? [];
-    list.push(row);
-    byId.set(row.specimen_id, list);
+    let rows: MediaRow[] = [];
+    if (!full.error && full.data) {
+      rows = full.data as MediaRow[];
+    } else {
+      // Fallback si view/label aún no existen en live
+      const core = await supabase
+        .from('specimen_media')
+        .select('id, specimen_id, media_type, media_url, public_id, display_order')
+        .in('specimen_id', ids)
+        .order('display_order', { ascending: true });
+      if (core.error || !core.data) {
+        console.error('Error al consultar multimedia de especímenes:', core.error);
+        return byId;
+      }
+      rows = core.data as MediaRow[];
+    }
+
+    if (rows.length === 0) {
+      console.error('La consulta de multimedia no devolvió datos.');
+      return byId;
+    }
+
+    for (const row of rows) {
+      if (!row.specimen_id) continue;
+      const list = byId.get(row.specimen_id) ?? [];
+      list.push(row);
+      byId.set(row.specimen_id, list);
+    }
+  } catch (error) {
+    console.error('Error inesperado al consultar multimedia de especímenes:', error);
   }
   return byId;
 }

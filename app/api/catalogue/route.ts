@@ -8,9 +8,14 @@ export async function GET() {
     const families = await sql`SELECT * FROM families`;
     const species = await sql`SELECT * FROM species`;
 
+    if (!regions.length && !categories.length && !families.length && !species.length) {
+      console.error('La consulta del catálogo no devolvió datos.');
+      return NextResponse.json({ regions: [], categories: [], families: [], species: [] });
+    }
+
     return NextResponse.json({ regions, categories, families, species });
   } catch (error) {
     console.error('Error al consultar Neon DB:', error);
-    return NextResponse.json({ error: 'Error al conectar con Neon DB' }, { status: 500 });
+    return NextResponse.json({ regions: [], categories: [], families: [], species: [] });
   }
 }
