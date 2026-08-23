@@ -1,33 +1,17 @@
-import { sql } from '@/lib/db';
+import { loadUniversalCatalogueRows } from './catalogueDb';
 import type { SpecimenView } from './view';
+import { toSpecimenView } from './view';
 
 export async function loadCatalogueSpecimens(): Promise<{
   specimens: SpecimenView[];
   error: string | null;
 }> {
   try {
-    const specimens = (await sql`
-      SELECT 
-        id,
-        code,
-        species_name as "speciesName",
-        scientific_name as "scientificName",
-        common_name as "commonName",
-        family,
-        family_id as "family_id",
-        category_id,
-        region_id,
-        rubro_id,
-        country,
-        cover_public_id as "coverPublicId",
-        video_public_id as "videoPublicId",
-        price
-      FROM especies_clean;
-    `) as unknown as SpecimenView[];
+    const result = await loadUniversalCatalogueRows();
+    const specimens = result.rows.map(toSpecimenView);
 
     if (specimens.length === 0) {
-      console.error('El catálogo no contiene especímenes.');
-      return { specimens: [], error: 'Catálogo vacío' };
+      return { specimens: [], error: result.error ?? 'Catálogo vacío' };
     }
 
     return { specimens, error: null };
