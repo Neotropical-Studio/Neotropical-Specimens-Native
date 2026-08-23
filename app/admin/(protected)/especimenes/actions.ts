@@ -4,8 +4,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth/admin';
-import { getSupabaseAdmin } from '@/lib/supabase/client';
-import { createFreeTaxonomy } from '@/lib/sync/resolveTaxonomy';
+import { sql } from '@/lib/db';
 
 export async function generateSpecimenCodeAction(regionCode: string): Promise<string> {
   await requireAdmin();
@@ -75,10 +74,6 @@ export interface SpecimenFormState {
   fieldErrors?: Record<string, string>;
 }
 
-function softColError(message: string): boolean {
-  return /column .* does not exist|Could not find/i.test(message);
-}
-
 function parseForm(formData: FormData): { data?: SpecimenInput; state?: SpecimenFormState } {
   const raw = Object.fromEntries(formData.entries());
   const parsed = SpecimenSchema.safeParse(raw);
@@ -90,174 +85,104 @@ function parseForm(formData: FormData): { data?: SpecimenInput; state?: Specimen
   return { data: parsed.data };
 }
 
-function rubroFromKind(kind: SpecimenInput['specimenKind']): string {
-  if (kind === 'zoology_skeleton') return 'ZOOLOGIA';
-  if (kind === 'plant') return 'PLANTAS';
-  return 'ESPECIMENES_SECOS';
-}
-
 function statusFromStock(stock: number): string {
   return stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK';
 }
 
-/** Columnas planas confirmadas en live (sección A). */
-function buildLiveCore(
-  input: SpecimenInput,
-  ctx: {
-    taxonomyId: string;
-    regionText: string | null;
-    categoria: string | null;
-    localidad: string | null;
-  },
-): Record<string, unknown> {
-  const speciesName = input.scientificName.trim();
-
+function buildNeonRecord(input: SpecimenInput, id: string) {
+  const region = input.geoRegionFolder?.trim() || null;
+  const category = input.catalogueCategoria?.trim() || null;
   return {
-    species_name: speciesName,
-    taxonomy_id: ctx.taxonomyId,
-    region_id: input.regionId,
-    rubro: rubroFromKind(input.specimenKind),
-    region: ctx.regionText,
-    categoria: ctx.categoria,
-    familia: input.familia?.trim() || null,
-    subfamilia: input.subfamilia?.trim() || null,
-    genero: input.genero.trim(),
-    especie: input.especie.trim(),
-    subespecie: input.subespecie || null,
-    sexo: input.sex || null,
-    calidad: input.gradeCode || null,
-    color_dominante: input.color || null,
-    origen: input.countryOrigin || null,
-    localidad: input.localidad || ctx.localidad,
-    gps: input.gps || null,
-    dimensiones: input.dimensiones || null,
-    peso_gramos: typeof input.pesoGramos === 'number' ? input.pesoGramos : null,
-    precio_menor: input.retailPrice,
-    precio_mayor: input.wholesalePrice ?? null,
-    status: statusFromStock(input.stock),
-  };
-}
-
-/** Campos opcionales (0009 / sección B). Se intentan; si faltan columnas, se omiten. */
-function buildOptionalExtras(input: SpecimenInput): Record<string, unknown> {
-  return {
-    specimen_code: input.specimenCode.trim(),
+    id,
+    code: input.specimenCode.trim(),
+    scientificName: input.scientificName.trim(),
+    commonName: input.commonName ?? null,
+    specimenKind: input.specimenKind,
+    orderName: input.orden ?? null,
+    family: input.familia?.trim() || null,
+    subfamily: input.subfamilia?.trim() || null,
+    genus: input.genero.trim(),
+    species: input.especie.trim(),
+    subspecies: input.subespecie ?? null,
+    categoryId: input.categoryId,
+    regionId: input.regionId,
+    category,
+    region,
+    country: input.countryOrigin ?? null,
+    locality: input.localidad ?? null,
+    gps: input.gps ?? null,
+    sex: input.sex ?? null,
+    grade: input.gradeCode ?? null,
+    dominantColor: input.color ?? null,
+    dimensions: input.dimensiones ?? null,
+    weightGrams: input.pesoGramos ?? null,
     stock: input.stock,
-    stock_status: statusFromStock(input.stock),
-    category_id: input.categoryId,
-    global_region_id: input.regionId,
-    attributes: {
-      common_name: input.commonName ?? null,
-      sex: input.sex ?? null,
-      grade_code: input.gradeCode ?? null,
-      quality: input.gradeCode ?? null,
-      country_origin: input.countryOrigin ?? null,
-      specimen_kind: input.specimenKind,
-      primary_colors: input.color ? [input.color] : null,
-    },
-    metadata: {
-      order: input.orden ?? null,
-      orden: input.orden ?? null,
-      family: input.familia ?? null,
-      familia: input.familia ?? null,
-      subfamilia: input.subfamilia ?? null,
-      genus: input.genero,
-      genero: input.genero,
-      especie: input.especie,
-      subespecie: input.subespecie ?? null,
-      common_name: input.commonName ?? null,
-      nombre_cientifico: input.scientificName.trim(),
-      localidad: input.localidad ?? null,
-      gps: input.gps ?? null,
-      region_id: input.regionId,
-    },
-    pricing: {
-      retail_price: input.retailPrice,
-      wholesale_price: input.wholesalePrice ?? null,
-      wholesale_min_qty: input.wholesaleMinQty ?? null,
-      currency: input.currency || 'USD',
-    },
+    retailPrice: input.retailPrice,
+    wholesalePrice: input.wholesalePrice ?? null,
+    wholesaleMinQty: input.wholesaleMinQty ?? null,
+    currency: input.currency || 'USD',
+    status: statusFromStock(input.stock),
+    description: null,
+    attributes: JSON.stringify({ primary_colors: input.color ? [input.color] : [], specimen_kind: input.specimenKind }),
+    metadata: JSON.stringify({ order: input.orden ?? null, family: input.familia ?? null, region_id: input.regionId }),
   };
 }
 
-async function upsertWithSoftExtras(
-  db: ReturnType<typeof getSupabaseAdmin>,
-  mode: 'insert' | 'update',
-  specimenId: string | null,
-  core: Record<string, unknown>,
-  extras: Record<string, unknown>,
-): Promise<{ id?: string; error?: string }> {
-  const full = { ...core, ...extras };
-
-  if (mode === 'insert') {
-    const { data, error } = await db.from('specimens').insert(full).select('id').single();
-    if (!error) return { id: data.id as string };
-    if (!softColError(error.message)) return { error: error.message };
-
-    const { data: d2, error: e2 } = await db.from('specimens').insert(core).select('id').single();
-    if (e2) return { error: e2.message };
-    const id = d2.id as string;
-    // Intento best-effort de extras uno a uno
-    for (const [key, value] of Object.entries(extras)) {
-      const { error: e3 } = await db.from('specimens').update({ [key]: value }).eq('id', id);
-      if (e3 && !softColError(e3.message)) {
-        // no bloquear por extras
-      }
-    }
-    return { id };
-  }
-
-  const { error } = await db.from('specimens').update(full).eq('id', specimenId!);
-  if (!error) return { id: specimenId! };
-  if (!softColError(error.message)) return { error: error.message };
-
-  const { error: e2 } = await db.from('specimens').update(core).eq('id', specimenId!);
-  if (e2) return { error: e2.message };
-  for (const [key, value] of Object.entries(extras)) {
-    await db.from('specimens').update({ [key]: value }).eq('id', specimenId!);
-  }
-  return { id: specimenId! };
-}
-
-async function buildRows(
-  db: ReturnType<typeof getSupabaseAdmin>,
-  input: SpecimenInput,
-): Promise<{ core: Record<string, unknown>; extras: Record<string, unknown> }> {
-  const taxonomyId = await createFreeTaxonomy(db, input.categoryId, {
-    order: input.orden,
-    family: input.familia,
-    subfamily: input.subfamilia,
-    genus: input.genero,
-    species: input.especie,
-  });
-
-  const { data: cat } = await db
-    .from('categories')
-    .select('category_name')
-    .eq('id', input.categoryId)
-    .maybeSingle();
-
-  const { data: reg } = await db
-    .from('global_regions')
-    .select('region_name, name, country, locality')
-    .eq('id', input.regionId)
-    .maybeSingle();
-
-  const core = buildLiveCore(input, {
-    taxonomyId,
-    // Preferir REGION geográfica Cloudinary; fallback a global_regions.
-    regionText:
-      input.geoRegionFolder?.trim() ||
-      reg?.region_name ||
-      reg?.name ||
-      null,
-    // Preferir categoría canónica del catálogo; fallback a categories.category_name.
-    categoria:
-      input.catalogueCategoria?.trim() || cat?.category_name || null,
-    localidad: input.localidad?.trim() || reg?.locality || null,
-  });
-  const extras = buildOptionalExtras(input);
-  return { core, extras };
+async function upsertSpecimen(input: SpecimenInput, specimenId?: string): Promise<string> {
+  const id = specimenId || crypto.randomUUID();
+  const record = buildNeonRecord(input, id);
+  const rows = await sql`
+    INSERT INTO especimenes (
+      id, code, scientific_name, common_name, specimen_kind, order_name, family,
+      subfamily, genus, species, subspecies, category_id, region_id, category,
+      region, country, locality, gps, sex, grade, dominant_color, dimensions,
+      weight_grams, stock, retail_price, wholesale_price, wholesale_min_qty,
+      currency, status, description, attributes, metadata, updated_at
+    ) VALUES (
+      ${record.id}, ${record.code}, ${record.scientificName}, ${record.commonName},
+      ${record.specimenKind}, ${record.orderName}, ${record.family}, ${record.subfamily},
+      ${record.genus}, ${record.species}, ${record.subspecies}, ${record.categoryId},
+      ${record.regionId}, ${record.category}, ${record.region}, ${record.country},
+      ${record.locality}, ${record.gps}, ${record.sex}, ${record.grade}, ${record.dominantColor},
+      ${record.dimensions}, ${record.weightGrams}, ${record.stock}, ${record.retailPrice},
+      ${record.wholesalePrice}, ${record.wholesaleMinQty}, ${record.currency}, ${record.status},
+      ${record.description}, ${record.attributes}::jsonb, ${record.metadata}::jsonb, now()
+    )
+    ON CONFLICT (code) DO UPDATE SET
+      scientific_name = EXCLUDED.scientific_name,
+      common_name = EXCLUDED.common_name,
+      specimen_kind = EXCLUDED.specimen_kind,
+      order_name = EXCLUDED.order_name,
+      family = EXCLUDED.family,
+      subfamily = EXCLUDED.subfamily,
+      genus = EXCLUDED.genus,
+      species = EXCLUDED.species,
+      subspecies = EXCLUDED.subspecies,
+      category_id = EXCLUDED.category_id,
+      region_id = EXCLUDED.region_id,
+      category = EXCLUDED.category,
+      region = EXCLUDED.region,
+      country = EXCLUDED.country,
+      locality = EXCLUDED.locality,
+      gps = EXCLUDED.gps,
+      sex = EXCLUDED.sex,
+      grade = EXCLUDED.grade,
+      dominant_color = EXCLUDED.dominant_color,
+      dimensions = EXCLUDED.dimensions,
+      weight_grams = EXCLUDED.weight_grams,
+      stock = EXCLUDED.stock,
+      retail_price = EXCLUDED.retail_price,
+      wholesale_price = EXCLUDED.wholesale_price,
+      wholesale_min_qty = EXCLUDED.wholesale_min_qty,
+      currency = EXCLUDED.currency,
+      status = EXCLUDED.status,
+      description = EXCLUDED.description,
+      attributes = EXCLUDED.attributes,
+      metadata = EXCLUDED.metadata,
+      updated_at = now()
+    RETURNING id
+  `;
+  return String(rows[0].id);
 }
 
 export async function createSpecimenAction(
@@ -269,19 +194,14 @@ export async function createSpecimenAction(
   const { data: input, state } = parseForm(formData);
   if (!input) return state!;
 
-  const db = getSupabaseAdmin();
-  let rows: { core: Record<string, unknown>; extras: Record<string, unknown> };
   try {
-    rows = await buildRows(db, input);
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : 'Error de taxonomía' };
+    const id = await upsertSpecimen(input);
+    revalidatePath('/admin/especimenes');
+    redirect(`/admin/especimenes/${id}?grabado=1`);
+  } catch (error) {
+    console.error('Error al guardar espécimen en Neon:', error);
+    return { error: error instanceof Error ? error.message : 'No se pudo crear' };
   }
-
-  const result = await upsertWithSoftExtras(db, 'insert', null, rows.core, rows.extras);
-  if (result.error || !result.id) return { error: result.error ?? 'No se pudo crear' };
-
-  revalidatePath('/admin/especimenes');
-  redirect(`/admin/especimenes/${result.id}?grabado=1`);
 }
 
 export async function updateSpecimenAction(
@@ -294,20 +214,15 @@ export async function updateSpecimenAction(
   const { data: input, state } = parseForm(formData);
   if (!input) return state!;
 
-  const db = getSupabaseAdmin();
-  let rows: { core: Record<string, unknown>; extras: Record<string, unknown> };
   try {
-    rows = await buildRows(db, input);
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : 'Error de taxonomía' };
+    const id = await upsertSpecimen(input, specimenId);
+    revalidatePath('/admin/especimenes');
+    revalidatePath(`/admin/especimenes/${id}`);
+    redirect(`/admin/especimenes/${id}?grabado=1`);
+  } catch (error) {
+    console.error('Error al actualizar espécimen en Neon:', error);
+    return { error: error instanceof Error ? error.message : 'No se pudo actualizar' };
   }
-
-  const result = await upsertWithSoftExtras(db, 'update', specimenId, rows.core, rows.extras);
-  if (result.error) return { error: result.error };
-
-  revalidatePath('/admin/especimenes');
-  revalidatePath(`/admin/especimenes/${specimenId}`);
-  redirect(`/admin/especimenes/${specimenId}?grabado=1`);
 }
 
 /** Borra una ficha de especie (media relacionada si la BD lo permite en cascada). */
@@ -318,14 +233,13 @@ export async function deleteSpecimenAction(
   const id = specimenId.trim();
   if (!id) return { error: 'id vacío' };
 
-  const db = getSupabaseAdmin();
   try {
-    await db.from('specimen_media').delete().eq('specimen_id', id);
-  } catch {
-    /* media opcional */
+    await sql`DELETE FROM especimen_medios WHERE specimen_id = ${id}`;
+    await sql`DELETE FROM especimenes WHERE id = ${id}`;
+  } catch (error) {
+    console.error('Error al eliminar espécimen en Neon:', error);
+    return { error: error instanceof Error ? error.message : 'No se pudo eliminar' };
   }
-  const { error } = await db.from('specimens').delete().eq('id', id);
-  if (error) return { error: error.message };
 
   revalidatePath('/admin/especimenes');
   return { ok: true };
@@ -346,25 +260,18 @@ export async function placeSpecimenFamilyAction(input: {
   const familia = input.familia.trim();
   if (!id || !familia) return { error: 'specimenId y familia obligatorios' };
 
-  const db = getSupabaseAdmin();
-  const patch: Record<string, unknown> = {
-    familia,
-  };
-  if (input.categoria != null && input.categoria.trim()) {
-    patch.categoria = input.categoria.trim();
-  }
-  if (input.region != null && input.region.trim()) {
-    patch.region = input.region.trim();
-  }
-
-  const { error } = await db.from('specimens').update(patch).eq('id', id);
-  if (error) {
-    // Fallback: solo familia si faltan columnas planas
-    const { error: e2 } = await db
-      .from('specimens')
-      .update({ familia })
-      .eq('id', id);
-    if (e2) return { error: e2.message };
+  try {
+    await sql`
+      UPDATE especimenes
+      SET family = ${familia},
+          category = ${input.categoria?.trim() || null},
+          region = ${input.region?.trim() || null},
+          updated_at = now()
+      WHERE id = ${id}
+    `;
+  } catch (error) {
+    console.error('Error al recolocar espécimen en Neon:', error);
+    return { error: error instanceof Error ? error.message : 'No se pudo recolocar' };
   }
 
   revalidatePath('/admin/especimenes');
