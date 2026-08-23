@@ -92,7 +92,7 @@ export function normalizeCatalogueRow(raw: RawRow): SpecimenRow {
 
 async function ensureUniversalTable(): Promise<void> {
   await sql`
-    CREATE TABLE IF NOT EXISTS especies (
+    CREATE TABLE IF NOT EXISTS especimenes (
       id text PRIMARY KEY,
       code text,
       scientific_name text,
@@ -106,29 +106,32 @@ async function ensureUniversalTable(): Promise<void> {
       description text
     );
   `;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS code text`;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS scientific_name text`;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS family text`;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS category text`;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS region text`;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS country text`;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS price numeric`;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS stock integer DEFAULT 0`;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS images jsonb DEFAULT '[]'::jsonb`;
-  await sql`ALTER TABLE especies ADD COLUMN IF NOT EXISTS description text`;
-}
-
-async function tableExists(table: 'especies_clean' | 'especies'): Promise<boolean> {
-  const result = await sql`SELECT to_regclass(${'public.' + table}) AS name`;
-  return Boolean(result[0]?.name);
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS code text`;
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS scientific_name text`;
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS family text`;
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS category text`;
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS region text`;
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS country text`;
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS price numeric`;
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS stock integer DEFAULT 0`;
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS images jsonb DEFAULT '[]'::jsonb`;
+  await sql`ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS description text`;
 }
 
 async function ensureReady(): Promise<void> {
   if (!initialization) {
     initialization = (async () => {
-      if (!(await tableExists('especies_clean')) && !(await tableExists('especies'))) {
-        await ensureUniversalTable();
-        console.info('[Neon] tabla universal especies inicializada');
+      try {
+        await sql`SELECT 1 FROM especimenes LIMIT 1`;
+        return;
+      } catch {
+        try {
+          await sql`SELECT 1 FROM especies LIMIT 1`;
+          return;
+        } catch {
+          await ensureUniversalTable();
+          console.info('[Neon] tabla universal especimenes inicializada');
+        }
       }
     })().catch((error) => {
       initialization = null;
@@ -139,16 +142,37 @@ async function ensureReady(): Promise<void> {
   await initialization;
 }
 
-async function readSource(table: 'especies_clean' | 'especies'): Promise<RawRow[]> {
-  const rows = await sql`SELECT to_jsonb(source) AS row FROM ${table === 'especies_clean' ? sql`especies_clean` : sql`especies`} AS source`;
+async function readPhysicalTable(table: 'especimenes' | 'especies'): Promise<RawRow[]> {
+  const rows = table === 'especimenes'
+    ? await sql`SELECT to_jsonb(source) AS row FROM especimenes AS source`
+    : await sql`SELECT to_jsonb(source) AS row FROM especies AS source`;
   return rows.map((item) => item.row as RawRow);
 }
 
 export async function loadUniversalCatalogueRows(): Promise<{ rows: SpecimenRow[]; source: string; error: string | null }> {
   try {
     await ensureReady();
-    const source = (await tableExists('especies_clean')) ? 'especies_clean' : 'especies';
-    const rawRows = await readSource(source);
+    let source: 'especimenes' | 'especies' = 'especimenes';
+    let rawRows: RawRow[];
+    try {
+      rawRows = await readPhysicalTable('especimenes');
+      try {
+        await ensureUniversalTable();
+      } catch (schemaError) {
+        console.error('[Neon] no se pudieron verificar columnas de especimenes:', schemaError);
+      }
+    } catch (primaryError) {
+      console.error('[Neon] no se pudo leer especimenes:', primaryError);
+      source = 'especies';
+      try {
+        rawRows = await readPhysicalTable('especies');
+      } catch (fallbackError) {
+        console.error('[Neon] no se pudo leer especies:', fallbackError);
+        await ensureUniversalTable();
+        rawRows = await readPhysicalTable('especimenes');
+        source = 'especimenes';
+      }
+    }
     const rows = rawRows.map(normalizeCatalogueRow);
     console.log(`[Neon] ${rows.length} especímenes cargados desde ${source}`);
     if (rows.length === 0) console.error(`[Neon] ${source} no contiene especímenes`);
