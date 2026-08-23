@@ -95,9 +95,9 @@ export function normalizeCatalogueRow(raw: RawRow): SpecimenRow {
 }
 
 async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> {
-  const family = `%${filters.family?.trim() || ''}%`;
-  const category = `%${filters.category?.trim() || ''}%`;
-  const region = `%${filters.region?.trim() || ''}%`;
+  const family = `%${filters.family?.trim().toLowerCase() || ''}%`;
+  const category = `%${filters.category?.trim().toLowerCase() || ''}%`;
+  const region = `%${filters.region?.trim().toLowerCase() || ''}%`;
   console.log('[Neon] consulta catálogo: SELECT to_jsonb(source) AS row FROM especies_clean AS source WHERE LOWER(TRIM(...)) ILIKE ...');
   const rows = await sql`
     SELECT to_jsonb(source) AS row
