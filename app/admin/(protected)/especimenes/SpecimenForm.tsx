@@ -423,15 +423,17 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
               className={inputClass}
               defaultValue={
                 specimen?.global_regions?.id ??
-                regions.find((r) => getRegionValue(r) === 'NEO')?.id
+                regions.find((r) => getRegionValue(r) === 'NEO-SA')?.id ??
+                regions.find((r) => getRegionValue(r) === 'NEO')?.id ??
+                ''
               }
               onChange={(e) => {
                 const region = regions.find((r) => r.id === e.target.value);
                 const next = getRegionValue(region);
                 if (next) setRegionCode(next);
               }}
-              required
             >
+              <option value="">— Región no especificada —</option>
               {regions.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.name} ({getRegionValue(r) || '—'})
@@ -767,10 +769,11 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
               defaultValue={
                 specimen?.category_id ??
                 categories.find((c) => c.name === specimen?.categoria)?.id ??
-                categories[0]?.id
+                categories[0]?.id ??
+                ''
               }
-              required
             >
+              <option value="">— Categoría no especificada —</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}

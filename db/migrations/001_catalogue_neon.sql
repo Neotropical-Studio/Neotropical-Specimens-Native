@@ -2,11 +2,28 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS global_regions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  code text NOT NULL UNIQUE,
   name text,
   region_name text,
   country text,
   locality text,
   created_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE global_regions ADD COLUMN IF NOT EXISTS name text;
+ALTER TABLE global_regions ADD COLUMN IF NOT EXISTS code text;
+ALTER TABLE global_regions ADD COLUMN IF NOT EXISTS region_name text;
+ALTER TABLE global_regions ADD COLUMN IF NOT EXISTS country text;
+ALTER TABLE global_regions ADD COLUMN IF NOT EXISTS locality text;
+ALTER TABLE global_regions ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
+
+INSERT INTO global_regions (code, name, region_name)
+SELECT defaults.code, defaults.code, defaults.code
+FROM (VALUES ('NEO-SA'), ('AFR'), ('AUS'), ('EUR'), ('NA')) AS defaults(code)
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM global_regions existing
+  WHERE lower(trim(coalesce(existing.code, existing.name, existing.region_name, ''))) = lower(trim(defaults.code))
 );
 
 CREATE TABLE IF NOT EXISTS especimenes (
@@ -56,6 +73,14 @@ CREATE TABLE IF NOT EXISTS especimen_medios (
   view_name text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE especimen_medios ADD COLUMN IF NOT EXISTS specimen_id uuid;
+ALTER TABLE especimen_medios ADD COLUMN IF NOT EXISTS media_type text NOT NULL DEFAULT 'image';
+ALTER TABLE especimen_medios ADD COLUMN IF NOT EXISTS media_url text;
+ALTER TABLE especimen_medios ADD COLUMN IF NOT EXISTS public_id text;
+ALTER TABLE especimen_medios ADD COLUMN IF NOT EXISTS display_order integer NOT NULL DEFAULT 0;
+ALTER TABLE especimen_medios ADD COLUMN IF NOT EXISTS view_name text;
+ALTER TABLE especimen_medios ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
 
 CREATE INDEX IF NOT EXISTS especimenes_family_idx ON especimenes (lower(trim(family)));
 CREATE INDEX IF NOT EXISTS especimenes_category_idx ON especimenes (lower(trim(category)));

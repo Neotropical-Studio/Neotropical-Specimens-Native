@@ -29,8 +29,14 @@ const optionalString = z.preprocess(
 const SpecimenSchema = z
   .object({
     specimenCode: z.string().min(1, 'El ID code es obligatorio'),
-    categoryId: z.string().uuid('Selecciona una categoría'),
-    regionId: z.string().uuid('Selecciona una región'),
+    categoryId: z.preprocess(
+      (value) => (typeof value === 'string' && value.trim() ? value.trim() : undefined),
+      z.string().uuid().optional(),
+    ),
+    regionId: z.preprocess(
+      (value) => (typeof value === 'string' && value.trim() ? value.trim() : undefined),
+      z.string().uuid().optional(),
+    ),
     scientificName: z.string().min(1, 'El nombre científico es obligatorio'),
     commonName: optionalString,
     specimenKind: z.enum(['dried_specimen', 'zoology_skeleton', 'plant']),
@@ -104,8 +110,8 @@ function buildNeonRecord(input: SpecimenInput, id: string) {
     genus: input.genero.trim(),
     species: input.especie.trim(),
     subspecies: input.subespecie ?? null,
-    categoryId: input.categoryId,
-    regionId: input.regionId,
+    categoryId: input.categoryId ?? null,
+    regionId: input.regionId ?? null,
     category,
     region,
     country: input.countryOrigin ?? null,
@@ -124,7 +130,7 @@ function buildNeonRecord(input: SpecimenInput, id: string) {
     status: statusFromStock(input.stock),
     description: null,
     attributes: JSON.stringify({ primary_colors: input.color ? [input.color] : [], specimen_kind: input.specimenKind }),
-    metadata: JSON.stringify({ order: input.orden ?? null, family: input.familia ?? null, region_id: input.regionId }),
+    metadata: JSON.stringify({ order: input.orden ?? null, family: input.familia ?? null, region_id: input.regionId ?? null }),
   };
 }
 
