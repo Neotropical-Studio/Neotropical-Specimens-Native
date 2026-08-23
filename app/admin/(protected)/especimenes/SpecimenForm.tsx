@@ -148,7 +148,24 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
     regions[0]?.region_name ??
     regions[0]?.name ??
     '';
+  const regionIdForGeo = (geo: string) => {
+    const normalized = geo.trim().toLowerCase();
+    const code = normalized.includes('africa') ? 'afr'
+      : normalized.includes('austral') ? 'aus'
+        : normalized.includes('europe') ? 'eur'
+          : normalized.includes('nearctic') ? 'na'
+            : normalized.includes('neo') || normalized.includes('south') ? 'neo-sa'
+              : '';
+    return regions.find((region) => getRegionValue(region).trim().toLowerCase() === code)?.id ?? '';
+  };
+  const categoryIdForLabel = (label: string) => {
+    const normalized = label.trim().toLowerCase();
+    return categories.find((category) => category.name.trim().toLowerCase() === normalized)?.id ?? '';
+  };
   const [regionCode, setRegionCode] = useState(defaultRegionCode);
+  const [regionId, setRegionId] = useState(
+    specimen?.global_regions?.id ?? regionIdForGeo(defaultGeoFolder(specimen?.regionFlat ?? null)),
+  );
   const [specimenCode, setSpecimenCode] = useState(specimen?.specimen_code ?? '');
   const [isGenerating, startGenerating] = useTransition();
 
@@ -170,6 +187,9 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
     CATALOGUE_CATEGORIES.find((c) => c.id === 'butterflies-lepidoptera-diurne')?.segment ??
     '';
   const [catalogueCategoria, setCatalogueCategoria] = useState(initialCat);
+  const [categoryId, setCategoryId] = useState(
+    specimen?.category_id ?? categoryIdForLabel(initialCat),
+  );
 
   const rh = specimen?.taxonomy?.rank_hierarchy ?? {};
   const [orden, setOrden] = useState(specimen?.orden ?? rh.order ?? '');
@@ -379,7 +399,12 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
               name="geoRegionFolder"
               className={inputClass}
               value={geoRegionFolder}
-              onChange={(e) => setGeoRegionFolder(e.target.value)}
+              onChange={(e) => {
+                const nextGeo = e.target.value;
+                setGeoRegionFolder(nextGeo);
+                const nextRegionId = regionIdForGeo(nextGeo);
+                if (nextRegionId) setRegionId(nextRegionId);
+              }}
             >
               {DRIED_SPECIMEN_REGION_FOLDERS.map((r) => (
                 <option key={r.id} value={r.folder}>
@@ -399,7 +424,12 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
               name="catalogueCategoria"
               className={inputClass}
               value={catalogueCategoria}
-              onChange={(e) => setCatalogueCategoria(e.target.value)}
+              onChange={(e) => {
+                const nextCategory = e.target.value;
+                setCatalogueCategoria(nextCategory);
+                const nextCategoryId = categoryIdForLabel(nextCategory);
+                if (nextCategoryId) setCategoryId(nextCategoryId);
+              }}
               disabled={specimenKind !== 'dried_specimen'}
             >
               <option value="">—</option>
@@ -421,15 +451,11 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
               id="regionId"
               name="regionId"
               className={inputClass}
-              defaultValue={
-                specimen?.global_regions?.id ??
-                regions.find((r) => getRegionValue(r) === 'NEO-SA')?.id ??
-                regions.find((r) => getRegionValue(r) === 'NEO')?.id ??
-                ''
-              }
+              value={regionId}
               onChange={(e) => {
                 const region = regions.find((r) => r.id === e.target.value);
                 const next = getRegionValue(region);
+                setRegionId(e.target.value);
                 if (next) setRegionCode(next);
               }}
             >
@@ -766,12 +792,8 @@ export default function SpecimenForm({ categories, regions, specimen }: Props) {
               id="categoryId"
               name="categoryId"
               className={inputClass}
-              defaultValue={
-                specimen?.category_id ??
-                categories.find((c) => c.name === specimen?.categoria)?.id ??
-                categories[0]?.id ??
-                ''
-              }
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
             >
               <option value="">— Categoría no especificada —</option>
               {categories.map((c) => (

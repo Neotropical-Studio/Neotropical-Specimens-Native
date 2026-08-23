@@ -7,16 +7,16 @@ async function loadOptions() {
   let categories: Array<{ id: string; category_name?: string | null }> = [];
   let regions: Array<{ id: string; name?: string | null; region_name?: string | null }> = [];
   try {
-    categories = await sql`SELECT id, category_name FROM categories ORDER BY category_name`;
+    categories = (await sql`SELECT id, category_name FROM categories ORDER BY category_name`) as typeof categories;
   } catch (error) {
     console.error('Error cargando categorías desde Neon:', error);
   }
   try {
-    regions = await sql`
+    regions = (await sql`
       SELECT id, name, region_name
       FROM global_regions
       ORDER BY COALESCE(name, region_name), id
-    `;
+    `) as typeof regions;
   } catch (error) {
     console.error('Error cargando regiones desde Neon:', error);
   }
