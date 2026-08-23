@@ -29,7 +29,7 @@ export default function LoginForm() {
       </FormField>
       {configError && (
         <p className="text-sm text-amber-300">
-          El deploy no tiene SUPABASE_SERVICE_ROLE_KEY. Sin esa variable el panel no puede
+          Faltan ADMIN_EMAIL o ADMIN_PASSWORD en las variables de entorno. El panel no puede
           autorizar administradores.
         </p>
       )}

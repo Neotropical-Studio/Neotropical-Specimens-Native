@@ -1,10 +1,16 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createSupabaseServerClient } from '@/lib/auth/admin';
+import { cookies } from 'next/headers';
+import { ADMIN_SESSION_COOKIE } from '@/lib/auth/session';
 
 export async function signOutAction() {
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
+  (await cookies()).set(ADMIN_SESSION_COOKIE, '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 0,
+  });
   redirect('/admin/login');
 }

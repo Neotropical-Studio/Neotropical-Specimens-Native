@@ -1,6 +1,58 @@
 import { sql } from '@/lib/db';
+import type { SpecimenRow } from './view';
 
 export const dynamic = 'force-dynamic';
+
+export interface CatalogRowsResult {
+  rows: SpecimenRow[];
+  error: string | null;
+}
+
+export async function loadCatalogRows(_client?: unknown): Promise<CatalogRowsResult> {
+  try {
+    const rows = (await sql`SELECT * FROM especies ORDER BY id ASC;`) as SpecimenRow[];
+    if (rows.length === 0) {
+      console.error('La consulta del catálogo no devolvió especímenes.');
+      return { rows: [], error: 'Catálogo vacío' };
+    }
+    return { rows, error: null };
+  } catch (error) {
+    console.error('Error al cargar filas del catálogo desde Neon:', error);
+    return { rows: [], error: error instanceof Error ? error.message : 'Error en Neon DB' };
+  }
+}
+
+export async function loadCatalogRowById(
+  _client: unknown,
+  id: string,
+): Promise<{ row: SpecimenRow | null; error: string | null }> {
+  try {
+    const rows = (await sql`SELECT * FROM especies WHERE id = ${id} LIMIT 1;`) as SpecimenRow[];
+    if (rows.length === 0) {
+      console.error(`No se encontró el espécimen ${id} en Neon.`);
+      return { row: null, error: 'Espécimen no encontrado' };
+    }
+    return { row: rows[0], error: null };
+  } catch (error) {
+    console.error(`Error al cargar el espécimen ${id} desde Neon:`, error);
+    return { row: null, error: error instanceof Error ? error.message : 'Error en Neon DB' };
+  }
+}
+
+export async function loadCatalogPool(
+  _client: unknown,
+  limit: number,
+): Promise<SpecimenRow[]> {
+  try {
+    const safeLimit = Math.max(1, Math.min(100, Math.floor(limit)));
+    const rows = (await sql`SELECT * FROM especies ORDER BY id ASC LIMIT ${safeLimit};`) as SpecimenRow[];
+    if (rows.length === 0) console.error('La consulta del grupo de catálogo no devolvió datos.');
+    return rows;
+  } catch (error) {
+    console.error('Error al cargar el grupo de catálogo desde Neon:', error);
+    return [];
+  }
+}
 
 export async function getCatalogueCategories(rubroSlug?: string, regionSlug?: string) {
   try {

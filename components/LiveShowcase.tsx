@@ -29,6 +29,20 @@ function computeStats(specimens: SpecimenView[]): HeroStats {
 export default function LiveShowcase({ initial, strings, lang, country }: Props) {
   const { specimens } = useLiveSpecimens(initial);
   const stats = computeStats(specimens);
+  const categories = Array.from(
+    specimens.reduce((groups, specimen) => {
+      const name = specimen.categoria || specimen.rubroLabel || 'catalogue';
+      const current = groups.get(name) ?? {
+        id: name,
+        name,
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        itemCount: 0,
+      };
+      current.itemCount += 1;
+      groups.set(name, current);
+      return groups;
+    }, new Map<string, { id: string; name: string; slug: string; itemCount: number }>()).values(),
+  );
 
   return (
     <>
@@ -41,15 +55,8 @@ export default function LiveShowcase({ initial, strings, lang, country }: Props)
       />
       {/* Parte de abajo de la portada: 5 ventanas → luego familias. */}
       <HomeCategoryWindows
-        specimens={specimens}
-        mediaSeed={initial}
+        categories={categories}
         lang={lang}
-        title={strings['catalogue.categories_title'] || 'Categorías'}
-        subtitle={
-          strings['catalogue.categories_home_subtitle'] ||
-          'Butterflies Diurne · Moths · Beetles · Insects · Rare, Gynan, Hybrid, Freak. Elige una; después las familias como siempre.'
-        }
-        childLabel={strings['catalogue.specimens'] || 'especímenes'}
       />
     </>
   );

@@ -1,8 +1,12 @@
 import { sql } from '@/lib/db';
+import type { SpecimenView } from './view';
 
-export async function loadCatalogueSpecimens() {
+export async function loadCatalogueSpecimens(): Promise<{
+  specimens: SpecimenView[];
+  error: string | null;
+}> {
   try {
-    const specimens = await sql`
+    const specimens = (await sql`
       SELECT 
         id,
         code,
@@ -19,7 +23,7 @@ export async function loadCatalogueSpecimens() {
         video_public_id as "videoPublicId",
         price
       FROM especies_clean;
-    `;
+    `) as unknown as SpecimenView[];
 
     if (specimens.length === 0) {
       console.error('El catálogo no contiene especímenes.');

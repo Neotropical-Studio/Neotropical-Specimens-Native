@@ -23,6 +23,13 @@ const mockInstance = createMockProxy();
 
 export function isSupabaseAdminConfigured() { return true; }
 export function isSupabaseConfigured() { return true; }
+export function getSupabaseAdminConfigStatus() {
+  return {
+    hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+    hasAnon: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+    hasServiceRole: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+  };
+}
 export function getSupabaseAdmin() { return mockInstance; }
 export function getSupabaseBrowser() { return mockInstance; }
 export function anonClient() { return mockInstance; }

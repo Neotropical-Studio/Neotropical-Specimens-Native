@@ -43,7 +43,7 @@ async function loadFamilyNames(
   }
   const sp = await db.from('specimens').select('familia').not('familia', 'is', null).limit(2000);
   if (!sp.error && sp.data) {
-    const set = new Set(
+    const set = new Set<string>(
       sp.data
         .map((r) => String((r as { familia?: string }).familia ?? '').trim())
         .filter(Boolean),

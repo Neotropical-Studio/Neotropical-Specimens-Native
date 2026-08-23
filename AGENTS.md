@@ -4,7 +4,7 @@
 
 ### Scope: lista de especímenes en el catálogo (solo dinámico / regenerativo)
 
-**No** generar ni cachear el catálogo como HTML estático. Fuente de verdad = Supabase + Cloudinary en vivo (`revalidate = 0` / `force-dynamic`). El service worker (`public/sw.js`) ya fuerza navegación HTML solo por red (sin precache de páginas).
+**No** generar ni cachear el catálogo como HTML estático. Fuente de verdad = Neon/PostgreSQL + Cloudinary en vivo (`revalidate = 0` / `force-dynamic`). El service worker (`public/sw.js`) ya fuerza navegación HTML solo por red (sin precache de páginas).
 
 Para **crear / ordenar / renombrar / activar** la lista de familias (navegación del catálogo de especímenes secos):
 
@@ -23,7 +23,7 @@ Storefront del catálogo: `/[lang]/catalogue/...` + API `/api/catalog/specimens`
 | Servicio | Rol |
 |---|---|
 | Next.js (`pnpm dev`) | Storefront + admin + APIs |
-| Supabase | `specimens`, `specimen_media`, nav familias |
+| Neon/PostgreSQL | `especies`, `specimens`, `specimen_media`, navegación y taxonomía |
 | Cloudinary | Árbol canónico `RUBROS/...` + meta de listas |
 
 Comandos estándar: `package.json` scripts (`lint`, `typecheck`, `dev`, `sync:cloudinary*`). Path canónico Cloudinary: `supabase/sql/README.md`.
@@ -32,5 +32,5 @@ Comandos estándar: `package.json` scripts (`lint`, `typecheck`, `dev`, `sync:cl
 
 - **No desinstalar** `node_modules` ni paquetes salvo fallo claro de instalación; preferir `pnpm install` idempotente.
 - En Cloud Agent, si `node -v` no es 24.x, anteponer el bin de nvm: `export PATH="$HOME/.nvm/versions/node/v24.19.0/bin:$PATH"` (o `nvm use` tras cargar `nvm.sh`).
-- Sin `SUPABASE_SERVICE_ROLE_KEY` el admin de fichas no carga. Sin `CLOUDINARY_*` no se puede activar/guardar la lista de familias ni sync.
+- Sin `DATABASE_URL` las consultas Neon devuelven fallbacks vacíos. Sin `CLOUDINARY_*` no se puede activar/guardar la lista de familias ni sync.
 - No usar carpetas `_PENDING`, `CATALOGUE_*`, ni dumps en raíz; espejo en `/admin/espejo`.

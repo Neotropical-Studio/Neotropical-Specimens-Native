@@ -53,10 +53,10 @@ export default function CatalogNavPager({
         {pageItems.map(({ node, href }) => (
           <CatalogNavCard
             key={node.id}
-            node={node}
+            title={node.label}
             href={href}
-            showCardVideo={showCardVideo}
-            childLabel={childLabel ?? (showCardVideo ? 'especímenes' : 'ítems')}
+            imageCode={node.coverPublicId ?? undefined}
+            subtitle={`${node.count} ${childLabel ?? (showCardVideo ? 'especímenes' : 'ítems')}`}
           />
         ))}
       </div>

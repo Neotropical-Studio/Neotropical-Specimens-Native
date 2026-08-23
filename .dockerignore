@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+coverage
+*.log
+supabase/.temp
+supabase/.branches
+scripts/.venv

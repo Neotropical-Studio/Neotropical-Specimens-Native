@@ -5,7 +5,7 @@ import {
   routeCheckoutByAmount,
   type ExportDocumentKind,
 } from '@/lib/payments/native-checkout';
-import { planExportDocuments } from '@/lib/payments/export-documents';
+import { planExportDocuments, type ExportLineItem } from '@/lib/payments/export-documents';
 import { dispatchExportDocuments } from '@/lib/payments/export-email';
 import { createWorldFirstQrSession, type QrPayMethod } from '@/lib/payments/worldfirst-qr';
 import { saveCheckoutOrder } from '@/lib/payments/order-store';
@@ -97,6 +97,14 @@ export async function POST(req: Request) {
   const route = routeCheckoutByAmount(breakdown);
   const orderId = newOrderId();
   const now = new Date().toISOString();
+  const lines: ExportLineItem[] = body.lines.map((line) => ({
+    sku: line.sku ?? '',
+    title: line.title ?? '',
+    quantity: line.quantity ?? 1,
+    unitPriceUsd: line.unitPriceUsd ?? 0,
+    grade: line.grade ?? null,
+    sex: line.sex ?? null,
+  }));
 
   const evidencePlan = planInsuredShipmentEvidence(Boolean(body.insuranceId));
   const packEvidence =
@@ -113,7 +121,7 @@ export async function POST(req: Request) {
     },
     breakdown,
     kinds,
-    lines: body.lines,
+    lines,
     locale: body.locale,
   });
 
@@ -149,7 +157,7 @@ export async function POST(req: Request) {
     country,
     breakdown,
     totalUsd: route.totalUsd,
-    lines: body.lines,
+    lines,
     qr,
     documentsDispatched: true,
     logisticsStarted: false,

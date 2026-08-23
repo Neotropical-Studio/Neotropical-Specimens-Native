@@ -126,9 +126,7 @@ export default function CatalogBrowseShell({
             >
               <div className="relative">
                 <CatalogEntryVideo
-                  videoPublicId={videoId}
-                  title={title}
-                  variant="hero"
+                  mediaCode={videoId}
                 />
                 <span className="absolute left-3 top-3 z-10 rounded bg-black/65 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/90">
                   Video

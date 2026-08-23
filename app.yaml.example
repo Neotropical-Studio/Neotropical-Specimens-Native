@@ -1,0 +1,48 @@
+# DigitalOcean App Platform spec.
+# Set the repository source in the App Platform dashboard or replace the
+# placeholder below before running: doctl apps create --spec app.yaml.
+name: neotropical-specimens-native
+region: nyc
+services:
+  - name: web
+    github:
+      repo: YOUR_GITHUB_OWNER/YOUR_GITHUB_REPOSITORY
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: Dockerfile
+    http_port: 3000
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 30
+      period_seconds: 30
+      timeout_seconds: 10
+      success_threshold: 1
+      failure_threshold: 3
+    envs:
+      - key: NODE_ENV
+        value: production
+        scope: RUN_TIME
+      - key: PORT
+        value: "3000"
+        scope: RUN_TIME
+      - key: HOSTNAME
+        value: 0.0.0.0
+        scope: RUN_TIME
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: NEXT_PUBLIC_SITE_URL
+        scope: RUN_TIME
+      - key: NEXT_PUBLIC_DEFAULT_LOCALE
+        value: en
+        scope: RUN_TIME
+      - key: NEXT_PUBLIC_FALLBACK_LOCALES
+        value: es,en
+        scope: RUN_TIME
+      - key: CLOUDINARY_CLOUD_NAME
+        scope: RUN_TIME
+      - key: CLOUDINARY_API_KEY
+        scope: RUN_TIME
+      - key: CLOUDINARY_API_SECRET
+        scope: RUN_TIME
+    source_dir: /
