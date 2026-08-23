@@ -95,43 +95,72 @@ function statusFromStock(stock: number): string {
   return stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK';
 }
 
+const BASE_SPECIMEN_COLUMNS = [
+  'id', 'nombre_cientifico', 'nombre_comun', 'rubro_id', 'region_id', 'categoria_id',
+  'familia_id', 'descripcion', 'imagen_url', 'fecha_coleccion', 'colector', 'created_at',
+  'updated_at', 'code', 'scientific_name', 'family', 'category', 'region', 'country',
+  'price', 'stock', 'images', 'description', 'common_name', 'attributes', 'metadata',
+] as const;
+
+type BaseSpecimenColumn = (typeof BASE_SPECIMEN_COLUMNS)[number];
+
+function sanitizeSpecimenPayload(payload: Record<string, unknown>): Record<BaseSpecimenColumn, unknown> {
+  return Object.fromEntries(
+    BASE_SPECIMEN_COLUMNS.map((column) => [column, payload[column] ?? null]),
+  ) as Record<BaseSpecimenColumn, unknown>;
+}
+
 function buildNeonRecord(input: SpecimenInput, id: string) {
   const region = input.geoRegionFolder?.trim() || null;
   const category = input.catalogueCategoria?.trim() || null;
-  return {
+  const payload = {
     id,
+    nombre_cientifico: input.scientificName.trim(),
+    nombre_comun: input.commonName ?? null,
+    rubro_id: null,
+    region_id: input.regionId ?? null,
+    categoria_id: input.categoryId ?? null,
+    familia_id: null,
+    descripcion: null,
+    imagen_url: null,
+    fecha_coleccion: null,
+    colector: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     code: input.specimenCode.trim(),
-    scientificName: input.scientificName.trim(),
-    commonName: input.commonName ?? null,
-    specimenKind: input.specimenKind,
-    orderName: input.orden ?? null,
+    scientific_name: input.scientificName.trim(),
     family: input.familia?.trim() || null,
-    subfamily: input.subfamilia?.trim() || null,
-    genus: input.genero.trim(),
-    species: input.especie.trim(),
-    subspecies: input.subespecie ?? null,
-    categoryId: input.categoryId ?? null,
-    regionId: input.regionId ?? null,
     category,
     region,
     country: input.countryOrigin ?? null,
-    locality: input.localidad ?? null,
-    gps: input.gps ?? null,
-    sex: input.sex ?? null,
-    grade: input.gradeCode ?? null,
-    dominantColor: input.color ?? null,
-    dimensions: input.dimensiones ?? null,
-    weightGrams: input.pesoGramos ?? null,
+    price: input.retailPrice,
     stock: input.stock,
-    retailPrice: input.retailPrice,
-    wholesalePrice: input.wholesalePrice ?? null,
-    wholesaleMinQty: input.wholesaleMinQty ?? null,
-    currency: input.currency || 'USD',
-    status: statusFromStock(input.stock),
+    images: JSON.stringify([]),
     description: null,
-    attributes: JSON.stringify({ primary_colors: input.color ? [input.color] : [], specimen_kind: input.specimenKind }),
-    metadata: JSON.stringify({ order: input.orden ?? null, family: input.familia ?? null, region_id: input.regionId ?? null }),
+    common_name: input.commonName ?? null,
+    attributes: JSON.stringify({
+      color: input.color ?? null,
+      sex: input.sex ?? null,
+      grade: input.gradeCode ?? null,
+      localidad: input.localidad ?? null,
+      gps: input.gps ?? null,
+      dimensiones: input.dimensiones ?? null,
+      peso_gramos: input.pesoGramos ?? null,
+      specimen_kind: input.specimenKind,
+    }),
+    metadata: JSON.stringify({
+      orden: input.orden ?? null,
+      family: input.familia ?? null,
+      genus: input.genero,
+      species: input.especie,
+      subspecies: input.subespecie ?? null,
+      wholesale_price: input.wholesalePrice ?? null,
+      wholesale_min_qty: input.wholesaleMinQty ?? null,
+      currency: input.currency || 'USD',
+      status: statusFromStock(input.stock),
+    }),
   };
+  return sanitizeSpecimenPayload(payload);
 }
 
 async function upsertSpecimen(input: SpecimenInput, specimenId?: string): Promise<string> {
@@ -139,49 +168,32 @@ async function upsertSpecimen(input: SpecimenInput, specimenId?: string): Promis
   const record = buildNeonRecord(input, id);
   const rows = await sql`
     INSERT INTO especimenes (
-      id, code, scientific_name, common_name, specimen_kind, order_name, family,
-      subfamily, genus, species, subspecies, category_id, region_id, category,
-      region, country, locality, gps, sex, grade, dominant_color, dimensions,
-      weight_grams, stock, retail_price, wholesale_price, wholesale_min_qty,
-      currency, status, description, attributes, metadata, updated_at
+      id, nombre_cientifico, nombre_comun, rubro_id, region_id, categoria_id,
+      familia_id, descripcion, imagen_url, fecha_coleccion, colector, created_at,
+      updated_at, code, scientific_name, family, category, region, country, price,
+      stock, images, description, common_name, attributes, metadata
     ) VALUES (
-      ${record.id}, ${record.code}, ${record.scientificName}, ${record.commonName},
-      ${record.specimenKind}, ${record.orderName}, ${record.family}, ${record.subfamily},
-      ${record.genus}, ${record.species}, ${record.subspecies}, ${record.categoryId},
-      ${record.regionId}, ${record.category}, ${record.region}, ${record.country},
-      ${record.locality}, ${record.gps}, ${record.sex}, ${record.grade}, ${record.dominantColor},
-      ${record.dimensions}, ${record.weightGrams}, ${record.stock}, ${record.retailPrice},
-      ${record.wholesalePrice}, ${record.wholesaleMinQty}, ${record.currency}, ${record.status},
-      ${record.description}, ${record.attributes}::jsonb, ${record.metadata}::jsonb, now()
+      ${record.id}, ${record.nombre_cientifico}, ${record.nombre_comun}, ${record.rubro_id},
+      ${record.region_id}, ${record.categoria_id}, ${record.familia_id}, ${record.descripcion},
+      ${record.imagen_url}, ${record.fecha_coleccion}, ${record.colector}, ${record.created_at},
+      ${record.updated_at}, ${record.code}, ${record.scientific_name}, ${record.family},
+      ${record.category}, ${record.region}, ${record.country}, ${record.price}, ${record.stock},
+      ${record.images}::jsonb, ${record.description}, ${record.common_name},
+      ${record.attributes}::jsonb, ${record.metadata}::jsonb
     )
     ON CONFLICT (code) DO UPDATE SET
+      nombre_cientifico = EXCLUDED.nombre_cientifico,
+      nombre_comun = EXCLUDED.nombre_comun,
       scientific_name = EXCLUDED.scientific_name,
       common_name = EXCLUDED.common_name,
-      specimen_kind = EXCLUDED.specimen_kind,
-      order_name = EXCLUDED.order_name,
       family = EXCLUDED.family,
-      subfamily = EXCLUDED.subfamily,
-      genus = EXCLUDED.genus,
-      species = EXCLUDED.species,
-      subspecies = EXCLUDED.subspecies,
       category_id = EXCLUDED.category_id,
       region_id = EXCLUDED.region_id,
       category = EXCLUDED.category,
       region = EXCLUDED.region,
       country = EXCLUDED.country,
-      locality = EXCLUDED.locality,
-      gps = EXCLUDED.gps,
-      sex = EXCLUDED.sex,
-      grade = EXCLUDED.grade,
-      dominant_color = EXCLUDED.dominant_color,
-      dimensions = EXCLUDED.dimensions,
-      weight_grams = EXCLUDED.weight_grams,
+      price = EXCLUDED.price,
       stock = EXCLUDED.stock,
-      retail_price = EXCLUDED.retail_price,
-      wholesale_price = EXCLUDED.wholesale_price,
-      wholesale_min_qty = EXCLUDED.wholesale_min_qty,
-      currency = EXCLUDED.currency,
-      status = EXCLUDED.status,
       description = EXCLUDED.description,
       attributes = EXCLUDED.attributes,
       metadata = EXCLUDED.metadata,

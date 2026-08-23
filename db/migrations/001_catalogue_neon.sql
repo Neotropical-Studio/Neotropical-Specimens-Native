@@ -30,7 +30,9 @@ CREATE TABLE IF NOT EXISTS especimenes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   code text NOT NULL UNIQUE,
   scientific_name text NOT NULL,
+  nombre_cientifico text NOT NULL,
   common_name text,
+  nombre_comun text,
   specimen_kind text NOT NULL DEFAULT 'dried_specimen',
   order_name text,
   family text,
@@ -88,6 +90,8 @@ CREATE INDEX IF NOT EXISTS especimenes_region_idx ON especimenes (lower(trim(reg
 CREATE INDEX IF NOT EXISTS especimen_medios_specimen_idx ON especimen_medios (specimen_id, display_order);
 
 ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS common_name text;
+ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS nombre_cientifico text;
+ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS nombre_comun text;
 ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS category text;
 ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS region text;
 ALTER TABLE especimenes ADD COLUMN IF NOT EXISTS description text;
