@@ -98,10 +98,10 @@ async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> 
   const family = `%${filters.family?.trim().toLowerCase() || ''}%`;
   const category = `%${filters.category?.trim().toLowerCase() || ''}%`;
   const region = `%${filters.region?.trim().toLowerCase() || ''}%`;
-  console.log('[Neon] consulta catálogo: SELECT to_jsonb(source) AS row FROM especies_clean AS source WHERE LOWER(TRIM(...)) ILIKE ...');
+  console.log('[Neon] consulta catálogo: SELECT to_jsonb(source) AS row FROM especies AS source WHERE LOWER(TRIM(...)) ILIKE ...');
   const rows = await sql`
     SELECT to_jsonb(source) AS row
-    FROM especies_clean AS source
+    FROM especies AS source
     WHERE LOWER(TRIM(COALESCE(
       to_jsonb(source)->>'family', to_jsonb(source)->>'familia', to_jsonb(source)->>'Familia', ''
     ))) ILIKE ${family}
@@ -119,12 +119,12 @@ export async function loadUniversalCatalogueRows(filters: CatalogueFilters = {})
   try {
     const rawRows = await readCatalogueTable(filters);
     const rows = rawRows.map(normalizeCatalogueRow);
-    console.log(`[Neon] ${rows.length} especímenes cargados desde especies_clean`);
+    console.log(`[Neon] ${rows.length} especímenes cargados desde especies`);
     if (rows.length === 0) {
-      console.error('[Neon] especies_clean no contiene especímenes para los filtros solicitados');
-      return { rows: [], source: 'especies_clean', error: 'Catálogo vacío' };
+      console.error('[Neon] especies no contiene especímenes para los filtros solicitados');
+      return { rows: [], source: 'especies', error: 'Catálogo vacío' };
     }
-    return { rows, source: 'especies_clean', error: null };
+    return { rows, source: 'especies', error: null };
   } catch (error) {
     console.error('[Neon] error cargando catálogo universal:', error);
     return { rows: [], source: 'none', error: error instanceof Error ? error.message : 'Error en Neon DB' };
