@@ -119,7 +119,7 @@ export async function loadUniversalCatalogueRows(filters: CatalogueFilters = {})
   try {
     const rawRows = await readCatalogueTable(filters);
     const rows = rawRows.map(normalizeCatalogueRow);
-    console.log(`[Neon] ${rows.length} especímenes cargados desde especies`);
+    console.log(`[Neon] ${rows.length} especímenes cargados desde especie`);
     if (rows.length === 0) {
       console.error('[Neon] especies no contiene especímenes para los filtros solicitados');
       return { rows: [], source: 'especie', error: 'Catálogo vacío' };
