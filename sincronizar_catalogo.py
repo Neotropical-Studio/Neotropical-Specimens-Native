@@ -3,10 +3,10 @@ import csv
 import psycopg2
 from dotenv import load_dotenv
 
-load_dotenv()
+# Cargar el archivo de configuración .env.local
+load_dotenv(dotenv_path='.env.local')
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Las 5 categorías exactas que maneja tu interfaz web
 CATEGORIAS_VALIDAS = {
     1: "Butterflies (Lepidoptera) Diurne",
     2: "Moths (Butterflies Nocturne)",
@@ -23,7 +23,7 @@ def clasificar_y_subir():
     conn = conectar_db()
     cursor = conn.cursor()
 
-    # Crear o asegurar la tabla especies con la estructura correcta
+    # Asegurar tabla especies
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS especies (
             id SERIAL PRIMARY KEY,
@@ -43,9 +43,7 @@ def clasificar_y_subir():
     """)
     conn.commit()
 
-    # Mapeo de cada archivo CSV de la carpeta data/ a su categoría correspondiente (1 a 5)
     archivos_por_categoria = [
-        # Categoría 1: Butterflies (Lepidoptera) Diurne
         ("data/carga_brassolini.csv", 1),
         ("data/carga_danaidae.csv", 1),
         ("data/carga_heliconiidae_ithomiidae.csv", 1),
@@ -63,10 +61,6 @@ def clasificar_y_subir():
         ("data/carga_pieridae_pierinae_lote1.csv", 1),
         ("data/carga_riodinidae_lote1.csv", 1),
         ("data/carga_satyridae_lote1.csv", 1),
-        
-        # Si tienes archivos para Nocturnos (Cat 2), Coleópteros (Cat 3), etc., agrégalos aquí:
-        # ("data/carga_noctuidae.csv", 2),
-        # ("data/carga_coleoptera.csv", 3),
     ]
 
     for archivo, cat_id in archivos_por_categoria:
@@ -74,7 +68,7 @@ def clasificar_y_subir():
             print(f"[AVISO] No se encontró el archivo {archivo}, se omite.")
             continue
 
-        print(f"[PROCESANDO] Leyendo {archivo} para la categoría [{CATEGORIAS_VALIDAS[cat_id]}]...")
+        print(f"[PROCESANDO] Leyendo {archivo}...")
         
         with open(archivo, mode='r', encoding='utf-8') as f:
             lector = csv.DictReader(f)
@@ -112,7 +106,7 @@ def clasificar_y_subir():
 
     cursor.close()
     conn.close()
-    print("[¡LISTO!] Sincronización completa de categorías y especímenes finalizada.")
+    print("[¡LISTO!] Sincronización completa.")
 
 if __name__ == "__main__":
     clasificar_y_subir()
