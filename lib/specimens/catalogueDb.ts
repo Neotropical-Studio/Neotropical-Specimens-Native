@@ -95,10 +95,30 @@ export function normalizeCatalogueRow(raw: RawRow): SpecimenRow {
 }
 
 async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> {
-  console.log('[Neon] consulta catálogo masivo sin restricciones estrictas de texto');
+  const family = filters.family?.trim().toLowerCase() || '';
+  const category = filters.category?.trim().toLowerCase() || '';
+  const region = filters.region?.trim().toLowerCase() || '';
+
+  console.log('[Neon] consulta catálogo con filtros flexibles:', { family, category, region });
+
+  // Si no hay ningún filtro estricto, devolvemos los primeros 500 registros para poblar el catálogo general
+  if (!family && !category && !region) {
+    const rows = await sql`
+      SELECT to_jsonb(source) AS row
+      FROM especie AS source
+      LIMIT 500;
+    `;
+    return rows.map((item) => item.row as RawRow);
+  }
+
+  // Si hay filtros, hacemos una búsqueda parcial segura que coincida con cualquiera de las columnas posibles
   const rows = await sql`
     SELECT to_jsonb(source) AS row
     FROM especie AS source
+    WHERE 
+      (${family} = '' OR LOWER(COALESCE(to_jsonb(source)->>'family', to_jsonb(source)->>'familia', '')) LIKE ${'%' + family + '%'})
+      AND (${category} = '' OR LOWER(COALESCE(to_jsonb(source)->>'category', to_jsonb(source)->>'categoria', '')) LIKE ${'%' + category + '%'})
+      AND (${region} = '' OR LOWER(COALESCE(to_jsonb(source)->>'region', to_jsonb(source)->>'región', '')) LIKE ${'%' + region + '%'})
     LIMIT 500;
   `;
   return rows.map((item) => item.row as RawRow);
