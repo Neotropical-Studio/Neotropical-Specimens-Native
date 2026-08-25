@@ -1,0 +1,40 @@
+import os
+import pandas as pd
+from supabase import create_client, Client
+from dotenv import load_dotenv
+
+# Cargar variables de entorno del archivo .env o .env.local
+load_dotenv('.env.local')
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL") or os.getenv("NEXT_PUBLIC_SUPABASE_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
+    print("❌ Error: Faltan las credenciales de Supabase (URL o Service Role Key) en el entorno.")
+    exit(1)
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+
+# Cargar el archivo CSV maestro que contiene todas las familias y especies
+csv_file = "coleopteros_peru_macro_maestro.csv"
+if not os.path.exists(csv_file):
+    print(f"❌ Error: No se encuentra el archivo {csv_file}")
+    exit(1)
+
+df = pd.read_csv(csv_file)
+print(f"📦 Archivo cargado con éxito. Total de registros a procesar: {len(df)}")
+
+records = df.to_dict(orient="records")
+
+# Subida masiva mediante upsert para evitar duplicados y asegurar integridad
+batch_size = 50
+for i in range(0, len(records), batch_size):
+    batch = records[i:i + batch_size]
+    try:
+        response = supabase.table("specimens").upsert(batch).execute()
+        print(f"✅ Lote {i // batch_size + 1} subido correctamente ({len(batch)} registros).")
+    except Exception as e:
+        print(f"⚠️ Error en el lote {i // batch_size + 1}: {e}")
+
+print("🚀 ¡Sincronización completa finalizada con éxito! Actualiza tu panel web para ver las familias con sus respectivos especímenes.")
