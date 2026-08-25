@@ -95,22 +95,11 @@ export function normalizeCatalogueRow(raw: RawRow): SpecimenRow {
 }
 
 async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> {
-  const family = `%${filters.family?.trim().toLowerCase() || ''}%`;
-  const category = `%${filters.category?.trim().toLowerCase() || ''}%`;
-  const region = `%${filters.region?.trim().toLowerCase() || ''}%`;
-  console.log('[Neon] consulta catálogo: SELECT to_jsonb(source) AS row FROM especie AS source WHERE LOWER(TRIM(...)) ILIKE ...');
+  console.log('[Neon] consulta catálogo masivo sin restricciones estrictas de texto');
   const rows = await sql`
     SELECT to_jsonb(source) AS row
     FROM especie AS source
-    WHERE LOWER(TRIM(COALESCE(
-      to_jsonb(source)->>'family', to_jsonb(source)->>'familia', to_jsonb(source)->>'Familia', ''
-    ))) ILIKE ${family}
-      AND LOWER(TRIM(COALESCE(
-        to_jsonb(source)->>'category', to_jsonb(source)->>'categoria', to_jsonb(source)->>'Categoría (por zona)', ''
-      ))) ILIKE ${category}
-      AND LOWER(TRIM(COALESCE(
-        to_jsonb(source)->>'region', to_jsonb(source)->>'región', to_jsonb(source)->>'Región geográfica', ''
-      ))) ILIKE ${region};
+    LIMIT 500;
   `;
   return rows.map((item) => item.row as RawRow);
 }
