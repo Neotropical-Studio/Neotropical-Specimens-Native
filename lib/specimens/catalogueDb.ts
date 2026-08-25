@@ -111,7 +111,7 @@ async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> 
     return rows.map((item) => item.row as RawRow);
   }
 
-  // Si hay filtros, hacemos una búsqueda parcial segura que coincida con cualquiera de las columnas posibles
+  // Si hay filtros, hacemos una búsqueda parcial segura
   const rows = await sql`
     SELECT to_jsonb(source) AS row
     FROM especie AS source
