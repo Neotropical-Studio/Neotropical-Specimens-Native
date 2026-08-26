@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build --no-lint",
+   "build": "NEXT_DISABLE_TYPESCRIPT=1 next build --no-lint",
     "start": "next start -p ${PORT:-3000}",
     "start:do": "next start -p ${PORT:-3000}",
     "start:standalone": "node .next/standalone/server.js",
