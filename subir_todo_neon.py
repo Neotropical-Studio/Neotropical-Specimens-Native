@@ -17,7 +17,6 @@ try:
     conexion = psycopg2.connect(DATABASE_URL)
     cursor = conexion.cursor()
 
-    # Buscar automáticamente todos los archivos CSV en la carpeta actual
     archivos_csv = glob.glob("*.csv")
 
     if not archivos_csv:
@@ -31,12 +30,24 @@ try:
     for archivo in archivos_csv:
         print(f"📄 Procesando: {archivo}")
         
+        # Detectar la región según el nombre del archivo
+        nombre_lower = archivo.lower()
+        if 'africa' in nombre_lower:
+            region = "Africa (Afrotropical)"
+        elif 'oriental' in nombre_lower or 'australasian' in nombre_lower:
+            region = "Australasian Y Oriental"
+        elif 'europe' in nombre_lower or 'holarctic' in nombre_lower:
+            region = "Europe (Holarctic)"
+        elif 'nearctic' in nombre_lower or 'north_america' in nombre_lower:
+            region = "North America (Nearctic)"
+        else:
+            region = "Central South America Neotropical"
+
         with open(archivo, mode='r', encoding='utf-8', errors='ignore') as f:
             reader = csv.DictReader(f)
             
             contador_archivo = 0
             for row in reader:
-                # Limpiamos y leemos las columnas comunes de tus CSVs
                 familia = row.get('familia') or row.get('Family') or row.get('FAMILIA') or "Desconocida"
                 genero = row.get('genero') or row.get('Genus') or row.get('GENERO') or ""
                 especie = row.get('especie') or row.get('Species') or row.get('ESPECIE') or ""
@@ -45,7 +56,6 @@ try:
                 if not s_name or s_name == " ":
                     continue
 
-                # Categorización automática basada en la familia real de tus listas
                 fam_lower = familia.lower()
                 if any(b in fam_lower for b in ['scarabaeidae', 'rutelinae', 'buprestidae', 'cerambycidae', 'cetoniidae', 'chrysomelidae', 'curculionidae', 'dynastidae', 'elateridae', 'lucanidae', 'coleoptera']):
                     categoria = "Beetles (Coleoptera)"
@@ -61,7 +71,8 @@ try:
                     DO UPDATE SET 
                         familia = EXCLUDED.familia,
                         genero = EXCLUDED.genero,
-                        especie = EXCLUDED.especie;
+                        especie = EXCLUDED.especie,
+                        region = EXCLUDED.region;
                 """
                 
                 valores = (
@@ -72,7 +83,7 @@ try:
                     s_name,
                     slug,
                     "ESPECIMENES_SECOS",
-                    "Peru",
+                    region,
                     "IN_STOCK"
                 )
 
@@ -85,11 +96,11 @@ try:
                     conexion.rollback()
                     print(f"    ❌ Error en {s_name}: {e}")
 
-            print(f"  [✔] {contador_archivo} registros subidos desde {archivo}")
+            print(f"  [✔] {contador_archivo} registros subidos a la región: '{region}'")
 
     cursor.close()
     conexion.close()
-    print(f"\n✨ ¡Listo! Se procesaron todos tus CSVs. Total de registros subidos/actualizados: {total_registros}")
+    print(f"\n✨ ¡Listo! Total de registros procesados en sus 5 regiones: {total_registros}")
 
 except Exception as error:
     print(f"❌ Error general: {error}")
