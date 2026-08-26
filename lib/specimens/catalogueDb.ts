@@ -25,8 +25,8 @@ const aliases = {
     stock: numberValue(raw, (aliases as any).stock) ?? undefined,
     description: text(raw, (aliases as any).description),
     attributes: { common_name: text(raw, (aliases as any).common) },
-    } as Record<string, string[]>;
-   };
+    } as Record<string, string[]>;};
+
   // Asegúrate de que aquí estén incluidos los nombres reales de tus columnas de imágenes y videos:
   media: ['media_url', 'cover_public_id', 'cloudinary_public_id', 'image', 'imagen', 'foto'],
   video: ['video_public_id', 'video_url', 'video'],
