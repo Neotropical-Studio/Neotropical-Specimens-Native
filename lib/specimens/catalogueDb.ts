@@ -78,7 +78,10 @@ export function normalizeCatalogueRow(raw: any): any {
   return result as any;
 }
 
-// Función puente requerida por tus imports externos
+// Reemplaza la función loadUniversalCatalogueRows al final de tu archivo por esta:
 export async function loadUniversalCatalogueRows() {
-  return [];
+  return {
+    rows: [],
+    error: null,
+  };
 }
