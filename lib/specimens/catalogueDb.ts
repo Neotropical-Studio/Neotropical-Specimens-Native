@@ -10,7 +10,6 @@ export interface CatalogueFilters {
 }
 
 const aliases = {
-const aliases = {
   id: ['id', 'uuid', 'codigo_id'],
   code: ['code', 'codigo', 'catalog_code', 'catalogCode', 'specimen_code'],
   species: ['species_name', 'scientific_name', 'nombre_cientifico', 'scientificName', 'especie'],
