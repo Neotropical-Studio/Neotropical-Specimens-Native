@@ -10,7 +10,9 @@ export interface CatalogRowsResult {
 
 export async function loadCatalogRows(_client?: unknown): Promise<CatalogRowsResult> {
   try {
-    const { rows, error } = await loadUniversalCatalogueRows();
+  const result: any = await loadUniversalCatalogueRows();
+    const rows = Array.isArray(result) ? result : (result?.rows ?? []);
+    const error = Array.isArray(result) ? null : (result?.error ?? null);
     if (rows.length === 0) {
       return { rows: [], error: error ?? 'Catálogo vacío' };
     }
