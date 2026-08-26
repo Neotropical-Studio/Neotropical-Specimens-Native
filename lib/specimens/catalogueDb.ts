@@ -105,6 +105,7 @@ async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> 
   `;
   return rows.map((item) => item.row as RawRow);
 }
+// fix-sync)
 
   // Si hay filtros, hacemos una búsqueda parcial segura
   const rows = await sql`
