@@ -1,36 +1,38 @@
 import { query } from './db';
 import { CollectionStats, CategorySummary, Specimen } from '@/types/specimen';
 
-// Obtiene los contadores globales dinámicamente
+// Obtiene los contadores globales dinámicamente desde la tabla 'especies'
 export async function getCollectionStats(): Promise<CollectionStats> {
   try {
-    const rows = await query<CollectionStats>(`
+    const rows = await query<any>(`
       SELECT 
         COUNT(*)::int AS total_specimens,
         COUNT(DISTINCT family)::int AS total_families,
         COUNT(DISTINCT region)::int AS total_regions
-      FROM specimens
-      WHERE status = 'active';
+      FROM especies;
     `);
 
-    return rows[0] || { total_specimens: 0, total_families: 0, total_regions: 0 };
+    return {
+      total_specimens: rows[0]?.total_specimens || 0,
+      total_families: rows[0]?.total_families || 0,
+      total_regions: rows[0]?.total_regions || 0,
+    };
   } catch (error) {
     console.error('Error fetching collection stats:', error);
     return { total_specimens: 0, total_families: 0, total_regions: 0 };
   }
 }
 
-// Obtiene el conteo dinámico por rubros/categorías
+// Obtiene el resumen agrupado por categoría/rubro desde 'especies'
 export async function getCategoriesSummary(): Promise<CategorySummary[]> {
   try {
-    const rows = await query<CategorySummary>(`
+    const rows = await query<any>(`
       SELECT 
-        category,
+        COALESCE(categoria, 'General') AS category,
         COUNT(*)::int AS total_items,
-        COALESCE(SUM(stock), 0)::int AS total_stock
-      FROM specimens
-      WHERE status = 'active'
-      GROUP BY category
+        COUNT(*)::int AS total_stock
+      FROM especies
+      GROUP BY categoria
       ORDER BY total_items DESC;
     `);
 
@@ -41,34 +43,34 @@ export async function getCategoriesSummary(): Promise<CategorySummary[]> {
   }
 }
 
-// Obtiene la lista completa de especímenes activos
+// Obtiene la lista completa de especímenes mapeando las columnas de tu tabla 'especies'
 export async function getSpecimens(category?: string): Promise<Specimen[]> {
   try {
     let sql = `
       SELECT 
         id,
-        scientific_name,
-        common_name,
-        family,
-        category,
-        region,
-        image_url,
-        stock,
-        status,
-        created_at
-      FROM specimens
-      WHERE status = 'active'
+        COALESCE(especie, nombre, 'Desconocido') AS scientific_name,
+        NULL AS common_name,
+        COALESCE(family, 'Desconocida') AS family,
+        COALESCE(categoria, 'General') AS category,
+        COALESCE(region, 'Neotropical') AS region,
+        'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?q=80&w=800&auto=format&fit=crop' AS image_url,
+        1 AS stock,
+        'active' AS status,
+        NOW() AS created_at
+      FROM especies
     `;
     const params: any[] = [];
 
     if (category) {
-      sql += ` AND category = $1`;
+      sql += ` WHERE categoria = $1`;
       params.push(category);
     }
 
-    sql += ` ORDER BY created_at DESC;`;
+    sql += ` ORDER BY id DESC;`;
 
-    return await query<Specimen>(sql, params);
+    const rawRows = await query<any>(sql, params);
+    return rawRows as Specimen[];
   } catch (error) {
     console.error('Error fetching specimens:', error);
     return [];
