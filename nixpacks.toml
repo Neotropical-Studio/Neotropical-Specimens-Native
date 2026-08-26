@@ -1,8 +1,0 @@
-# 1. Asegúrate de añadir el archivo al control de versiones
-git add nixpacks.toml
-
-# 2. Guarda los cambios con un mensaje
-git commit -m "fix: configurar nixpacks para usar node 20 y pnpm directamente"
-
-# 3. Sube los cambios a tu repositorio (esto activará el webhook automático en Coolify)
-git push origin main
