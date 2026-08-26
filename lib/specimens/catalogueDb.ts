@@ -72,7 +72,7 @@ export function normalizeCatalogueRow(raw: RawRow): SpecimenRow {
     catalog_code: text(raw, aliases.code) ?? undefined,
     species_name: text(raw, aliases.species),
     genero: text(raw, aliases.genus),
-    especie: text(raw, ['especies', 'species', 'species_epithet']),
+    especie: text(raw, ['especies', 'species', 'species_epithet']),as any,
     familia: text(raw, aliases.family),
     rubro: text(raw, ['rubro', 'Rubro', 'rubro_id']),
     categoria: text(raw, aliases.category),
