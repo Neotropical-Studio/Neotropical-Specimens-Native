@@ -10,24 +10,19 @@ export interface CatalogueFilters {
 }
 
 const aliases = {
+const aliases = {
   id: ['id', 'uuid', 'codigo_id'],
   code: ['code', 'codigo', 'catalog_code', 'catalogCode', 'specimen_code'],
-  species: ['species_name', 'scientific_name', 'nombre_cientifico', 'scientificName', 'especies'],
+  species: ['species_name', 'scientific_name', 'nombre_cientifico', 'scientificName', 'especie'],
   common: ['common_name', 'nombre_comun', 'commonName'],
   family: ['family', 'familia', 'Familia'],
   genus: ['genus', 'genero', 'Genero'],
-  order: ['order', 'orden', 'Orden'],
   category: ['category', 'categoria', 'Categoría (por zona)', 'category_id'],
   region: ['region', 'región', 'Región geográfica', 'region_name', 'region_id'],
-  country: ['country', 'pais', 'País', 'origen', 'pais_origen'],
-  sex: ['sex', 'sexo'],
-  grade: ['grade', 'calidad'],
-  price: ['price', 'precio', 'price_amount', 'precio_menor'],
-  stock: ['stock', 'cantidad', 'inventory'],
-  description: ['description', 'descripcion', 'descripción'],
-  media: ['media_url', 'cover_public_id', 'cloudinary_public_id', 'image', 'imagen'],
-  video: ['video_public_id', 'video_url'],
-  images: ['images', 'imagenes', 'media_assets'],
+  // Asegúrate de que aquí estén incluidos los nombres reales de tus columnas de imágenes y videos:
+  media: ['media_url', 'cover_public_id', 'cloudinary_public_id', 'image', 'imagen', 'foto'],
+  video: ['video_public_id', 'video_url', 'video'],
+  images: ['images', 'imagenes', 'media_assets', 'galeria'],
 } as const;
 
 function value(row: RawRow, keys: readonly string[]): unknown {
