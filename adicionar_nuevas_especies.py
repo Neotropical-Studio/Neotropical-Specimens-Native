@@ -31,7 +31,7 @@ for fam, s_name, gen, esp in especies:
         "categoria": "Insects (Arthropoda)",
         "familia": fam,  # Familia ajustada para que coincida con la ruta web
         "genero": gen,
-        "especie": esp,
+        "especies": esp,
         "species_name": s_name,
         "media_url": slug,
         "rubro": "ESPECIMENES_SECOS",
