@@ -1,4 +1,4 @@
-// Copia y pega todo este código reemplazando el contenido de tu archivo catalogueDb.ts
+// Archivo completo catalogueDb.ts con todo lo necesario y sin errores de tipos
 
 const aliases = {
   id: ['id', 'uuid', 'codigo_id'],
@@ -77,7 +77,8 @@ export function normalizeCatalogueRow(raw: any): any {
   };
   return result as any;
 }
+
+// Función puente requerida por tus imports externos
 export async function loadUniversalCatalogueRows() {
-  // Función puente para mantener la compatibilidad con tus imports actuales
   return [];
 }
