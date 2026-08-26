@@ -12,7 +12,7 @@ export interface CatalogueFilters {
 const aliases = {
   id: ['id', 'uuid', 'codigo_id'],
   code: ['code', 'codigo', 'catalog_code', 'catalogCode', 'specimen_code'],
-  species: ['species_name', 'scientific_name', 'nombre_cientifico', 'scientificName', 'especie'],
+  species: ['species_name', 'scientific_name', 'nombre_cientifico', 'scientificName', 'especies'],
   common: ['common_name', 'nombre_comun', 'commonName'],
   family: ['family', 'familia', 'Familia'],
   genus: ['genus', 'genero', 'Genero'],
