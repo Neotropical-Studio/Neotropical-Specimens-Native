@@ -1,7 +1,7 @@
 import { query } from './db';
 import { CollectionStats, CategorySummary, Specimen } from '@/types/specimen';
 
-// Obtiene los contadores globales dinámicamente desde la tabla 'especies'
+// Obtiene los contadores globales dinámicamente desde tu tabla en Neon
 export async function getCollectionStats(): Promise<CollectionStats> {
   try {
     const rows = await query<any>(`
@@ -23,7 +23,7 @@ export async function getCollectionStats(): Promise<CollectionStats> {
   }
 }
 
-// Obtiene el resumen agrupado por categoría/rubro desde 'especies'
+// Obtiene el resumen agrupado por categoría
 export async function getCategoriesSummary(): Promise<CategorySummary[]> {
   try {
     const rows = await query<any>(`
@@ -43,7 +43,7 @@ export async function getCategoriesSummary(): Promise<CategorySummary[]> {
   }
 }
 
-// Obtiene la lista completa de especímenes mapeando las columnas de tu tabla 'especies'
+// Obtiene la lista completa de especímenes
 export async function getSpecimens(category?: string): Promise<Specimen[]> {
   try {
     let sql = `
