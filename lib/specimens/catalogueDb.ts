@@ -113,7 +113,7 @@ async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> 
       (${family} = '' OR LOWER(COALESCE(to_jsonb(source)->>'family', to_jsonb(source)->>'familia', '')) LIKE ${'%' + family + '%'})
       AND (${category} = '' OR LOWER(COALESCE(to_jsonb(source)->>'category', to_jsonb(source)->>'categoria', '')) LIKE ${'%' + category + '%'})
       AND (${region} = '' OR LOWER(COALESCE(to_jsonb(source)->>'region', to_jsonb(source)->>'región', '')) LIKE ${'%' + region + '%'})
-    LIMIT 500;
+    LIMIT 2000;
   `;
   return rows.map((item) => item.row as RawRow);
 }
