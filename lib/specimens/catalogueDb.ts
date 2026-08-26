@@ -67,12 +67,12 @@ export function normalizeCatalogueRow(raw: RawRow): SpecimenRow {
   if (mediaRef) media.unshift({ id: `${id}-cover`, specimen_id: id, media_type: 'image', media_url: mediaRef, public_id: null, display_order: 0 });
   if (videoRef) media.push({ id: `${id}-video`, specimen_id: id, media_type: 'video', media_url: videoRef, public_id: null, display_order: media.length });
 
-  return {
+  const result: any = {
     id,
     catalog_code: text(raw, aliases.code) ?? undefined,
     species_name: text(raw, aliases.species),
     genero: text(raw, aliases.genus),
-    especies: text(raw, ['especies', 'species', 'species_epithet']),as any,
+    especies: text(raw, ['especies', 'species', 'species_epithet']),
     familia: text(raw, aliases.family),
     rubro: text(raw, ['rubro', 'Rubro', 'rubro_id']),
     categoria: text(raw, aliases.category),
@@ -86,7 +86,7 @@ export function normalizeCatalogueRow(raw: RawRow): SpecimenRow {
     attributes: { common_name: text(raw, aliases.common) },
     specimen_media: media,
   };
-}
+  return result;
 
 async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> {
   const family = filters.family?.trim().toLowerCase() || '';
