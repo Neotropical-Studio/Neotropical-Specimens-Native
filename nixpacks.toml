@@ -1,2 +1,2 @@
-[providers]
-node = { version = "24" }
+[providers.node]
+version = "24"
