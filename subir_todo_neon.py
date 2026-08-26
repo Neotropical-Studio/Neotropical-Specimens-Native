@@ -28,10 +28,19 @@ try:
     total_registros = 0
 
     for archivo in archivos_csv:
-        print(f"📄 Procesando: {archivo}")
+        print(f"📄 Procesando archivo: {archivo}")
         
-        # Detectar la región según el nombre del archivo
         nombre_lower = archivo.lower()
+        
+        # 1. Detectar el Rubro correcto según el archivo
+        if 'esqueleto' in nombre_lower or 'zoologia' in nombre_lower:
+            rubro = "Esqueletos de zoología"
+        elif 'planta' in nombre_lower or 'cites' in nombre_lower:
+            rubro = "Plantas secas no-CITES"
+        else:
+            rubro = "Especímenes secos biológicos"
+
+        # 2. Detectar la Región correcta
         if 'africa' in nombre_lower:
             region = "Africa (Afrotropical)"
         elif 'oriental' in nombre_lower or 'australasian' in nombre_lower:
@@ -48,6 +57,7 @@ try:
             
             contador_archivo = 0
             for row in reader:
+                # Leer familia, género y especie con soporte para varios nombres de columnas posibles
                 familia = row.get('familia') or row.get('Family') or row.get('FAMILIA') or "Desconocida"
                 genero = row.get('genero') or row.get('Genus') or row.get('GENERO') or ""
                 especie = row.get('especie') or row.get('Species') or row.get('ESPECIE') or ""
@@ -56,9 +66,16 @@ try:
                 if not s_name or s_name == " ":
                     continue
 
+                # 3. Detectar la Categoría exacta que espera tu web
                 fam_lower = familia.lower()
-                if any(b in fam_lower for b in ['scarabaeidae', 'rutelinae', 'buprestidae', 'cerambycidae', 'cetoniidae', 'chrysomelidae', 'curculionidae', 'dynastidae', 'elateridae', 'lucanidae', 'coleoptera']):
+                nombre_archivo_inf = archivo.lower()
+                
+                if 'moth' in nombre_archivo_inf or 'noctuidae' in nombre_archivo_inf or 'uranidae' in nombre_archivo_inf or 'castnia' in nombre_archivo_inf:
+                    categoria = "Moths (Butterflies Nocturne)"
+                elif any(b in fam_lower for b in ['scarabaeidae', 'rutelinae', 'buprestidae', 'cerambycidae', 'cetoniidae', 'chrysomelidae', 'curculionidae', 'dynastidae', 'elateridae', 'lucanidae', 'coleoptera']) or 'coleoptera' in nombre_archivo_inf:
                     categoria = "Beetles (Coleoptera)"
+                elif any(d in fam_lower for d in ['nymphalidae', 'morphidae', 'papilionidae', 'pieridae', 'lycaenidae', 'hesperiidae', 'danainae', 'satyrinae', 'riodinidae']) or 'diurne' in nombre_archivo_inf or 'butterflies' in nombre_archivo_inf:
+                    categoria = "Butterflies (Lepidoptera) Diurne"
                 else:
                     categoria = "Insects (Arthropoda)"
 
@@ -72,17 +89,19 @@ try:
                         familia = EXCLUDED.familia,
                         genero = EXCLUDED.genero,
                         especie = EXCLUDED.especie,
-                        region = EXCLUDED.region;
+                        rubro = EXCLUDED.rubro,
+                        region = EXCLUDED.region,
+                        categoria = EXCLUDED.categoria;
                 """
                 
                 valores = (
                     categoria,
-                    familia.capitalize(),
-                    genero,
-                    especie,
-                    s_name,
+                    familia.strip(),
+                    genero.strip(),
+                    especie.strip(),
+                    s_name.strip(),
                     slug,
-                    "ESPECIMENES_SECOS",
+                    rubro,
                     region,
                     "IN_STOCK"
                 )
@@ -96,11 +115,11 @@ try:
                     conexion.rollback()
                     print(f"    ❌ Error en {s_name}: {e}")
 
-            print(f"  [✔] {contador_archivo} registros subidos a la región: '{region}'")
+            print(f"  [✔] {contador_archivo} registros guardados en Rubro: '{rubro}' | Región: '{region}'")
 
     cursor.close()
     conexion.close()
-    print(f"\n✨ ¡Listo! Total de registros procesados en sus 5 regiones: {total_registros}")
+    print(f"\n✨ ¡Listo! Se procesaron y clasificaron correctamente {total_registros} registros en total.")
 
 except Exception as error:
     print(f"❌ Error general: {error}")
