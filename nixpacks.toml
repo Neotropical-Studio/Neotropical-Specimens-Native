@@ -1,2 +1,2 @@
-[phases.setup]
-nodeVersion = "24"
+[providers]
+node = { version = "24" }
