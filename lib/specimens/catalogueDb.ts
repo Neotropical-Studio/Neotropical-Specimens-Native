@@ -17,7 +17,16 @@ const aliases = {
   family: ['family', 'familia', 'Familia'],
   genus: ['genus', 'genero', 'Genero'],
   category: ['category', 'categoria', 'Categoría (por zona)', 'category_id'],
-  region: ['region', 'región', 'Región geográfica', 'region_name', 'region_id'],
+  region: text(raw, (aliases as any).country),
+  origen: text(raw, (aliases as any).country),
+   sexo: text(raw, (aliases as any).sex),
+    calidad: text(raw, (aliases as any).grade),
+    precio_menor: numberValue(raw, (aliases as any).price),
+    stock: numberValue(raw, (aliases as any).stock) ?? undefined,
+    description: text(raw, (aliases as any).description),
+    attributes: { common_name: text(raw, (aliases as any).common) },
+    } as Record<string, string[]>;
+   };
   // Asegúrate de que aquí estén incluidos los nombres reales de tus columnas de imágenes y videos:
   media: ['media_url', 'cover_public_id', 'cloudinary_public_id', 'image', 'imagen', 'foto'],
   video: ['video_public_id', 'video_url', 'video'],
