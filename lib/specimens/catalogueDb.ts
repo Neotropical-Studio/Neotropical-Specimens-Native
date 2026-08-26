@@ -106,7 +106,7 @@ async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> 
     const rows = await sql`
       SELECT to_jsonb(source) AS row
       FROM especies AS source
-      LIMIT 500;
+      LIMIT 2000;
     `;
     return rows.map((item) => item.row as RawRow);
   }
