@@ -105,7 +105,7 @@ async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> 
   if (!family && !category && !region) {
     const rows = await sql`
       SELECT to_jsonb(source) AS row
-      FROM especie AS source
+      FROM especies AS source
       LIMIT 500;
     `;
     return rows.map((item) => item.row as RawRow);
@@ -114,7 +114,7 @@ async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> 
   // Si hay filtros, hacemos una búsqueda parcial segura
   const rows = await sql`
     SELECT to_jsonb(source) AS row
-    FROM especie AS source
+    FROM especies AS source
     WHERE 
       (${family} = '' OR LOWER(COALESCE(to_jsonb(source)->>'family', to_jsonb(source)->>'familia', '')) LIKE ${'%' + family + '%'})
       AND (${category} = '' OR LOWER(COALESCE(to_jsonb(source)->>'category', to_jsonb(source)->>'categoria', '')) LIKE ${'%' + category + '%'})
