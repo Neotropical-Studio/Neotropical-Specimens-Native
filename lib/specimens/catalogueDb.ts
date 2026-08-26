@@ -86,7 +86,8 @@ export function normalizeCatalogueRow(raw: RawRow): SpecimenRow {
     attributes: { common_name: text(raw, aliases.common) },
     specimen_media: media,
   };
-  return result;
+  return result as any;
+}
 
 async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> {
   const family = filters.family?.trim().toLowerCase() || '';
