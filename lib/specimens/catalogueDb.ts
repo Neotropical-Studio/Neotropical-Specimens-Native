@@ -97,13 +97,13 @@ async function readCatalogueTable(filters: CatalogueFilters): Promise<RawRow[]> 
 
   // Si no hay ningún filtro estricto, devolvemos los primeros 500 registros para poblar el catálogo general
   if (!family && !category && !region) {
-    const rows = await sql`
-      SELECT to_jsonb(source) AS row
-      FROM especies AS source
-      LIMIT 2000;
-    `;
-    return rows.map((item) => item.row as RawRow);
-  }
+  const rows = await sql`
+    SELECT to_jsonb(source) AS row
+    FROM especies AS source
+    LIMIT 2000;
+  `;
+  return rows.map((item) => item.row as RawRow);
+}
 
   // Si hay filtros, hacemos una búsqueda parcial segura
   const rows = await sql`
