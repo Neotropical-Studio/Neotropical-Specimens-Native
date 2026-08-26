@@ -77,3 +77,7 @@ export function normalizeCatalogueRow(raw: any): any {
   };
   return result as any;
 }
+export async function loadUniversalCatalogueRows() {
+  // Función puente para mantener la compatibilidad con tus imports actuales
+  return [];
+}
