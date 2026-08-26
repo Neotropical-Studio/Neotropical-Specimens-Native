@@ -1,58 +1,59 @@
 import os
+import glob
+import csv
 import psycopg2
 from dotenv import load_dotenv
 
 load_dotenv()
 load_dotenv('.env.local')
 
-# Conexión a Neon PostgreSQL
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 if not DATABASE_URL:
     print("❌ Error: No se encontró la DATABASE_URL en el entorno.")
     exit(1)
 
-# Diccionario organizado por Categoría -> Familia -> Lista de Especies (s_name, gen, esp)
-taxonomia = {
-    "Beetles (Coleoptera)": {
-        "Scarabaeidae": [
-            ("Canthon smaragdulus", "Canthon", "smaragdulus"),
-            ("Canthon sp.", "Canthon", "sp."),
-            ("Dichotomius sp.", "Dichotomius", "sp."),
-            ("Phanaeus mimas", "Phanaeus", "mimas"),
-        ],
-        "Rutelinae": [
-            ("Lagochile trigona mancocapaci", "Lagochile", "trigona mancocapaci"),
-            ("Macraspis andicola", "Macraspis", "andicola"),
-            ("Macraspis bicincta", "Macraspis", "bicincta"),
-        ]
-    },
-    "Insects (Arthropoda)": {
-        "Phasmatidae": [
-            ("Prisopus sp.", "Prisopus", "sp."),
-            ("Verophasmatoidea spp.", "Verophasmatoidea", "spp."),
-            ("Proscopia gigantea", "Proscopia", "gigantea")
-        ],
-        "Phylliidae": [
-            ("Phyllium giganteum", "Phyllium", "giganteum"),
-            ("Phyllium bioculatum", "Phyllium", "bioculatum")
-        ]
-    }
-}
-
 try:
     conexion = psycopg2.connect(DATABASE_URL)
     cursor = conexion.cursor()
 
-    for categoria, familias in taxonomia.items():
-        print(f"\n📂 Procesando categoría: {categoria}")
+    # Buscar automáticamente todos los archivos CSV en la carpeta actual
+    archivos_csv = glob.glob("*.csv")
+
+    if not archivos_csv:
+        print("⚠️ No se encontraron archivos CSV en este directorio.")
+        exit(1)
+
+    print(f"📂 Se encontraron {len(archivos_csv)} archivos CSV para procesar.\n")
+
+    total_registros = 0
+
+    for archivo in archivos_csv:
+        print(f"📄 Procesando: {archivo}")
         
-        for familia, especies in familias.items():
-            print(f"  🔹 Familia: {familia} ({len(especies)} especies)")
+        with open(archivo, mode='r', encoding='utf-8', errors='ignore') as f:
+            reader = csv.DictReader(f)
             
-            for s_name, gen, esp in especies:
-                slug = s_name.lower().replace('.', '').replace(' ', '-') + "-01.jpg"
+            contador_archivo = 0
+            for row in reader:
+                # Limpiamos y leemos las columnas comunes de tus CSVs
+                familia = row.get('familia') or row.get('Family') or row.get('FAMILIA') or "Desconocida"
+                genero = row.get('genero') or row.get('Genus') or row.get('GENERO') or ""
+                especie = row.get('especie') or row.get('Species') or row.get('ESPECIE') or ""
+                s_name = row.get('species_name') or row.get('NOMBRE') or f"{genero} {especie}".strip()
                 
+                if not s_name or s_name == " ":
+                    continue
+
+                # Categorización automática basada en la familia real de tus listas
+                fam_lower = familia.lower()
+                if any(b in fam_lower for b in ['scarabaeidae', 'rutelinae', 'buprestidae', 'cerambycidae', 'cetoniidae', 'chrysomelidae', 'curculionidae', 'dynastidae', 'elateridae', 'lucanidae', 'coleoptera']):
+                    categoria = "Beetles (Coleoptera)"
+                else:
+                    categoria = "Insects (Arthropoda)"
+
+                slug = s_name.lower().replace('.', '').replace(' ', '-') + "-01.jpg"
+
                 sql = """
                     INSERT INTO specimens (categoria, familia, genero, especie, species_name, media_url, rubro, region, status)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -65,9 +66,9 @@ try:
                 
                 valores = (
                     categoria,
-                    familia,
-                    gen,
-                    esp,
+                    familia.capitalize(),
+                    genero,
+                    especie,
                     s_name,
                     slug,
                     "ESPECIMENES_SECOS",
@@ -78,14 +79,17 @@ try:
                 try:
                     cursor.execute(sql, valores)
                     conexion.commit()
-                    print(f"    [✔] Registrado: {s_name}")
+                    contador_archivo += 1
+                    total_registros += 1
                 except Exception as e:
                     conexion.rollback()
                     print(f"    ❌ Error en {s_name}: {e}")
 
+            print(f"  [✔] {contador_archivo} registros subidos desde {archivo}")
+
     cursor.close()
     conexion.close()
-    print("\n✨ ¡Todas las familias y especies han sido migradas con éxito a Neon!")
+    print(f"\n✨ ¡Listo! Se procesaron todos tus CSVs. Total de registros subidos/actualizados: {total_registros}")
 
 except Exception as error:
-    print(f"❌ Error de conexión a la base de datos: {error}")
+    print(f"❌ Error general: {error}")
