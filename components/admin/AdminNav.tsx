@@ -20,12 +20,12 @@ export default function AdminNav({ admin }: { admin: AdminUser }) {
     <header className="sticky top-0 z-40 border-b border-neutral-800 bg-neutral-950/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <div className="flex flex-wrap items-center gap-4">
-          <Link href="/admin" className="text-sm font-semibold tracking-wide text-emerald-400">
+          <Link target="_blank" rel="noopener noreferrer" href="/admin" className="text-sm font-semibold tracking-wide text-emerald-400">
             NEOTROPICAL · Admin
           </Link>
           <nav className="flex flex-wrap gap-1">
             {NAV.map(({ href, label, icon: Icon, status }) => (
-              <Link
+              <Link target="_blank" rel="noopener noreferrer"
                 key={href}
                 href={href}
                 title={status === 'stub' ? 'Abre · schema incompleto hasta SQL Supabase' : undefined}

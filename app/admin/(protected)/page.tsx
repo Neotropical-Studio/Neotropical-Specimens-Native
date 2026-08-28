@@ -28,7 +28,7 @@ export default async function AdminDashboardPage() {
           <p className="mt-2 text-4xl font-extrabold text-emerald-400">{counts.specimens}</p>
           <div className="mt-4">
             <Link
-              href="/admin/specimens"
+              href="/admin/especimenes"
               className="text-xs font-semibold text-emerald-400 hover:underline"
             >
               Gestionar especímenes →

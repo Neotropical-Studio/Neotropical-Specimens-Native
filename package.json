@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-   "build": "NEXT_DISABLE_TYPESCRIPT=1 next build --no-lint",
+    "build": "NEXT_DISABLE_TYPESCRIPT=1 next build --no-lint",
     "start": "next start -p ${PORT:-3000}",
     "start:do": "next start -p ${PORT:-3000}",
     "start:standalone": "node .next/standalone/server.js",
@@ -22,7 +22,7 @@
     "studio:auto:once": "python3 scripts/auto_studio_daemon.py --once"
   },
   "dependencies": {
-    "@google/model-viewer": "^4.0.0",
+    "@google/model-viewer": "^4.3.1",
     "@neondatabase/serverless": "^1.1.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9",
